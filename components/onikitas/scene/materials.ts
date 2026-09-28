@@ -43,7 +43,7 @@ vec3 oki_sky(vec3 d){
   vec3 c = mix(uHorizon, uZenith, pow(y, 0.42));
   float sd = max(dot(d, uSunDir), 0.0);
   float up = smoothstep(-0.25, 0.05, uSunDir.y);
-  c += uSunColor * (pow(sd, 7.0) * 0.28 + pow(sd, 60.0) * 0.5) * up * (1.0 - uNight);
+  c += uSunColor * (pow(sd, 7.0) * 0.28 + pow(sd, 60.0) * 0.5) * up * (1.0 - uNight) * smoothstep(-0.04, 0.0, d.y);
   return c;
 }`;
 
@@ -77,7 +77,16 @@ export function villaMaterial() {
         vec3 lime = vec3(0.905, 0.878, 0.83) * (0.84 + 0.2 * pl);
         vec3 trav = mix(vec3(0.68, 0.63, 0.55), oki_tri(uTrav, vWp, n, 0.22), 0.42);
         vec3 wood = vec3(0.26, 0.2, 0.14) * (0.8 + 0.4 * oki_noise(vWp.xz * 8.0));
-        vec3 real = vKind < 0.5 ? lime : (vKind < 1.5 ? trav : wood);
+        // rubble garden walls: irregular courses of Bodrum stone, cap stones on top
+        vec3 an = abs(n);
+        vec2 sc = vec2((an.x > an.z ? vWp.z : vWp.x) * 3.1, vWp.y * 4.6);
+        float row = floor(sc.y);
+        float sh = oki_hash(vec2(row, 7.0)) * 3.0;
+        vec2 f = fract(vec2(sc.x + sh, sc.y));
+        float joint = smoothstep(0.0, 0.16, min(min(f.x, 1.0 - f.x) * 1.5, min(f.y, 1.0 - f.y)));
+        vec3 stone = mix(vec3(0.5, 0.46, 0.4), vec3(0.68, 0.63, 0.55), oki_hash(vec2(floor(sc.x + sh), row))) * mix(0.7, 1.0, joint);
+        stone = mix(stone, trav, step(0.6, an.y));
+        vec3 real = vKind < 0.5 ? lime : (vKind < 1.5 ? trav : (vKind < 3.5 ? wood : stone));
         vec3 clay = OKI_CLAY * (0.985 + 0.03 * pl);
         vec3 col = mix(clay, real, r);
         float isH = 1.0 - step(0.5, abs(vVilla - uHover));
@@ -140,40 +149,39 @@ export function terrainMaterial() {
         vWn = nn; vPad = aPad; vH = position.y;
       }`,
     fragmentShader: /* glsl */ `
-      uniform sampler2D uTrav;
       varying vec3 vWp; varying vec3 vWn; varying float vPad; varying float vH;
       ${NOISE}${REVEAL}${CLAY}
+      // triplanar value noise: steep banks get their own projection instead of
+      // a blend of coordinates, which folded the pattern into marbled rings
+      float oki_tnoise(vec3 p, vec3 w, float s){
+        return oki_noise(p.zy * s) * w.x + oki_noise(p.xz * s) * w.y + oki_noise(p.xy * s) * w.z;
+      }
       void main(){
         vec3 n = normalize(vWn);
         float slope = 1.0 - n.y;
-        vec2 tp = mix(vWp.xz, vec2(vWp.x + vWp.z, vWp.y * 1.4), smoothstep(0.3, 0.65, slope));
+        vec3 tw = pow(abs(n), vec3(4.0)); tw /= (tw.x + tw.y + tw.z);
         float n1 = oki_fbm(vWp.xz * 0.07);
-        float n2 = oki_noise(tp * 0.55);
-        float n3 = oki_noise(tp * 2.6);
-        // clay: plaster board, a hairline where each contour layer ends
-        float ph = fract(vH / ${STEP.toFixed(3)});
-        float line = 1.0 - smoothstep(0.0, 0.045, min(ph, 1.0 - ph));
-        vec3 clay = OKI_CLAY * (0.975 + 0.035 * n3) * (1.0 - line * 0.07 * (1.0 - vPad));
-        // real: dry grass, maquis, limestone
+        float n2 = oki_tnoise(vWp, tw, 0.55);
+        float n3 = oki_tnoise(vWp, tw, 2.6);
+        float n4 = oki_tnoise(vWp + vec3(17.0, 0.0, 9.0), tw, 2.8) * 0.65 + n2 * 0.35;
+        // clay: plaster board, a hairline where each contour layer ends,
+        // one pixel wide at any distance and faded where the lines would crowd
+        float ph = vH / ${STEP.toFixed(3)};
+        float fw = max(fwidth(ph), 1e-4);
+        float dl = abs(fract(ph + 0.5) - 0.5);
+        float line = (1.0 - smoothstep(fw * 0.6, fw * 1.6, dl)) * (1.0 - smoothstep(0.18, 0.4, fw));
+        vec3 clay = OKI_CLAY * (0.975 + 0.035 * n3) * (1.0 - line * 0.08 * (1.0 - vPad));
+        // real: dry grass and maquis, bare earth on the banks, scattered limestone
         vec3 dry = vec3(0.36, 0.31, 0.21);
         vec3 maquis = vec3(0.12, 0.145, 0.085);
-        vec3 rock = vec3(0.5, 0.48, 0.43);
+        vec3 earth = vec3(0.33, 0.255, 0.18);
+        vec3 rock = vec3(0.335, 0.318, 0.285);
         vec3 real = mix(dry, maquis, smoothstep(0.3, 0.55, n1 + 0.18 * (n2 - 0.5)));
-        real = mix(real, rock, smoothstep(0.3, 0.55, slope + (n2 - 0.5) * 0.35));
+        real = mix(real, earth, smoothstep(0.2, 0.5, slope + (n2 - 0.5) * 0.3) * 0.75);
+        float rk = smoothstep(0.71, 0.82, n4 + slope * 0.25 + (n3 - 0.5) * 0.1);
+        real = mix(real, rock * (0.85 + 0.3 * n3), rk * 0.8);
         real = mix(real, vec3(0.6, 0.56, 0.48), 1.0 - smoothstep(0.35, 1.9, vH));
-        vec3 trav = mix(vec3(0.64, 0.6, 0.52), texture(uTrav, vWp.xz * 0.12).rgb, 0.4);
-        float top = smoothstep(0.86, 0.985, vPad) * smoothstep(0.22, 0.08, slope);
-        float wall = smoothstep(0.3, 0.55, vPad) * (1.0 - top) * smoothstep(0.4, 0.62, slope);
-        // dry-stone courses, like the terrace walls of the peninsula
-        vec2 sc = vec2((vWp.x + vWp.z) * 2.3, vWp.y * 3.6);
-        float row = floor(sc.y);
-        vec2 cell = vec2(floor(sc.x + oki_hash(vec2(row, 3.0)) * 3.0), row);
-        vec2 f = fract(vec2(sc.x + oki_hash(vec2(row, 3.0)) * 3.0, sc.y));
-        float joint = smoothstep(0.0, 0.12, min(min(f.x, 1.0 - f.x) * 1.6, min(f.y, 1.0 - f.y)));
-        vec3 stone = mix(vec3(0.44, 0.41, 0.36), vec3(0.58, 0.55, 0.48), oki_hash(cell)) * mix(0.8, 1.0, joint);
-        real = mix(real, stone, wall);
-        real = mix(real, trav, top);
-        real *= (0.86 + 0.28 * n3) * mix(0.88, 1.0, wall);
+        real *= 0.86 + 0.28 * n3;
         float r = oki_reveal(vWp, 0.0);
         csm_DiffuseColor = vec4(mix(clay, real, r), 1.0);
         csm_Emissive = vec3(1.0, 0.6, 0.32) * oki_edge(vWp, 0.0) * 0.85;
@@ -255,8 +263,14 @@ export function waterMaterial(pool: boolean) {
         vec3 V = normalize(cameraPosition - vWp);
         float dist = length(cameraPosition - vWp);
         float s = uPool > 0.5 ? 2.2 : 0.55;
-        vec2 g = waveGrad(vWp.xz * s + vec2(uTime * 0.13, uTime * 0.07)) * 0.6
-               + waveGrad(vWp.xz * s * 2.7 - vec2(uTime * 0.09, -uTime * 0.16)) * 0.35;
+        // footprint of one pixel in wave space: when a wave is smaller than a
+        // couple of pixels it is faded out instead of aliasing into sparkle
+        vec2 px = fwidth(vWp.xz) * s;
+        float fp = max(px.x, px.y);
+        float lod1 = 1.0 - smoothstep(0.25, 0.9, fp);
+        float lod2 = 1.0 - smoothstep(0.1, 0.35, fp);
+        vec2 g = waveGrad(vWp.xz * s + vec2(uTime * 0.13, uTime * 0.07)) * 0.6 * lod1
+               + waveGrad(vWp.xz * s * 2.7 - vec2(uTime * 0.09, -uTime * 0.16)) * 0.35 * lod2;
         float amp = (uPool > 0.5 ? 0.05 : 0.11) / (1.0 + dist * 0.012);
         vec3 N = normalize(vec3(-g.x * amp, 1.0, -g.y * amp));
         float fres = 0.02 + 0.98 * pow(1.0 - max(dot(N, V), 0.0), 5.0);
@@ -271,8 +285,8 @@ export function waterMaterial(pool: boolean) {
         float day = 1.0 - uNight;
         body *= 0.12 + 0.88 * day * clamp(uLightDir.y * 2.5 + 0.35, 0.0, 1.0);
         vec3 col = mix(body, sky, fres * (uPool > 0.5 ? 0.6 : 0.85));
-        float spec = pow(max(dot(R, uLightDir), 0.0), uPool > 0.5 ? 180.0 : 320.0);
-        col += uSunColor * spec * (uPool > 0.5 ? 1.2 : 2.4) * mix(1.0, 0.35, uNight);
+        float spec = pow(max(dot(R, uLightDir), 0.0), uPool > 0.5 ? 140.0 : 160.0);
+        col += uSunColor * spec * (uPool > 0.5 ? 1.0 : 1.4) * mix(1.0, 0.35, uNight);
         // foam where the sea touches the rocks
         float shore = (1.0 - smoothstep(0.0, 0.05, depth)) * inside * (1.0 - uPool);
         col = mix(col, vec3(0.8, 0.82, 0.8) * (0.4 + 0.6 * day), shore * smoothstep(0.35, 0.7, oki_noise(vWp.xz * 1.4 + uTime * 0.3)));
@@ -281,7 +295,8 @@ export function waterMaterial(pool: boolean) {
         vec3 clay = mix(acrylic, sky, fres * 0.55) + uSunColor * spec * 0.6;
         if (uPool > 0.5) clay = OKI_CLAY * 0.95;
         float r = oki_reveal(vWp, 0.0);
-        gl_FragColor = vec4(mix(clay, col, r), 1.0);
+        // stay under the bloom threshold (1.05): the glitter reads as light, not sparks
+        gl_FragColor = vec4(min(mix(clay, col, r), vec3(0.97)), 1.0);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
         #include <fog_fragment>

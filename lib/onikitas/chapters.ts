@@ -19,7 +19,8 @@ export const chapters: Chapter[] = [
   { id: "ogle", from: 11.8, to: 14.4, vh: 180, span: [0, 1] },
   { id: "ikindi", from: 14.4, to: 17.8, vh: 200, span: [0, 1] },
   { id: "aksam", from: 17.8, to: 19.667, vh: 300, span: [0, 0.4] },
-  { id: "yatsi", from: 19.667, to: 21.5, vh: 200, span: [0, 0.9] },
+  // night: the lamps come on over the first 55%, then the slope holds, calm
+  { id: "yatsi", from: 19.667, to: 21.5, vh: 340, span: [0, 0.55] },
 ];
 
 /** Fixed framings for still capture (?still=n): [chapter, t]. */

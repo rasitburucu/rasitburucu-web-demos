@@ -26,25 +26,24 @@ class SceneBoundary extends Component<{ children: ReactNode; onError: () => void
   }
 }
 
-function webgl2() {
+/** One throwaway WebGL2 context: is it there, and what GPU is behind it. Released at once. */
+function probeGL(): { ok: boolean; renderer: string } {
   try {
-    const c = document.createElement("canvas");
-    return !!c.getContext("webgl2");
+    const gl = document.createElement("canvas").getContext("webgl2");
+    if (!gl) return { ok: false, renderer: "" };
+    const ext = gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return { ok: true, renderer };
   } catch {
-    return false;
+    return { ok: false, renderer: "" };
   }
 }
 
-function detectTier(): Tier {
+function detectTier(renderer: string): Tier {
   const coarse = matchMedia("(pointer: coarse)").matches;
   const small = Math.min(screen.width, screen.height) < 820;
   if (coarse && small) return "low";
-  let renderer = "";
-  try {
-    const gl = document.createElement("canvas").getContext("webgl2");
-    const ext = gl?.getExtension("WEBGL_debug_renderer_info");
-    renderer = ext && gl ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
-  } catch {}
   if (/swiftshader|llvmpipe|software|basic render/i.test(renderer)) return "low";
   const cores = navigator.hardwareConcurrency || 4;
   if (/intel|mali|adreno [1-5]|powervr/i.test(renderer) || cores <= 4 || coarse) return "mid";
@@ -58,10 +57,14 @@ const COPY_WINDOW: [number, number][] = [
   [0.12, 0.8],
   [0.1, 0.86],
   [0.1, 0.86],
-  [0.05, 0.34],
+  // akşam: the question stays up while the dial is in use
+  [0.05, 1.5],
   [0.12, 1.5],
 ];
 const DIAL_WINDOW: [number, number] = [0.38, 1.5];
+/** Evening tone switch (decimal hours), with a small hysteresis band. */
+const TONE_DARK_FROM = 18.0;
+const TONE_LIGHT_BELOW = 17.85;
 
 function useDirector(mode: Mode) {
   useEffect(() => {
@@ -166,7 +169,10 @@ function useDirector(mode: Mode) {
         ticks.forEach((tk, i) => (tk.dataset.active = i === c ? "true" : "false"));
         emit("tone");
       }
-      const tone = store.hour >= 19.25 ? "dark" : "light";
+      // Ink flips to limewash as the slope falls into evening shade. Hysteresis
+      // keeps it from flickering when the scroll rests near the threshold.
+      const tone =
+        lastTone === "dark" ? (store.hour < TONE_LIGHT_BELOW ? "light" : "dark") : store.hour >= TONE_DARK_FROM ? "dark" : "light";
       if (tone !== lastTone) {
         lastTone = tone;
         store.tone = tone;
@@ -208,13 +214,14 @@ export function Experience({ children }: { children: ReactNode }) {
     const params = new URLSearchParams(location.search);
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const forced = params.get("mode");
-    const ok = webgl2();
+    const gpu = probeGL();
+    const ok = gpu.ok;
     const q = params.get("tier") as Tier | null;
     // mode decision happens once on the client, after first paint
     const decide = window.setTimeout(() => {
       if (!ok || forced === "stills" || (reduce && params.get("still") === null && forced !== "webgl")) setMode("stills");
       else {
-        setTier(q === "high" || q === "mid" || q === "low" ? q : detectTier());
+        setTier(q === "high" || q === "mid" || q === "low" ? q : detectTier(gpu.renderer));
         setMode("webgl");
       }
     }, 0);

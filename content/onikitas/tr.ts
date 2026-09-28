@@ -7,8 +7,6 @@ export type ChapterId = "safak" | "sabah" | "kusluk" | "ogle" | "ikindi" | "aksa
 export type VillaCopy = {
   /** Roman numeral, also the villa's name. */
   no: string;
-  /** Turkish accusative suffix for the numeral as read aloud ("VII'yi"). */
-  acc: string;
   facing: string;
   /** The hour this house "loves", HH:MM. Fictional. */
   hour: string;
@@ -21,7 +19,7 @@ export type Copy = {
   skip: string;
   brand: string;
   nav: { visit: string; soundOn: string; soundOff: string; dayNav: string };
-  loader: { coords: string; time: string; label: string };
+  loader: { time: string; label: string };
   chapters: Record<ChapterId, { name: string; time: string; title: string; body: string }>;
   dial: {
     label: string;
@@ -29,13 +27,6 @@ export type Copy = {
     villaLegend: string;
     villaPrefix: string;
     cta: string;
-    copy: string;
-    opened: string;
-    copied: string;
-    copyFailed: string;
-    mailTo: string;
-    subject: (villa: string, time: string) => string;
-    body: (villaAcc: string, time: string) => string;
     lightsAt: (time: string) => string;
   };
   tip: { loves: (time: string) => string };
@@ -51,92 +42,84 @@ export type Copy = {
 };
 
 export const villas: VillaCopy[] = [
-  { no: "I", acc: "I'i", facing: "Doğuya bakar", hour: "06:10", line: "Günün ilk ışığı onun duvarına düşer." },
-  { no: "II", acc: "II'yi", facing: "Güneydoğuya bakar", hour: "08:30", line: "Kahvaltı masası gölgeye hiç girmez." },
-  { no: "III", acc: "III'ü", facing: "Güneye bakar", hour: "11:00", line: "Havuzu en erken ısınan ev." },
-  { no: "IV", acc: "IV'ü", facing: "Güneye bakar", hour: "13:20", line: "Öğlen avlusu serin bir odaya döner." },
-  { no: "V", acc: "V'i", facing: "Güneydoğuya bakar", hour: "09:40", line: "Zeytinliğe en yakın ev." },
-  { no: "VI", acc: "VI'yı", facing: "Güneye bakar", hour: "15:00", line: "Pergolası ikindide çizgili gölge örer." },
-  { no: "VII", acc: "VII'yi", facing: "Batıya bakar", hour: "18:40", line: "Akşamı sever; avlusu altın rengine döner." },
-  { no: "VIII", acc: "VIII'i", facing: "Güneybatıya bakar", hour: "17:30", line: "Meltemi ilk o duyar." },
-  { no: "IX", acc: "IX'u", facing: "Doğuya bakar", hour: "07:20", line: "Yamacın en yukarısında; sabahı herkesten önce görür." },
-  { no: "X", acc: "X'u", facing: "Güneye bakar", hour: "12:10", line: "Denizle arasında yalnızca zeytin var." },
-  { no: "XI", acc: "XI'i", facing: "Güneybatıya bakar", hour: "19:10", line: "Gün batımını çatıdan izlemek için yapıldı." },
-  { no: "XII", acc: "XII'yi", facing: "Batıya bakar", hour: "20:05", line: "Son ışığı o alır, ilk lambayı o yakar." },
+  { no: "I", facing: "Güneydoğuya bakar", hour: "06:10", line: "Yamaçta güne ilk uyanan ev." },
+  { no: "II", facing: "Güneydoğuya bakar", hour: "08:30", line: "Kahvaltı terasına sabah güneşi tam oturur." },
+  { no: "III", facing: "Güneye bakar", hour: "11:00", line: "Havuzu gün içinde en erken ısınan ev." },
+  { no: "IV", facing: "Güneye bakar", hour: "13:20", line: "Kuzeydeki avlusu öğle sıcağında bile serin." },
+  { no: "V", facing: "Güneye bakar", hour: "09:40", line: "Zeytinliğin hemen kıyısında." },
+  { no: "VI", facing: "Güneye bakar", hour: "15:00", line: "Çardağı ikindi güneşini süzer." },
+  { no: "VII", facing: "Batıya bakar", hour: "18:40", line: "Gün batımını salondan izlersiniz." },
+  { no: "VIII", facing: "Güneye bakar", hour: "17:30", line: "Akşam meltemini ilk o alır." },
+  { no: "IX", facing: "Güneybatıya bakar", hour: "07:20", line: "Yamacın en üstünde, en geniş manzarayla." },
+  { no: "X", facing: "Güneydoğuya bakar", hour: "12:10", line: "Denizle arasında yalnızca zeytin ağaçları var." },
+  { no: "XI", facing: "Güneye bakar", hour: "19:10", line: "Çatı terası gün batımı için tasarlandı." },
+  { no: "XII", facing: "Güneybatıya bakar", hour: "20:05", line: "Günün son ışığı onun duvarına düşer." },
 ];
 
 export const tr: Copy = {
   meta: {
-    title: "Onikitaş · Bir günün ışığında on iki ev",
+    title: "Onikitaş Villaları · Yalıkavak, Bodrum",
     description:
-      "Bodrum'da kurgusal on iki ev, bir günün ışığında gezilen gerçek zamanlı bir maket. rasitburucu.com konsept çalışması.",
+      "Yalıkavak'ın güney sırtlarında, her birinin önü deniz olan on iki taş villa. Kurgusal bir marka için hazırlanmış rasitburucu.com konsept çalışması.",
   },
   strip: { text: "Konsept çalışma — rasitburucu.com", href: "https://rasitburucu.com/tr" },
   skip: "İçeriğe geç",
   brand: "Onikitaş",
   nav: { visit: "Ziyaret", soundOn: "Sesi kapat", soundOff: "Sesi aç", dayNav: "Günün saatleri" },
-  loader: { coords: "37°02′K  27°26′D", time: "05:41", label: "Sahne hazırlanıyor" },
+  loader: { time: "05:41", label: "Sahne hazırlanıyor" },
   chapters: {
     safak: {
       name: "Şafak",
       time: "05:41",
-      title: "On iki taş. Bir yamaç. Bir gün.",
-      body: "Bodrum'da, denize dönük bir yamaçta on iki ev. Onları bir günün ışığında gösteriyoruz; kaydırdıkça gün ilerler.",
+      title: "Yamaçta on iki ev. Hepsinin önü deniz.",
+      body: "Onikitaş Villaları, Yalıkavak'ın güney sırtlarında taş, kireç ve zeytin arasında yükseliyor. Her ev, günün en güzel ışığını alacak açıyla yerleştirildi.",
     },
     sabah: {
       name: "Sabah",
       time: "07:00",
-      title: "Yamaca yaslanan on iki taş.",
-      body: "Evler eğimi izler, hiçbiri ötekinin denizini kesmez. Güneş önce en doğudakine, I'e değer.",
+      title: "Hiçbir ev, komşusunun denizini kesmiyor.",
+      body: "Evleri yamacın eğimine göre kademe kademe yerleştirdik. Hangi terasa çıkarsanız çıkın, önünüzde yalnızca deniz ve zeytin var.",
     },
     kusluk: {
       name: "Kuşluk",
       time: "10:00",
-      title: "Işık değdiği yeri gerçek kılar.",
-      body: "Beyaz maket, güneş geçtikçe kirece, travertene ve zeytine döner. Kalın duvarlar sabahın serinliğini öğlene taşır.",
+      title: "Bodrum taşı, kireç sıva, meşe ve traverten.",
+      body: "Yarımadanın yüzyıllardır kullandığı malzemeleri seçtik. Kalın taş duvarlar sabahın serinliğini öğleden sonraya kadar içeride tutar.",
     },
     ogle: {
       name: "Öğle",
       time: "13:00",
-      title: "Öğlen, gölge bir oda olur.",
-      body: "Her avlu kuzeye çekilmiş. En sıcak saatte bile havuzun yarısı gölgede kalır.",
+      title: "En sıcak saatte bile avlunuz gölgede.",
+      body: "Her avluyu evin kuzeyine aldık. Öğle güneşinde bile avlunun yarısı, havuzun da uzun kenarı gölgede kalır.",
     },
     ikindi: {
       name: "İkindi",
       time: "16:30",
-      title: "Meltem ikindiyle gelir.",
-      body: "Zeytinler gümüş yüzünü çevirir. Bir eve dokunun; hangi saati sevdiğini söyler.",
+      title: "İkindi meltemi, klimadan iyidir.",
+      body: "Evler, yarımadanın kuzeybatı rüzgârına açık konumlandı; pencereleri açmanız yeter. Her evin gün içinde en güzel göründüğü bir saat var, evlerin üzerine gelip tanışın.",
     },
     aksam: {
       name: "Akşam",
       time: "19:40",
-      title: "Evi hangi saatin ışığında görmek istersiniz?",
-      body: "Güneşi sürükleyin, bir ev seçin. Ziyaretinizi o ışığa göre ayarlayalım.",
+      title: "Evinizi hangi ışıkta görmek istersiniz?",
+      body: "Bir saat ve bir ev seçin; ziyaretinizi o ışığa göre planlayalım.",
     },
     yatsi: {
       name: "Yatsı",
       time: "21:30",
-      title: "Gece, on iki pencere.",
-      body: "Lambalar birer birer yanar. Yamaç sabaha kadar denizi dinler.",
+      title: "Gece, on iki pencere yanar.",
+      body: "Yamaç sessizleşir, geriye denizin sesi kalır. Onikitaş, 2027 yazında ilk sahiplerini ağırlıyor.",
     },
   },
   dial: {
     label: "Ziyaret saati",
-    hint: "Güneşi sürükleyin ya da ok tuşlarıyla saati değiştirin.",
+    hint: "Güneşi sürükleyerek saati seçin.",
     villaLegend: "Hangi ev?",
     villaPrefix: "Villa",
     cta: "Bu ışıkta ziyaret iste",
-    copy: "Metni kopyala",
-    opened: "E-posta taslağı açıldı. Bu bir konsept çalışma: adres kurgusal, mesaj kimseye ulaşmaz.",
-    copied: "Metin kopyalandı. Bu bir konsept çalışma: adres kurgusal, mesaj kimseye ulaşmaz.",
-    copyFailed: "Kopyalanamadı. Metni e-posta düğmesiyle açabilirsiniz.",
-    mailTo: "ziyaret@onikitas.example",
-    subject: (villa, time) => `Onikitaş, Villa ${villa}, ${time} ışığı`,
-    body: (villaAcc, time) =>
-      `Merhaba,\n\nVilla ${villaAcc} ${time} ışığında görmek istiyorum. Uygun bir gün önerebilir misiniz?\n\nAd:\nTelefon:\n\n(Bu metin rasitburucu.com için hazırlanmış Onikitaş konsept çalışmasından geldi. Adres kurgusaldır.)`,
     lightsAt: (time) => `${time} ışığında`,
   },
-  tip: { loves: (time) => `En sevdiği saat ${time}` },
+  tip: { loves: (time) => `En güzel saati ${time}` },
   footer: {
     fiction:
       "Onikitaş kurgusal bir projedir. Adı, evleri, saatleri ve bu sayfadaki bütün bilgiler bir konsept çalışma için yazıldı.",

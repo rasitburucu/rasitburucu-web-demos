@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { PerformanceMonitor, useTexture } from "@react-three/drei";
-import { addLoad, emit, store, type Tier } from "@/lib/onikitas/store";
+import { addLoad, emit, on, store, type Tier } from "@/lib/onikitas/store";
 import { depthMap, FOCUS, makeTrees } from "@/lib/onikitas/site";
 import { buildBackdrop, buildTerrain, buildTreeGeometry, buildVillas, treeMatrices } from "./build";
 import { skyMaterial, terrainMaterial, treeMaterial, U, villaMaterial, wallMaterial, waterMaterial, windowMaterial } from "./materials";
@@ -13,12 +13,37 @@ import { cameraGoal, wallFrame } from "./rig";
 import { makeLeafTexture } from "./leaves";
 
 const Q = {
-  high: { seg: 256, trees: 520, shadow: 4096, radius: 3.5, dpr: [1, 1.5] as [number, number] },
-  mid: { seg: 200, trees: 360, shadow: 2048, radius: 2, dpr: [1, 1.25] as [number, number] },
+  high: { seg: 256, trees: 520, shadow: 2048, radius: 3.5, dpr: [1, 1.5] as [number, number] },
+  mid: { seg: 192, trees: 360, shadow: 2048, radius: 2, dpr: [1, 1.25] as [number, number] },
   low: { seg: 120, trees: 170, shadow: 1024, radius: 2, dpr: [1, 1] as [number, number] },
 };
 
+/** Depth range: tight enough that the sea never shimmers, wide enough for the fog (ends at 760). */
+const NEAR = 0.5;
+const FAR = 1200;
+
 const damp = (a: number, b: number, lambda: number, dt: number) => a + (b - a) * (1 - Math.exp(-lambda * dt));
+
+/** Give the browser a frame between build steps (with a fallback for hidden tabs). */
+const breathe = () =>
+  new Promise<void>((resolve) => {
+    let done = false;
+    const go = () => {
+      if (done) return;
+      done = true;
+      resolve();
+    };
+    requestAnimationFrame(() => setTimeout(go, 0));
+    setTimeout(go, 60);
+  });
+
+/** performance.measure around a synchronous step, visible in DevTools > Performance. */
+function timed<T>(name: string, f: () => T): T {
+  const t0 = performance.now();
+  const r = f();
+  performance.measure(`oki:${name}`, { start: t0, end: performance.now() });
+  return r;
+}
 
 // ---------------------------------------------------------------------------
 
@@ -42,32 +67,79 @@ function Textures() {
     U.uPlaster.value = plaster;
     U.uPlasterN.value = plasterN;
     U.uTrav.value = trav;
-    addLoad(3);
+    addLoad(2);
   }, [plaster, plasterN, trav, gl]);
   return null;
 }
 
 // ---------------------------------------------------------------------------
 
+type Built = {
+  terrain: THREE.BufferGeometry;
+  backdrop: THREE.BufferGeometry;
+  villas: ReturnType<typeof buildVillas>;
+  treeGeo: THREE.BufferGeometry;
+  mats: THREE.Matrix4[];
+};
+
+/**
+ * Builds the world in steps with a frame between each, so the loader keeps
+ * moving and no single task holds the main thread. One loader stone per step.
+ */
 function World({ tier }: { tier: Tier }) {
   const q = Q[tier];
-  const scene = useThree((s) => s.scene);
+  const [built, setBuilt] = useState<Built | null>(null);
 
-  const built = useMemo(() => {
-    const terrain = buildTerrain(q.seg);
-    const backdrop = buildBackdrop();
-    const villas = buildVillas();
-    const treeGeo = buildTreeGeometry();
-    const trees = makeTrees(q.trees);
-    const mats = treeMatrices(trees);
-    const size = 128;
-    const depth = new THREE.DataTexture(depthMap(size), size, size, THREE.RedFormat, THREE.UnsignedByteType);
-    depth.magFilter = depth.minFilter = THREE.LinearFilter;
-    depth.needsUpdate = true;
-    U.uDepth.value = depth;
-    U.uLeaves.value = makeLeafTexture();
-    return { terrain, backdrop, villas, treeGeo, mats };
+  useEffect(() => {
+    let alive = true;
+    const made: { dispose(): void }[] = [];
+    const step = async <T,>(name: string, f: () => T) => {
+      const r = timed(name, f);
+      addLoad(1);
+      await breathe();
+      return r;
+    };
+    (async () => {
+      performance.mark("oki:build-start");
+      await breathe();
+      const terrain = await step("terrain", () => buildTerrain(q.seg));
+      made.push(terrain);
+      if (!alive) return;
+      const backdrop = await step("backdrop", () => {
+        const size = 128;
+        const depth = new THREE.DataTexture(depthMap(size), size, size, THREE.RedFormat, THREE.UnsignedByteType);
+        depth.magFilter = depth.minFilter = THREE.LinearFilter;
+        depth.needsUpdate = true;
+        U.uDepth.value = depth;
+        return buildBackdrop();
+      });
+      made.push(backdrop);
+      if (!alive) return;
+      const villas = await step("villas", () => buildVillas());
+      made.push(villas.solid, villas.windows, villas.pools);
+      if (!alive) return;
+      const { treeGeo, mats } = await step("trees", () => ({ treeGeo: buildTreeGeometry(), mats: treeMatrices(makeTrees(q.trees)) }));
+      made.push(treeGeo);
+      if (!alive) return;
+      await step("leaves", () => {
+        U.uLeaves.value = makeLeafTexture();
+      });
+      if (!alive) return;
+      performance.mark("oki:build-end");
+      performance.measure("oki:build", "oki:build-start", "oki:build-end");
+      setBuilt({ terrain, backdrop, villas, treeGeo, mats });
+    })();
+    return () => {
+      alive = false;
+      made.forEach((g) => g.dispose());
+    };
   }, [q.seg, q.trees]);
+
+  return built ? <WorldMeshes built={built} tier={tier} /> : null;
+}
+
+function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
+  const scene = useThree((s) => s.scene);
 
   const materials = useMemo(
     () => ({
@@ -82,18 +154,6 @@ function World({ tier }: { tier: Tier }) {
     }),
     [],
   );
-
-  useEffect(() => {
-    addLoad(2);
-    return () => {
-      built.terrain.dispose();
-      built.backdrop.dispose();
-      built.villas.solid.dispose();
-      built.villas.windows.dispose();
-      built.villas.pools.dispose();
-      built.treeGeo.dispose();
-    };
-  }, [built]);
 
   useEffect(() => () => Object.values(materials).forEach((m) => m.dispose()), [materials]);
 
@@ -171,8 +231,13 @@ function World({ tier }: { tier: Tier }) {
     emit("selected");
   };
 
+  // hidden until every shader is compiled, so no frame stalls on a compile
+  const world = useRef<THREE.Group>(null);
+  const [shown, setShown] = useState(false);
+
   return (
     <>
+      <group ref={world} visible={shown}>
       <mesh material={materials.sky} frustumCulled={false} renderOrder={-10}>
         <sphereGeometry args={[1000, 32, 16]} />
       </mesh>
@@ -199,8 +264,10 @@ function World({ tier }: { tier: Tier }) {
         castShadow
         frustumCulled={false}
       />
+      </group>
       <Sun tier={tier} />
       <Director wallRef={wallRef} />
+      <Ready world={world} post={tier !== "low"} onCompiled={() => setShown(true)} />
     </>
   );
 }
@@ -221,10 +288,10 @@ function Sun({ tier }: { tier: Tier }) {
     scene.add(target);
     l.target = target;
     const cam = l.shadow.camera;
-    cam.left = -46;
-    cam.right = 46;
-    cam.top = 38;
-    cam.bottom = -38;
+    cam.left = -48;
+    cam.right = 48;
+    cam.top = 40;
+    cam.bottom = -40;
     cam.near = 1;
     cam.far = 260;
     cam.updateProjectionMatrix();
@@ -283,8 +350,8 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
     const portrait = size.width / size.height < 0.9;
     camera.fov = portrait ? 58 : 38;
     U.uBeamX.value = portrait ? -0.35 : -1.35;
-    camera.near = 0.05;
-    camera.far = 4000;
+    camera.near = NEAR;
+    camera.far = FAR;
     camera.updateProjectionMatrix();
   }, [camera, size.width, size.height]);
 
@@ -309,7 +376,7 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
       damp(U.uPointer.value.y, store.py, 3, dt),
     );
 
-    cameraGoal(store.chapter, store.t, goal, s.current.sel, store.selected, size.width / size.height < 0.9);
+    cameraGoal(store.chapter, store.t, goal, s.current.sel, store.selected, size.width / size.height < 0.9, size.width / size.height);
     // pointer parallax, gentler at the wall
     const par = store.chapter === 0 && store.t < 0.5 ? 0.06 : 0.9;
     const fwd = goal.tgt.clone().sub(goal.pos).normalize();
@@ -336,41 +403,103 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
 
 // ---------------------------------------------------------------------------
 
-function Ready() {
+/**
+ * Shaders compile while the world is still hidden: one mesh at a time with a
+ * frame between, programs linking in parallel (KHR_parallel_shader_compile), so
+ * the main thread never blocks. Then the world shows and the first frame counts.
+ */
+function Ready({ world, post, onCompiled }: { world: React.RefObject<THREE.Group | null>; post: boolean; onCompiled: () => void }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
+  const done = useRef(onCompiled);
   useEffect(() => {
     let alive = true;
-    const done = () => {
-      if (!alive) return;
-      addLoad(2);
-      let frames = 0;
-      const tick = () => {
+    const t0 = performance.now();
+    const meshes: THREE.Object3D[] = [];
+    world.current?.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) meshes.push(o);
+    });
+    // With post-processing the scene is drawn into a render target (linear
+    // output), before that straight to the screen (sRGB): two shader variants.
+    const rt = post ? new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType }) : null;
+    const targets = rt ? [null, rt] : [null];
+    (async () => {
+      for (const m of meshes) {
         if (!alive) return;
-        if (++frames < 3) return requestAnimationFrame(tick);
+        const prev = gl.getRenderTarget();
+        const jobs = targets.map((t) => {
+          gl.setRenderTarget(t);
+          return gl.compileAsync(m, camera, scene);
+        });
+        gl.setRenderTarget(prev);
+        await Promise.all(jobs);
+        await breathe();
+      }
+    })()
+      .finally(() => rt?.dispose())
+      .catch(() => undefined)
+      .then(() => {
+        if (!alive) return;
+        performance.measure("oki:compile", { start: t0, end: performance.now() });
         addLoad(1);
-        store.ready = true;
-        emit("ready");
-      };
-      requestAnimationFrame(tick);
-    };
-    const r = gl as THREE.WebGLRenderer & { compileAsync?: (s: THREE.Object3D, c: THREE.Camera) => Promise<unknown> };
-    if (r.compileAsync) r.compileAsync(scene, camera).then(done, done);
-    else done();
+        done.current();
+        // two frames: the loop draws the world, then we count it
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => {
+            if (!alive) return;
+            performance.mark("oki:first-frame");
+            addLoad(1);
+            emit("frame");
+          }),
+        );
+      });
     return () => {
       alive = false;
     };
-  }, [gl, scene, camera]);
+  }, [gl, scene, camera, world, post]);
   return null;
 }
 
-// Post-processing is split per tier so phones never download it.
+/** Last loader stone: a couple of settled frames with the final look in place. */
+function Settle() {
+  useEffect(() => {
+    let alive = true;
+    let frames = 0;
+    const tick = () => {
+      if (!alive) return;
+      if (++frames < 3) return void requestAnimationFrame(tick);
+      if (store.ready) return;
+      performance.mark("oki:settled");
+      addLoad(1);
+      store.ready = true;
+      emit("ready");
+    };
+    requestAnimationFrame(tick);
+    return () => {
+      alive = false;
+    };
+  }, []);
+  return null;
+}
+
+// Post-processing is split per tier so phones never download it, and loads
+// only after the first frame so its shaders never delay that frame.
 const PostHigh = lazy(() => import("./PostHigh"));
 const PostMid = lazy(() => import("./PostMid"));
 function Post({ tier }: { tier: Tier }) {
-  if (tier === "low") return null;
-  return <Suspense fallback={null}>{tier === "high" ? <PostHigh /> : <PostMid />}</Suspense>;
+  const [on_, setOn] = useState(false);
+  const [warm, setWarm] = useState(false);
+  useEffect(() => on("frame", () => setOn(true)), []);
+  const onReady = useMemo(() => () => setWarm(true), []);
+  if (!on_) return null;
+  if (tier === "low") return <Settle />;
+  return (
+    <>
+      <Suspense fallback={null}>{tier === "high" ? <PostHigh onReady={onReady} /> : <PostMid onReady={onReady} />}</Suspense>
+      {warm ? <Settle /> : null}
+    </>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -378,8 +507,12 @@ function Post({ tier }: { tier: Tier }) {
 export default function Scene({ tier: initial }: { tier: Tier }) {
   const [tier, setTier] = useState<Tier>(initial);
   const [dpr, setDpr] = useState(Q[initial].dpr[1]);
+  // frame-rate watch starts once loading is over: build steps are not a slow GPU
+  const [watch, setWatch] = useState(false);
   useEffect(() => {
-    addLoad(3);
+    // the scene code has arrived
+    addLoad(1);
+    return on("ready", () => setWatch(true));
   }, []);
   const degrade = () => {
     if (store.still >= 0) return;
@@ -393,19 +526,20 @@ export default function Scene({ tier: initial }: { tier: Tier }) {
     <div className="oki-canvas" aria-hidden="true">
     <Canvas
       shadows={{ type: THREE.PCFShadowMap }}
+      // with post-processing, tone mapping happens in the effect pass; set it off
+      // from the start so no shader has to recompile when the effects arrive
+      flat={tier !== "low"}
       dpr={dpr}
       gl={{ antialias: tier === "low", powerPreference: "high-performance", stencil: false, alpha: false }}
-      camera={{ fov: 38, near: 0.05, far: 4000, position: [0, 20, 80] }}
+      camera={{ fov: 38, near: NEAR, far: FAR, position: [0, 20, 80] }}
     >
-      <PerformanceMonitor onDecline={degrade} flipflops={2} />
+      {watch ? <PerformanceMonitor onDecline={degrade} flipflops={2} /> : null}
       <Suspense fallback={null}>
         <Textures />
-        <World tier={tier} />
-        <Ready />
       </Suspense>
+      <World tier={tier} />
       <Post tier={tier} />
     </Canvas>
     </div>
   );
 }
-

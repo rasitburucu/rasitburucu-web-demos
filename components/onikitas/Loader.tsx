@@ -69,7 +69,7 @@ export function Loader({ mode }: { mode: "pending" | "webgl" | "stills" }) {
     <div className="oki-loader" data-leaving={leaving ? "true" : "false"} data-mode={mode} role="status" aria-live="polite" aria-busy={!leaving}>
       <span className="sr-only">{tr.loader.label}</span>
       <div className="oki-loader__inner" aria-hidden="true">
-        <p className="oki-loader__coords">{tr.loader.coords}</p>
+        <p className="oki-loader__brand">{tr.brand}</p>
         <p className="oki-loader__time">{tr.loader.time}</p>
         <div className="oki-loader__ground">
           <div className="oki-loader__stones">

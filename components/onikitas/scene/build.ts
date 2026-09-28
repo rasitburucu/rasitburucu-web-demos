@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
-import { baseHeight, HALF, padAt, stepped, villaSites, WORLD, type Tree, type VillaSite } from "@/lib/onikitas/site";
+import { baseHeight, ground, HALF, lampHours, padAt, PLINTH_DEPTH, SLAB, stepped, villaSites, WORLD, type Tree, type VillaSite } from "@/lib/onikitas/site";
 import { mulberry32 } from "@/lib/onikitas/noise";
 
 // ---------- terrain ----------
@@ -18,7 +18,7 @@ export function buildTerrain(seg: number) {
     const z = pos.getZ(i);
     const b = baseHeight(x, z);
     const [w, ph] = padAt(x, z);
-    const h = b + (ph - b) * w;
+    const h = ground(b, w, ph);
     pos.setY(i, h);
     stepY[i] = stepped(h, w);
     pad[i] = w;
@@ -63,71 +63,129 @@ export function buildBackdrop() {
 
 // ---------- villas ----------
 
+// kind: 0 limewash, 1 travertine, 2 (windows), 3 oak, 4 rubble stone
 type Part = { w: number; h: number; d: number; x: number; y: number; z: number; kind: number; round?: boolean };
 
-const S = 0.3; // terrace slab thickness (top of the slab = floor level)
+const S = SLAB; // terrace slab thickness (top of the slab = floor level)
 
+/** Parts of one house in its local frame, from its seeded programme. */
 function massing(v: VillaSite) {
-  const r = mulberry32(1000 + v.index);
+  const P = v.plan;
+  const r = mulberry32(1000 + Math.floor(v.seed * 1e6));
   const solid: Part[] = [];
   const windows: Part[] = [];
-  const hasWing = r() > 0.22;
-  const upperShift = (r() - 0.5) * 1.4;
-  const tall = 1.85 + r() * 0.25;
+  const box = (w: number, h: number, d: number, x: number, y: number, z: number, kind: number, round = false) =>
+    solid.push({ w, h, d, x, y, z, kind, round });
 
-  // terrace slab around a pool opening (x -4.4..0, z 1.35..3.05)
-  const px0 = -4.4, px1 = 0, pz0 = 1.35, pz1 = 3.05;
-  const sx0 = -5.2, sx1 = 5.2, sz0 = -3.9, sz1 = 4.6;
-  const slab = (x0: number, x1: number, z0: number, z1: number) =>
-    solid.push({ w: x1 - x0, h: S, d: z1 - z0, x: (x0 + x1) / 2, y: S / 2, z: (z0 + z1) / 2, kind: 1 });
+  // stone plinth under the whole pad: its faces are the terrace retaining walls
+  box(P.pad.hx * 2, PLINTH_DEPTH, P.pad.hz * 2, 0, -PLINTH_DEPTH / 2, 0, 4);
+
+  // travertine terrace around the pool opening
+  const { x0: sx0, x1: sx1, z0: sz0, z1: sz1 } = P.slab;
+  const px0 = P.pool.x - P.pool.w / 2;
+  const px1 = P.pool.x + P.pool.w / 2;
+  const pz0 = P.pool.z - P.pool.d / 2;
+  const pz1 = P.pool.z + P.pool.d / 2;
+  const slab = (x0: number, x1: number, z0: number, z1: number) => {
+    if (x1 - x0 > 0.01 && z1 - z0 > 0.01) box(x1 - x0, S, z1 - z0, (x0 + x1) / 2, S / 2, (z0 + z1) / 2, 1);
+  };
   slab(sx0, px0, sz0, sz1);
   slab(px1, sx1, sz0, sz1);
   slab(px0, px1, pz1, sz1);
   slab(px0, px1, sz0, pz0);
-  // pool basin floor
-  solid.push({ w: px1 - px0, h: 0.06, d: pz1 - pz0, x: (px0 + px1) / 2, y: 0.03, z: (pz0 + pz1) / 2, kind: 1 });
+  box(P.pool.w, 0.06, P.pool.d, P.pool.x, 0.03, P.pool.z, 1);
 
-  // main mass, upper room, wing
-  const main = { w: 5.2, h: tall, d: 3.7, x: -1.5, z: -1.85 };
-  solid.push({ ...main, y: S + main.h / 2, kind: 0, round: true });
-  const up = { w: 3.1, h: 1.65, d: 2.9, x: -2.2 + upperShift, z: -2.25 };
-  solid.push({ ...up, y: S + main.h + up.h / 2, kind: 0, round: true });
-  const roofY = S + main.h;
-  // parapet around the main roof terrace
-  const pt = 0.12, ph = 0.3;
-  solid.push({ w: main.w, h: ph, d: pt, x: main.x, y: roofY + ph / 2, z: main.z + main.d / 2 - pt / 2, kind: 0 });
-  solid.push({ w: pt, h: ph, d: main.d, x: main.x + main.w / 2 - pt / 2, y: roofY + ph / 2, z: main.z, kind: 0 });
-  solid.push({ w: pt, h: ph, d: main.d, x: main.x - main.w / 2 + pt / 2, y: roofY + ph / 2, z: main.z, kind: 0 });
-  // Bodrum chimney with its little cap
-  const cx = up.x - up.w / 2 + 0.45;
-  const cy = roofY + up.h;
-  solid.push({ w: 0.36, h: 0.75, d: 0.36, x: cx, y: cy + 0.375, z: up.z - 0.7, kind: 0 });
-  solid.push({ w: 0.62, h: 0.08, d: 0.62, x: cx, y: cy + 0.79, z: up.z - 0.7, kind: 0 });
-  if (hasWing) {
-    const wg = { w: 2.8, h: 1.6, d: 3.1, x: 2.75, z: -2.15 };
-    solid.push({ ...wg, y: S + wg.h / 2, kind: 0, round: true });
-    windows.push({ w: 0.6, h: 1.0, d: 0.04, x: wg.x, y: S + 0.72, z: wg.z + wg.d / 2 + 0.01, kind: 2 });
+  // limewashed blocks
+  const M = P.main;
+  box(M.w, M.h, M.d, M.x, S + M.h / 2, M.z, 0, true);
+  if (P.wing) box(P.wing.w, P.wing.h, P.wing.d, P.wing.x, S + P.wing.h / 2, P.wing.z, 0, true);
+  const roofY = S + M.h;
+  const U = P.upper;
+  if (U) box(U.w, U.h, U.d, U.x, roofY + U.h / 2, U.z, 0, true);
+  // roof edge: a parapet round a roof terrace, otherwise a thin eave
+  const pt = 0.12;
+  if (P.roofTerrace) {
+    const ph = 0.3 + r() * 0.12;
+    box(M.w, ph, pt, M.x, roofY + ph / 2, M.z + M.d / 2 - pt / 2, 0);
+    box(pt, ph, M.d, M.x + M.w / 2 - pt / 2, roofY + ph / 2, M.z, 0);
+    box(pt, ph, M.d, M.x - M.w / 2 + pt / 2, roofY + ph / 2, M.z, 0);
+    if (!U) {
+      box(M.w, ph, pt, M.x, roofY + ph / 2, M.z - M.d / 2 + pt / 2, 0);
+      // stair head on a single-storey roof terrace
+      const kx = M.x + (r() < 0.5 ? -1 : 1) * (M.w / 2 - 0.65);
+      box(1.05, 1.05, 1.0, kx, roofY + 0.525, M.z - M.d / 2 + 0.62, 0, true);
+    }
+  } else {
+    box(M.w + 0.16, 0.08, M.d + 0.16, M.x, roofY + 0.04, M.z, 0);
   }
-  // low garden walls
-  solid.push({ w: sx1 - sx0, h: 0.5, d: 0.22, x: 0, y: S + 0.25, z: sz1 - 0.11, kind: 0 });
-  solid.push({ w: 0.22, h: 0.5, d: sz1 - sz0, x: sx0 + 0.11, y: S + 0.25, z: (sz0 + sz1) / 2, kind: 0 });
-  // pergola over the terrace: its slats draw striped shadows
-  const gx0 = 0.9, gx1 = 4.5, gz0 = 0.15, gz1 = 2.9, gh = 1.75;
-  for (const [x, z] of [[gx0, gz0], [gx1, gz0], [gx0, gz1], [gx1, gz1]])
-    solid.push({ w: 0.13, h: gh, d: 0.13, x, y: S + gh / 2, z, kind: 3 });
-  for (const z of [gz0, gz1]) solid.push({ w: gx1 - gx0 + 0.3, h: 0.12, d: 0.14, x: (gx0 + gx1) / 2, y: S + gh + 0.06, z, kind: 3 });
-  for (let i = 0; i < 9; i++) {
-    const x = gx0 + ((gx1 - gx0) * i) / 8;
-    solid.push({ w: 0.09, h: 0.07, d: gz1 - gz0 + 0.4, x, y: S + gh + 0.155, z: (gz0 + gz1) / 2, kind: 3 });
-  }
-  // windows on the sea facades
-  const fz = main.z + main.d / 2 + 0.01;
-  for (const x of [-3.3, -2.05, -0.8]) windows.push({ w: 0.5, h: 1.15, d: 0.04, x, y: S + 0.74, z: fz, kind: 2 });
-  windows.push({ w: 1.15, h: 0.7, d: 0.04, x: up.x + 0.3, y: roofY + 0.9, z: up.z + up.d / 2 + 0.01, kind: 2 });
-  // a door-height opening on the east face for night silhouettes
-  windows.push({ w: 0.04, h: 1.3, d: 0.7, x: main.x + main.w / 2 + 0.01, y: S + 0.8, z: main.z + 0.6, kind: 2 });
+  if (U) box(U.w + 0.12, 0.07, U.d + 0.12, U.x, roofY + U.h + 0.035, U.z, 0);
+  if (P.wing) box(P.wing.w + 0.12, 0.07, P.wing.d + 0.12, P.wing.x, S + P.wing.h + 0.035, P.wing.z, 0);
 
-  const pool = { w: px1 - px0, d: pz1 - pz0, x: (px0 + px1) / 2, y: S - 0.07, z: (pz0 + pz1) / 2 };
+  // Bodrum chimneys with their little caps, on the highest roof
+  const top = U ?? M;
+  const topY = U ? roofY + U.h : roofY;
+  const first = r() < 0.5 ? -1 : 1;
+  for (let i = 0; i < P.chimneys; i++) {
+    const side = i === 0 ? first : -first;
+    const cx = top.x + side * (top.w / 2 - 0.4);
+    const cz = top.z - top.d / 2 + 0.45 + r() * 0.5;
+    const ch = 0.62 + r() * 0.25;
+    box(0.36, ch, 0.36, cx, topY + ch / 2, cz, 0);
+    box(0.62, 0.08, 0.62, cx, topY + ch + 0.04, cz, 0);
+  }
+
+  // low garden wall along the terrace edge with a gap for the steps, and one side
+  const wk = P.wallStone ? 4 : 0;
+  const wh = P.wallH;
+  const gapW = 1.1;
+  const gapX = P.pool.x > (sx0 + sx1) / 2 ? sx0 + 0.9 + gapW / 2 : sx1 - 0.9 - gapW / 2;
+  const fw = (x0: number, x1: number) => {
+    if (x1 - x0 > 0.2) box(x1 - x0, wh, 0.24, (x0 + x1) / 2, S + wh / 2, sz1 - 0.12, wk);
+  };
+  fw(sx0, gapX - gapW / 2);
+  fw(gapX + gapW / 2, sx1);
+  const wallSide = P.wing ? -Math.sign(P.wing.x - M.x) : r() < 0.5 ? -1 : 1;
+  const wx = wallSide < 0 ? sx0 + 0.12 : sx1 - 0.12;
+  const wd = (sz1 - sz0) * (0.55 + r() * 0.45);
+  box(0.24, wh, wd, wx, S + wh / 2, sz1 - wd / 2, wk);
+
+  // oak pergola over the terrace: its slats draw striped shadows
+  if (P.pergola) {
+    const { x0: gx0, x1: gx1, z0: gz0, z1: gz1 } = P.pergola;
+    const gh = 1.7 + r() * 0.15;
+    for (const x of [gx0, gx1]) box(0.13, gh, 0.13, x, S + gh / 2, gz1, 3);
+    for (const z of [gz0 + 0.07, gz1]) box(gx1 - gx0 + 0.3, 0.12, 0.14, (gx0 + gx1) / 2, S + gh + 0.06, z, 3);
+    const slats = Math.max(5, Math.round((gx1 - gx0) / 0.42));
+    for (let i = 0; i <= slats; i++) {
+      const x = gx0 + ((gx1 - gx0) * i) / slats;
+      box(0.09, 0.07, gz1 - gz0 + 0.4, x, S + gh + 0.155, (gz0 + gz1) / 2, 3);
+    }
+  }
+
+  // windows on the sea facade, in this house's own rhythm
+  const fz = M.z + M.d / 2 + 0.01;
+  const { n: wn, w: ww, h: whh } = P.windows;
+  const span = M.w - 1.0;
+  const sill = whh > 1 ? 0.62 : 0.85;
+  const doorAt = Math.floor(r() * wn);
+  for (let i = 0; i < wn; i++) {
+    const x = M.x - span / 2 + (span * (i + 0.5)) / wn;
+    const door = i === doorAt && ww < 0.7;
+    const h = door ? 1.5 : whh;
+    windows.push({ w: ww, h, d: 0.04, x, y: S + (door ? 0.02 : sill - 0.4) + h / 2, z: fz, kind: 2 });
+  }
+  if (U) {
+    const two = U.w > 3.1 && r() < 0.6;
+    for (const k of two ? [-0.5, 0.5] : [0]) {
+      windows.push({ w: two ? 0.55 : 1.1, h: two ? 0.95 : 0.7, d: 0.04, x: U.x + k * U.w * 0.5, y: roofY + 0.9, z: U.z + U.d / 2 + 0.01, kind: 2 });
+    }
+  }
+  if (P.wing) windows.push({ w: 0.6, h: 1.0, d: 0.04, x: P.wing.x, y: S + 0.72, z: P.wing.z + P.wing.d / 2 + 0.01, kind: 2 });
+  // a door-height opening on a side face for night silhouettes
+  const sideX = P.wing ? -Math.sign(P.wing.x - M.x) : 1;
+  windows.push({ w: 0.04, h: 1.3, d: 0.7, x: M.x + sideX * (M.w / 2 + 0.01), y: S + 0.8, z: M.z + 0.4, kind: 2 });
+
+  const pool = { w: P.pool.w, d: P.pool.d, x: P.pool.x, y: S - 0.07, z: P.pool.z };
   return { solid, windows, pool };
 }
 
@@ -141,11 +199,10 @@ function partGeometry(p: Part) {
 
 export function villaMatrix(v: VillaSite) {
   const m = new THREE.Matrix4();
-  const flip = v.flip ? -1 : 1;
   m.compose(
     new THREE.Vector3(v.x, v.y, v.z),
     new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), v.rot),
-    new THREE.Vector3(flip, 1, 1),
+    new THREE.Vector3(1, 1, 1),
   );
   return m;
 }
@@ -160,31 +217,18 @@ export function buildVillas() {
   const solids: THREE.BufferGeometry[] = [];
   const wins: THREE.BufferGeometry[] = [];
   const pools: THREE.BufferGeometry[] = [];
-  // lamps come on one by one after sunset; a few are still on at dawn
-  const order = [3, 8, 0, 10, 5, 1, 11, 6, 2, 9, 4, 7];
   for (const v of villaSites) {
     const m = villaMatrix(v);
-    const flipped = v.flip;
     const { solid, windows, pool } = massing(v);
-    for (const p of solid) {
-      const g = partGeometry(p).applyMatrix4(m);
-      if (flipped) flipWinding(g);
-      solids.push(withAttrs(g, { aKind: p.kind, aVilla: v.index }));
-    }
-    const on = 19.95 + order.indexOf(v.index) * 0.085;
-    const off = v.index % 3 === 1 ? 5.78 + v.index * 0.02 : 0;
-    for (const p of windows) {
-      const g = partGeometry(p).applyMatrix4(m);
-      if (flipped) flipWinding(g);
-      wins.push(withAttrs(g, { aOn: on, aOff: off, aVilla: v.index }));
-    }
+    for (const p of solid) solids.push(withAttrs(partGeometry(p).applyMatrix4(m), { aKind: p.kind, aVilla: v.index }));
+    const { on, off } = lampHours(v);
+    for (const p of windows) wins.push(withAttrs(partGeometry(p).applyMatrix4(m), { aOn: on, aOff: off, aVilla: v.index }));
     const pg = new THREE.PlaneGeometry(pool.w, pool.d);
     pg.rotateX(-Math.PI / 2);
     pg.translate(pool.x, pool.y, pool.z);
     const png = pg.toNonIndexed();
     pg.dispose();
     png.applyMatrix4(m);
-    if (flipped) flipWinding(png);
     pools.push(withAttrs(png, { aVilla: v.index }));
   }
   const solid = mergeGeometries(solids)!;
@@ -195,24 +239,6 @@ export function buildVillas() {
   pools.forEach((g) => g.dispose());
   solid.computeBoundingSphere();
   return { solid, windows, pools: poolGeo };
-}
-
-/** Mirroring with a negative scale inverts triangle winding; swap it back. */
-function flipWinding(g: THREE.BufferGeometry) {
-  const attrs = Object.values(g.attributes) as THREE.BufferAttribute[];
-  const n = g.attributes.position.count;
-  for (const a of attrs) {
-    const s = a.itemSize;
-    const arr = a.array as Float32Array;
-    for (let i = 0; i < n; i += 3) {
-      for (let k = 0; k < s; k++) {
-        const t = arr[(i + 1) * s + k];
-        arr[(i + 1) * s + k] = arr[(i + 2) * s + k];
-        arr[(i + 2) * s + k] = t;
-      }
-    }
-    a.needsUpdate = true;
-  }
 }
 
 // ---------- olive trees ----------

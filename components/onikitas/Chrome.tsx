@@ -14,11 +14,7 @@ export function Chrome() {
       </div>
       <header className="oki-header">
         <a href="#safak" className="oki-brand" aria-label={`${tr.brand}, başa dön`}>
-          <svg viewBox="0 0 24 24" aria-hidden="true" className="oki-brand__mark">
-            <path d="M3 20.5h18" />
-            <path d="M5.5 20.5v-6.5h5v6.5M10.5 20.5v-9h6v9M16.5 20.5v-4.5h3v4.5" />
-          </svg>
-          <span>{tr.brand}</span>
+          {tr.brand}
         </a>
         <nav className="oki-header__nav" aria-label="Ana">
           <SoundToggle />
@@ -34,7 +30,6 @@ export function Chrome() {
         <p className="oki-hud__clock" data-clock>
           {tr.chapters.safak.time}
         </p>
-        <p className="oki-hud__coords">{tr.loader.coords}</p>
       </div>
       <nav className="oki-days" aria-label={tr.nav.dayNav}>
         <ol>

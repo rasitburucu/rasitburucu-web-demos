@@ -4,7 +4,7 @@
 
 export type Tier = "high" | "mid" | "low";
 
-type Events = "hover" | "selected" | "dial" | "ready" | "load" | "tone";
+type Events = "hover" | "selected" | "dial" | "ready" | "load" | "tone" | "frame";
 
 export const store = {
   /** Chapter index and local progress 0..1 (from scroll). */

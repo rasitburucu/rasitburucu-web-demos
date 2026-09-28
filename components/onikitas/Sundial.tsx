@@ -5,12 +5,22 @@ import { emit, on, store } from "@/lib/onikitas/store";
 import { DIAL_MAX, DIAL_MIN, formatHour } from "@/lib/onikitas/chapters";
 import { tr, villas } from "@/content/onikitas/tr";
 
-// The one conversion: pick the light, pick the house, open a prefilled e-mail.
-// No form, no server. The address is fictional and the copy says so.
+// The one conversion: pick the light, pick the house. The request button is a
+// showpiece in this concept (no form, no e-mail, no server).
+//
+// Geometry, in viewBox units (400 x 236). One radius for the sun's path; the
+// ticks sit outside it, the hour labels well inside it, so the sun's halo can
+// ride the path at any hour without touching a label.
 
 const CX = 200;
 const CY = 196;
-const R = 164;
+const R = 160;
+const TICK_IN = R + 3;
+const TICK_OUT = R + 9;
+const TICK_OUT_MAJOR = R + 13;
+const LABEL_R = R - 31;
+const HALO_R = 16;
+const SUN_R = 10;
 const r2 = (v: number) => Math.round(v * 100) / 100;
 
 function angleFor(h: number) {
@@ -28,10 +38,11 @@ const LABELS = [6, 9, 12, 15, 18, 21];
 export function Sundial() {
   const [hour, setHour] = useState(19 + 40 / 60);
   const [sel, setSel] = useState(6);
-  const [status, setStatus] = useState("");
-  const [touched, setTouched] = useState(false);
   const svg = useRef<SVGSVGElement>(null);
+  const face = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+  // latest value for key repeat, which can outrun a render
+  const hourRef = useRef(hour);
   const groupId = useId();
 
   useEffect(
@@ -44,8 +55,8 @@ export function Sundial() {
 
   const commit = useCallback((h: number) => {
     const v = snap(h);
+    hourRef.current = v;
     setHour(v);
-    setTouched(true);
     store.dialHour = v;
     emit("dial");
   }, []);
@@ -64,7 +75,7 @@ export function Sundial() {
 
   const onKey = (e: React.KeyboardEvent) => {
     const step = e.shiftKey ? 1 : 1 / 6;
-    let h = hour;
+    let h = hourRef.current;
     if (e.key === "ArrowRight" || e.key === "ArrowUp") h += step;
     else if (e.key === "ArrowLeft" || e.key === "ArrowDown") h -= step;
     else if (e.key === "PageUp") h += 1;
@@ -93,32 +104,26 @@ export function Sundial() {
     document.getElementById(`${groupId}-${n}`)?.focus();
   };
 
+  // dragging must never select the hour labels or the page behind the panel
+  const endDrag = () => {
+    dragging.current = false;
+    document.documentElement.classList.remove("oki-noselect");
+  };
+  useEffect(() => () => document.documentElement.classList.remove("oki-noselect"), []);
+
   const time = formatHour(hour);
   const v = villas[sel];
-  const subject = tr.dial.subject(v.no, time);
-  const body = tr.dial.body(v.acc, time);
-  const href = `mailto:${tr.dial.mailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(`${tr.dial.mailTo}\n${subject}\n\n${body}`);
-      setStatus(tr.dial.copied);
-    } catch {
-      setStatus(tr.dial.copyFailed);
-    }
-  };
 
   const sun = pointAt(hour);
-  const a = angleFor(hour);
-  const elev = Math.sin(a);
-  const shadowLen = 34 + 70 * (1 - elev);
-  const shadow = { x: r2(CX - Math.cos(a) * shadowLen), y: r2(CY + Math.min(elev, 1) * 14 + 6) };
   const start = pointAt(DIAL_MIN);
-  const large = hour - DIAL_MIN > (DIAL_MAX - DIAL_MIN) / 2 ? 1 : 0;
+  // The travelled path is always the upper semicircle's minor arc (<= 180deg),
+  // so the large-arc flag is always 0. (With 1, SVG drew the long way round a
+  // bigger circle once the hour passed 13:30 and the arc left the panel.)
 
   return (
     <div className="oki-dial">
       <div
+        ref={face}
         className="oki-dial__face"
         role="slider"
         tabIndex={0}
@@ -134,35 +139,40 @@ export function Sundial() {
           ref={svg}
           viewBox="0 0 400 236"
           onPointerDown={(e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            face.current?.focus({ preventScroll: true });
             dragging.current = true;
+            document.documentElement.classList.add("oki-noselect");
             (e.currentTarget as SVGSVGElement).setPointerCapture(e.pointerId);
             fromPointer(e);
           }}
           onPointerMove={(e) => dragging.current && fromPointer(e)}
-          onPointerUp={() => (dragging.current = false)}
-          onPointerCancel={() => (dragging.current = false)}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onLostPointerCapture={endDrag}
           aria-hidden="true"
         >
+          {/* back to front: track, travelled path, halo, ticks, labels, ground, sun */}
           <path d={`M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}`} className="oki-dial__arc" />
-          <path d={`M ${start.x} ${start.y} A ${R} ${R} 0 ${large} 1 ${sun.x} ${sun.y}`} className="oki-dial__path" />
+          <path d={`M ${start.x} ${start.y} A ${R} ${R} 0 0 1 ${sun.x} ${sun.y}`} className="oki-dial__path" />
+          <circle cx={sun.x} cy={sun.y} r={HALO_R} className="oki-dial__halo" />
           {TICKS.map((h) => {
-            const o = pointAt(h, R + 7);
-            const i = pointAt(h, R - (LABELS.includes(h) ? 9 : 4));
-            return <line key={h} x1={i.x} y1={i.y} x2={o.x} y2={o.y} className="oki-dial__tick" />;
+            const major = LABELS.includes(h);
+            const i = pointAt(h, TICK_IN);
+            const o = pointAt(h, major ? TICK_OUT_MAJOR : TICK_OUT);
+            return <line key={h} x1={i.x} y1={i.y} x2={o.x} y2={o.y} className="oki-dial__tick" data-major={major || undefined} />;
           })}
           {LABELS.map((h) => {
-            const p = pointAt(h, R - 26);
+            const p = pointAt(h, LABEL_R);
             return (
-              <text key={h} x={p.x} y={r2(p.y + 4)} className="oki-dial__label" textAnchor="middle">
+              <text key={h} x={p.x} y={p.y} className="oki-dial__label" textAnchor="middle" dominantBaseline="central">
                 {String(h).padStart(2, "0")}
               </text>
             );
           })}
           <line x1={CX - R - 16} y1={CY} x2={CX + R + 16} y2={CY} className="oki-dial__horizon" />
-          <line x1={CX} y1={CY} x2={shadow.x} y2={shadow.y} className="oki-dial__shadow" />
-          <circle cx={CX} cy={CY} r={3.5} className="oki-dial__pin" />
-          <circle cx={sun.x} cy={sun.y} r={22} className="oki-dial__halo" />
-          <circle cx={sun.x} cy={sun.y} r={11} className="oki-dial__sun" />
+          <circle cx={sun.x} cy={sun.y} r={SUN_R} className="oki-dial__sun" />
         </svg>
         <p className="oki-dial__time" aria-hidden="true">
           {time}
@@ -212,16 +222,10 @@ export function Sundial() {
       </p>
 
       <div className="oki-dial__actions">
-        <a className="oki-cta" href={href} onClick={() => setStatus(tr.dial.opened)} data-touched={touched ? "true" : "false"}>
+        <button type="button" className="oki-cta">
           {tr.dial.cta}
-        </a>
-        <button type="button" className="oki-link" onClick={copy}>
-          {tr.dial.copy}
         </button>
       </div>
-      <p className="oki-dial__status" role="status" aria-live="polite">
-        {status}
-      </p>
     </div>
   );
 }

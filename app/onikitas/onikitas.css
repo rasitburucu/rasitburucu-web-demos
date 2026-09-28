@@ -28,6 +28,13 @@
   --z-skip: 60;
 }
 
+/* Registered so the scrims can cross-fade when the tone flips at dusk. */
+@property --scrim-c {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #f2eee6;
+}
+
 html:has([data-demo="onikitas"]) {
   background: var(--lime);
   color-scheme: light;
@@ -41,8 +48,8 @@ html:has([data-demo="onikitas"])[data-tone="dark"] {
 
 .oki-root {
   --ink: var(--olive);
-  --ink-soft: var(--olive-soft);
-  --scrim: 242, 238, 230;
+  --ink-soft: #4a483d;
+  --scrim-c: #f2eee6;
   --focus: var(--tile-ink);
   position: relative;
   min-height: 100dvh;
@@ -55,11 +62,12 @@ html:has([data-demo="onikitas"])[data-tone="dark"] {
   text-rendering: optimizeLegibility;
   font-kerning: normal;
   caret-color: var(--tile);
+  transition: --scrim-c 1.4s var(--ease-out);
 }
 html[data-tone="dark"] .oki-root {
   --ink: var(--lime);
-  --ink-soft: #d6d0c3;
-  --scrim: 12, 22, 30;
+  --ink-soft: #ddd7ca;
+  --scrim-c: #0c161e;
   --focus: var(--tile-light);
 }
 
@@ -157,7 +165,7 @@ html:not(.js) .oki-stills img[data-i="0"] {
 .oki-strip {
   position: fixed;
   inset: 0 0 auto 0;
-  z-index: var(--z-header);
+  z-index: calc(var(--z-header) + 1);
   height: 28px;
   display: flex;
   align-items: center;
@@ -191,42 +199,60 @@ html:not(.js) .oki-stills img[data-i="0"] {
   transition: color 0.8s var(--ease-out);
   pointer-events: none;
 }
+/* A limewash (or night) veil falling from the top edge: the header reads on
+   every hour without becoming a bar. */
+.oki-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -72px 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--scrim-c) 90%, transparent) 0%,
+    color-mix(in srgb, var(--scrim-c) 72%, transparent) 42%,
+    color-mix(in srgb, var(--scrim-c) 30%, transparent) 72%,
+    color-mix(in srgb, var(--scrim-c) 0%, transparent) 100%
+  );
+}
 .oki-header > * {
   pointer-events: auto;
 }
 .oki-brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
+  min-height: 44px;
+  padding-top: 0.12em;
   text-decoration: none;
-  font-family: var(--font-bodoni), serif;
-  font-style: italic;
-  font-size: 1.5rem;
-  letter-spacing: -0.01em;
+  font-family: var(--font-pinyon), "Snell Roundhand", cursive;
+  font-size: 2.6rem;
   line-height: 1;
-}
-.oki-brand__mark {
-  width: 22px;
-  height: 22px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.3;
+  letter-spacing: 0;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--scrim-c) 70%, transparent);
 }
 .oki-header__nav {
   display: flex;
   align-items: center;
   gap: clamp(0.9rem, 2.4vw, 2rem);
 }
-.oki-visit {
+.oki-root .oki-visit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  background: var(--tile);
+  color: var(--paper);
   font-size: 0.9375rem;
   font-weight: 600;
   text-decoration: none;
-  padding: 0.55rem 0;
-  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
-  transition: background-size 0.4s var(--ease-out);
+  box-shadow: 0 10px 24px -14px rgba(60, 28, 12, 0.7);
+  transition: background 0.25s, transform 0.25s var(--ease-out);
 }
-.oki-visit:hover {
-  background-size: 40% 1px;
+.oki-root .oki-visit:hover {
+  background: var(--tile-ink);
+}
+.oki-root .oki-visit:active {
+  transform: translateY(1px);
 }
 .oki-sound {
   appearance: none;
@@ -235,12 +261,19 @@ html:not(.js) .oki-stills img[data-i="0"] {
   color: inherit;
   font: inherit;
   font-size: 0.875rem;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.55rem 0;
+  gap: 0.6rem;
+  padding: 0 1rem;
   cursor: pointer;
   min-height: 44px;
+  border: 1px solid color-mix(in srgb, currentColor 34%, transparent);
+  background: color-mix(in srgb, var(--scrim-c) 58%, transparent);
+  transition: border-color 0.25s, background 0.8s var(--ease-out);
+}
+.oki-sound:hover {
+  border-color: currentColor;
 }
 .oki-sound__bars {
   display: inline-flex;
@@ -268,7 +301,7 @@ html:not(.js) .oki-stills img[data-i="0"] {
 /* ---------- day clock + hour navigation ---------- */
 
 .oki-hud {
-  text-shadow: 0 0 28px rgba(var(--scrim), 0.85), 0 0 8px rgba(var(--scrim), 0.6);
+  text-shadow: 0 0 28px color-mix(in srgb, var(--scrim-c) 85%, transparent), 0 0 8px color-mix(in srgb, var(--scrim-c) 60%, transparent);
   position: fixed;
   left: var(--pad);
   bottom: clamp(1rem, 4.5vh, 3rem);
@@ -282,18 +315,24 @@ html:not(.js) .oki-stills img[data-i="0"] {
   font-weight: 500;
 }
 .oki-hud__clock {
-  font-family: var(--font-bodoni), serif;
+  font-family: var(--font-display), serif;
   font-size: clamp(3rem, 6.2vw, 6rem);
   line-height: 0.92;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.015em;
   font-variant-numeric: lining-nums tabular-nums;
   margin: 0.1em 0 0.18em -0.04em;
 }
-.oki-hud__coords {
-  font-size: 0.78rem;
-  font-variant-numeric: tabular-nums;
-  color: var(--ink-soft);
-  white-space: pre;
+.oki-hud::before,
+.oki-days::before {
+  content: "";
+  position: absolute;
+  inset: -55% -45% -40%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 84%, transparent), color-mix(in srgb, var(--scrim-c) 52%, transparent) 58%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
+}
+.oki-days::before {
+  inset: -22% -30% -18% -40%;
 }
 
 .oki-root:has(.oki-dial-panel[data-on="true"]) .oki-days {
@@ -301,7 +340,7 @@ html:not(.js) .oki-stills img[data-i="0"] {
   visibility: hidden;
 }
 .oki-days {
-  text-shadow: 0 0 18px rgba(var(--scrim), 0.9);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--scrim-c) 90%, transparent);
   position: fixed;
   transition: opacity 0.5s var(--ease-out), visibility 0.5s;
   right: var(--pad);
@@ -326,7 +365,7 @@ html:not(.js) .oki-stills img[data-i="0"] {
   padding: 0.28rem 0;
   text-decoration: none;
   font-size: 0.8125rem;
-  opacity: 0.62;
+  opacity: 0.8;
   transition: opacity 0.4s var(--ease-out);
 }
 .oki-days a:hover,
@@ -385,24 +424,31 @@ html:not(.js) .oki-stills img[data-i="0"] {
   position: absolute;
   inset: -30% -28%;
   z-index: -1;
-  background: radial-gradient(closest-side, rgba(var(--scrim), 0.72), rgba(var(--scrim), 0.3) 60%, rgba(var(--scrim), 0));
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 88%, transparent), color-mix(in srgb, var(--scrim-c) 62%, transparent) 58%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
   pointer-events: none;
+  transition: opacity 0.9s var(--ease-out);
+}
+.oki-title,
+.oki-copy__body {
+  text-shadow: 0 0 22px color-mix(in srgb, var(--scrim-c) 75%, transparent);
 }
 html.js .oki-copy:not([data-on="true"]) {
   opacity: 0;
   visibility: hidden;
 }
 .oki-title {
-  font-family: var(--font-bodoni), serif;
-  font-optical-sizing: auto;
-  font-size: clamp(2.25rem, 4.3vw, 4.4rem);
-  line-height: 1.02;
-  letter-spacing: -0.024em;
+  font-family: var(--font-display), serif;
+  /* capped by height too, so short desktop windows keep the copy clear of the HUD */
+  font-size: clamp(2.25rem, min(4.3vw, 7.4vh), 4.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
   text-wrap: balance;
+  /* room for descenders and cedillas (ş, ç, ğ) under the last line */
+  padding-bottom: 0.08em;
 }
 .oki-chapter--safak .oki-title {
-  font-size: clamp(2.75rem, 5.6vw, 6rem);
-  line-height: 1;
+  font-size: clamp(2.75rem, min(5.6vw, 9.4vh), 6rem);
+  line-height: 1.04;
 }
 .oki-chapter--safak .oki-copy__body {
   margin-top: 2rem;
@@ -429,7 +475,7 @@ html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-ch {
   transition-delay: 0s;
 }
 .oki-copy__body {
-  margin-top: 1.4rem;
+  margin-top: 1.8rem;
   max-width: 34ch;
   font-size: clamp(1rem, 0.35vw + 0.92rem, 1.1875rem);
   line-height: 1.55;
@@ -450,7 +496,8 @@ html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-copy__body {
   width: min(36rem, 44vw);
 }
 .oki-chapter--safak .oki-copy::before {
-  display: none;
+  inset: -24% -22%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 70%, transparent), color-mix(in srgb, var(--scrim-c) 40%, transparent) 60%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
 }
 .oki-chapter--kusluk .oki-copy,
 .oki-chapter--ikindi .oki-copy {
@@ -508,10 +555,22 @@ html.js .oki-dial-panel:not([data-on="true"]) {
     backdrop-filter: none;
   }
 }
+.oki-dial {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+html.oki-noselect,
+html.oki-noselect * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  cursor: grabbing !important;
+}
 .oki-dial__face {
   position: relative;
   cursor: grab;
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .oki-dial__face:active {
   cursor: grabbing;
@@ -533,11 +592,14 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   stroke-linecap: round;
 }
 .oki-dial__tick {
-  stroke: rgba(59, 58, 46, 0.5);
+  stroke: rgba(59, 58, 46, 0.42);
   stroke-width: 1;
 }
+.oki-dial__tick[data-major] {
+  stroke: rgba(59, 58, 46, 0.75);
+}
 .oki-dial__label {
-  font-size: 12px;
+  font-size: 13px;
   fill: var(--olive-soft);
   font-variant-numeric: tabular-nums;
   font-family: var(--font-instrument), sans-serif;
@@ -546,18 +608,9 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   stroke: var(--olive);
   stroke-width: 1;
 }
-.oki-dial__shadow {
-  stroke: var(--olive);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  opacity: 0.8;
-}
-.oki-dial__pin {
-  fill: var(--olive);
-}
 .oki-dial__halo {
   fill: var(--tile);
-  opacity: 0.16;
+  opacity: 0.18;
 }
 .oki-dial__sun {
   fill: var(--tile);
@@ -567,13 +620,14 @@ html.js .oki-dial-panel:not([data-on="true"]) {
 .oki-dial__time {
   position: absolute;
   left: 50%;
-  top: 40%;
+  /* centred in the open bowl between the noon label and the horizon */
+  top: 47%;
   translate: -50% 0;
   pointer-events: none;
-  font-family: var(--font-bodoni), serif;
-  font-size: 2.6rem;
+  font-family: var(--font-display), serif;
+  font-size: 2.9rem;
   line-height: 1;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   font-variant-numeric: lining-nums tabular-nums;
 }
 .oki-dial__hint {
@@ -603,7 +657,7 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   border: 0;
   min-height: 30px;
   padding: 0;
-  font-family: var(--font-bodoni), serif;
+  font-family: var(--font-display), serif;
   font-size: 0.78rem;
   color: var(--olive);
   cursor: pointer;
@@ -632,57 +686,42 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   color: var(--olive-soft);
 }
 .oki-dial__villa {
-  font-family: var(--font-bodoni), serif;
+  font-family: var(--font-display), serif;
   font-size: 1.5rem;
   color: var(--olive);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 .oki-dial__actions {
-  margin-top: 0.9rem;
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   gap: 1.25rem;
   flex-wrap: wrap;
 }
 .oki-cta {
+  appearance: none;
+  border: 0;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 48px;
   padding: 0 1.35rem;
   background: var(--tile);
-  color: var(--paper) !important;
+  color: var(--paper);
+  font: inherit;
   font-weight: 600;
   font-size: 0.9375rem;
-  text-decoration: none;
   white-space: nowrap;
-  transition: background 0.25s, transform 0.25s var(--ease-out);
+  cursor: pointer;
+  transition: background 0.25s, transform 0.2s var(--ease-out), box-shadow 0.2s;
 }
 .oki-cta:hover {
   background: var(--tile-ink);
 }
 .oki-cta:active {
+  background: #8a3b1f;
   transform: translateY(1px);
-}
-.oki-link {
-  appearance: none;
-  border: 0;
-  background: none;
-  padding: 0.6rem 0;
-  min-height: 44px;
-  font: inherit;
-  font-size: 0.9375rem;
-  color: var(--olive);
-  text-decoration: underline;
-  text-underline-offset: 0.24em;
-  text-decoration-thickness: 1px;
-  cursor: pointer;
-}
-.oki-dial__status {
-  margin-top: 0.6rem;
-  min-height: 2.5em;
-  font-size: 0.8125rem;
-  line-height: 1.4;
-  color: var(--tile-ink);
+  box-shadow: inset 0 2px 6px rgba(40, 16, 6, 0.35);
 }
 
 /* ---------- villa pin label ---------- */
@@ -732,10 +771,10 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   right: -3px;
 }
 .oki-tip__no {
-  font-family: var(--font-bodoni), serif;
+  font-family: var(--font-display), serif;
   font-size: 1.9rem;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 .oki-tip__facing {
   margin-top: 0.3rem;
@@ -778,15 +817,14 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   color: #c9c4b8;
 }
 .oki-footer__brand {
-  font-family: var(--font-bodoni), serif;
-  font-style: italic;
-  font-size: clamp(2.5rem, 4vw, 3.75rem);
-  line-height: 1;
+  font-family: var(--font-pinyon), "Snell Roundhand", cursive;
+  font-size: clamp(3.25rem, 5vw, 4.75rem);
+  line-height: 1.1;
   color: var(--lime);
   margin-bottom: 0.5rem !important;
 }
 .oki-footer__credits h2 {
-  font-family: var(--font-bodoni), serif;
+  font-family: var(--font-display), serif;
   font-size: 1.75rem;
   margin-bottom: 1.6rem;
 }
@@ -860,17 +898,17 @@ html.js .oki-loader[data-leaving="true"] {
   translate: 0 -12vh;
   opacity: 0;
 }
-.oki-loader__coords {
-  font-size: 0.8125rem;
-  font-variant-numeric: tabular-nums;
-  white-space: pre;
-  color: var(--olive-soft);
+.oki-loader__brand {
+  font-family: var(--font-pinyon), "Snell Roundhand", cursive;
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  line-height: 1.15;
+  color: var(--olive);
 }
 .oki-loader__time {
-  font-family: var(--font-bodoni), serif;
+  font-family: var(--font-display), serif;
   font-size: clamp(4rem, 9vw, 7rem);
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.015em;
   font-variant-numeric: lining-nums tabular-nums;
   margin-bottom: 1.6rem !important;
 }
@@ -946,7 +984,16 @@ html[data-capture="true"] .oki-stills {
     height: 56px;
   }
   .oki-brand {
-    font-size: 1.3rem;
+    font-size: 2.15rem;
+  }
+  .oki-header::before {
+    bottom: -56px;
+  }
+  .oki-root .oki-visit {
+    padding: 0 1rem;
+  }
+  .oki-sound {
+    padding: 0;
   }
   .oki-sound span:last-child {
     position: absolute;
@@ -992,8 +1039,11 @@ html[data-capture="true"] .oki-stills {
     top: 104px;
     translate: none;
   }
-  .oki-copy::before {
-    inset: -40% -20% -30%;
+  /* narrow screens put the copy over the busiest part of the scene */
+  .oki-copy::before,
+  .oki-chapter--safak .oki-copy::before {
+    inset: -40% -22% -34%;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 92%, transparent), color-mix(in srgb, var(--scrim-c) 74%, transparent) 60%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
   }
   .oki-title {
     font-size: clamp(2rem, 8.6vw, 2.75rem);
@@ -1002,8 +1052,13 @@ html[data-capture="true"] .oki-stills {
     font-size: clamp(2.4rem, 11vw, 3.3rem);
   }
   .oki-copy__body {
-    margin-top: 1rem;
+    margin-top: 1.25rem;
     font-size: 1rem;
+  }
+  /* the dial owns the lower screen; keep only the question above it */
+  .oki-root:has(.oki-dial-panel[data-on="true"]) .oki-chapter--aksam .oki-copy__body {
+    opacity: 0;
+    visibility: hidden;
   }
   .oki-dial-panel {
     left: 0.75rem;
@@ -1017,8 +1072,8 @@ html[data-capture="true"] .oki-stills {
     gap: 6px;
   }
   .oki-pebble {
-    min-height: 34px;
-    font-size: 0.85rem;
+    min-height: 44px;
+    font-size: 0.9rem;
   }
   .oki-dial__time {
     font-size: 1.75rem;
@@ -1079,24 +1134,30 @@ html[data-capture="true"] .oki-stills {
 .oki-chapter--kusluk .oki-copy::before,
 .oki-chapter--ikindi .oki-copy::before {
   inset: -38% -26%;
-  background: radial-gradient(closest-side, rgba(var(--scrim), 0.94), rgba(var(--scrim), 0.72) 55%, rgba(var(--scrim), 0));
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 94%, transparent), color-mix(in srgb, var(--scrim-c) 72%, transparent) 55%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
 }
 .oki-chapter--kusluk .oki-copy__body,
 .oki-chapter--ikindi .oki-copy__body {
   color: var(--ink);
 }
 
-/* at dawn the arch owns the right side and the bottom: hold the hour index
-   (desktop) and the clock (mobile) until the day starts moving */
+/* at dawn the headline and the arch own the screen: hold the hour index and
+   the clock (every viewport) until the day starts moving */
 .oki-days {
   transition: color 0.8s var(--ease-out), opacity 0.5s var(--ease-out), visibility 0.5s;
 }
-.oki-root:has(.oki-days a[href="#safak"][data-active="true"]) .oki-days {
+.oki-hud {
+  transition: color 0.8s var(--ease-out), opacity 0.5s var(--ease-out), visibility 0.5s;
+}
+.oki-root:has(.oki-days a[href="#safak"][data-active="true"]) .oki-days,
+.oki-root:has(.oki-days a[href="#safak"][data-active="true"]) .oki-hud {
   opacity: 0;
   visibility: hidden;
 }
-@media (max-width: 899px) {
-  .oki-root:has(.oki-days a[href="#safak"][data-active="true"]) .oki-hud {
-    opacity: 0;
+
+/* touch: every dial control at least 44px */
+@media (pointer: coarse) {
+  .oki-pebble {
+    min-height: 44px;
   }
 }

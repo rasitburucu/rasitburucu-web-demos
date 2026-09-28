@@ -50,12 +50,13 @@ function branch(
 }
 
 function layer(size: number, seed: number, blur: number, count: number) {
+  // draw sharp, then blur the whole layer once: a blur filter on every leaf
+  // stroke used to cost over half a second of main thread
   const c = document.createElement("canvas");
   c.width = c.height = size;
   const ctx = c.getContext("2d")!;
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, size, size);
-  ctx.filter = `blur(${blur}px)`;
   ctx.fillStyle = "#fff";
   ctx.strokeStyle = "#fff";
   const rand = mulberry32(seed);
@@ -66,7 +67,14 @@ function layer(size: number, seed: number, blur: number, count: number) {
     const a = edge < 0.5 ? Math.PI * (0.55 + rand() * 0.3) : Math.PI * (0.8 + rand() * 0.4);
     branch(ctx, rand, x, y, a, size * (0.45 + rand() * 0.3), 6, 2);
   }
-  return ctx.getImageData(0, 0, size, size).data;
+  const out = document.createElement("canvas");
+  out.width = out.height = size;
+  const o = out.getContext("2d", { willReadFrequently: true })!;
+  o.fillStyle = "#000";
+  o.fillRect(0, 0, size, size);
+  o.filter = `blur(${blur}px)`;
+  o.drawImage(c, 0, 0);
+  return o.getImageData(0, 0, size, size).data;
 }
 
 export function makeLeafTexture() {
