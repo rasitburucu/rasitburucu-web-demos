@@ -1,0 +1,298 @@
+/* Onikitaş ("Kireç") — scoped to this demo only. Tailwind scans only
+   Onikitaş sources so other demos never share generated styles. */
+@import "tailwindcss" source(none);
+@source "../../components/onikitas";
+@source "./";
+
+@theme {
+  --color-lime: #f2eee6;
+  --color-lime-deep: #e9e3d7;
+  --color-travertine: #d8ccb8;
+  --color-olive: #3b3a2e;
+  --color-olive-soft: #5e5b4c; /* 5.9:1 on lime, secondary text */
+  --color-olive-line: #3b3a2e33;
+  --color-aegean: #1e3442;
+  --color-aegean-soft: #a6a08f; /* 4.9:1 on aegean */
+  --color-tile: #b5532c; /* accent: primary CTA fill + "available" */
+  --color-tile-ink: #9c4424; /* accent for small text on lime, 5.6:1 */
+  --color-tile-light: #d9825e; /* accent for text on aegean, 4.5:1 */
+  --color-paper: #fffaf3; /* CTA label on tile, 4.8:1 */
+
+  --ease-arch: cubic-bezier(0.22, 0.61, 0.21, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --breakpoint-xs: 26rem;
+}
+
+/* Font variables come from next/font on the demo wrapper, so the tokens are
+   inlined into utilities instead of being resolved at :root. */
+@theme inline {
+  --font-display: var(--font-gloock), "Times New Roman", serif;
+  --font-sans: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  html:has([data-demo="onikitas"]) {
+    background: var(--color-lime);
+    color-scheme: light;
+    scroll-padding-top: 96px;
+  }
+
+  [data-demo="onikitas"] {
+    background: var(--color-lime);
+    color: var(--color-olive);
+    font-family: var(--font-schibsted), ui-sans-serif, system-ui, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+  }
+
+  [data-demo="onikitas"] ::selection {
+    background: var(--color-travertine);
+    color: var(--color-olive);
+  }
+
+  [data-demo="onikitas"] :focus-visible {
+    outline: 2px solid var(--color-tile-ink);
+    outline-offset: 3px;
+  }
+
+  [data-demo="onikitas"] .on-dark :focus-visible {
+    outline-color: var(--color-tile-light);
+  }
+
+  [data-demo="onikitas"] h1,
+  [data-demo="onikitas"] h2,
+  [data-demo="onikitas"] h3 {
+    font-family: var(--font-gloock), "Times New Roman", serif;
+    font-weight: 400;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+
+  [data-demo="onikitas"] p {
+    text-wrap: pretty;
+  }
+
+  [data-demo="onikitas"] a {
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+  }
+
+  [data-demo="onikitas"] table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  html:has([data-demo="onikitas"]) {
+    scrollbar-color: #3b3a2e66 var(--color-lime);
+    scrollbar-width: thin;
+  }
+}
+
+@layer components {
+  /* Primary CTA: terracotta fill, square corners (UI is all-sharp; arches are
+     reserved for photographs). */
+  .btn-tile {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    background: var(--color-tile);
+    color: var(--color-paper);
+    padding: 0.9em 1.35em;
+    font-weight: 500;
+    font-size: 0.97rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    transition: background-color 0.25s var(--ease-out-expo), transform 0.2s var(--ease-out-expo);
+  }
+  .btn-tile:hover {
+    background: var(--color-tile-ink);
+  }
+  .btn-tile:active {
+    transform: translateY(1px);
+  }
+
+  .btn-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    color: var(--color-olive);
+    padding: 0.9em 1.35em;
+    font-weight: 500;
+    font-size: 0.97rem;
+    line-height: 1.1;
+    white-space: nowrap;
+    box-shadow: inset 0 0 0 1px var(--color-olive);
+    transition: background-color 0.25s var(--ease-out-expo), color 0.25s var(--ease-out-expo);
+  }
+  .btn-line:hover {
+    background: var(--color-olive);
+    color: var(--color-lime);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    min-height: 2.5rem;
+    padding: 0.45em 0.95em;
+    font-size: 0.9rem;
+    line-height: 1.1;
+    box-shadow: inset 0 0 0 1px var(--color-olive-line);
+    color: var(--color-olive);
+    transition: box-shadow 0.2s, background-color 0.2s, color 0.2s;
+    cursor: pointer;
+  }
+  .chip:hover {
+    box-shadow: inset 0 0 0 1px var(--color-olive);
+  }
+  .chip[aria-pressed="true"],
+  .chip[aria-checked="true"],
+  .chip[data-on="true"] {
+    background: var(--color-olive);
+    color: var(--color-lime);
+    box-shadow: inset 0 0 0 1px var(--color-olive);
+  }
+  .chip:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .label-mono {
+    font-family: var(--font-plex-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .arch {
+    border-radius: 999px 999px 0 0;
+  }
+
+  .measure {
+    max-width: 62ch;
+  }
+
+  .field {
+    display: block;
+    width: 100%;
+    background: #fffdf9;
+    color: var(--color-olive);
+    padding: 0.75rem 0.85rem;
+    font: inherit;
+    font-size: 1rem;
+    box-shadow: inset 0 0 0 1px #3b3a2e59;
+    border-radius: 0;
+  }
+  .field:focus {
+    outline: 2px solid var(--color-tile-ink);
+    outline-offset: 0;
+  }
+  .field[aria-invalid="true"] {
+    box-shadow: inset 0 0 0 1.5px var(--color-tile-ink);
+  }
+  .field::placeholder {
+    color: #6b6857;
+  }
+}
+
+/* Sun slider */
+.onk-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+}
+.onk-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: #3b3a2e;
+}
+.onk-range::-moz-range-track {
+  height: 2px;
+  background: #3b3a2e;
+}
+.onk-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -9px;
+  border-radius: 999px;
+  background: #b5532c;
+  box-shadow: 0 0 0 4px #f2eee6, 0 0 0 5px #3b3a2e55;
+}
+.onk-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #b5532c;
+  box-shadow: 0 0 0 4px #f2eee6, 0 0 0 5px #3b3a2e55;
+}
+.onk-range:focus-visible {
+  outline-offset: 6px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* Hero load reveal: the arch opens upward once. CSS only, so it runs before
+   hydration and never blocks LCP (the image is painted, only clipped). */
+@keyframes onk-arch-open {
+  from {
+    clip-path: inset(38% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes onk-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .onk-arch-open {
+    animation: onk-arch-open 900ms var(--ease-arch) both;
+  }
+  .onk-rise {
+    animation: onk-rise 900ms var(--ease-out-expo) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-demo="onikitas"] *,
+  [data-demo="onikitas"] *::before,
+  [data-demo="onikitas"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

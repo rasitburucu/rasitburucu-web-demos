@@ -1,0 +1,1102 @@
+/* Onikitaş v2, "Kireç Saati". Scoped to this demo. Plain CSS, no utility layer.
+   Palette: Kireç (limewash, travertine, olive-shadow, deep Aegean, terracotta),
+   extended with a night navy for the last hour. Shape rule: UI is all-sharp;
+   only the stones (loader, villa picker) are organic, because they are stones. */
+
+:root {
+  --lime: #f2eee6;
+  --lime-deep: #e8e2d6;
+  --trav: #d8ccb8;
+  --olive: #3b3a2e;
+  --olive-soft: #58564a;
+  --aegean: #1e3442;
+  --night: #0f1b24;
+  --tile: #b5532c;
+  --tile-ink: #9c4424;
+  --tile-light: #e0906a;
+  --paper: #fffaf3;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-io: cubic-bezier(0.76, 0, 0.24, 1);
+  --pad: clamp(1.25rem, 6.5vw, 7.5rem);
+  --z-scene: 0;
+  --z-main: 2;
+  --z-hud: 5;
+  --z-footer: 6;
+  --z-header: 10;
+  --z-tip: 12;
+  --z-loader: 50;
+  --z-skip: 60;
+}
+
+html:has([data-demo="onikitas"]) {
+  background: var(--lime);
+  color-scheme: light;
+  scrollbar-width: thin;
+  scrollbar-color: #3b3a2e80 var(--lime);
+}
+html:has([data-demo="onikitas"])[data-tone="dark"] {
+  background: var(--night);
+  scrollbar-color: #f2eee680 var(--night);
+}
+
+.oki-root {
+  --ink: var(--olive);
+  --ink-soft: var(--olive-soft);
+  --scrim: 242, 238, 230;
+  --focus: var(--tile-ink);
+  position: relative;
+  min-height: 100dvh;
+  overflow-x: clip;
+  color: var(--ink);
+  font-family: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  caret-color: var(--tile);
+}
+html[data-tone="dark"] .oki-root {
+  --ink: var(--lime);
+  --ink-soft: #d6d0c3;
+  --scrim: 12, 22, 30;
+  --focus: var(--tile-light);
+}
+
+.oki-root ::selection {
+  background: var(--trav);
+  color: var(--olive);
+}
+.oki-root :focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+.oki-root a {
+  color: inherit;
+  text-underline-offset: 0.24em;
+  text-decoration-thickness: 1px;
+}
+.oki-root p {
+  margin: 0;
+  text-wrap: pretty;
+}
+.oki-root h1,
+.oki-root h2,
+.oki-root h3 {
+  margin: 0;
+  font-weight: 400;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- scene layers ---------- */
+
+.oki-canvas {
+  position: fixed;
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: 100lvh;
+  z-index: var(--z-scene);
+}
+.oki-canvas canvas {
+  touch-action: pan-y;
+}
+
+.oki-stills {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 100lvh;
+  z-index: var(--z-scene);
+  background: var(--lime-deep);
+}
+.oki-stills[data-hidden="true"] {
+  display: none;
+}
+.oki-stills img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-out);
+}
+.oki-stills img[data-on="true"] {
+  opacity: 1;
+}
+html:not(.js) .oki-stills img[data-i="0"] {
+  opacity: 1;
+}
+
+/* ---------- honesty strip + header ---------- */
+
+.oki-skip {
+  position: fixed;
+  left: 1rem;
+  top: -4rem;
+  z-index: var(--z-skip);
+  background: var(--olive);
+  color: var(--lime) !important;
+  padding: 0.6rem 1rem;
+  text-decoration: none;
+}
+.oki-skip:focus-visible {
+  top: 2.4rem;
+}
+
+.oki-strip {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-header);
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--olive);
+  color: var(--lime);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+}
+.oki-strip a {
+  color: var(--lime);
+  text-decoration-color: #f2eee666;
+}
+.oki-strip a:hover {
+  text-decoration-color: var(--lime);
+}
+.oki-strip a:focus-visible {
+  outline-color: var(--tile-light);
+}
+
+.oki-header {
+  position: fixed;
+  inset: 28px 0 auto 0;
+  z-index: var(--z-header);
+  height: 68px;
+  padding: 0 var(--pad);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--ink);
+  transition: color 0.8s var(--ease-out);
+  pointer-events: none;
+}
+.oki-header > * {
+  pointer-events: auto;
+}
+.oki-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  font-family: var(--font-bodoni), serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.oki-brand__mark {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.3;
+}
+.oki-header__nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.9rem, 2.4vw, 2rem);
+}
+.oki-visit {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.55rem 0;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.4s var(--ease-out);
+}
+.oki-visit:hover {
+  background-size: 40% 1px;
+}
+.oki-sound {
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0;
+  cursor: pointer;
+  min-height: 44px;
+}
+.oki-sound__bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.oki-sound__bars i {
+  width: 2px;
+  height: 3px;
+  background: currentColor;
+  transition: height 0.3s var(--ease-out);
+}
+.oki-sound__bars[data-on="true"] i {
+  animation: oki-bars 1.1s ease-in-out infinite alternate;
+}
+.oki-sound__bars[data-on="true"] i:nth-child(2) { animation-delay: -0.4s; }
+.oki-sound__bars[data-on="true"] i:nth-child(3) { animation-delay: -0.8s; }
+.oki-sound__bars[data-on="true"] i:nth-child(4) { animation-delay: -0.2s; }
+@keyframes oki-bars {
+  from { height: 3px; }
+  to { height: 12px; }
+}
+
+/* ---------- day clock + hour navigation ---------- */
+
+.oki-hud {
+  text-shadow: 0 0 28px rgba(var(--scrim), 0.85), 0 0 8px rgba(var(--scrim), 0.6);
+  position: fixed;
+  left: var(--pad);
+  bottom: clamp(1rem, 4.5vh, 3rem);
+  z-index: var(--z-hud);
+  color: var(--ink);
+  pointer-events: none;
+  transition: color 0.8s var(--ease-out), opacity 0.5s var(--ease-out);
+}
+.oki-hud__name {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.oki-hud__clock {
+  font-family: var(--font-bodoni), serif;
+  font-size: clamp(3rem, 6.2vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums tabular-nums;
+  margin: 0.1em 0 0.18em -0.04em;
+}
+.oki-hud__coords {
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  white-space: pre;
+}
+
+.oki-root:has(.oki-dial-panel[data-on="true"]) .oki-days {
+  opacity: 0;
+  visibility: hidden;
+}
+.oki-days {
+  text-shadow: 0 0 18px rgba(var(--scrim), 0.9);
+  position: fixed;
+  transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+  right: var(--pad);
+  bottom: clamp(1rem, 4.5vh, 3rem);
+  z-index: var(--z-hud);
+  color: var(--ink);
+  transition: color 0.8s var(--ease-out);
+}
+.oki-days ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.1rem;
+  justify-items: end;
+}
+.oki-days a {
+  display: grid;
+  grid-template-columns: auto 4.2rem;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.28rem 0;
+  text-decoration: none;
+  font-size: 0.8125rem;
+  opacity: 0.62;
+  transition: opacity 0.4s var(--ease-out);
+}
+.oki-days a:hover,
+.oki-days a[data-active="true"] {
+  opacity: 1;
+}
+.oki-days__time {
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+.oki-days a[data-active="true"] .oki-days__time::before {
+  content: "";
+  position: absolute;
+  right: calc(100% + 0.6rem);
+  top: 50%;
+  width: 1.6rem;
+  height: 1px;
+  background: currentColor;
+}
+.oki-days a[data-active="true"] .oki-days__name {
+  font-weight: 600;
+}
+
+/* ---------- chapters ---------- */
+
+.oki-main {
+  position: relative;
+  z-index: var(--z-main);
+}
+.oki-chapter {
+  position: relative;
+  pointer-events: none;
+}
+.oki-anchor {
+  position: absolute;
+  left: 0;
+  width: 1px;
+  height: 1px;
+}
+.oki-sticky {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+}
+.oki-copy {
+  position: absolute;
+  left: var(--pad);
+  top: 22vh;
+  width: min(33rem, 40vw);
+  pointer-events: auto;
+  color: var(--ink);
+  transition: opacity 0.9s var(--ease-out), visibility 0.9s, color 0.8s var(--ease-out);
+}
+.oki-copy::before {
+  content: "";
+  position: absolute;
+  inset: -30% -28%;
+  z-index: -1;
+  background: radial-gradient(closest-side, rgba(var(--scrim), 0.72), rgba(var(--scrim), 0.3) 60%, rgba(var(--scrim), 0));
+  pointer-events: none;
+}
+html.js .oki-copy:not([data-on="true"]) {
+  opacity: 0;
+  visibility: hidden;
+}
+.oki-title {
+  font-family: var(--font-bodoni), serif;
+  font-optical-sizing: auto;
+  font-size: clamp(2.25rem, 4.3vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
+}
+.oki-chapter--safak .oki-title {
+  font-size: clamp(2.75rem, 5.6vw, 6rem);
+  line-height: 1;
+}
+.oki-chapter--safak .oki-copy__body {
+  margin-top: 2rem;
+}
+.oki-title__vis {
+  display: block;
+}
+.oki-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.oki-ch {
+  display: inline-block;
+  transition:
+    transform 1.1s var(--ease-out) calc(var(--i) * 16ms),
+    opacity 0.9s var(--ease-out) calc(var(--i) * 16ms),
+    filter 1s var(--ease-out) calc(var(--i) * 16ms);
+}
+html.js .oki-copy:not([data-on="true"]) .oki-ch,
+html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-ch {
+  transform: translateY(0.42em);
+  opacity: 0;
+  filter: blur(8px);
+  transition-delay: 0s;
+}
+.oki-copy__body {
+  margin-top: 1.4rem;
+  max-width: 34ch;
+  font-size: clamp(1rem, 0.35vw + 0.92rem, 1.1875rem);
+  line-height: 1.55;
+  color: var(--ink-soft);
+  transition: opacity 1s var(--ease-out) 0.35s, transform 1s var(--ease-out) 0.35s;
+}
+html.js .oki-copy:not([data-on="true"]) .oki-copy__body,
+html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-copy__body {
+  opacity: 0;
+  transform: translateY(10px);
+  transition-delay: 0s;
+}
+
+/* one composition per hour */
+.oki-chapter--safak .oki-copy {
+  top: 50%;
+  translate: 0 -46%;
+  width: min(36rem, 44vw);
+}
+.oki-chapter--safak .oki-copy::before {
+  display: none;
+}
+.oki-chapter--kusluk .oki-copy,
+.oki-chapter--ikindi .oki-copy {
+  left: auto;
+  right: var(--pad);
+  top: 20vh;
+}
+.oki-chapter--ogle .oki-copy {
+  top: auto;
+  bottom: 24vh;
+}
+.oki-chapter--aksam .oki-copy {
+  top: 20vh;
+  width: min(30rem, 38vw);
+}
+.oki-chapter--yatsi .oki-copy {
+  left: 50%;
+  top: 19vh;
+  translate: -50% 0;
+  width: min(40rem, 80vw);
+  text-align: center;
+}
+.oki-chapter--yatsi .oki-copy__body {
+  margin-inline: auto;
+}
+
+/* ---------- the sundial ---------- */
+
+.oki-dial-panel {
+  position: absolute;
+  right: var(--pad);
+  bottom: clamp(1rem, 5vh, 3.5rem);
+  width: min(28rem, 92vw);
+  padding: 1.4rem 1.5rem 1.2rem;
+  background: rgba(242, 238, 230, 0.93);
+  -webkit-backdrop-filter: blur(12px) saturate(1.05);
+  backdrop-filter: blur(12px) saturate(1.05);
+  border: 1px solid rgba(59, 58, 46, 0.32);
+  outline: 1px solid rgba(59, 58, 46, 0.14);
+  outline-offset: -7px;
+  color: var(--olive);
+  pointer-events: auto;
+  box-shadow: 0 24px 60px -30px rgba(59, 42, 30, 0.45);
+  transition: opacity 0.9s var(--ease-out), visibility 0.9s, translate 0.9s var(--ease-out);
+  --focus: var(--tile-ink);
+}
+html.js .oki-dial-panel:not([data-on="true"]) {
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 16px;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .oki-dial-panel {
+    background: var(--lime);
+    backdrop-filter: none;
+  }
+}
+.oki-dial__face {
+  position: relative;
+  cursor: grab;
+  touch-action: none;
+}
+.oki-dial__face:active {
+  cursor: grabbing;
+}
+.oki-dial__face svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.oki-dial__arc {
+  fill: none;
+  stroke: rgba(59, 58, 46, 0.3);
+  stroke-width: 1;
+}
+.oki-dial__path {
+  fill: none;
+  stroke: var(--tile);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.oki-dial__tick {
+  stroke: rgba(59, 58, 46, 0.5);
+  stroke-width: 1;
+}
+.oki-dial__label {
+  font-size: 12px;
+  fill: var(--olive-soft);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-instrument), sans-serif;
+}
+.oki-dial__horizon {
+  stroke: var(--olive);
+  stroke-width: 1;
+}
+.oki-dial__shadow {
+  stroke: var(--olive);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+.oki-dial__pin {
+  fill: var(--olive);
+}
+.oki-dial__halo {
+  fill: var(--tile);
+  opacity: 0.16;
+}
+.oki-dial__sun {
+  fill: var(--tile);
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+.oki-dial__time {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  translate: -50% 0;
+  pointer-events: none;
+  font-family: var(--font-bodoni), serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.oki-dial__hint {
+  margin-top: 0.7rem;
+  font-size: 0.8125rem;
+  color: var(--olive-soft);
+}
+.oki-dial__villas {
+  border: 0;
+  margin: 1rem 0 0;
+  padding: 0;
+  min-width: 0;
+}
+.oki-dial__villas legend {
+  padding: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  margin-bottom: 0.55rem;
+}
+.oki-dial__stones {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 5px;
+}
+.oki-pebble {
+  appearance: none;
+  border: 0;
+  min-height: 30px;
+  padding: 0;
+  font-family: var(--font-bodoni), serif;
+  font-size: 0.78rem;
+  color: var(--olive);
+  cursor: pointer;
+  border-radius: 50% 46% 54% 48% / 58% 52% 46% 42%;
+  background: radial-gradient(circle at 36% 28%, #f3ecdf, #d8ccb8 58%, #bcae95);
+  box-shadow: inset -1px -2px 3px rgba(59, 58, 46, 0.22), 0 2px 2px -1px rgba(59, 58, 46, 0.3);
+  transition: transform 0.25s var(--ease-out), background 0.25s, color 0.25s;
+}
+.oki-pebble:nth-child(3n) { border-radius: 46% 54% 44% 56% / 52% 44% 56% 48%; }
+.oki-pebble:nth-child(4n + 1) { border-radius: 54% 44% 50% 50% / 46% 56% 44% 54%; }
+.oki-pebble:hover {
+  transform: translateY(-2px);
+}
+.oki-pebble[aria-checked="true"] {
+  background: radial-gradient(circle at 36% 28%, #cf7650, var(--tile) 60%, #93401f);
+  color: var(--paper);
+  transform: translateY(-3px);
+}
+.oki-dial__choice {
+  margin-top: 1rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  font-size: 0.9375rem;
+  color: var(--olive-soft);
+}
+.oki-dial__villa {
+  font-family: var(--font-bodoni), serif;
+  font-size: 1.5rem;
+  color: var(--olive);
+  letter-spacing: -0.01em;
+}
+.oki-dial__actions {
+  margin-top: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.oki-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1.35rem;
+  background: var(--tile);
+  color: var(--paper) !important;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.25s, transform 0.25s var(--ease-out);
+}
+.oki-cta:hover {
+  background: var(--tile-ink);
+}
+.oki-cta:active {
+  transform: translateY(1px);
+}
+.oki-link {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 0.6rem 0;
+  min-height: 44px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--olive);
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+}
+.oki-dial__status {
+  margin-top: 0.6rem;
+  min-height: 2.5em;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--tile-ink);
+}
+
+/* ---------- villa pin label ---------- */
+
+.oki-tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: var(--z-tip);
+  width: 15rem;
+  padding: 0.85rem 1rem 0.9rem;
+  background: var(--lime);
+  color: var(--olive);
+  border: 1px solid rgba(59, 58, 46, 0.3);
+  box-shadow: 0 18px 40px -24px rgba(40, 32, 24, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-out);
+}
+.oki-tip[data-on="true"] {
+  opacity: 1;
+}
+.oki-tip__leader {
+  position: absolute;
+  top: 70px;
+  left: -44px;
+  width: 44px;
+  height: 1px;
+  background: var(--olive);
+}
+.oki-tip__leader::before {
+  content: "";
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--tile);
+}
+.oki-tip[data-flip="true"] .oki-tip__leader {
+  left: auto;
+  right: -44px;
+}
+.oki-tip[data-flip="true"] .oki-tip__leader::before {
+  left: auto;
+  right: -3px;
+}
+.oki-tip__no {
+  font-family: var(--font-bodoni), serif;
+  font-size: 1.9rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.oki-tip__facing {
+  margin-top: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.oki-tip__line {
+  margin-top: 0.35rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+.oki-tip__hour {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--tile-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- footer ---------- */
+
+.oki-footer {
+  position: relative;
+  z-index: var(--z-footer);
+  background: var(--night);
+  color: var(--lime);
+  padding: 14vh var(--pad) 10vh;
+  --focus: var(--tile-light);
+}
+.oki-footer__grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: clamp(2.5rem, 7vw, 8rem);
+  max-width: 1400px;
+}
+.oki-footer__lead {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  max-width: 34rem;
+  color: #c9c4b8;
+}
+.oki-footer__brand {
+  font-family: var(--font-bodoni), serif;
+  font-style: italic;
+  font-size: clamp(2.5rem, 4vw, 3.75rem);
+  line-height: 1;
+  color: var(--lime);
+  margin-bottom: 0.5rem !important;
+}
+.oki-footer__credits h2 {
+  font-family: var(--font-bodoni), serif;
+  font-size: 1.75rem;
+  margin-bottom: 1.6rem;
+}
+.oki-footer__credits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+  align-content: start;
+}
+.oki-footer__credits h2 {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+}
+.oki-footer__group h3 {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #a9b3b8;
+  margin-bottom: 0.7rem;
+}
+.oki-footer__group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+}
+.oki-footer__group li {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.875rem;
+  line-height: 1.35;
+}
+.oki-footer__group li span {
+  color: #a9b3b8;
+  font-size: 0.8125rem;
+}
+.oki-footer a {
+  color: var(--lime);
+  text-decoration-color: #f2eee666;
+}
+.oki-footer a:hover {
+  text-decoration-color: var(--lime);
+}
+
+/* ---------- loader: twelve stones ---------- */
+
+.oki-loader {
+  display: none;
+}
+html.js .oki-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  display: grid;
+  place-items: center;
+  background: var(--lime);
+  color: var(--olive);
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 1.25s var(--ease-io);
+}
+html.js .oki-loader[data-leaving="true"] {
+  clip-path: inset(0 0 100% 0);
+}
+.oki-loader__inner {
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  transition: translate 1.25s var(--ease-io), opacity 0.8s;
+}
+.oki-loader[data-leaving="true"] .oki-loader__inner {
+  translate: 0 -12vh;
+  opacity: 0;
+}
+.oki-loader__coords {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+  color: var(--olive-soft);
+}
+.oki-loader__time {
+  font-family: var(--font-bodoni), serif;
+  font-size: clamp(4rem, 9vw, 7rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums tabular-nums;
+  margin-bottom: 1.6rem !important;
+}
+.oki-loader__ground {
+  position: relative;
+  width: min(26rem, 78vw);
+  height: 64px;
+}
+.oki-loader__stones {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 5px;
+}
+.oki-stone {
+  display: block;
+  border-radius: 50% 46% 54% 48% / 58% 52% 46% 42%;
+  background: radial-gradient(circle at 35% 28%, #f3ecdf, #d8ccb8 55%, #b4a58b);
+  box-shadow: inset -2px -3px 4px rgba(59, 58, 46, 0.25), 0 3px 3px -2px rgba(59, 58, 46, 0.35);
+  transform: translateY(-58px);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(0.34, 1.6, 0.64, 1), opacity 0.18s;
+}
+.oki-stone:nth-child(3n) { border-radius: 46% 54% 44% 56% / 52% 44% 56% 48%; }
+.oki-stone:nth-child(4n + 1) { border-radius: 54% 44% 50% 50% / 46% 56% 44% 54%; }
+.oki-stone[data-in="true"] {
+  transform: none;
+  opacity: 1;
+}
+.oki-loader__horizon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--olive);
+  transform-origin: left;
+  animation: oki-horizon 1.3s var(--ease-out) both;
+}
+@keyframes oki-horizon {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.oki-loader__count {
+  margin-top: 0.9rem !important;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--olive-soft);
+}
+
+/* ---------- capture mode (?still=n): scene only ---------- */
+
+html[data-capture="true"] .oki-strip,
+html[data-capture="true"] .oki-header,
+html[data-capture="true"] .oki-hud,
+html[data-capture="true"] .oki-days,
+html[data-capture="true"] .oki-main,
+html[data-capture="true"] .oki-footer,
+html[data-capture="true"] .oki-loader,
+html[data-capture="true"] .oki-tip,
+html[data-capture="true"] .oki-stills {
+  display: none !important;
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 899px) {
+  .oki-header {
+    height: 56px;
+  }
+  .oki-brand {
+    font-size: 1.3rem;
+  }
+  .oki-sound span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .oki-sound {
+    min-width: 44px;
+    justify-content: center;
+  }
+  .oki-days {
+    display: none;
+  }
+  .oki-hud__clock {
+    font-size: 2.9rem;
+  }
+  .oki-root:has(.oki-dial-panel[data-on="true"]) .oki-hud {
+    opacity: 0;
+  }
+  .oki-copy,
+  .oki-chapter--kusluk .oki-copy,
+  .oki-chapter--ikindi .oki-copy,
+  .oki-chapter--aksam .oki-copy,
+  .oki-chapter--ogle .oki-copy {
+    left: 1.25rem;
+    right: 1.25rem;
+    top: 104px;
+    bottom: auto;
+    width: auto;
+    translate: none;
+  }
+  .oki-chapter--safak .oki-copy {
+    top: 110px;
+    translate: none;
+    width: auto;
+  }
+  .oki-chapter--yatsi .oki-copy {
+    left: 1.25rem;
+    right: 1.25rem;
+    width: auto;
+    top: 104px;
+    translate: none;
+  }
+  .oki-copy::before {
+    inset: -40% -20% -30%;
+  }
+  .oki-title {
+    font-size: clamp(2rem, 8.6vw, 2.75rem);
+  }
+  .oki-chapter--safak .oki-title {
+    font-size: clamp(2.4rem, 11vw, 3.3rem);
+  }
+  .oki-copy__body {
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+  .oki-dial-panel {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: auto;
+    padding: 1rem 1rem 0.8rem;
+  }
+  .oki-dial__stones {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+  .oki-pebble {
+    min-height: 34px;
+    font-size: 0.85rem;
+  }
+  .oki-dial__time {
+    font-size: 1.75rem;
+  }
+  .oki-dial__hint {
+    display: none;
+  }
+  .oki-footer__grid,
+  .oki-footer__credits {
+    grid-template-columns: 1fr;
+  }
+  .oki-tip {
+    width: 13rem;
+  }
+}
+
+@media (max-height: 760px) and (min-width: 900px) {
+  .oki-dial__hint {
+    display: none;
+  }
+  .oki-dial-panel {
+    padding-top: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oki-ch,
+  .oki-copy__body {
+    transition: opacity 0.3s linear !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .oki-copy,
+  .oki-dial-panel {
+    transition-duration: 0.3s;
+    translate: none;
+  }
+  .oki-stone {
+    transition: opacity 0.2s;
+    transform: none;
+  }
+  .oki-loader__horizon,
+  .oki-sound__bars[data-on="true"] i {
+    animation: none;
+  }
+  html.js .oki-loader {
+    transition: opacity 0.3s;
+  }
+  html.js .oki-loader[data-leaving="true"] {
+    clip-path: none;
+    opacity: 0;
+  }
+}
+
+/* ---------- review fixes ---------- */
+
+/* busy mid-day terrain: give the copy a denser limewash bed */
+.oki-chapter--kusluk .oki-copy::before,
+.oki-chapter--ikindi .oki-copy::before {
+  inset: -38% -26%;
+  background: radial-gradient(closest-side, rgba(var(--scrim), 0.94), rgba(var(--scrim), 0.72) 55%, rgba(var(--scrim), 0));
+}
+.oki-chapter--kusluk .oki-copy__body,
+.oki-chapter--ikindi .oki-copy__body {
+  color: var(--ink);
+}
+
+/* at dawn the arch owns the right side and the bottom: hold the hour index
+   (desktop) and the clock (mobile) until the day starts moving */
+.oki-days {
+  transition: color 0.8s var(--ease-out), opacity 0.5s var(--ease-out), visibility 0.5s;
+}
+.oki-root:has(.oki-days a[href="#safak"][data-active="true"]) .oki-days {
+  opacity: 0;
+  visibility: hidden;
+}
+@media (max-width: 899px) {
+  .oki-root:has(.oki-days a[href="#safak"][data-active="true"]) .oki-hud {
+    opacity: 0;
+  }
+}
