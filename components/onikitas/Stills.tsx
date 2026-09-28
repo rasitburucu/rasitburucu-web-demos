@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import { addLoad, emit, on, store } from "@/lib/onikitas/store";
 import { chapters } from "@/lib/onikitas/chapters";
 import { tr } from "@/content/onikitas/tr";
+import { asset } from "@/lib/asset";
 
 // Curated frames rendered from the live scene, one per hour of the day. Used for
 // reduced motion, for browsers without WebGL2 and as the no-JS backdrop.
 
-const FRAMES = chapters.map((c) => `/onikitas/frames/${c.id}.webp`);
+const FRAMES = chapters.map((c) => asset(`/onikitas/frames/${c.id}.webp`));
 const HOURS = [5.7, 7.0, 10.0, 13.0, 16.5, 19.67, 21.3];
 
 function nearest(h: number) {

@@ -6,6 +6,7 @@ import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber"
 import { PerformanceMonitor, useTexture } from "@react-three/drei";
 import { addLoad, emit, on, store, type Tier } from "@/lib/onikitas/store";
 import { depthMap, FOCUS, makeTrees } from "@/lib/onikitas/site";
+import { asset } from "@/lib/asset";
 import { buildBackdrop, buildTerrain, buildTreeGeometry, buildVillas, treeMatrices } from "./build";
 import { skyMaterial, terrainMaterial, treeMaterial, U, villaMaterial, wallMaterial, waterMaterial, windowMaterial } from "./materials";
 import { createLight, sampleLight } from "./palette";
@@ -49,9 +50,9 @@ function timed<T>(name: string, f: () => T): T {
 
 function Textures() {
   const [plaster, plasterN, trav] = useTexture([
-    "/onikitas/tex/plaster.webp",
-    "/onikitas/tex/plaster-n.webp",
-    "/onikitas/tex/travertine.webp",
+    asset("/onikitas/tex/plaster.webp"),
+    asset("/onikitas/tex/plaster-n.webp"),
+    asset("/onikitas/tex/travertine.webp"),
   ]);
   const gl = useThree((s) => s.gl);
   useLayoutEffect(() => {

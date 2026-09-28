@@ -1,11 +1,12 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Static export (./out) served by Workers static assets.
+  // Local preview only: out/ is staged under .preview/web/ (scripts/stage-preview.mjs)
+  // to mirror production, where the export lives at rasitburucu.com/web/.
   // Config only: deploy and custom domains are the owner's decision.
   "name": "rasitburucu-web-demos",
   "compatibility_date": "2026-09-01",
   "assets": {
-    "directory": "./out",
+    "directory": "./.preview",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   }

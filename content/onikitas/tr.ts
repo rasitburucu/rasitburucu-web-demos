@@ -62,7 +62,7 @@ export const tr: Copy = {
     description:
       "Yalıkavak'ın güney sırtlarında, her birinin önü deniz olan on iki taş villa. Kurgusal bir marka için hazırlanmış rasitburucu.com konsept çalışması.",
   },
-  strip: { text: "Konsept çalışma — rasitburucu.com", href: "https://rasitburucu.com/tr" },
+  strip: { text: "Konsept çalışma — rasitburucu.com", href: "/tr" },
   skip: "İçeriğe geç",
   brand: "Onikitaş",
   nav: { visit: "Ziyaret", soundOn: "Sesi kapat", soundOff: "Sesi aç", dayNav: "Günün saatleri" },

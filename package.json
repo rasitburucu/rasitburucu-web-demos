@@ -7,7 +7,8 @@
     "build": "next build",
     "lint": "eslint",
     "images": "node scripts/process-images.mjs",
-    "preview": "next build && wrangler dev --port 3301"
+    "preview": "next build && node scripts/stage-preview.mjs && wrangler dev --port 3301",
+    "sync:site": "node scripts/sync-site.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",
