@@ -1,0 +1,251 @@
+{
+  "hero": {
+    "file": "hero",
+    "w": 2200,
+    "h": 2930,
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "source": "11932099"
+  },
+  "anaokulu": {
+    "file": "anaokulu",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "7269710"
+  },
+  "ilkokul": {
+    "file": "ilkokul",
+    "w": 2200,
+    "h": 1650,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "207756"
+  },
+  "ortaokul": {
+    "file": "ortaokul",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "8770717"
+  },
+  "lise": {
+    "file": "lise",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "7973028"
+  },
+  "writing": {
+    "file": "writing",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "6249385"
+  },
+  "music": {
+    "file": "music",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "7095838"
+  },
+  "robotics": {
+    "file": "robotics",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      400,
+      720
+    ],
+    "source": "15470540"
+  },
+  "debate": {
+    "file": "debate",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      400,
+      720
+    ],
+    "source": "164829"
+  },
+  "ceramics": {
+    "file": "ceramics",
+    "w": 2200,
+    "h": 1850,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "18486386"
+  },
+  "stage": {
+    "file": "stage",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      400,
+      720
+    ],
+    "source": "7991381"
+  },
+  "library": {
+    "file": "library",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "13278839"
+  },
+  "pool": {
+    "file": "pool",
+    "w": 2200,
+    "h": 1650,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "8688149"
+  },
+  "court": {
+    "file": "court",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "5331954"
+  },
+  "chess": {
+    "file": "chess",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "6202994"
+  },
+  "campus": {
+    "file": "campus",
+    "w": 2200,
+    "h": 1783,
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "source": "32715517"
+  },
+  "kampusHero": {
+    "file": "kampusHero",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "source": "13787808"
+  },
+  "kabul": {
+    "file": "kabul",
+    "w": 2200,
+    "h": 1464,
+    "widths": [
+      400,
+      720
+    ],
+    "source": "17113072"
+  },
+  "lab": {
+    "file": "lab",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "15509862"
+  },
+  "dining": {
+    "file": "dining",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "34316837"
+  },
+  "garden": {
+    "file": "garden",
+    "w": 2200,
+    "h": 3300,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "32416206"
+  },
+  "classroom": {
+    "file": "classroom",
+    "w": 2200,
+    "h": 3911,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "27916160"
+  },
+  "corridor": {
+    "file": "corridor",
+    "w": 2200,
+    "h": 1467,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "29636314"
+  }
+}

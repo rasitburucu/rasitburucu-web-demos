@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-const demos = [{ href: "/onikitas", name: "Onikitaş", note: "Bodrum'da 12 villalık kurgusal konut projesi" }];
+const demos = [
+  { href: "/onikitas", name: "Onikitaş", note: "Bodrum'da 12 villalık kurgusal konut projesi" },
+  { href: "/revak", name: "Revak Okulları", note: "İstanbul'da anaokulundan liseye kurgusal özel okul; ön kayıt, tur ve bursluluk akışlarıyla" },
+];
 
 export default function Index() {
   return (

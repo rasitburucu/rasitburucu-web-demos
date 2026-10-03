@@ -1,0 +1,1426 @@
+/* Revak Okulları v2, "Almanak": the editorial layer on top of revak.css.
+   Stone, ink and seal stay; what changes is scale, rhythm and one signature
+   (the walk through the arcade). Scoped to .rv-root like the base sheet.
+
+   Motion rules for this file: transform and opacity only, custom curves,
+   everything off under prefers-reduced-motion. */
+
+.rv-root {
+  --rv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --rv-ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+  --rv-caps: 600 0.72rem/1.2 var(--rv-f-sans);
+
+  /* the arcade (walk) */
+  --w-face: #d6cfc2;
+  --w-line: rgba(22, 32, 46, 0.16);
+  --w-shade: #9f9585;
+  --w-haze: #978d7c;
+  --w-vault: #b9b0a0;
+  --w-floor: #c9c1b2;
+  --w-sky-am: #f3f1ea;
+  --w-sky-pm: #f5d7a6;
+  --w-sun-am: #efe9dc;
+  --w-sun-pm: #f3d6a4;
+}
+
+/* Lenis (weighted scroll) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+html.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* ---------- almanac marks ---------- */
+
+.rv-root .rv-folio {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0 0 clamp(2rem, 4vw, 3.5rem);
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rv-ink);
+  font: var(--rv-caps);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+}
+.rv-root .rv-folio-n {
+  font-family: var(--rv-f-serif);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--rv-seal-deep);
+}
+.rv-on-ink .rv-folio,
+.rv-ink .rv-folio {
+  border-top-color: var(--rv-stone);
+  color: var(--rv-ink-soft);
+}
+
+.rv-masthead {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid var(--rv-ink);
+  border-bottom: 1px solid var(--rv-line);
+  font: var(--rv-caps);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+}
+.rv-masthead li:first-child {
+  color: var(--rv-ink);
+}
+
+/* hover language: an ink line drawn under the word, seal on hover */
+.rv-textlink {
+  text-decoration: none;
+  background: linear-gradient(currentColor, currentColor) 0 calc(100% - 0.55em) / 100% 1px no-repeat,
+    linear-gradient(var(--rv-seal), var(--rv-seal)) 0 calc(100% - 0.55em) / 0% 2px no-repeat;
+  transition: background-size 0.3s var(--rv-ease-out);
+}
+.rv-textlink:hover {
+  background-size: 100% 1px, 100% 2px;
+}
+.rv-textlink--big {
+  font-family: var(--rv-f-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.rv-h2 {
+  font-size: clamp(2.3rem, 1.2rem + 3.4vw, 4.6rem);
+  line-height: 1;
+  letter-spacing: -0.028em;
+}
+
+/* ---------- cover (hero) ---------- */
+
+.rv-cover {
+  padding: clamp(0.75rem, 1.5vw, 1.5rem) 0 clamp(3.5rem, 6vw, 6rem);
+}
+.rv-root .rv-cover-title {
+  margin-top: clamp(2.25rem, 6vw, 5.5rem);
+  font-size: clamp(3rem, 0.6rem + 10.4vw, 11.6rem);
+  line-height: 0.9;
+  letter-spacing: -0.038em;
+  font-variation-settings: "opsz" 72;
+}
+.rv-root .rv-cover-title {
+  text-wrap: nowrap;
+}
+.rv-line {
+  display: flex;
+  align-items: flex-end;
+}
+.rv-line--in {
+  padding-left: 2.55em;
+}
+.rv-line em {
+  font-style: italic;
+  letter-spacing: -0.03em;
+}
+/* the mask: padded so İ, ğ, ç and the italic overhang are not clipped */
+.rv-mask {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.14em 0.12em 0.12em 0.02em;
+  margin: -0.14em -0.12em -0.12em -0.02em;
+}
+.rv-mask > span {
+  display: inline-block;
+}
+/* the arch hangs at the right edge, rising from line two into line one */
+.rv-cover-arch {
+  flex: none;
+  width: 1.2em;
+  height: 1.95em;
+  margin: -0.95em 0 0.04em auto;
+  align-self: flex-end;
+}
+.rv-cover-arch .rv-photo {
+  width: 100%;
+  height: 100%;
+}
+.rv-cover-arch img {
+  transform-origin: 50% 100%;
+}
+.rv-cover-foot {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem clamp(1rem, 2.5vw, 2.5rem);
+  align-items: end;
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+.rv-cover-caption {
+  grid-column: 1 / span 3;
+  font: var(--rv-caps);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--rv-line);
+  align-self: start;
+}
+.rv-cover-foot .rv-lede {
+  grid-column: 4 / span 5;
+  max-width: 40ch;
+  color: #2c3544;
+}
+.rv-cover-cta {
+  grid-column: 10 / span 3;
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .rv-cover .rv-mask > span {
+    animation: rv-line-up 1.05s var(--rv-ease-out) both;
+  }
+  html.js .rv-cover .rv-line:nth-of-type(2) .rv-mask > span {
+    animation-delay: 0.09s;
+  }
+  html.js .rv-cover .rv-line:nth-of-type(3) .rv-mask > span {
+    animation-delay: 0.18s;
+  }
+  html.js .rv-cover-arch .rv-photo {
+    animation: rv-open 1.3s var(--rv-ease-out) 0.28s both;
+  }
+  html.js .rv-cover-arch img {
+    animation: rv-settle 1.9s var(--rv-ease-out) 0.28s both;
+  }
+  html.js .rv-masthead,
+  html.js .rv-cover-foot,
+  html.js .rv-cover .rv-sentence {
+    animation: rv-fade 0.9s var(--rv-ease-out) 0.5s both;
+  }
+}
+@keyframes rv-line-up {
+  from {
+    transform: translateY(112%);
+  }
+}
+@keyframes rv-open {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes rv-settle {
+  from {
+    transform: scale(1.14);
+  }
+}
+@keyframes rv-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 860px) {
+  .rv-masthead li:nth-child(2),
+  .rv-masthead li:nth-child(3) {
+    display: none;
+  }
+  .rv-cover-title {
+    font-size: 12.6vw;
+  }
+  .rv-line--in {
+    padding-left: 0;
+  }
+  .rv-cover-arch {
+    width: 1.15em;
+    height: 1.85em;
+    margin-top: -0.95em;
+  }
+  .rv-cover-foot > * {
+    grid-column: 1 / -1 !important;
+  }
+  .rv-cover-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+  }
+}
+
+/* sentence form: a line on a printed form */
+.rv-sentence {
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-sentence-label {
+  display: block;
+  margin-bottom: 0.9rem;
+  font: var(--rv-caps);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+}
+.rv-sentence form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2em 0.45em;
+  font-family: var(--rv-f-serif);
+  font-size: clamp(1.5rem, 1rem + 1.7vw, 2.6rem);
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+.rv-inline-select {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+}
+.rv-inline-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 44px;
+  padding: 0 1.25em 0.02em 0.15em;
+  border: 0;
+  border-bottom: 1.5px solid var(--rv-ink);
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  font-style: italic;
+  color: var(--rv-seal-deep);
+  cursor: pointer;
+  transition: border-color 0.2s var(--rv-ease-out);
+}
+.rv-inline-select select:hover {
+  border-bottom-color: var(--rv-seal);
+}
+.rv-inline-select svg {
+  position: absolute;
+  right: 0.15em;
+  bottom: 0.5em;
+  pointer-events: none;
+}
+.rv-root .rv-sentence-go {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  margin-left: auto;
+  padding: 0 0.4rem 0 1.25rem;
+  border: 0;
+  border-radius: 100vmax;
+  background: var(--rv-seal);
+  color: #fbf9f6;
+  font: 600 1rem/1 var(--rv-f-sans);
+  letter-spacing: 0.005em;
+  cursor: pointer;
+  transition: background-color 0.25s var(--rv-ease-out);
+}
+.rv-sentence-go svg {
+  box-sizing: content-box;
+  padding: 0.55rem;
+  border-radius: 50%;
+  background: #fbf9f61f;
+  transition: transform 0.35s var(--rv-ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rv-sentence-go:hover {
+    background: var(--rv-seal-deep);
+  }
+  .rv-sentence-go:hover svg {
+    transform: translateX(3px);
+  }
+}
+.rv-sentence-go:active,
+.rv-btn:active {
+  transform: scale(0.97);
+}
+@media (max-width: 640px) {
+  .rv-sentence-go {
+    margin: 0.75rem 0 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* ---------- § 01 facts: numerals in the running text ---------- */
+
+.rv-facts {
+  padding: clamp(4rem, 9vw, 9rem) 0 clamp(4rem, 8vw, 8rem);
+}
+.rv-facts-text {
+  font-family: var(--rv-f-serif);
+  font-size: clamp(1.45rem, 0.9rem + 2.4vw, 3.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.018em;
+}
+.rv-fact {
+  display: block;
+  width: fit-content;
+}
+.rv-fact:nth-child(2) {
+  margin-left: 25%;
+}
+.rv-fact:nth-child(3) {
+  margin-left: 8.33%;
+}
+.rv-fact:nth-child(4) {
+  margin-left: 41.66%;
+}
+.rv-fact-big {
+  display: inline-block;
+  margin: 0 0.06em;
+  font-size: 2.7em;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  font-style: italic;
+  font-variant-numeric: lining-nums;
+  font-variation-settings: "opsz" 72;
+  vertical-align: -0.08em;
+}
+.rv-fact-ref {
+  margin: 0 0.15em 0 0.05em;
+  font: 600 0.34em/1 var(--rv-f-sans);
+  color: var(--rv-seal-deep);
+  vertical-align: 1.9em;
+}
+.rv-facts-notes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem clamp(1rem, 2.5vw, 2.5rem);
+  margin-top: clamp(3rem, 6vw, 5.5rem);
+  padding-top: 1rem;
+  border-top: 1px solid var(--rv-line);
+  counter-reset: note;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--rv-ash);
+}
+.rv-facts-notes li {
+  counter-increment: note;
+  display: grid;
+  grid-template-columns: 1.4rem 1fr;
+}
+.rv-facts-notes li::before {
+  content: counter(note);
+  font-weight: 600;
+  color: var(--rv-seal-deep);
+}
+@media (max-width: 860px) {
+  .rv-fact:nth-child(n) {
+    margin-left: 0;
+  }
+  .rv-fact:nth-child(even) {
+    margin-left: auto;
+    text-align: right;
+  }
+  .rv-facts-notes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .rv-facts-notes {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- § 02 the walk: static (default, reduced motion, no JS) ---------- */
+
+.rv-walk {
+  position: relative;
+  background: var(--rv-stone);
+}
+.rv-walk-stage {
+  position: relative;
+}
+.rv-walk-window,
+.rv-walk-toc {
+  display: none;
+}
+.rv-walk-copy {
+  width: 100%;
+  max-width: var(--rv-max);
+  margin: 0 auto;
+  padding: clamp(4rem, 8vw, 8rem) var(--rv-gutter);
+}
+.rv-walk-head .rv-folio {
+  font-size: 0.72rem;
+}
+.rv-walk-head .rv-folio > span {
+  font-family: var(--rv-f-serif);
+  font-size: 1.05rem;
+  letter-spacing: 0;
+  color: var(--rv-seal-deep);
+}
+.rv-walk-title {
+  font-size: clamp(3.4rem, 1rem + 9vw, 10rem);
+  font-style: italic;
+  line-height: 0.88;
+  letter-spacing: -0.045em;
+  font-variation-settings: "opsz" 72;
+}
+.rv-walk-intro {
+  max-width: 34ch;
+  margin-top: clamp(1.25rem, 2vw, 2rem);
+  font-size: 1.125rem;
+  color: #2c3544;
+}
+.rv-chapters {
+  display: grid;
+  gap: clamp(4rem, 9vw, 8rem);
+  margin-top: clamp(3.5rem, 7vw, 7rem);
+}
+.rv-chapter {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem clamp(1rem, 2.5vw, 2.5rem);
+  align-items: end;
+}
+.rv-chapter-plate {
+  grid-column: 1 / span 5;
+  margin: 0;
+}
+.rv-chapter-plate .rv-photo {
+  aspect-ratio: 3 / 4.4;
+}
+.rv-chapter-plate figcaption {
+  margin-top: 0.7rem;
+  font: var(--rv-caps);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+}
+.rv-chapter-text {
+  grid-column: 7 / span 6;
+  display: grid;
+  gap: 1.1rem;
+  justify-items: start;
+}
+.rv-chapter:nth-child(even) .rv-chapter-plate {
+  grid-column: 8 / span 5;
+  order: 2;
+}
+.rv-chapter:nth-child(even) .rv-chapter-text {
+  grid-column: 1 / span 6;
+}
+.rv-chapter-folio {
+  display: flex;
+  gap: 1.25rem;
+  font: var(--rv-caps);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+}
+.rv-chapter-folio .rv-num {
+  font-family: var(--rv-f-serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--rv-seal-deep);
+}
+.rv-chapter-name {
+  font-size: clamp(3.2rem, 1rem + 6.6vw, 8.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variation-settings: "opsz" 72;
+  text-wrap: nowrap;
+}
+.rv-root .rv-chapter-name {
+  text-wrap: nowrap;
+}
+.rv-ch-mask {
+  padding: 0.16em 0.02em 0.14em;
+  margin: -0.16em -0.02em -0.14em;
+}
+.rv-root .rv-chapter-name {
+  margin-bottom: 0.1em;
+}
+.rv-chapter-line {
+  max-width: 38ch;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+.rv-chapter-facts {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+.rv-chapter-facts div {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 1rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--rv-line);
+}
+.rv-chapter-facts dt {
+  color: var(--rv-ash);
+}
+.rv-chapter-facts dd {
+  margin: 0;
+  font-weight: 500;
+}
+.rv-chapter-quote {
+  margin: 0.25rem 0 0;
+  max-width: 40ch;
+  padding-left: 1rem;
+  border-left: 2px solid var(--rv-seal);
+}
+.rv-chapter-quote p {
+  font-family: var(--rv-f-serif);
+  font-style: italic;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+.rv-chapter-quote footer {
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+.rv-chapter-cta {
+  margin-top: 0.4rem;
+}
+.rv-walk-exit {
+  margin-top: clamp(4rem, 8vw, 7rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rv-ink);
+  max-width: 44rem;
+}
+.rv-walk-exit-title {
+  font-family: var(--rv-f-serif);
+  font-size: clamp(2rem, 1rem + 3vw, 3.6rem);
+  font-style: italic;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.9rem;
+}
+@media (max-width: 860px) {
+  .rv-chapter-plate,
+  .rv-chapter-text,
+  .rv-chapter:nth-child(even) .rv-chapter-plate,
+  .rv-chapter:nth-child(even) .rv-chapter-text {
+    grid-column: 1 / -1;
+    order: 0;
+  }
+  .rv-chapter-plate .rv-photo {
+    aspect-ratio: 4 / 4.2;
+  }
+}
+
+/* ---------- § 02 the walk: live (JS + motion allowed) ---------- */
+
+.rv-walk.is-live .rv-walk-stage {
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.rv-walk.is-live .rv-walk-window {
+  display: block;
+  position: absolute;
+  right: calc(var(--rv-gutter) + 2.5vw);
+  bottom: 0;
+  height: calc(100svh - var(--rv-header-h) - clamp(20px, 5vh, 56px));
+  aspect-ratio: 0.6;
+  max-width: 44vw;
+  container-type: size;
+  overflow: hidden;
+  border-radius: 100vmax 100vmax 0 0;
+  background: linear-gradient(to bottom, var(--w-vault) 0%, #c3baab 55%, var(--w-floor) 71%, #d3ccbe 100%);
+  isolation: isolate;
+}
+.rv-walk-sky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse calc(38cqw + var(--end, 0) * 70cqw) calc(44cqw + var(--end, 0) * 90cqw) at 50% calc(100% - 50cqw),
+    #fffaf0 0%,
+    color-mix(in srgb, var(--w-sky-am), var(--w-sky-pm) calc(var(--sun, 0) * 100%)) calc(8% + var(--end, 0) * 40%),
+    transparent 100%
+  );
+}
+.rv-walk-floor {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.rv-joint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: rgba(22, 32, 46, 0.18);
+}
+.rv-portal {
+  position: absolute;
+  left: calc(50% - 79.2cqw);
+  bottom: 0;
+  width: 158.4cqw;
+  height: 169.58cqw;
+  /* vanishing point: eye height 0.34 of the hole above the floor */
+  transform-origin: 50% calc(100% - 49.88cqw);
+}
+.rv-walk.is-active .rv-portal {
+  will-change: transform, opacity;
+}
+.rv-portal svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.rv-portal-face {
+  fill: var(--w-face);
+}
+.rv-portal-line {
+  fill: none;
+  stroke: var(--w-line);
+  stroke-width: 0.4;
+}
+.rv-portal-edge {
+  fill: none;
+  stroke: rgba(22, 32, 46, 0.24);
+  stroke-width: 0.45;
+}
+.rv-sh {
+  fill: var(--w-shade);
+}
+.rv-sh--am {
+  opacity: calc((1 - var(--sun, 0)) * 0.85);
+}
+.rv-sh--pm {
+  opacity: calc(var(--sun, 0) * 0.85);
+}
+.rv-portal-haze {
+  fill: var(--w-haze);
+  opacity: 0;
+}
+.rv-portal-photo {
+  position: absolute;
+  left: 22.222%;
+  top: 13.49%;
+  width: 55.556%;
+  height: 86.51%;
+  overflow: hidden;
+  border-radius: 100vmax 100vmax 0 0;
+  background: var(--w-vault);
+}
+.rv-portal-photo picture,
+.rv-portal-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* sunlight through the side openings, lying on the floor in front of the arch */
+.rv-portal-sun {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 100%;
+  height: 22%;
+  background: color-mix(in srgb, var(--w-sun-am), var(--w-sun-pm) calc(var(--sun, 0) * 100%));
+  opacity: 0.7;
+  transform-origin: 50% 0;
+  transform: skewX(calc(-40deg + var(--sun, 0) * 80deg));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+}
+.rv-portal.is-exit .rv-portal-sun {
+  display: none;
+}
+.rv-walk-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+.rv-walk-tint--am {
+  background: #d3dfe9;
+  opacity: calc((1 - var(--sun, 0)) * 0.34);
+}
+.rv-walk-tint--pm {
+  background: #eec28c;
+  opacity: calc(var(--sun, 0) * 0.4);
+}
+/* the sun on the wall itself: one soft diagonal of shade that travels */
+.rv-walk.is-live .rv-walk-stage::before {
+  content: "";
+  position: absolute;
+  inset: -10% -30%;
+  background: linear-gradient(104deg, transparent 46%, rgba(22, 32, 46, 0.045) 46.2%, rgba(22, 32, 46, 0.045) 70%, transparent 70.2%);
+  transform: translateX(calc(-18% + var(--sun, 0) * 36%));
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.9s var(--rv-ease-out);
+}
+.rv-walk.is-active .rv-walk-stage::before {
+  opacity: 1;
+}
+
+.rv-walk.is-live .rv-walk-copy {
+  position: absolute;
+  top: var(--rv-header-h);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+.rv-walk.is-live .rv-walk-head,
+.rv-walk.is-live .rv-chapter,
+.rv-walk.is-live .rv-walk-exit {
+  position: absolute;
+  left: var(--rv-gutter);
+  width: min(41vw, 36rem);
+}
+.rv-walk.is-live .rv-walk-head {
+  top: clamp(1.5rem, 7vh, 5rem);
+  pointer-events: auto;
+}
+.rv-walk.is-live .rv-walk-title {
+  font-size: clamp(4rem, 1rem + 7.6vw, 9.6rem);
+}
+.rv-walk.is-live .rv-chapters {
+  margin: 0;
+}
+.rv-walk.is-live .rv-chapter {
+  top: 0;
+  bottom: 5.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+.rv-walk.is-live .rv-chapter[data-on],
+.rv-walk.is-live .rv-walk-exit {
+  pointer-events: auto;
+}
+.rv-walk.is-live .rv-chapter-plate {
+  display: none;
+}
+.rv-walk.is-live .rv-chapter:not([data-on]) .rv-chapter-name {
+  opacity: 0;
+}
+.rv-walk-age {
+  display: none;
+}
+.rv-walk.is-live .rv-walk-age {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  position: absolute;
+  left: var(--rv-gutter);
+  top: 50%;
+  translate: 0 -58%;
+  opacity: 0;
+  pointer-events: none;
+}
+.rv-walk-age-n {
+  font-family: var(--rv-f-serif);
+  font-style: italic;
+  font-size: clamp(9rem, 4rem + 14vw, 20rem);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-variation-settings: "opsz" 72;
+  color: var(--rv-ink);
+}
+.rv-walk-age-l {
+  font-family: var(--rv-f-serif);
+  font-style: italic;
+  font-size: clamp(1.6rem, 1rem + 1.4vw, 2.6rem);
+  letter-spacing: -0.02em;
+  color: var(--rv-seal-deep);
+}
+.rv-walk.is-live .rv-chapter-text {
+  gap: 0.95rem;
+}
+.rv-walk.is-live .rv-chapter-name {
+  font-size: clamp(3.6rem, 1rem + 6.2vw, 8.6rem);
+}
+.rv-walk.is-live .rv-walk-exit {
+  top: 50%;
+  translate: 0 -60%;
+  margin: 0;
+}
+.rv-walk.is-live .rv-walk-toc {
+  display: block;
+  position: absolute;
+  left: var(--rv-gutter);
+  bottom: clamp(1rem, 3vh, 1.75rem);
+  width: min(41vw, 36rem);
+  pointer-events: auto;
+}
+.rv-walk-toc ol {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.rv-walk-toc button {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 500 0.875rem/1 var(--rv-f-sans);
+  color: var(--rv-ash);
+  cursor: pointer;
+  transition: color 0.25s var(--rv-ease-out);
+}
+.rv-walk-toc button .rv-num {
+  font-family: var(--rv-f-serif);
+  font-size: 1rem;
+  margin-right: 0.3em;
+}
+.rv-walk-toc button:hover,
+.rv-walk-toc button[aria-current] {
+  color: var(--rv-ink);
+}
+.rv-walk-toc button[aria-current] .rv-num {
+  color: var(--rv-seal-deep);
+}
+.rv-walk-toc-bar {
+  display: block;
+  height: 1px;
+  background: var(--rv-line);
+}
+.rv-walk-toc-bar > span {
+  display: block;
+  height: 2px;
+  margin-top: -0.5px;
+  background: var(--rv-ink);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+@media (max-height: 760px) and (min-width: 861px) {
+  .rv-walk.is-live .rv-chapter-quote {
+    display: none;
+  }
+}
+
+/* phones and small tablets: the window moves to the top, the wall text below */
+@media (max-width: 860px) {
+  .rv-walk.is-live .rv-walk-window {
+    right: auto;
+    left: 50%;
+    bottom: auto;
+    top: calc(var(--rv-header-h) + 10px);
+    height: 44svh;
+    max-width: none;
+    translate: -50% 0;
+  }
+  .rv-walk.is-live .rv-walk-head,
+  .rv-walk.is-live .rv-chapter,
+  .rv-walk.is-live .rv-walk-exit,
+  .rv-walk.is-live .rv-walk-toc {
+    left: var(--rv-gutter);
+    right: var(--rv-gutter);
+    width: auto;
+  }
+  .rv-walk.is-live .rv-walk-head {
+    top: auto;
+    bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+  .rv-walk.is-live .rv-walk-title {
+    font-size: 17vw;
+  }
+  .rv-walk.is-live .rv-walk-intro {
+    font-size: 1rem;
+    margin-top: 0.75rem;
+  }
+  .rv-walk.is-live .rv-chapter {
+    top: calc(44svh + 22px);
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    justify-content: flex-start;
+  }
+  .rv-walk.is-live .rv-chapter-text {
+    gap: 0.55rem;
+  }
+  .rv-walk.is-live .rv-chapter-name {
+    font-size: 13vw;
+  }
+  .rv-walk.is-live .rv-chapter-line {
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
+  .rv-walk.is-live .rv-chapter-facts {
+    font-size: 0.85rem;
+  }
+  .rv-walk.is-live .rv-chapter-facts div {
+    grid-template-columns: 6.5rem 1fr;
+  }
+  .rv-walk.is-live .rv-chapter-quote {
+    display: none;
+  }
+  .rv-walk.is-live .rv-walk-exit {
+    top: auto;
+    bottom: calc(80px + env(safe-area-inset-bottom));
+    translate: none;
+  }
+  .rv-walk.is-live .rv-walk-toc {
+    top: calc(44svh + 18px);
+    bottom: auto;
+    left: auto;
+    width: auto;
+  }
+  .rv-walk.is-live .rv-walk-toc ol {
+    gap: 0.55rem;
+  }
+  .rv-walk.is-live .rv-walk-toc button {
+    font-size: 0;
+    min-width: 28px;
+  }
+  .rv-walk.is-live .rv-walk-toc button .rv-num {
+    font-size: 0.95rem;
+    margin: 0;
+  }
+  .rv-walk.is-live .rv-walk-toc-bar {
+    display: none;
+  }
+  .rv-walk.is-live .rv-chapter-folio {
+    padding-right: 8.5rem;
+    gap: 0.75rem;
+  }
+  .rv-walk.is-live .rv-chapter-folio > span {
+    white-space: nowrap;
+  }
+  .rv-walk.is-live .rv-walk-age {
+    top: calc(44svh + 60px);
+    translate: none;
+  }
+  .rv-walk-age-n {
+    font-size: 38vw;
+  }
+}
+
+/* ---------- § 03 alumni ---------- */
+
+.rv-alumni .rv-folio {
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+.rv-alumni-quote blockquote p {
+  font-size: clamp(1.6rem, 1rem + 1.6vw, 2.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- § 04 manifesto ---------- */
+
+.rv-manifesto-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 2rem clamp(1rem, 2.5vw, 2.5rem);
+  align-items: start;
+}
+.rv-manifesto-title {
+  grid-column: 1 / span 8;
+  font-size: clamp(2.6rem, 1rem + 5vw, 6.4rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 72;
+}
+.rv-manifesto-plate {
+  grid-column: 10 / span 3;
+  margin: 0;
+}
+.rv-manifesto-plate .rv-photo {
+  aspect-ratio: 3 / 4.2;
+}
+.rv-manifesto-list {
+  grid-column: 3 / span 10;
+  margin-top: clamp(1.5rem, 4vw, 4rem);
+}
+.rv-manifesto-list li {
+  display: grid;
+  grid-template-columns: minmax(3.5rem, 1fr) minmax(0, 4fr) minmax(0, 5fr);
+  gap: 0.5rem clamp(1rem, 2.5vw, 2.5rem);
+  align-items: baseline;
+  padding: clamp(1.25rem, 2.5vw, 2rem) 0;
+  border-top: 1px solid var(--rv-line);
+}
+.rv-manifesto-list li:last-child {
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-manifesto-n {
+  font-family: var(--rv-f-serif);
+  font-style: italic;
+  font-size: clamp(2rem, 1rem + 2.4vw, 3.4rem);
+  line-height: 0.8;
+  color: var(--rv-seal-deep);
+}
+.rv-manifesto-list h3 {
+  font-size: clamp(1.4rem, 1.1rem + 0.9vw, 2rem);
+  line-height: 1.12;
+}
+.rv-manifesto-list p {
+  color: #3a4250;
+  max-width: 46ch;
+}
+@media (max-width: 860px) {
+  .rv-manifesto-title,
+  .rv-manifesto-list {
+    grid-column: 1 / -1;
+  }
+  .rv-manifesto-plate {
+    grid-column: 7 / -1;
+    grid-row: 1;
+    margin-bottom: -3rem;
+  }
+  .rv-manifesto-title {
+    grid-row: 2;
+  }
+  .rv-manifesto-list li {
+    grid-template-columns: 3rem 1fr;
+  }
+  .rv-manifesto-list p {
+    grid-column: 2;
+  }
+}
+
+/* ---------- § 06 campus: full-bleed, the heading on the photograph's sill ---------- */
+
+.rv-campus2 {
+  position: relative;
+  padding-bottom: clamp(4rem, 8vw, 8rem);
+}
+.rv-campus2-media .rv-photo {
+  height: min(82vh, 60vw);
+  background: var(--rv-stone-lo);
+}
+.rv-campus2-body {
+  position: relative;
+  margin-top: calc(-1 * clamp(5rem, 14vw, 13rem));
+}
+.rv-campus2-head {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: start;
+  width: min(100%, 50rem);
+  padding: clamp(1.5rem, 3vw, 3rem) clamp(1.25rem, 3vw, 3rem) 0 0;
+  background: var(--rv-stone);
+}
+.rv-campus2-body .rv-folio {
+  width: min(100%, 50rem);
+  margin: 0;
+  padding: 0.85rem clamp(1.25rem, 3vw, 3rem) 0 0;
+  background: var(--rv-stone);
+}
+.rv-campus2 .rv-facts4 {
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+.rv-facts4-n {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-family: var(--rv-f-serif);
+  font-size: 1.05rem;
+  color: var(--rv-seal-deep);
+}
+
+/* ---------- other home sections: type only ---------- */
+
+.rv-voices .rv-folio {
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+.rv-voice blockquote p {
+  font-size: clamp(1.7rem, 1rem + 2vw, 3rem);
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+}
+.rv-closing h2 {
+  font-size: clamp(3rem, 1rem + 7vw, 8.4rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+}
+.rv-display {
+  font-size: clamp(2.9rem, 1rem + 6vw, 7rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  font-variation-settings: "opsz" 72;
+}
+
+/* ---------- flows: the level plate and the arch transition ---------- */
+
+.rv-plate {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+.rv-plate--empty {
+  display: none;
+}
+.rv-plate-arch {
+  flex: none;
+  width: 58px;
+  height: 88px;
+  view-transition-name: rv-arch;
+}
+.rv-plate p {
+  display: grid;
+  gap: 0.15rem;
+  padding-bottom: 0.2rem;
+}
+.rv-plate-label {
+  font: var(--rv-caps);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--rv-ash);
+}
+.rv-plate strong {
+  font-family: var(--rv-f-serif);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.05;
+}
+.rv-plate p > span:last-child {
+  font-size: 0.9rem;
+  color: var(--rv-ash);
+}
+::view-transition-group(rv-arch) {
+  animation-duration: 0.75s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* the page underneath: the old one leaves quickly, the new one arrives after
+   the arch has started to travel, so the two never read as a double exposure */
+::view-transition-old(root) {
+  animation: 0.22s cubic-bezier(0.4, 0, 1, 1) both rv-vt-out;
+}
+::view-transition-new(root) {
+  animation: 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.16s both rv-vt-in;
+}
+@keyframes rv-vt-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes rv-vt-in {
+  from {
+    opacity: 0;
+  }
+}
+::view-transition-old(rv-arch),
+::view-transition-new(rv-arch) {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- flows: a printed application form ---------- */
+
+.rv-flow-main {
+  padding-top: clamp(1.25rem, 2vw, 1.75rem);
+  border-top: 3px double var(--rv-ink);
+}
+.rv-flow-main h1 {
+  font-size: clamp(2.4rem, 1.4rem + 3vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.032em;
+  max-width: 16ch;
+}
+.rv-flow-name {
+  font-size: 1.9rem;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+/* step marks in roman numerals, like a printed form's sections */
+.rv-steps {
+  counter-reset: step;
+}
+.rv-steps li {
+  counter-increment: step;
+}
+.rv-step-dot {
+  font-size: 0;
+  font-family: var(--rv-f-serif);
+}
+.rv-step-dot::before {
+  content: counter(step, upper-roman);
+  line-height: 1;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+.rv-steps .is-done .rv-step-dot::before {
+  content: none;
+}
+.rv-steps .is-done .rv-step-dot svg {
+  width: 13px;
+  height: 13px;
+}
+
+.rv-label,
+.rv-fieldset legend {
+  font: var(--rv-caps);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--rv-ink);
+}
+.rv-label small,
+.rv-fieldset legend small {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.85rem;
+}
+.rv-input {
+  min-height: 52px;
+  padding: 0.45rem 0.1rem 0.4rem;
+  border: 0;
+  border-bottom: 1.5px solid #8b8477;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--rv-f-serif);
+  font-size: 1.4rem;
+  letter-spacing: -0.01em;
+  transition:
+    border-color 0.2s var(--rv-ease-out),
+    box-shadow 0.2s var(--rv-ease-out),
+    background-color 0.2s var(--rv-ease-out);
+}
+.rv-input:hover {
+  border-bottom-color: var(--rv-ink);
+}
+.rv-input:focus {
+  outline: none;
+  border-bottom-color: var(--rv-ink);
+  box-shadow: 0 1.5px 0 var(--rv-ink);
+  background: #efece6;
+}
+.rv-input:focus-visible {
+  outline: 2px solid var(--rv-seal-deep);
+  outline-offset: 4px;
+}
+.rv-input[aria-invalid="true"] {
+  border-bottom-color: var(--rv-seal-deep);
+  box-shadow: 0 1.5px 0 var(--rv-seal-deep);
+}
+input[type="date"].rv-input,
+.rv-phone .rv-input {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+select.rv-input {
+  background-position: right 0.1rem center;
+  padding-right: 2rem;
+}
+.rv-phone-prefix {
+  padding: 0 0.6rem 0 0.1rem;
+  border: 0;
+  border-bottom: 1.5px solid #8b8477;
+  border-radius: 0;
+  background: transparent;
+  font-family: var(--rv-f-serif);
+  font-size: 1.4rem;
+  color: var(--rv-ash);
+}
+.rv-phone .rv-input {
+  border-radius: 0;
+}
+
+/* choices: ballot lines with a printed box, not tiles */
+.rv-choices {
+  gap: 0 clamp(1rem, 2vw, 1.75rem);
+}
+.rv-choice-face {
+  position: relative;
+  padding: 0.85rem 0.25rem 0.85rem 2.35rem;
+  border: 0;
+  border-top: 1px solid var(--rv-line);
+  border-radius: 0;
+  background: transparent;
+  transition: background-color 0.2s var(--rv-ease-out);
+}
+.rv-choice-face::before {
+  content: "";
+  position: absolute;
+  left: 0.2rem;
+  top: 1.05rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1.5px solid var(--rv-ink);
+  background: var(--rv-stone-hi);
+  transition:
+    background-color 0.18s var(--rv-ease-out),
+    box-shadow 0.18s var(--rv-ease-out);
+}
+.rv-choice input[type="radio"] + .rv-choice-face::before {
+  border-radius: 50%;
+}
+.rv-choice-face strong {
+  font-family: var(--rv-f-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.rv-choice input:hover + .rv-choice-face {
+  background: #e0ddd6;
+}
+.rv-choice input:checked + .rv-choice-face {
+  background: transparent;
+  color: var(--rv-ink);
+}
+.rv-choice input:checked + .rv-choice-face span {
+  color: var(--rv-ash);
+}
+.rv-choice input:checked + .rv-choice-face::before {
+  background: var(--rv-ink);
+  box-shadow: inset 0 0 0 3px var(--rv-stone-hi);
+}
+.rv-choice input:checked + .rv-choice-face strong {
+  text-decoration: underline;
+  text-decoration-color: var(--rv-seal);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+}
+.rv-choice input:disabled + .rv-choice-face {
+  border-style: solid;
+  border-top-style: dashed;
+}
+.rv-choice input:disabled + .rv-choice-face::before {
+  border-style: dashed;
+  border-color: #9a9ea6;
+  background: transparent;
+}
+/* chips (sınıf, saat, kademeler) stay compact: numbered tickets */
+.rv-choices--chips {
+  gap: 0.5rem;
+}
+.rv-choices--chips .rv-choice-face {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--rv-ink);
+  border-radius: 100vmax;
+  font-family: var(--rv-f-serif);
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+.rv-choices--chips .rv-choice-face::before {
+  content: none;
+}
+.rv-choices--chips .rv-choice input:checked + .rv-choice-face {
+  background: var(--rv-ink);
+  color: var(--rv-stone);
+}
+.rv-choices--chips .rv-choice input:checked + .rv-choice-face strong,
+.rv-choices--chips .rv-choice input:checked + .rv-choice-face {
+  text-decoration: none;
+}
+.rv-choices--chips .rv-choice input:checked + .rv-choice-face span {
+  color: #cdd1d8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rv-textlink,
+  .rv-sentence-go,
+  .rv-sentence-go svg {
+    transition: none;
+  }
+}

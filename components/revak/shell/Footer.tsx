@@ -1,0 +1,89 @@
+import Link from "next/link";
+import { tr } from "@/content/revak/tr";
+import { credits } from "@/content/revak/credits";
+import { Mark } from "../ui/Icon";
+import { KvkkLink } from "../ui/Drawer";
+
+const f = tr.footer;
+const c = tr.contact;
+
+export function Footer() {
+  const photos = credits.filter((x) => x.group === "photo");
+  return (
+    <footer className="rv-footer" id="iletisim">
+      <div className="rv-wrap">
+        <div className="rv-footer-top">
+          <div className="rv-footer-brand">
+            <Mark size={44} />
+            <p className="rv-footer-name">{tr.brand.full}</p>
+          </div>
+
+          <div className="rv-footer-col">
+            <h2>{f.contactTitle}</h2>
+            <address>
+              {c.address.map((l) => (
+                <span key={l}>{l}</span>
+              ))}
+            </address>
+            <p>
+              <a href={c.phoneHref}>{c.phone}</a>
+              <br />
+              <a href={`mailto:${c.email}`}>{c.email}</a>
+            </p>
+            <p className="rv-footer-muted">{c.hours}</p>
+            <a href={c.mapsHref} target="_blank" rel="noopener noreferrer" className="rv-footer-link">
+              {f.directions}
+            </a>
+          </div>
+
+          <div className="rv-footer-col">
+            <h2>{f.linksTitle}</h2>
+            <ul>
+              {f.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href}>{l.label}</Link>
+                </li>
+              ))}
+              <li>
+                <KvkkLink className="rv-footer-btnlink" />
+              </li>
+            </ul>
+          </div>
+
+          <div className="rv-footer-col">
+            <h2>{f.routesTitle}</h2>
+            <p>{f.routes}</p>
+          </div>
+        </div>
+
+        <div className="rv-footer-base">
+          <p className="rv-footer-note">{f.note}</p>
+          <details className="rv-credits">
+            <summary>{f.creditsTitle}</summary>
+            <p>{f.creditsLead}</p>
+            <ul>
+              {photos.map((p) => (
+                <li key={p.url}>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer">
+                    {p.author}
+                  </a>{" "}
+                  <span>({p.use})</span>
+                </li>
+              ))}
+            </ul>
+            <p>{f.fonts}</p>
+          </details>
+          <p className="rv-footer-muted">{f.copyright}</p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export function Strip() {
+  return (
+    <div className="rv-strip">
+      <a href={tr.strip.href}>{tr.strip.text}</a>
+    </div>
+  );
+}
