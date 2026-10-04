@@ -217,7 +217,7 @@ export function Flow() {
     `${b.kisi} kişi`,
     b.tarih ? dayLong(b.tarih) : "",
     b.saat ?? "",
-    b.deneyim === "ozel" ? "" : menu.label,
+    b.deneyim === "ozel" ? "" : `${menu.label}, ${f.sum.plates(menu.plates)}`,
     notesCount ? `${notesCount} misafir notu` : "",
   ]
     .filter(Boolean)
@@ -601,7 +601,7 @@ export function Flow() {
               <div>
                 <dt>{f.sum.menu}</dt>
                 <dd>
-                  {menu.label}
+                  {menu.label}, {f.sum.plates(menu.plates)}
                   {b.eslesme ? `, ${f.sum.pairing}` : ""}
                 </dd>
               </div>

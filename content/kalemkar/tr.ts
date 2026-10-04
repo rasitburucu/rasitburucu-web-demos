@@ -219,7 +219,7 @@ export const tr = {
     total: "Toplam",
     summaryLabel: "Seçimleriniz",
     summaryEmpty: "Henüz seçim yok.",
-    sum: { where: "Masa", day: "Akşam", time: "Saat", menu: "Menü", notes: "Not bırakan", pairing: "alkolsüz eşleşme", guestNotes: (n: number) => `${n} misafir` },
+    sum: { where: "Masa", day: "Akşam", time: "Saat", menu: "Menü", notes: "Not bırakan", pairing: "alkolsüz eşleşme", guestNotes: (n: number) => `${n} misafir`, plates: (n: number) => `${n} tabak` },
     steps: ["Deneyim", "Akşam", "Saat", "Misafirler", "İletişim", "Onay"],
 
     experience: {

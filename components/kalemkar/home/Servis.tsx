@@ -169,9 +169,9 @@ export function Servis() {
       (entries) => {
         for (const e of entries) if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i));
       },
-      // On phones the sticky sini band covers about the top 31 %: the serving
+      // On phones the sticky sini band covers about the top third: the serving
       // line sits just below it, where the block's text is read.
-      { rootMargin: matchMedia("(max-width: 767px)").matches ? "-36% 0px -62% 0px" : "-48% 0px -48% 0px" },
+      { rootMargin: matchMedia("(max-width: 767px)").matches ? "-38% 0px -60% 0px" : "-48% 0px -48% 0px" },
     );
     steps.current.forEach((el) => el && io.observe(el));
     return () => io.disconnect();
@@ -334,6 +334,7 @@ export function Servis() {
                 {s.of} {DISHES.length}
               </small>
             </span>
+            <span className="kk-serve-name">{DISHES[shown].name}</span>
             <button type="button" className="kk-btn kk-btn--line kk-btn--sm" onClick={next} tabIndex={-1}>
               {last ? s.restart : s.next}
             </button>

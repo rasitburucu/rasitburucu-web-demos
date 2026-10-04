@@ -306,7 +306,11 @@ html:not(.js) .kk-plate[data-i="0"] { opacity: 1; }
 .kk-serve-steps { list-style: none; margin: 0; padding: 0; }
 .kk-step { min-height: 60svh; display: flex; align-items: center; }
 .kk-step:last-child { min-height: 70svh; }
-.kk-step-in { max-width: 30em; opacity: 0.36; transition: opacity 420ms var(--kk-out); }
+.kk-step-in { max-width: 30em; opacity: 0.6; transition: opacity 420ms var(--kk-out); }
+/* Passive plates stay readable: at 0.6 the dimmer greys fall under 4.5:1, so
+   they take the main ink (0.6 of it is 5.9:1 on the page colour). */
+.js .kk-step:not([data-active]) .kk-step-in :is(.kk-step-line, .kk-step-meta dt, .kk-step-meta dd, .kk-serve-num small) { color: var(--kk-ink); }
+.kk-step-line, .kk-step-meta dt, .kk-step-meta dd { transition: color 420ms var(--kk-out); }
 .kk-step[data-active] .kk-step-in, html:not(.js) .kk-step-in { opacity: 1; }
 .kk-step-thumb { display: none; }
 html:not(.js) .kk-step-thumb { display: block; width: 120px; margin-bottom: 16px; }
@@ -446,20 +450,24 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-serve-head { order: 0; padding: 0 0 24px; }
   .kk-serve-stage { order: 1; justify-self: stretch; }
   .kk-serve-steps { order: 2; }
-  /* Sini and counter on one row; the solid band and the fade under it keep
-     the previous plate's text from showing through. */
-  .kk-serve-stage { top: var(--kk-header); z-index: 2; padding: 8px 0 12px; background: var(--kk-bg); margin-inline: calc(-1 * var(--kk-gutter)); padding-inline: var(--kk-gutter); display: flex; align-items: center; gap: 20px; }
+  /* Sini above one caption line (count and plate name); the solid band and the
+     fade under it keep the previous plate's text from showing through. The
+     sini is about half the screen width but, with the header, never more than
+     a third of the screen height. */
+  .kk-serve-stage { --kk-band-sini: min(52vw, calc(33svh - var(--kk-header) - 40px)); top: var(--kk-header); z-index: 2; padding: 6px var(--kk-gutter) 8px; background: var(--kk-bg); margin-inline: calc(-1 * var(--kk-gutter)); display: flex; flex-direction: column; align-items: center; gap: 2px; }
   .kk-serve-stage::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 56px; background: linear-gradient(var(--kk-bg) 45%, rgba(23, 19, 15, 0)); pointer-events: none; }
-  .kk-fly { width: 40vw; flex: none; }
+  .kk-fly { width: var(--kk-band-sini); flex: none; }
   .kk-dots circle { r: 16px; stroke-width: 4px; }
   .kk-dots circle[data-s="now"] { r: 20px; }
-  .kk-serve-count { flex-direction: column; align-items: flex-start; padding: 0; margin: 0; }
+  .kk-serve-count { flex-direction: row; align-items: baseline; justify-content: center; gap: 10px; width: 100%; min-width: 0; padding: 0; margin: 0; }
   .kk-serve-count .kk-btn { display: none; }
+  .kk-serve-num { font-size: 1.05rem; min-width: 0; }
+  .kk-serve-num small { font-size: 0.9rem; margin-left: 4px; }
+  .kk-serve-name { min-width: 0; font-size: 0.95rem; color: var(--kk-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .kk-step { min-height: 44svh; align-items: flex-start; padding-top: 2svh; }
   .kk-step:first-child { min-height: 44svh; }
   .kk-step:last-child { min-height: 60svh; }
   .kk-step-name { font-size: 1.75rem; }
-  .kk-step-in { opacity: 0.12; }
   .kk-free { padding-bottom: 8px; }
   .kk-plan text { font-size: 26px; }
   .kk-plan .kk-plan-label { font-size: 36px; }
@@ -514,6 +522,7 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
 .kk-phone .kk-input { border-radius: 0 10px 10px 0; }
 .kk-hint { font-size: 14px; color: var(--kk-ink-3); margin: 0; }
 .kk-hint--quiet { margin-top: 24px; }
+.kk-hint--gap { margin-top: 10px; margin-bottom: 24px; }
 .kk-error { font-size: 14px; color: #f0a184; margin: 0; }
 .kk-check { display: inline-flex; align-items: flex-start; gap: 12px; cursor: pointer; line-height: 1.45; }
 .kk-check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
@@ -774,7 +783,10 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-pair-list li { grid-template-columns: 1fr; gap: 0; }
 }
 .kk-flow-step .kk-form-grid, .kk-invite .kk-form-grid { margin-top: 28px; }
-.kk-know-grid > .kk-h2 { position: sticky; top: calc(var(--kk-header) + 32px); align-self: start; }
+/* One column below 768 px: a sticky heading there would ride over the accordion. */
+@media (min-width: 768px) {
+  .kk-know-grid > .kk-h2 { position: sticky; top: calc(var(--kk-header) + 32px); align-self: start; }
+}
 
 /* =================== page transitions (View Transitions) =================== */
 html[data-kk-vt]::view-transition-old(root) { animation: kk-vt-out 160ms cubic-bezier(0.77, 0, 0.175, 1) both; }
