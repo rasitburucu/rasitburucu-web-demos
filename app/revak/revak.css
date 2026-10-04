@@ -477,12 +477,7 @@ html[data-rv-menu="open"] {
   }
 }
 
-/* the short concept line exists only on phones */
-.rv-strip-short {
-  display: none;
-}
-/* phones: the concept strip and the exam notice share one ink line (two stacked bands
-   took 78 px of the first screen); the full concept sentence is the footer note */
+/* phones: the concept strip and the exam notice share one ink line */
 @media (max-width: 560px) {
   .rv-topbar {
     display: flex;
@@ -503,12 +498,12 @@ html[data-rv-menu="open"] {
     font-size: inherit;
     text-align: left;
   }
-  .rv-strip-full {
-    display: none;
-  }
-  .rv-strip-short {
-    display: block;
+  .rv-topbar .rv-strip p {
     white-space: nowrap;
+  }
+  /* the concept line and the exam notice no longer fit one line: two short rows */
+  .rv-topbar .rv-strip {
+    min-height: 30px;
   }
   .rv-topbar .rv-announce {
     flex: 0 0 auto;
@@ -669,7 +664,9 @@ html[data-rv-menu="open"] {
     display: none;
   }
 }
-@media (max-width: 1060px) {
+/* the menu button takes over below 1180 px, where "Veli girişi" no longer fits in the
+   header: every page stays reachable from the menu at every width */
+@media (max-width: 1180px) {
   .rv-nav {
     display: none;
   }
@@ -1474,7 +1471,7 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
 }
 .rv-footer-top {
   display: grid;
-  grid-template-columns: minmax(0, 4fr) repeat(3, minmax(0, 3fr));
+  grid-template-columns: minmax(0, 4fr) minmax(0, 3fr) minmax(0, 3fr) minmax(0, 5fr);
   gap: 2.5rem clamp(1.5rem, 3vw, 3rem);
 }
 .rv-footer-brand {
@@ -1547,16 +1544,42 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   text-decoration-color: #e7e5e055;
   text-underline-offset: 0.2em;
 }
-.rv-credits ul {
-  columns: 3 16rem;
-  margin: 0.5rem 0 0.75rem;
+.rv-footer-place {
+  margin-top: 0.4rem;
 }
-.rv-credits li {
-  color: var(--rv-ink-soft);
+/* the page list is long: two columns of links */
+.rv-footer-pages ul {
+  columns: 2;
+  column-gap: 1.5rem;
+}
+.rv-footer-pages li {
   break-inside: avoid;
 }
-.rv-credits p {
+.rv-kunye {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0.5rem 0 0.75rem;
   color: var(--rv-ink-soft);
+}
+.rv-kunye > div {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: 0.25rem 1rem;
+}
+.rv-kunye dt {
+  color: var(--rv-stone);
+}
+.rv-kunye ul {
+  columns: 2 22rem;
+  column-gap: 2rem;
+}
+.rv-kunye li {
+  break-inside: avoid;
+}
+@media (max-width: 640px) {
+  .rv-kunye > div {
+    grid-template-columns: 1fr;
+  }
 }
 @media (max-width: 900px) {
   .rv-footer-top {
@@ -3502,5 +3525,23 @@ select.rv-input {
   }
   to {
     translate: 0 4%;
+  }
+}
+
+/* Touch screens and narrow windows: no backdrop blur behind the sticky header, the phone
+   action bar and the flow buttons. The bars are 94-96% opaque, so the blur barely showed,
+   but it made the GPU re-blur the page under them on every frame of a scroll (and of the
+   walk). A slightly more opaque fill keeps the same look. */
+@media (max-width: 1180px), (hover: none) {
+  .rv-header {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--rv-stone) 97%, transparent);
+  }
+  .rv-mbar,
+  .rv-flow-actions {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: color-mix(in srgb, var(--rv-stone) 98%, transparent) !important;
   }
 }

@@ -338,96 +338,436 @@ html.lenis.lenis-stopped {
   }
 }
 
-/* ---------- § 01 facts: numerals in the running text ---------- */
+/* ---------- § 01 facts: a poster ---------- */
 
+/* One large numeral (the class size) across the full measure, then three smaller ones in a
+   row of stone courses. Each item still reads as its sentence: the label above the numeral
+   is the start of it, the line under it the end. Derz lines, no cards. */
 .rv-facts {
   padding: clamp(4rem, 9vw, 9rem) 0 clamp(4rem, 8vw, 8rem);
 }
-.rv-facts-text {
-  font-family: var(--rv-f-serif);
-  font-size: clamp(1.45rem, 0.9rem + 2.4vw, 3.3rem);
-  line-height: 1.15;
-  letter-spacing: -0.018em;
+.rv-poster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(1.5rem, 3vw, 2.75rem);
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-poster-item {
+  min-width: 0;
+  padding: clamp(1.25rem, 2.4vw, 2rem) clamp(1rem, 2.4vw, 2.5rem) clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--rv-line);
+}
+.rv-poster-item:nth-child(n + 3) {
+  border-left: 1px solid var(--rv-line);
 }
 .rv-fact {
-  display: block;
-  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
 }
-.rv-fact:nth-child(2) {
-  margin-left: 25%;
-}
-.rv-fact:nth-child(3) {
-  margin-left: 8.33%;
-}
-.rv-fact:last-child {
-  /* room under the last line's big numeral, so it never meets the rule of the notes */
-  padding-bottom: 0.4em;
-}
-.rv-fact:nth-child(4) {
-  /* 4 columns, not 5: the sans "1" is wider than Marcellus' I, and "kampüs." must stay on its line */
-  margin-left: 33.33%;
-}
-.rv-fact-big {
-  display: inline-block;
-  margin: 0 0.06em;
-  font-size: 2.7em;
-  line-height: 0.92;
-  letter-spacing: -0.012em;
-  font-style: normal;
-  font-variant-numeric: lining-nums;
-  vertical-align: -0.08em;
-}
-.rv-fact-ref {
-  /* the footnote letter closes the sentence, after the full stop, not beside the numeral */
-  margin: 0 0 0 0.2em;
-  font: 600 0.34em/1 var(--rv-f-sans);
-  color: var(--rv-seal-deep);
-  vertical-align: 1.2em;
-}
-.rv-facts-notes {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1.25rem clamp(1rem, 2.5vw, 2.5rem);
-  margin-top: clamp(3rem, 6vw, 5.5rem);
-  padding-top: 1rem;
-  border-top: 1px solid var(--rv-line);
-  counter-reset: note;
-  font-size: 0.9rem;
-  line-height: 1.5;
+/* the start of the sentence in the stone's grey, its end in ink: one sentence, two weights of colour */
+.rv-fact-pre {
+  font-family: var(--rv-f-serif);
+  font-size: clamp(1.3rem, 1rem + 0.9vw, 1.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
   color: var(--rv-ash);
 }
-.rv-facts-notes li {
-  counter-increment: note;
+.rv-fact-big {
+  font-family: var(--rv-f-serif);
+  font-size: clamp(5.5rem, 2.6rem + 6.4vw, 10rem);
+  font-weight: 400;
+  line-height: 0.8;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
+  color: var(--rv-ink);
+  margin: 0.14em 0 0.1em -0.04em;
+}
+.rv-fact-post {
+  max-width: 21ch;
+  font-family: var(--rv-f-serif);
+  font-size: clamp(1.3rem, 1rem + 0.9vw, 1.9rem);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+/* the headline course: 18 across the measure, the sentence set beside its foot */
+.rv-poster-item:first-child {
+  grid-column: 1 / -1;
+  padding-left: 0;
+  padding-right: 0;
+}
+.rv-poster-item:first-child .rv-fact {
   display: grid;
-  grid-template-columns: 1.4rem 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: 1fr auto;
+  column-gap: clamp(1.25rem, 3vw, 3.5rem);
+  align-items: end;
 }
-.rv-facts-notes li::before {
-  content: counter(note, lower-alpha);
-  font-weight: 600;
-  color: var(--rv-seal-deep);
+.rv-poster-item:first-child .rv-fact-big {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  font-size: clamp(10rem, 4rem + 17vw, 22rem);
+  line-height: 0.74;
+  letter-spacing: -0.045em;
+  margin: 0.06em 0 -0.035em -0.05em;
 }
-/* the notes' own margin was lost to the reset (.rv-root ol): without it the last numeral met the rule */
-.rv-root .rv-facts-notes {
-  margin-top: clamp(1.25rem, 3vw, 2.5rem);
+.rv-poster-item:first-child .rv-fact-pre {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  font-family: var(--rv-f-serif);
+  font-size: clamp(1.6rem, 1rem + 2vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--rv-ash);
+}
+.rv-poster-item:first-child .rv-fact-post {
+  grid-column: 2;
+  grid-row: 2;
+  max-width: none;
+  font-size: clamp(2.6rem, 1.4rem + 4vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+}
+.rv-poster-item:nth-child(2) {
+  padding-left: 0;
+}
+.rv-poster-item:last-child {
+  padding-right: 0;
 }
 @media (max-width: 860px) {
-  .rv-fact + .rv-fact {
-    margin-top: 0.25em;
+  .rv-poster {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .rv-fact:nth-child(n) {
-    margin-left: 0;
+  .rv-poster-item,
+  .rv-poster-item:nth-child(n) {
+    padding: 1.15rem 0 1.35rem;
+    border-left: 0;
   }
-  .rv-fact:nth-child(even) {
-    margin-left: auto;
-    text-align: right;
+  /* the three smaller numerals: numeral on the left, the sentence beside it */
+  .rv-poster-item:not(:first-child) .rv-fact {
+    display: grid;
+    grid-template-columns: 4.6rem minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    column-gap: 1rem;
+    align-items: end;
   }
-  .rv-facts-notes {
-    grid-template-columns: 1fr 1fr;
+  .rv-poster-item:not(:first-child) .rv-fact-big {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    font-size: 5.6rem;
+    margin: 0;
+  }
+  .rv-poster-item:not(:first-child) .rv-fact-pre {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    font-size: 1.2rem;
+  }
+  .rv-poster-item:not(:first-child) .rv-fact-post {
+    grid-column: 2;
+    grid-row: 2;
+    max-width: none;
+    font-size: 1.35rem;
+  }
+  .rv-poster-item:first-child .rv-fact-big {
+    font-size: clamp(8rem, 2rem + 30vw, 12rem);
+  }
+  .rv-poster-item:first-child .rv-fact-pre {
+    font-size: 1.35rem;
+  }
+  .rv-poster-item:first-child .rv-fact-post {
+    font-size: clamp(2rem, 1rem + 4.4vw, 2.8rem);
   }
 }
-@media (max-width: 480px) {
-  .rv-facts-notes {
-    grid-template-columns: 1fr;
+
+/* ---------- § 02b the keystone: the arch laid stone by stone, the name carved ---------- */
+
+.rv-ks {
+  padding: clamp(4rem, 8vw, 7rem) 0;
+}
+.rv-ks-in {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-areas: "copy arch";
+  align-items: center;
+  gap: 2rem clamp(2rem, 5vw, 5rem);
+}
+.rv-ks-arch {
+  grid-area: arch;
+  position: relative;
+  justify-self: center;
+  width: 100%;
+  max-width: min(100%, calc((100svh - var(--rv-header-h) - 7rem) * 600 / 620));
+  aspect-ratio: 600 / 620;
+}
+.rv-ks-piers,
+.rv-ks-upper svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.rv-ks-ground {
+  position: absolute;
+  left: -6%;
+  right: -6%;
+  bottom: 0;
+  height: 1px;
+  background: var(--rv-line);
+}
+.rv-ks-ring {
+  position: absolute;
+  inset: 0;
+}
+.rv-ks-stone {
+  position: absolute;
+  display: block;
+  overflow: visible;
+}
+/* limestone blocks: warm grey faces, derz lines a shade darker than the stone */
+.rv-ks-face,
+.rv-ks-block,
+.rv-ks-impost,
+.rv-ks-cornice,
+.rv-ks-plaque {
+  stroke: #a99c85;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+.rv-ks-key .rv-ks-face {
+  stroke: #9a8c74;
+}
+.rv-ks-impost,
+.rv-ks-cornice {
+  fill: #cbc1ad;
+}
+.rv-ks-wall {
+  fill: #d9d2c3;
+}
+.rv-ks-joint {
+  fill: none;
+  stroke: #bcb19c;
+  stroke-width: 1.2;
+}
+.rv-ks-plaque {
+  fill: #e3ddd0;
+}
+.rv-ks-plaque-in {
+  fill: none;
+  stroke: #bdb19b;
+  stroke-width: 1.2;
+}
+.rv-ks-dust {
+  position: absolute;
+  width: 2.6%;
+  aspect-ratio: 1;
+  margin: -1.3% 0 0 -1.3%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #cdc3af 0%, #cdc3af00 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+.rv-ks-upper {
+  position: absolute;
+}
+
+/* the inscription: Marcellus capitals cut into the stone (dark inside, a lit lower edge,
+   a shadowed upper edge). One line for a name, sized to fit up to 24 letters */
+.rv-ks-kitabe {
+  position: absolute;
+  left: 7.78%;
+  width: 84.44%;
+  top: 2.96%;
+  height: 20.1%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  container-type: inline-size;
+}
+.rv-ks-letters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--rv-f-serif);
+  font-size: min(8.6cqw, calc(104cqw / var(--n, 12)));
+  line-height: 1.08;
+  letter-spacing: 0.08em;
+  color: #857965;
+  text-shadow:
+    0 1px 0 #f6f2ea,
+    0 -1px 0 #6a5d4a66;
+}
+.rv-ks-line {
+  display: block;
+  white-space: nowrap;
+}
+.rv-ks-ch {
+  position: relative;
+  display: inline-block;
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* carving: each letter is struck in turn, a chisel mark flashes and chips fly */
+  .rv-ks-letters[data-carved] .rv-ks-ch {
+    animation: rv-carve 0.46s var(--rv-ease-out) both;
+    animation-delay: calc(var(--i) * 80ms);
+  }
+  .rv-ks-letters[data-carved] .rv-ks-ch::before,
+  .rv-ks-letters[data-carved] .rv-ks-ch::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    animation-delay: calc(var(--i) * 80ms);
+    animation-fill-mode: both;
+  }
+  .rv-ks-letters[data-carved] .rv-ks-ch::before {
+    left: 10%;
+    top: 46%;
+    width: 80%;
+    height: 1.5px;
+    background: #6a5d4a;
+    transform-origin: left center;
+    animation-name: rv-chisel;
+    animation-duration: 0.32s;
+    animation-timing-function: ease-out;
+  }
+  .rv-ks-letters[data-carved] .rv-ks-ch::after {
+    left: 60%;
+    top: 20%;
+    width: 0.1em;
+    height: 0.1em;
+    background: #b5a991;
+    box-shadow:
+      0.22em -0.12em 0 #c8bea9,
+      -0.3em -0.2em 0 #ada089,
+      0.05em -0.36em 0 #c2b7a2;
+    animation-name: rv-chip;
+    animation-duration: 0.55s;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+}
+@keyframes rv-carve {
+  from {
+    opacity: 0;
+    transform: translateY(-0.05em) scale(1.16);
+  }
+  55% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes rv-chisel {
+  0% {
+    opacity: 0;
+    transform: rotate(-32deg) scaleX(0);
+  }
+  35% {
+    opacity: 0.8;
+    transform: rotate(-32deg) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-32deg) scaleX(1);
+  }
+}
+@keyframes rv-chip {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0.3em, -0.55em) rotate(50deg);
+  }
+}
+
+.rv-ks-copy {
+  grid-area: copy;
+  max-width: 30rem;
+}
+.rv-root .rv-ks-title {
+  font-family: var(--rv-f-serif);
+  font-size: clamp(2rem, 1.1rem + 2.4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.012em;
+}
+.rv-ks-form {
+  margin-top: clamp(1.25rem, 3vw, 2.25rem);
+}
+.rv-ks-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.rv-ks-row {
+  display: flex;
+  gap: 0.6rem;
+}
+.rv-ks-row .rv-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.rv-ks-row .rv-btn {
+  flex: none;
+}
+.rv-root .rv-ks-note {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+
+/* live: a sticky stage inside a tall section (height from the first paint, no pin) */
+.rv-live .rv-ks {
+  height: 250vh;
+  height: 250svh;
+  padding: 0;
+}
+.rv-live .rv-ks-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  padding-top: var(--rv-header-h);
+}
+.rv-live .rv-ks-in {
+  width: 100%;
+}
+.rv-ks.is-active :is(.rv-ks-stone, .rv-ks-dust, .rv-ks-upper, .rv-ks-ring) {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 860px) {
+  .rv-ks-in {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "arch" "copy";
+    gap: 1.25rem;
+  }
+  .rv-ks-arch {
+    max-width: min(100%, calc((100svh - var(--rv-header-h) - 72px - 17.5rem) * 600 / 620));
+  }
+  .rv-live .rv-ks-stage {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+  .rv-root .rv-ks-title {
+    font-size: clamp(1.5rem, 1rem + 2.6vw, 2rem);
+  }
+  .rv-ks-form {
+    margin-top: 0.9rem;
   }
 }
 
@@ -464,6 +804,20 @@ html.lenis.lenis-stopped {
   font-style: normal;
   line-height: 1;
   letter-spacing: -0.012em;
+}
+/* the word itself, as a dictionary entry: one line under the title */
+.rv-root .rv-walk-term {
+  max-width: 44ch;
+  margin-top: 0.9rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--rv-ash);
+}
+.rv-walk-term dfn {
+  font-family: var(--rv-f-serif);
+  font-size: 1.1em;
+  font-style: normal;
+  color: var(--rv-ink);
 }
 .rv-root .rv-walk-skip {
   display: inline-block;
@@ -750,6 +1104,14 @@ html.lenis.lenis-stopped {
 .rv-walk.is-active .rv-portal-photo img {
   will-change: transform;
 }
+/* the counter, its caption and the TOC bar change every frame of the walk: their own small
+   layers, so the wall text around them is not repainted with them */
+.rv-walk.is-active :is(.rv-walk-age, .rv-walk-cap) {
+  will-change: opacity;
+}
+.rv-walk.is-active .rv-walk-toc-bar > span {
+  will-change: transform;
+}
 .rv-portal-photo::after {
   content: "";
   position: absolute;
@@ -830,6 +1192,9 @@ html.lenis.lenis-stopped {
   opacity: calc(0.16 + 0.3 * max(var(--sun, 0) - 0.35, 0.35 - var(--sun, 0)));
 }
 /* a warm glow from the courtyard side, only in the second half of the day */
+.rv-walk.is-live .rv-walk-stage:not([data-pm]) .rv-walk-tint--pm {
+  display: none;
+}
 .rv-walk-tint--pm {
   mix-blend-mode: soft-light;
   background: radial-gradient(ellipse 90% 70% at 100% 40%, #ffb766, transparent 70%);
@@ -1027,10 +1392,21 @@ html.lenis.lenis-stopped {
   }
   .rv-walk:is(.is-live, .rv-live *) .rv-walk-title {
     font-size: 17vw;
+    line-height: 0.9;
+  }
+  /* the dictionary line takes two short lines here: the spacing under it gives them back,
+     so the title keeps its place under the window */
+  .rv-walk:is(.is-live, .rv-live *) .rv-walk-term {
+    margin-top: 0.4rem;
+    font-size: 0.8125rem;
+    line-height: 1.35;
   }
   .rv-walk:is(.is-live, .rv-live *) .rv-walk-intro {
     font-size: 1rem;
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  .rv-root .rv-walk:is(.is-live, .rv-live *) .rv-walk-skip {
+    margin-top: 0.5rem;
   }
   .rv-walk:is(.is-live, .rv-live *) .rv-chapter {
     top: calc(44svh + 22px);
@@ -1751,6 +2127,30 @@ select.rv-input {
 @media (max-width: 860px) {
   .rv-walk:is(.is-live, .rv-live *) .rv-chapter-folio .rv-num {
     display: none;
+  }
+}
+
+/* short phones (667-780 px tall): the head no longer fits two title lines between the
+   window and the action bar, so the title sets on one line and the copy tightens; the
+   window keeps its frame */
+@media (max-width: 860px) and (max-height: 780px) {
+  .rv-walk:is(.is-live, .rv-live *) .rv-walk-title {
+    font-size: 11.6vw;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .rv-walk:is(.is-live, .rv-live *) .rv-walk-term {
+    font-size: 0.78rem;
+    line-height: 1.3;
+  }
+  .rv-walk:is(.is-live, .rv-live *) .rv-walk-intro {
+    font-size: 0.9375rem;
+    line-height: 1.42;
+    margin-top: 0.4rem;
+  }
+  .rv-root .rv-walk:is(.is-live, .rv-live *) .rv-walk-skip {
+    margin-top: 0.3rem;
+    font-size: 0.9375rem;
   }
 }
 

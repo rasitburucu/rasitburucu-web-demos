@@ -953,7 +953,7 @@
 }
 
 /* phones and tablets: groups as headings with their links beneath */
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .rv-root .rv-menu-groups > li {
     padding: 0.85rem 0 1rem;
     border-bottom: 1px solid var(--rv-line);

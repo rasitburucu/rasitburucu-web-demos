@@ -82,3 +82,7 @@ Gerekçe: veliler siteyi çoğunlukla akşam telefondan açar ve sitenin işi ba
 - Eğitim: kitabe satırları (ilke) + mürekkep altyazı (uygulama), mürekkep zeminde yıl çizelgesi, katlanmış rapor kartı. Almanak: taş kitabe ay başlıkları, cetvelli satırlar, mühür kırmızısı "bugün" çizgisi. Güvende: yapışkan dizin + havadar bölümler + senaryo zinciri. Okulumuz: geniş render bandı, kemer parçaları diyagramı, lento yazıtı. İletişim: birim defteri + elle çizilmiş konum. Veli: mühürle kapatılmış form.
 - **"Örnek" mührü** (çift çizgili, mühür kırmızısı, kemer işaretli küçük damga) gerçek veri izlenimi veren her blokta aynı bileşenle durur; dürüstlük dekorun parçası.
 - Rakamlar serif içinde sans (`numerals()`): Marcellus sıfırı büyük O gibi çizer.
+
+## Karar: dördüncü imza an, kilit taşı ve kitabe (2026-10-05, Raşit)
+Hareket bütçesi üç imza an diyordu (yürüyüş, kemerden ön kayda geçiş, mühür). Raşit dördüncüyü açıkça istedi: yürüyüşün sonunda kemer kaydırdıkça taş taş örülür, kilit taşı en son iner ve oturduğunda kemer kendini taşır; kemerin üstündeki kitabeye ziyaretçi çocuğunun adını kazır. Gerekçe: eğitim tamamlanınca yapı ayakta durur; "her çocuğu adıyla tanıyan okul" sözü kitabede somutlaşır. Ad yalnız sayfa belleğinde, hiçbir yere gönderilmez ve saklanmaz.
+Azaltılmış hareket: kemer örülmüş durur, kitabe ve form hazır; ad harf harf değil doğrudan kazılı görünür.

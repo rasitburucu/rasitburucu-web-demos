@@ -185,3 +185,31 @@ Ekranlar: `ekran/gelistir-2026-10-04/` (dogrula çıktısı; `sheet-walk-d.png`,
 | Bölüm ritmi | Ana sayfada bölümler arası 96 (telefon) - 128 px (masaüstü); önceden ~269 px |
 | Başlık boyutu | Dev başlık: yürüyüş ("Revak boyunca") ve kapanış. Yarı boyut (≈51 px masaüstü, 32 px telefon): Üniversite rehberliği, Üç alışkanlık, Ders bittiğinde, Kampüs, Etkinlikler, SSS; "Kısaca Revak" zaten küçük |
 
+
+## 2026-10-05 üçüncü tur (Raşit'in listesi)
+| Konu | Ne yapıldı |
+|---|---|
+| Üst şerit, menü, künye | Şerit her boyutta "Konsept çalışma — rasitburucu.com" (kısa/uzun ayrımı kalktı; telefonda bursluluk duyurusuyla artık iki kısa satır, 36 → 66 px). Menü 1180 px altında menü düğmesine geçer (1061-1180 arasında "Veli girişi" görünmüyordu); Kabul paneline bursluluk başvurusu ve ücret bilgisi sayfaları eklendi (panel 7 bağlantı). Alt bilgi künye şablonunda: marka + yer, Ziyaret, İletişim, Sayfalar (menüden üretilen 16 sayfa, `PAGES`), konsept notu, Proje künyesi, telif satırı |
+| Performans (yürüyüş) | Dokunmatik ve ≤1180 px'te başlık, telefon çubuğu ve form düğmelerinin arkasındaki `backdrop-filter` kalktı (dolgu %97-98). Yürüyüşte her karede yazılan stiller adımlandı ve değişmeyen değer yazılmıyor (`--sun`/`--end` 0,01; pus ve fotoğraf opaklığı 0,02; sayaç 0,02). Sayaç, alt yazısı ve TOC çubuğu kendi küçük katmanlarında. Görünmeyen (opaklık 0) kemer fotoğrafı ve öğleden önceki avlu parıltısı (soft-light) sahneden çıkar. Ölçüm: yazılım GPU'da (SwiftShader, 4× CPU) kare başına GPU işi 5,75 → 3,16 ms, katman 57 → 54; ana iş parçacığı 4× ve 6×'te önce de sonra da 165 Hz'de kare kaçırmıyor (p95 6,2 ms) |
+| Kısaca Revak | Dipnot işaretleri ve listesi kalktı; poster: 18 tam ölçüde dev rakam, altında üç derzli hücre (2 / 2 / 1). Cümleler aynı |
+| Ana başlık | "Her çocuğu adıyla tanıyan okul." |
+| Revak sözlük satırı | "Revak boyunca" başlığının altında tek madde |
+| Üç alışkanlık fotoğrafı | Neden: kapalı kemer (`clip-path: inset(100% …)`) görseli sıfır alanlı yapıyordu, tarayıcının tembel yüklemesi kemer açılmaya başlayana kadar isteği hiç başlatmıyordu. Çözüm: 2,5 ekran önceden `loading=eager` + `decode()`. Yavaş 4G (150 ms, 1,6 Mbps), telefon: önce görüntü bölüme girdiğinde yüklenmemişti, 1,2 sn sonra geldi; sonra bölüme gelmeden yüklü |
+
+### Bu turun borçları
+| Konu | Neden | Ne zaman |
+|---|---|---|
+| Gerçek telefonda kare hızı | Bu makinede Chrome emülasyonu (4×/6× CPU) yürüyüşte kare kaçırmıyor; takılmanın kaynağı büyük olasılıkla telefon GPU'su ve Safari (bulanıklık, karışım modları, katman belleği). Laboratuvar ölçümü yalnız göstergedir | Raşit telefonunda ve tablette denesin |
+| Küçük telefonda (360×740) "Revak boyunca" başlığı pencereye biniyor | Önceden de biniyordu; sözlük satırı iki satır daha ekledi | Raşit görmek isterse başlık boyutu kararı |
+
+## 2026-10-05 üçüncü tur, imza an: kilit taşı + kitabe
+| Konu | Ne yapıldı |
+|---|---|
+| Yer | Yürüyüşün hemen ardı, rehberlikten önce (`components/revak/home/Keystone.tsx`, `#kilit-tasi`) |
+| Kilit taşı | 2,5 ekranlık bölümde yapışkan sahne (pin yok, yükseklik ilk boyamadan `html.rv-live` ile). Ayaklar hazır; 8 kemer taşı iki yandan sırayla kendi yarıçapı boyunca dönerek yerine oturur, kilit taşı yukarıdan hızlanarak iner; oturduğu anda kemer 2,5 birim çöküp toparlanır, derzlerden 6 toz bulutu. Sonra kemerin taşıdığı duvar, korniş ve kitabe iner, ardından cümle ve form. Her taş ayrı küçük SVG, konumu % ile; hareket yalnız transform/opaklık (birleştirilmiş katman), SVG öznitelik animasyonu yok |
+| Kitabe | Marcellus büyük harf, oyuk görünümü (koyu iç, alt kenarda ışık, üst kenarda gölge). Ad boşken okulun sözü iki satır. Ad: tek satır, 24 harfe kadar sığacak boyut (`--n`), Türkçe büyük harf `tr-TR` ile (i → İ, ı → I). Kazıma: harf başına 80 ms, keski izi + taş kırıntısı (CSS, transform/opaklık) |
+| Gizlilik | Ad yalnız React durumunda; form gönderilmez, `autocomplete=off`, localStorage yok |
+| Ölçüm (4× CPU, telefon 390×844 DPR3) | Bölüm boyunca kaydırma: ana iş parçacığı kare başına 1,9 ms (6×'te 3,7 ms), kare aralığı p95 6,1 ms (kare kaçırma yok), raster görevi 11 (taşlar yeniden boyanmıyor), yazılım GPU'da kare başına 1,2 ms (yürüyüş 3,2 ms) |
+
+## 2026-10-05 düzeltme: küçük telefonda "Revak boyunca" başlığı kemere binmesin
+Kemer kadrajı aynı. Telefonda başlık satır aralığı 0,98 → 0,9. Kısa telefonda (yükseklik ≤ 780 px) başlık tek satır (11,6vw), sözlük satırı, giriş ve atlama bağlantısı sıkılaştı; tek satır başlıkla aynı sıraya düşen kademe cetveli (I-IV) başlık çıkarken belirir. Ölçüm (kemer altı ile başlık üstü arası, artı = boşluk): 360×740 −58 → +45 px, 375×667 −103 → +3 px, 390×844 −9 → +2 px; alt çubukla çakışma yok (7 px). Kareler: `ekran/gelistir3/E-kucuk-telefon-*.png`

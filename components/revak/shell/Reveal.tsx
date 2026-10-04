@@ -28,7 +28,27 @@ export function Reveal() {
       { rootMargin: "0px 0px -8% 0px", threshold: 0.12 },
     );
     els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
+    // The closed arch (clip-path inset 100% on the <picture>) has no visible area, so the
+    // browser's own lazy loading never starts the image until the arch begins to open, and
+    // on a slow connection it opened on an empty frame. Fetch and decode it well ahead.
+    const ahead = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          ahead.unobserve(e.target);
+          const img = e.target.querySelector("img");
+          if (!img) continue;
+          img.loading = "eager";
+          img.decode?.().catch(() => {});
+        }
+      },
+      { rootMargin: "0px 0px 250% 0px" },
+    );
+    els.forEach((el) => ahead.observe(el));
+    return () => {
+      io.disconnect();
+      ahead.disconnect();
+    };
   }, [pathname]);
   return null;
 }
