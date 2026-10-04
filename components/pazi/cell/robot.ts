@@ -6,10 +6,19 @@
 //   `wrist` to the tool flange · J6 turns the tool about the vertical.
 // The shoulder, elbow and wrist housings step sideways like a real cobot, so
 // the tool centre sits at a lateral offset `zt`; the base angle accounts for it.
+//
+// Build: every joint is a pair of cylinders that meet at a parting line (a dark
+// seam), the way a joint module bolts to the cast end of a link: the module on
+// one side, the link's casting on the other. Links are cast tubes with bosses
+// where they enter a housing. Nothing intersects except where a tube sits in its
+// socket, so the teardown view can pull any module straight off its seat.
+// Primitives are merged per frame, service module and material (geo.ts Batch):
+// the whole arm draws in about twenty calls.
 
 import * as THREE from "three";
 import type { GripperId, GripperSpec, ModelSpec } from "@/lib/pazi/plan";
-import { axisX, axisZ, mesh, rbox, roundCyl, tubeX } from "./geo";
+import { axisX, axisZ, Batch, linkX, mesh, rbox, roundCyl } from "./geo";
+import { armLayout, solveArm } from "./layout";
 import { labelTexture, type Mats } from "./materials";
 
 export type Pose = { t1: number; t2: number; t3: number; t6: number };
@@ -32,6 +41,28 @@ export type RobotPart =
   | "wrist3"
   | "toolFlange"
   | "clips";
+
+export type RobotDims = {
+  /** Housing radii: shoulder, elbow, wrist; base column. */
+  R1: number;
+  R2: number;
+  R3: number;
+  Rb: number;
+  /** Lateral planes: upper arm (o1), forearm step back (o2), wrist neck out (o3). */
+  o1: number;
+  o2: number;
+  o3: number;
+  /** Wrist 2 axis below wrist 1; wrist 3 body length. */
+  h1: number;
+  w3h: number;
+  /** Shoulder module (J2 stator) ends along the J2 axis, in the shoulder frame. */
+  shA: number;
+  shB: number;
+  /** Outer end of the upper arm's cast end along the J2 axis, in the shoulder frame. */
+  rB: number;
+  /** J1 parting line height (base column top). */
+  yS: number;
+};
 
 export class Robot {
   readonly root = new THREE.Group();
@@ -57,186 +88,263 @@ export class Robot {
   readonly elbow = new THREE.Group();
   /** Meshes by service module (see RobotPart). */
   readonly parts = new Map<RobotPart, THREE.Object3D[]>();
-  /** Housing radii and lateral offsets, for parts built around the arm. */
-  readonly dims: { R1: number; R2: number; R3: number; o1: number; o2: number; o3: number; h1: number; w3h: number };
+  /** Housing radii and offsets, for parts built around the arm. */
+  readonly dims: RobotDims;
   pose: Pose = { t1: 0, t2: 1.2, t3: -2.2, t6: 0 };
 
-  constructor(spec: ModelSpec, m: Mats) {
+  constructor(spec: ModelSpec, m: Mats, detail: "high" | "low" = "high") {
     this.spec = spec;
-    const { d1, a2, a3, wrist, r } = spec.link;
+    const { d1, a2, a3, wrist } = spec.link;
     this.d1 = d1;
     this.a2 = a2;
     this.a3 = a3;
     this.hang = wrist;
+    const seg = detail === "high" ? 40 : 28;
 
-    const R1 = r * 1.28; // shoulder housing
-    const R2 = r * 1.06; // elbow housing
-    const R3 = r * 0.78; // wrist housings
-    const o1 = R1 * 1.02; // upper arm plane (lateral)
-    const o2 = R2 * 1.75; // forearm steps back
-    const o3 = R3 * 1.25; // wrist neck steps out
-    const zf = o1 - o2;
-    this.zt = zf + o3;
-    const tag = <T extends THREE.Object3D>(part: RobotPart, o: T): T => {
-      const list = this.parts.get(part);
-      if (list) list.push(o);
-      else this.parts.set(part, [o]);
-      return o;
+    // ---- proportions (all from the link radius r; shared with the plan drawing)
+    const { R1, R2, R3, Rb, gap, ru, rue, rf, rfe, shA, shB, rA, o1, rB, eA, fr, o2, wA, neckR, o3, wB, h1, j6y, flT, w3h, yS, zt } = armLayout(spec.link);
+    this.zt = zt;
+
+    const B = new Batch();
+    const P = m.paint;
+    const rim = (R: number) => R * 0.12;
+    /** Housing along local Z from z0 to z1. */
+    const hz = (parent: THREE.Object3D, part: RobotPart, R: number, z0: number, z1: number, x = 0, y = 0) =>
+      B.add(parent, part, axisZ(roundCyl(R, z1 - z0, rim(R), seg)), P, x, y, (z0 + z1) / 2);
+    /** Joint end cap on a face at `at` along `axis`, facing `dir`: dark cover, bright bead, hub. */
+    const cap = (parent: THREE.Object3D, part: RobotPart, R: number, axis: "x" | "z", at: number, dir: 1 | -1, x = 0, y = 0, z = 0) => {
+      const place = (g: THREE.BufferGeometry, off: number, mat: THREE.Material, cast: boolean) => {
+        if (axis === "z") B.add(parent, part, axisZ(g), mat, x, y, at + dir * off, cast);
+        else B.add(parent, part, axisX(g), mat, at + dir * off, y, z, cast);
+      };
+      place(new THREE.CylinderGeometry(R * 0.84, R * 0.84, 0.006, seg), 0.0012, m.capDark, false);
+      const bead = new THREE.TorusGeometry(R * 0.84, Math.max(0.0016, R * 0.018), 6, seg);
+      if (axis === "z") B.add(parent, part, bead, m.capRing, x, y, at + dir * 0.0042, false);
+      else B.add(parent, part, bead, m.capRing, at + dir * 0.0042, y, z, false, 0, Math.PI / 2, 0);
+      place(new THREE.CylinderGeometry(R * 0.26, R * 0.26, 0.004, 24), 0.005, m.anodized, false);
+    };
+    /** Dark parting line between two housings (a thin disc filling the groove). */
+    const seam = (parent: THREE.Object3D, part: RobotPart, R: number, axis: "x" | "y" | "z", at: number, x = 0, y = 0, z = 0) => {
+      const g = new THREE.CylinderGeometry(R * 0.94, R * 0.94, gap + 0.002, seg);
+      if (axis === "z") B.add(parent, part, axisZ(g), m.seam, x, y, at, false);
+      else if (axis === "x") B.add(parent, part, axisX(g), m.seam, at, y, z, false);
+      else B.add(parent, part, g, m.seam, x, at, z, false);
     };
 
     const root = this.root;
     root.add(this.j1);
 
-    // Mounting flange with bolt heads
-    const plate = tag("mount", mesh(roundCyl(R1 * 1.42, 0.022, 0.005), m.anodized));
-    plate.position.y = 0.011;
-    root.add(plate);
+    // ---- mounting flange: anodised plate, eight socket-head bolts
+    const plateR = R1 * 1.42;
+    B.add(root, "mount", roundCyl(plateR, 0.022, 0.004, seg), m.anodized, 0, 0.011);
     for (let i = 0; i < 8; i++) {
       const a = (i / 8) * Math.PI * 2 + 0.2;
-      const b = tag("mount", mesh(new THREE.CylinderGeometry(0.0075, 0.0075, 0.008, 6), m.metal, false));
-      b.position.set(Math.cos(a) * R1 * 1.24, 0.026, Math.sin(a) * R1 * 1.24);
-      root.add(b);
+      const bx = Math.cos(a) * plateR * 0.84;
+      const bz = Math.sin(a) * plateR * 0.84;
+      B.add(root, "mount", new THREE.CylinderGeometry(0.0078, 0.0078, 0.008, 12), m.screw, bx, 0.026, bz, false);
+      B.add(root, "mount", new THREE.CylinderGeometry(0.0036, 0.0036, 0.002, 6), m.seam, bx, 0.0296, bz, false);
     }
 
-    // J1 base housing: vertical, meets the shoulder housing from below
-    const baseH = d1 - 0.022;
-    const base = tag("base", mesh(roundCyl(R1 * 1.0, baseH, R1 * 0.12), m.paint));
-    base.position.y = 0.022 + baseH / 2;
-    this.j1.add(base);
-    const baseRing = tag("base", mesh(new THREE.CylinderGeometry(R1 * 1.012, R1 * 1.012, 0.014, 48, 1, true), m.capDark));
-    baseRing.position.y = 0.022 + baseH * 0.28;
-    this.j1.add(baseRing);
+    // ---- J1: fixed base column up to the parting line; the rotor above it turns with the shoulder
+    const colH = yS - 0.022;
+    B.add(root, "base", roundCyl(Rb, colH, Rb * 0.08, seg), P, 0, 0.022 + colH / 2);
+    B.add(root, "base", new THREE.CylinderGeometry(Rb * 1.015, Rb * 1.015, 0.012, seg, 1, true), m.anodized, 0, 0.03, 0, false);
+    seam(root, "base", Rb, "y", yS + gap / 2);
+    // connector on the back of the base, cable down into the riser through a gland
+    const ca = Math.PI * 1.18;
+    const cx = Math.cos(ca);
+    const cz = Math.sin(ca);
+    const conY = 0.022 + Math.min(0.06, colH * 0.42);
+    B.add(root, "base", rbox(0.046, 0.056, 0.03, 0.006), m.graphitePaint, cx * (Rb + 0.012), conY, cz * (Rb + 0.012), true, 0, -ca, 0);
+    B.add(root, "base", axisX(new THREE.CylinderGeometry(0.012, 0.012, 0.03, 16)), m.metal, cx * (Rb + 0.04), conY, cz * (Rb + 0.04), false, 0, -ca, 0);
+    {
+      const s = Rb + 0.05;
+      const e = plateR + 0.035;
+      const curve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(cx * s, conY, cz * s),
+        new THREE.Vector3(cx * (s + 0.03), conY - 0.004, cz * (s + 0.03)),
+        new THREE.Vector3(cx * (e + 0.01), conY * 0.45, cz * (e + 0.01)),
+        new THREE.Vector3(cx * e, 0.012, cz * e),
+        new THREE.Vector3(cx * e, -0.004, cz * e),
+      ]);
+      B.add(root, "base", new THREE.TubeGeometry(curve, 28, 0.0085, 8, false), m.cable);
+      B.add(root, "base", new THREE.CylinderGeometry(0.016, 0.018, 0.016, 16), m.graphitePaint, cx * e, 0.006, cz * e, false);
+    }
 
-    // Shoulder (J2) housing, axis lateral, offset sideways
+    // ---- shoulder: J1 rotor (vertical) carrying the J2 module (horizontal)
     const sh = this.shoulder;
     sh.position.set(0, d1, 0);
     this.j1.add(sh);
-    const shHouse = tag("shoulder", mesh(axisZ(roundCyl(R1, R1 * 2.05, R1 * 0.16)), m.paint));
-    shHouse.position.z = o1 * 0.55;
-    sh.add(shHouse);
-    this.cap(sh, R1, o1 * 0.55 + R1 * 1.025, m).forEach((o) => tag("shoulder", o));
-    this.cap(sh, R1, o1 * 0.55 - R1 * 1.025, m, -1).forEach((o) => tag("shoulderCover", o));
+    const neckH = d1 - yS - gap;
+    // the rotor's top ends inside the J2 module, below the motor and gear it carries
+    B.add(sh, "shoulder", roundCyl(Rb, neckH - R1 * 0.25, Rb * 0.08, seg), P, 0, -neckH + (neckH - R1 * 0.25) / 2);
+    hz(sh, "shoulder", R1, shA, shB);
+    // the module's open front under the cover (dark): brake, motor and gear come out through it
+    B.add(sh, "shoulder", axisZ(new THREE.CylinderGeometry(R1 * 0.86, R1 * 0.86, 0.002, seg)), m.seam, 0, 0, shA - 0.0006, false);
+    cap(sh, "shoulderCover", R1, "z", shA, -1);
+    seam(sh, "shoulder", R1, "z", shB + gap / 2);
 
-    // Upper arm
+    // ---- upper arm: its cast end beyond the shoulder seam, the tube, the elbow socket
     this.j2.position.z = o1;
     sh.add(this.j2);
-    const ua = tag("upperArm", mesh(tubeX(r * 1.02, r * 0.84, a2), m.paint));
-    this.j2.add(ua);
-    // label band on the outer side
+    hz(this.j2, "upperArm", R1, rA - o1, rB - o1);
+    cap(this.j2, "upperArm", R1, "z", rB - o1, 1);
+    const xa = R1 * 1.3;
+    const xb = a2 - R2 * 1.3;
+    B.add(
+      this.j2,
+      "upperArm",
+      linkX(
+        [
+          [0, ru],
+          [R1 * 0.9, ru],
+          [R1 * 0.97, ru * 1.075],
+          [R1 * 1.14, ru * 1.075],
+          [R1 * 1.22, ru * 1.03],
+          [xa, ru],
+          [xb, rue],
+          [a2 - R2 * 1.22, rue * 1.03],
+          [a2 - R2 * 1.14, rue * 1.075],
+          [a2 - R2 * 0.97, rue * 1.075],
+          [a2 - R2 * 0.9, rue],
+          [a2, rue],
+        ],
+        seg,
+      ),
+      P,
+    );
+    // label band on the outer side, following the taper
+    const radAt = (x: number) => ru + ((rue - ru) * (x - xa)) / (xb - xa);
     const labMap = labelTexture(spec.name);
     labMap.center.set(0.5, 0.5);
     labMap.rotation = Math.PI / 2;
-    const lab = tag(
-      "upperArm",
-      new THREE.Mesh(
-      new THREE.CylinderGeometry(r * 1.004, r * 1.004, a2 * 0.4, 32, 1, true, Math.PI * 0.3, Math.PI * 0.4),
-        new THREE.MeshStandardMaterial({ map: labMap, transparent: true, roughness: 0.5, depthWrite: false }),
-      ),
+    const lab = new THREE.Mesh(
+      new THREE.CylinderGeometry(radAt(a2 * 0.68) * 1.006, radAt(a2 * 0.32) * 1.006, a2 * 0.36, 32, 1, true, Math.PI * 0.3, Math.PI * 0.4),
+      new THREE.MeshStandardMaterial({ map: labMap, transparent: true, roughness: 0.5, depthWrite: false }),
     );
     lab.rotation.z = -Math.PI / 2;
     lab.rotation.x = -Math.PI / 2;
     lab.position.x = a2 * 0.5;
     this.j2.add(lab);
+    this.tag("upperArm", lab);
 
-    // Elbow (J3) housing: a double lobe stepping back to the forearm plane
+    // elbow: the J3 module around the upper arm's end
     const el = this.elbow;
     el.position.x = a2;
     this.j2.add(el);
-    const elA = tag("elbow", mesh(axisZ(roundCyl(R2, R2 * 1.9, R2 * 0.16)), m.paint));
-    elA.position.z = 0;
-    el.add(elA);
-    const elB = tag("elbow", mesh(axisZ(roundCyl(R2 * 0.97, o2 + R2 * 0.6, R2 * 0.16)), m.paint));
-    elB.position.z = -o2 / 2 - R2 * 0.1;
-    el.add(elB);
-    this.cap(el, R2, R2 * 0.95, m).forEach((o) => tag("elbow", o));
-    this.cap(el, R2 * 0.97, -o2 - R2 * 0.4, m, -1).forEach((o) => tag("elbow", o));
+    hz(el, "elbow", R2, -eA, eA);
+    cap(el, "elbow", R2, "z", eA, 1);
+    seam(el, "elbow", R2, "z", -eA - gap / 2);
 
+    // ---- forearm: its cast end on the J3 output, the tube, into the wrist socket
     this.j3.position.set(a2, 0, -o2);
     this.j2.add(this.j3);
-    const fa = tag("forearm", mesh(tubeX(r * 0.88, r * 0.64, a3), m.paint));
-    this.j3.add(fa);
+    hz(this.j3, "forearm", R2 * 0.97, -fr, fr);
+    cap(this.j3, "forearm", R2 * 0.97, "z", -fr, -1);
+    const fa = R2 * 1.3;
+    const fb = a3 - R3 * 1.3;
+    B.add(
+      this.j3,
+      "forearm",
+      linkX(
+        [
+          [0, rf],
+          [R2 * 0.88, rf],
+          [R2 * 0.95, rf * 1.08],
+          [R2 * 1.12, rf * 1.08],
+          [R2 * 1.2, rf * 1.03],
+          [fa, rf],
+          [fb, rfe],
+          [a3 - R3 * 1.22, rfe * 1.04],
+          [a3 - R3 * 1.12, rfe * 1.1],
+          [a3 - R3 * 0.96, rfe * 1.1],
+          [a3 - R3 * 0.9, rfe],
+          [a3, rfe],
+        ],
+        seg,
+      ),
+      P,
+    );
 
-    // Wrist 1 (J4) housing at the forearm end
+    // ---- wrist 1 (J4): socket on the forearm end, the module beyond the seam, the neck down
     this.j4.position.x = a3;
     this.j3.add(this.j4);
-    const w1 = tag("wrist1", mesh(axisZ(roundCyl(R3, o3 + R3 * 1.1, R3 * 0.16)), m.paint));
-    w1.position.z = o3 / 2;
-    this.j4.add(w1);
-    this.cap(this.j4, R3, -R3 * 0.55, m, -1).forEach((o) => tag("wrist1", o));
+    const j4 = this.j4;
+    hz(j4, "wrist1", R3, -wA, wA);
+    cap(j4, "wrist1", R3, "z", -wA, -1);
+    seam(j4, "wrist1", R3, "z", wA + gap / 2);
+    hz(j4, "wrist1", R3, wA + gap, wB);
+    cap(j4, "wrist1", R3, "z", wB, 1);
+    B.add(j4, "wrist1", new THREE.CylinderGeometry(neckR, neckR, h1 - R3 * 1.1, seg), P, 0, -h1 / 2, o3);
 
-    // Neck down to wrist 2, whose axis is radial
-    const h1 = wrist * 0.42;
-    const neck = tag("wrist2", mesh(new THREE.CylinderGeometry(R3 * 0.92, R3 * 0.92, h1, 32), m.paint));
-    neck.position.set(0, -h1 / 2, o3);
-    this.j4.add(neck);
-    const w2 = tag("wrist2", mesh(axisX(roundCyl(R3, R3 * 2.0, R3 * 0.16)), m.paint));
-    w2.position.set(0, -h1, o3);
-    this.j4.add(w2);
-    const capW2 = tag("wrist2", mesh(axisX(new THREE.CylinderGeometry(R3 * 0.86, R3 * 0.86, 0.006, 40)), m.capDark));
-    capW2.position.set(R3 * 1.0, -h1, o3);
-    this.j4.add(capW2);
-    const ringW2 = tag("wrist2", mesh(axisX(new THREE.TorusGeometry(R3 * 0.86, 0.0022, 6, 40)), m.capRing, false));
-    ringW2.rotation.y = Math.PI / 2;
-    ringW2.position.set(R3 * 1.003, -h1, o3);
-    this.j4.add(ringW2);
+    // wrist 2: axis radial, one housing below wrist 1
+    B.add(j4, "wrist2", axisX(roundCyl(R3, R3 * 2.0, rim(R3), seg)), P, 0, -h1, o3);
+    cap(j4, "wrist2", R3, "x", R3, 1, 0, -h1, o3);
 
-    // Wrist 3 (J6): vertical, tool flange underneath
-    this.j6.position.set(0, -h1 - R3 * 0.62, o3);
-    this.j4.add(this.j6);
-    const w3h = wrist - h1 - R3 * 0.62 - 0.012;
-    const w3 = tag("wrist3", mesh(roundCyl(R3 * 0.9, w3h, R3 * 0.14), m.paint));
-    w3.position.y = -w3h / 2;
-    this.j6.add(w3);
-    this.led = tag("wrist3", mesh(new THREE.CylinderGeometry(R3 * 0.915, R3 * 0.915, 0.008, 40, 1, true), m.led.clone(), false));
-    this.led.position.y = -w3h * 0.62;
+    // ---- wrist 3 (J6): hangs from wrist 2, LED ring, tool flange underneath
+    this.j6.position.set(0, -j6y, o3);
+    j4.add(this.j6);
+    const R6 = R3 * 0.86;
+    const w3a = w3h * 0.42;
+    B.add(this.j6, "wrist3", roundCyl(R6, w3a + R3 * 0.5, R6 * 0.06, seg), P, 0, (R3 * 0.5 - w3a) / 2);
+    seam(this.j6, "wrist3", R6, "y", -w3a - gap / 2);
+    const w3b = w3h - w3a - gap;
+    B.add(this.j6, "wrist3", roundCyl(R6, w3b, R6 * 0.1, seg), P, 0, -w3a - gap - w3b / 2);
+    this.led = mesh(new THREE.CylinderGeometry(R6 * 1.012, R6 * 1.012, 0.006, seg, 1, true), m.led.clone(), false);
+    this.led.position.y = -w3a * 0.55;
     this.j6.add(this.led);
-    const fl = tag("toolFlange", mesh(new THREE.CylinderGeometry(R3 * 0.62, R3 * 0.62, 0.012, 32), m.metal));
-    fl.position.y = -w3h - 0.006;
-    this.j6.add(fl);
-    this.flange.position.y = -w3h - 0.012;
+    this.tag("wrist3", this.led);
+    // ISO-style tool flange: machined face, four bolt holes, centre bore, dowel
+    const flR = R3 * 0.66;
+    B.add(this.j6, "toolFlange", new THREE.CylinderGeometry(flR, flR, flT, seg), m.metal, 0, -w3h - flT / 2);
+    for (let i = 0; i < 4; i++) {
+      const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+      B.add(this.j6, "toolFlange", new THREE.CylinderGeometry(0.0034, 0.0034, 0.0012, 10), m.seam, Math.cos(a) * flR * 0.68, -w3h - flT - 0.0005, Math.sin(a) * flR * 0.68, false);
+    }
+    B.add(this.j6, "toolFlange", new THREE.CylinderGeometry(flR * 0.3, flR * 0.3, 0.0012, 20), m.seam, 0, -w3h - flT - 0.0005, 0, false);
+    this.flange.position.y = -w3h - flT;
     this.j6.add(this.flange);
 
-    // hose clips (anchors), in link frames
+    // ---- hose clips (anchors), banded around the hose on top of each tube
     const clip = (parent: THREE.Object3D, x: number, y: number, z: number) => {
       const c = new THREE.Object3D();
       c.position.set(x, y, z);
       parent.add(c);
       this.clips.push(c);
-      const band = tag("clips", mesh(new THREE.TorusGeometry(0.016, 0.004, 6, 16), m.rubber, false));
-      band.position.set(x, y, z);
-      parent.add(band);
+      B.add(parent, "clips", new THREE.TorusGeometry(0.016, 0.0042, 6, 16), m.rubber, x, y, z, false, 0, Math.PI / 2, 0);
+      // strap down to the tube
+      B.add(parent, "clips", rbox(0.012, 0.018, 0.02, 0.003), m.rubber, x, y - 0.018, z, false);
       return c;
     };
     // base rear, upper arm (two), forearm (two), wrist
     const baseClip = new THREE.Object3D();
-    baseClip.position.set(-R1 * 1.0, 0.09, -R1 * 0.2);
-    this.j1.add(baseClip);
+    baseClip.position.set(-Rb * 1.12, yS - 0.02, -Rb * 0.25);
+    root.add(baseClip);
     this.clips.push(baseClip);
-    clip(this.j2, a2 * 0.18, r * 1.25, -r * 0.45);
-    clip(this.j2, a2 * 0.82, r * 1.2, -r * 0.45);
-    clip(this.j3, a3 * 0.2, r * 1.05, r * 0.35);
-    clip(this.j3, a3 * 0.85, r * 0.95, r * 0.35);
+    for (const k of [0.1, 0.9]) {
+      const x = xa + (xb - xa) * k;
+      clip(this.j2, x, radAt(x) + 0.02, -radAt(x) * 0.4);
+    }
+    for (const k of [0.12, 0.86]) {
+      const x = fa + (fb - fa) * k;
+      const rr = rf + ((rfe - rf) * (x - fa)) / (fb - fa);
+      clip(this.j3, x, rr + 0.02, rr * 0.3);
+    }
     const wristClip = new THREE.Object3D();
-    wristClip.position.set(-R3 * 1.1, -h1, o3);
-    this.j4.add(wristClip);
+    wristClip.position.set(-R3 * 1.18, -h1, o3);
+    j4.add(wristClip);
     this.clips.push(wristClip);
 
-    this.dims = { R1, R2, R3, o1, o2, o3, h1, w3h };
+    B.flush((key, me) => this.tag(key as RobotPart, me));
+
+    this.dims = { R1, R2, R3, Rb, o1, o2, o3, h1, w3h, shA, shB, rB, yS };
     this.apply();
   }
 
-  /** A joint end cap (dark disc, bright ring, anodised hub); returns its meshes. */
-  private cap(parent: THREE.Object3D, R: number, z: number, m: Mats, dir = 1) {
-    const c = mesh(axisZ(new THREE.CylinderGeometry(R * 0.86, R * 0.86, 0.007, 48)), m.capDark);
-    c.position.z = z + dir * 0.0035;
-    parent.add(c);
-    const ring = mesh(new THREE.TorusGeometry(R * 0.86, 0.0024, 6, 48), m.capRing, false);
-    ring.position.z = z + dir * 0.0072;
-    parent.add(ring);
-    const hub = mesh(axisZ(new THREE.CylinderGeometry(R * 0.32, R * 0.32, 0.004, 32)), m.anodized, false);
-    hub.position.z = z + dir * 0.009;
-    parent.add(hub);
-    return [c, ring, hub];
+  private tag(part: RobotPart, o: THREE.Object3D) {
+    const list = this.parts.get(part);
+    if (list) list.push(o);
+    else this.parts.set(part, [o]);
   }
 
   apply() {
@@ -254,31 +362,7 @@ export class Robot {
    */
   solve(target: THREE.Vector3, yaw: number, out: Pose = { t1: 0, t2: 0, t3: 0, t6: 0 }) {
     const base = this.root.position;
-    const px = target.x - base.x;
-    const pz = target.z - base.z;
-    const py = target.y - base.y;
-    const zt = this.zt;
-    const d = Math.max(Math.hypot(px, pz), Math.abs(zt) + 0.02);
-    const rho = Math.sqrt(d * d - zt * zt);
-    const t1 = Math.atan2(-pz, px) - Math.atan2(-zt, rho);
-    const dx = rho;
-    const dy = py + this.hang - this.d1;
-    const a2 = this.a2;
-    const a3 = this.a3;
-    let D = Math.hypot(dx, dy);
-    const maxD = a2 + a3 - 1e-4;
-    const minD = Math.abs(a2 - a3) + 1e-3;
-    const reach = D <= maxD && D >= minD;
-    D = Math.min(maxD, Math.max(minD, D));
-    const base2 = Math.atan2(dy, dx);
-    const cosA = (a2 * a2 + D * D - a3 * a3) / (2 * a2 * D);
-    const cosB = (a2 * a2 + a3 * a3 - D * D) / (2 * a2 * a3);
-    const t2 = base2 + Math.acos(Math.min(1, Math.max(-1, cosA)));
-    const t3 = -(Math.PI - Math.acos(Math.min(1, Math.max(-1, cosB))));
-    out.t1 = t1;
-    out.t2 = t2;
-    out.t3 = t3;
-    out.t6 = yaw;
+    const reach = solveArm(this.spec.link, this.zt, target.x - base.x, target.y - base.y, target.z - base.z, yaw, out);
     return { pose: out, reach };
   }
 
@@ -294,8 +378,18 @@ export class Robot {
 /** Hold plane under the tool flange (m). The same for every tool, so a tool change never moves the arm. */
 export const GRIP_H = 0.12;
 
-type PadSet = { root: THREE.Group; items: { obj: THREE.Object3D; fx: number; fz: number }[] };
-type TineSet = { root: THREE.Group; pivots: { obj: THREE.Group; side: number; fz: number }[] };
+/** One pad layout: every suction cup is an instance of one mesh (one draw call). */
+type PadSet = { inst: THREE.InstancedMesh; items: { fx: number; fz: number }[] };
+/** One finger layout: fingers and feet are two instanced meshes, posed from their pivots. */
+type TineSet = { tine: THREE.InstancedMesh; foot: THREE.InstancedMesh; D: number; pivots: { side: number; fz: number }[]; W: number; L: number; s: number };
+
+const _m = new THREE.Matrix4();
+const _p = new THREE.Matrix4();
+const _l = new THREE.Matrix4();
+const _v = new THREE.Vector3();
+const _q = new THREE.Quaternion();
+const _s = new THREE.Vector3();
+const _z = new THREE.Vector3(0, 0, 1);
 
 const lerpN = (a: number, b: number, t: number) => a + (b - a) * t;
 const smooth01 = (t: number) => {
@@ -362,7 +456,8 @@ export class Gripper {
       this.frame.position.y = -0.05;
       this.rails = mesh(rbox(0.05, 0.05, 1, 0.006), m.anodized);
       this.rails.position.y = -0.09;
-      this.clampPlate = mesh(rbox(1, 0.012, 1, 0.003), m.graphitePaint);
+      // rubber-faced clamp plate presses the bag from above while the fingers close under it
+      this.clampPlate = mesh(rbox(1, 0.012, 1, 0.003), m.foam);
       this.clampPlate.position.y = -0.118;
       b.add(this.frame, this.rails, this.clampPlate);
       for (let i = 0; i < 2; i++) {
@@ -413,9 +508,6 @@ export class Gripper {
 
   /** Suction pads on a grid under the plate: stem, bellows, lip; the lip meets the hold plane. */
   private buildPads(s: GripperSpec): PadSet {
-    const root = new THREE.Group();
-    root.position.y = -0.084;
-    this.body.add(root);
     const R = s.pads.d / 2000;
     const prof = [
       [0.001, 0],
@@ -433,37 +525,47 @@ export class Gripper {
     geo.computeVertexNormals();
     const items: PadSet["items"] = [];
     const { nx, nz } = s.pads;
-    for (let i = 0; i < nx; i++)
-      for (let j = 0; j < nz; j++) {
-        const p = mesh(geo, this.m.rubber, true);
-        root.add(p);
-        items.push({ obj: p, fx: (i + 0.5) / nx - 0.5, fz: (j + 0.5) / nz - 0.5 });
-      }
-    return { root, items };
+    for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) items.push({ fx: (i + 0.5) / nx - 0.5, fz: (j + 0.5) / nz - 0.5 });
+    const inst = new THREE.InstancedMesh(geo, this.m.rubber, items.length);
+    inst.position.y = -0.084;
+    inst.castShadow = true;
+    inst.receiveShadow = true;
+    inst.frustumCulled = false;
+    this.body.add(inst);
+    return { inst, items };
   }
 
   /** Fork fingers on both sides, on pivots under the frame; each foot swings under the bag. */
   private buildTines(s: GripperSpec): TineSet {
-    const root = new THREE.Group();
-    this.body.add(root);
     const n = s.claw?.fingers ?? 4;
     const D = (s.claw?.depth ?? 186) / 1000;
-    const tineGeo = rbox(0.012, D + 0.014, 0.03, 0.004);
-    const footGeo = rbox(0.1, 0.008, 0.03, 0.003);
     const pivots: TineSet["pivots"] = [];
-    for (const side of [-1, 1]) {
-      for (let i = 0; i < n; i++) {
-        const pivot = new THREE.Group();
-        const tine = mesh(tineGeo, this.m.metal);
-        tine.position.y = 0.01 - (D + 0.014) / 2;
-        const foot = mesh(footGeo, this.m.metal);
-        foot.position.set(-side * 0.05, -D, 0);
-        pivot.add(tine, foot);
-        root.add(pivot);
-        pivots.push({ obj: pivot, side, fz: (i + 0.5) / n - 0.5 });
-      }
-    }
-    return { root, pivots };
+    for (const side of [-1, 1]) for (let i = 0; i < n; i++) pivots.push({ side, fz: (i + 0.5) / n - 0.5 });
+    const mk = (g: THREE.BufferGeometry) => {
+      const im = new THREE.InstancedMesh(g, this.m.metal, pivots.length);
+      im.castShadow = true;
+      im.receiveShadow = true;
+      im.frustumCulled = false;
+      this.body.add(im);
+      return im;
+    };
+    return { tine: mk(rbox(0.012, D + 0.014, 0.03, 0.004, 1)), foot: mk(rbox(0.1, 0.008, 0.03, 0.003, 1)), D, pivots, W: 0.4, L: 0.6, s: 1 };
+  }
+
+  /** Pose every finger of a set: pivot under the frame edge, swung by the open amount. */
+  private poseTines(set: TineSet) {
+    const vis = set.s > 0.002;
+    set.tine.visible = set.foot.visible = vis;
+    if (!vis) return;
+    const sc = Math.max(0.001, set.s);
+    set.pivots.forEach((p, i) => {
+      _q.setFromAxisAngle(_z, p.side * (0.05 + this.openT * 0.55));
+      _p.compose(_v.set((p.side * set.W) / 2, -0.07, p.fz * set.L), _q, _s.set(sc, sc, sc));
+      set.tine.setMatrixAt(i, _m.multiplyMatrices(_p, _l.makeTranslation(0, 0.01 - (set.D + 0.014) / 2, 0)));
+      set.foot.setMatrixAt(i, _m.multiplyMatrices(_p, _l.makeTranslation(-p.side * 0.05, -set.D, 0)));
+    });
+    set.tine.instanceMatrix.needsUpdate = true;
+    set.foot.instanceMatrix.needsUpdate = true;
   }
 
   /** Start a resize from the previous tool of the same family (then drive setMorph from 0 to 1). */
@@ -481,8 +583,13 @@ export class Gripper {
     this.layout();
     if (this.mix >= 1 && this.from) {
       // drop the old layout (its geometry is disposed with the cell)
-      const old = this.spec.family === "pence" ? this.tineSets.pop()?.root : this.padSets.pop()?.root;
-      if (old) old.visible = false;
+      if (this.spec.family === "pence") {
+        const old = this.tineSets.pop();
+        if (old) old.tine.visible = old.foot.visible = false;
+      } else {
+        const old = this.padSets.pop();
+        if (old) old.inst.visible = false;
+      }
       this.from = null;
     }
   }
@@ -511,12 +618,9 @@ export class Gripper {
         c.position.z = (i ? -1 : 1) * L * 0.3;
       });
       this.tineSets.forEach((set, k) => {
-        const s = k === 0 ? grow : shrink;
-        set.root.visible = s > 0.002;
-        for (const p of set.pivots) {
-          p.obj.position.set((p.side * W) / 2, -0.07, p.fz * L);
-          p.obj.scale.setScalar(Math.max(0.001, s));
-        }
+        set.s = k === 0 ? grow : shrink;
+        set.W = W;
+        set.L = L;
       });
       this.setOpen(this.openT);
       return;
@@ -539,18 +643,17 @@ export class Gripper {
     this.divider!.visible = z > 0.002;
     this.padSets.forEach((set, k) => {
       const s = k === 0 ? grow : shrink;
-      set.root.visible = s > 0.002;
-      for (const p of set.items) {
-        p.obj.position.set(p.fx * W, 0, p.fz * L);
-        p.obj.scale.setScalar(Math.max(0.001, s));
-      }
+      set.inst.visible = s > 0.002;
+      const sc = Math.max(0.001, s);
+      set.items.forEach((p, i) => set.inst.setMatrixAt(i, _m.compose(_v.set(p.fx * W, 0, p.fz * L), _q.identity(), _s.set(sc, sc, sc))));
+      set.inst.instanceMatrix.needsUpdate = true;
     });
   }
 
   /** 0 = closed on the product, 1 = open (claw only). */
   setOpen(t: number) {
     this.openT = t;
-    for (const set of this.tineSets) for (const p of set.pivots) p.obj.rotation.z = p.side * (0.05 + t * 0.55);
+    for (const set of this.tineSets) this.poseTines(set);
   }
 
   get hoseAnchor() {
@@ -644,13 +747,15 @@ export class Riser {
 export class Hose {
   readonly mesh: THREE.Mesh;
   private curve: THREE.CatmullRomCurve3;
-  private readonly segs = 72;
-  private readonly radial = 8;
+  private readonly segs: number;
+  private readonly radial: number;
   private readonly radius: number;
   private pts: THREE.Vector3[];
 
-  constructor(count: number, radius: number, mat: THREE.Material) {
+  constructor(count: number, radius: number, mat: THREE.Material, segs = 72, radial = 8) {
     this.radius = radius;
+    this.segs = segs;
+    this.radial = radial;
     this.pts = Array.from({ length: count }, () => new THREE.Vector3());
     this.curve = new THREE.CatmullRomCurve3(this.pts, false, "centripetal");
     const geo = new THREE.BufferGeometry();

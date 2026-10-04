@@ -10,7 +10,7 @@ import { MODELS, PALLET_DECK } from "@/lib/pazi/plan";
 import { sizeGripper } from "@/lib/pazi/gripper";
 import { Gripper, Hose, Riser, Robot, type Pose, type RobotPart } from "@/components/pazi/cell/robot";
 import { bagMaterial, floorTextures, makeMaterials, woodMaterial, type Mats } from "@/components/pazi/cell/materials";
-import { axisZ, mesh, pillowGeometry, rbox, roundCyl, roundRectStrip } from "@/components/pazi/cell/geo";
+import { axisZ, mergeStatic, mesh, pillowGeometry, rbox, roundCyl, roundRectStrip } from "@/components/pazi/cell/geo";
 import { PART_COUNT, PART_IDS, P_OPEN, amounts, cellPresence, framing, minJerk, span, workT, type PartId } from "./model";
 
 export type SceneOptions = {
@@ -106,11 +106,13 @@ export class TeardownScene {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer = renderer;
-    this.m = makeMaterials();
+    this.m = makeMaterials(opts.quality === "high");
 
     // the cell's light: soft room reflections, one key light with shadows, a cool fill
     const pmrem = new THREE.PMREMGenerator(renderer);
-    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    const room = new RoomEnvironment();
+    const env = pmrem.fromScene(room, 0.04, 0.1, 100, { size: opts.quality === "high" ? 256 : 128 }).texture;
+    room.dispose();
     this.scene.environment = env;
     this.scene.environmentIntensity = 0.5;
     pmrem.dispose();
@@ -155,6 +157,7 @@ export class TeardownScene {
     const spec = MODELS.find((x) => x.id === "p30") ?? MODELS[MODELS.length - 1];
     const m = this.m;
     const riser = new Riser(false, RISER_H, m);
+    mergeStatic(riser.group);
     this.scene.add(riser.group);
     this.robot = new Robot(spec, m);
     this.robot.root.position.y = RISER_H;
@@ -171,13 +174,13 @@ export class TeardownScene {
 
     const parts = this.robot.parts;
     const get = (p: RobotPart) => parts.get(p) ?? [];
-    const { R1, o1, o2, h1 } = this.robot.dims;
+    const { R1, o2, h1, shA, shB, rB, yS } = this.robot.dims;
     const { a2, a3, d1 } = this.robot;
 
     // shoulder internals: hidden inside the housing until they slide out along J2
     const sh = this.robot.shoulder;
-    const z0 = o1 * 0.55;
-    const hl = R1 * 1.025;
+    const z0 = (shA + shB) / 2;
+    const hl = (shB - shA) / 2;
     const brake = new THREE.Group();
     brake.position.z = z0 - hl * 0.74;
     {
@@ -330,7 +333,7 @@ export class TeardownScene {
     A.upperArm = anchor(this.robot.j2, a2 * 0.55, 0, 0);
     // 08–11 shoulder: cover, brake, motor, strain-wave gear, out along J2 the other way
     for (const o of get("shoulderCover")) add("shoulderCover", o, V(0, 0, -0.62));
-    A.shoulderCover = anchor(get("shoulderCover")[0] ?? sh, 0, 0, 0);
+    A.shoulderCover = anchor(get("shoulderCover")[0] ?? sh, 0, 0, shA - 0.01);
     add("brake", brake, V(0, 0, -0.47), V(0.25, 0, 0));
     add("motor", motor, V(0, 0, -0.32), V(0, 0.2, 0));
     add("gearbox", gearbox, V(0, 0, -0.16), V(0.15, 0, 0));
@@ -339,8 +342,10 @@ export class TeardownScene {
     A.gearbox = gearbox;
     // 12 base joint: the shoulder lifts off J1; 13 the base lifts off its mounting flange
     add("base", sh, V(0, 0.2, 0));
-    A.base = anchor(get("base")[0] ?? this.robot.j1, 0, 0, 0);
+    A.base = anchor(get("base")[0] ?? this.robot.j1, 0, (0.022 + yS) / 2, 0);
+    // the base column is fixed to the flange (it does not turn with J1): it lifts with the rest
     add("mount", this.robot.j1, V(0, 0.12, 0));
+    for (const o of get("base")) add("mount", o, V(0, 0.12, 0));
     A.mount = anchor(this.robot.root, R1 * 1.25, 0.03, R1 * 0.6);
     // 14 control box: rolls out from behind the arm into view, then its door swings out;
     // 15 scanner head lifts off its stand
@@ -364,7 +369,7 @@ export class TeardownScene {
     dash(this.robot.j6, V(0, fl.y + 0.02, 0), V(0, fl.y - 0.62, 0), "gripper");
     dash(this.robot.j2, V(a2, 0, -o2).addScaledVector(faAxis, a3 * 0.4), V(a2, 0, -o2).addScaledVector(faAxis, a3 + 0.62), "forearm");
     dash(this.robot.j2, V(a2 + 0.02, 0, 0), V(a2 + 0.3, 0, 0), "elbow");
-    dash(sh, V(0, 0, o1 * 0.55 + 0.1), V(0, 0, o1 + 0.42), "upperArm");
+    dash(sh, V(0, 0, rB + 0.02), V(0, 0, rB + 0.34), "upperArm");
     dash(sh, V(0, 0, z0 - hl), V(0, 0, z0 - hl - 0.74), "shoulderCover");
     dash(this.robot.root, V(0, -0.01, 0), V(0, d1 + 0.42, 0), "mount");
     dash(this.robot.j3, V(a3 - 0.02, 0, 0), V(a3 + 0.22, 0, 0), "wrist");

@@ -13,3 +13,7 @@ Raşit'in onayını bekleyen yeni ya da değişen Türkçe kullanıcı metinleri
 **ONAY BEKLİYOR:** 2026-10-04 (gelistir2) tarihli iki satır.
 
 **ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.
+
+## 2026-10-05 üçüncü tur (3B)
+
+Yeni ya da değişen Türkçe kullanıcı metni yok. Robot görünümü, hareketi, güvenlik planındaki çizim ve performans değişti; `content/pazi/tr.ts`'e dokunulmadı.
