@@ -41,11 +41,13 @@ function probeGL(): { ok: boolean; renderer: string } {
   }
 }
 
+const SOFTWARE_GL = /swiftshader|llvmpipe|software|basic render/i;
+
 function detectTier(renderer: string): Tier {
   const coarse = matchMedia("(pointer: coarse)").matches;
   const small = Math.min(screen.width, screen.height) < 820;
   if (coarse && small) return "low";
-  if (/swiftshader|llvmpipe|software|basic render/i.test(renderer)) return "low";
+  if (SOFTWARE_GL.test(renderer)) return "low";
   const cores = navigator.hardwareConcurrency || 4;
   if (/intel|mali|adreno [1-5]|powervr/i.test(renderer) || cores <= 4 || coarse) return "mid";
   return "high";
@@ -227,7 +229,8 @@ export function Experience({ children }: { children: ReactNode }) {
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const forced = params.get("mode");
     const gpu = probeGL();
-    const ok = gpu.ok;
+    // a software rasteriser can draw the scene but not at a usable frame rate
+    const ok = gpu.ok && (forced === "webgl" || !SOFTWARE_GL.test(gpu.renderer));
     const q = params.get("tier") as Tier | null;
     // mode decision happens once on the client, after first paint
     const decide = window.setTimeout(() => {
