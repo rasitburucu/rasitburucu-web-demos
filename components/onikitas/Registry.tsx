@@ -16,9 +16,15 @@ const FIRST = 4;
 
 const selectedStone = () => document.querySelector<HTMLElement>("[data-dial-panel] [role='radio'][aria-checked='true']");
 
+// "Bu evi gör": the house becomes the selected one, the camera comes close to
+// it once the day has scrolled back to the evening dial, and the panel offers
+// the way back to this row ("Listeye dön", see Sundial).
 function see(i: number) {
   store.selected = i;
+  store.focus = i;
+  store.fromList = i;
   emit("selected");
+  emit("focus");
   goTo("ziyaret", selectedStone);
 }
 
@@ -84,7 +90,7 @@ export function Registry() {
                   </span>
                 </td>
                 <td>
-                  <button type="button" className="oki-see" onClick={() => see(i)}>
+                  <button type="button" className="oki-see" id={`evler-gor-${i}`} onClick={() => see(i)}>
                     {v.status === "satildi" ? r.seeSimilar : r.see}
                     <span className="sr-only">
                       , {tr.dial.villaPrefix} {v.no}
@@ -134,7 +140,7 @@ export function Registry() {
                     <dd>{v.pool}</dd>
                   </div>
                 </dl>
-                <button type="button" className="oki-see" onClick={() => see(i)}>
+                <button type="button" className="oki-see" id={`evler-kart-gor-${i}`} onClick={() => see(i)}>
                   {v.status === "satildi" ? r.seeSimilar : r.see}
                   <span className="sr-only">
                     , {tr.dial.villaPrefix} {v.no}

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { chapters, smooth } from "@/lib/onikitas/chapters";
-import { FOCUS, villaSites } from "@/lib/onikitas/site";
+import { FOCUS, height, villaLocal, villaSites } from "@/lib/onikitas/site";
 
 // Camera choreography. One key per chapter boundary; chapter i travels from
 // key i to key i+1 along a Catmull-Rom spline. Chapter 0 is the wall: the camera
@@ -159,3 +159,95 @@ export function cameraGoal(chapter: number, t: number, out: { pos: THREE.Vector3
   return out;
 }
 
+
+// ---------------------------------------------------------------------------
+// Close-up on one house (the evening dial, the registry's "Bu evi gör").
+// The camera stands in front of the house, a little to one side and above it,
+// and backs off just far enough that the house with its terrace and pool fills
+// the part of the screen the panel and the copy leave free.
+
+/** Elevation of the close-up view and its turn off the house's axis (radians). */
+const CLOSE_ELEV = 0.5;
+const CLOSE_YAW = 0.52;
+
+/** How much of the stone plinth shows under a pad's front edge (terrace wall and steps). */
+const PLINTH_SHOWS = 0.9;
+
+/** Look-at point of a house: the middle of its pad, halfway between the plinth's foot and the roof. */
+function houseAim(i: number, out: THREE.Vector3) {
+  const v = villaSites[i];
+  const [x, y, z] = villaLocal(v, 0, (v.plan.top - PLINTH_SHOWS) / 2, 0);
+  return out.set(x, y, z);
+}
+
+function viewDir(i: number, yaw: number, out: THREE.Vector3) {
+  const v = villaSites[i];
+  // the house's facing (local +z) and its local +x, in world terms
+  const fx = Math.sin(v.rot);
+  const fz = Math.cos(v.rot);
+  const rx = Math.cos(v.rot);
+  const rz = -Math.sin(v.rot);
+  const hx = fx * Math.cos(yaw) + rx * Math.sin(yaw);
+  const hz = fz * Math.cos(yaw) + rz * Math.sin(yaw);
+  return out.set(hx * Math.cos(CLOSE_ELEV), Math.sin(CLOSE_ELEV), hz * Math.cos(CLOSE_ELEV)).normalize();
+}
+
+/**
+ * Which side each close-up swings to: the one whose line of sight crosses
+ * less ground and fewer neighbouring houses (checked once, at load).
+ */
+const CLOSE_SIDE = villaSites.map((v, i) => {
+  const aim = houseAim(i, new THREE.Vector3());
+  const d = new THREE.Vector3();
+  const p = new THREE.Vector3();
+  let best = 1;
+  let bestHits = Infinity;
+  for (const side of [1, -1]) {
+    viewDir(i, side * CLOSE_YAW, d);
+    let hits = 0;
+    for (let k = 2; k <= 26; k++) {
+      p.copy(aim).addScaledVector(d, k * 0.75);
+      if (p.y < height(p.x, p.z) + 0.6) hits++;
+      for (const o of villaSites) {
+        if (o === v) continue;
+        if (Math.hypot(p.x - o.x, p.z - o.z) < Math.hypot(o.plan.pad.hx, o.plan.pad.hz) * 0.9 && p.y < o.y + o.plan.top + 0.4) hits += 2;
+      }
+    }
+    if (hits < bestHits) {
+      bestHits = hits;
+      best = side;
+    }
+  }
+  return best;
+});
+
+const cDir = new THREE.Vector3();
+
+/**
+ * Camera pose for a close-up of house `i`. `free` is the part of the viewport
+ * left to the scene (fractions); `tanHalf` the tangent of half the vertical
+ * field of view.
+ */
+export function closeGoal(i: number, out: { pos: THREE.Vector3; tgt: THREE.Vector3 }, aspect: number, tanHalf: number, free: [number, number, number, number] | null) {
+  const v = villaSites[i];
+  const P = v.plan;
+  const yaw = CLOSE_SIDE[i] * CLOSE_YAW;
+  houseAim(i, out.tgt);
+  viewDir(i, yaw, cDir);
+  // the pad as seen from this direction: its width across the view, and its
+  // height (walls standing up, the terrace laid back by the elevation)
+  const halfW = P.pad.hx * Math.abs(Math.cos(yaw)) + P.pad.hz * Math.abs(Math.sin(yaw));
+  const halfH = ((P.top + PLINTH_SHOWS) * Math.cos(CLOSE_ELEV) + 2 * (P.pad.hx * Math.abs(Math.sin(yaw)) + P.pad.hz * Math.abs(Math.cos(yaw))) * Math.sin(CLOSE_ELEV)) / 2;
+  const fw = free ? Math.max(0.2, free[2] - free[0]) : 0.9;
+  const fh = free ? Math.max(0.2, free[3] - free[1]) : 0.8;
+  const d = Math.max(halfW / (tanHalf * aspect * fw), halfH / (tanHalf * fh)) * 1.12;
+  out.pos.copy(out.tgt).addScaledVector(cDir, d);
+  return out;
+}
+
+/** Never below the ground (plus a margin): the close-ups fly low over the slope. */
+export function aboveGround(p: THREE.Vector3, margin = 1.2) {
+  const h = height(p.x, p.z) + margin;
+  if (p.y < h) p.y = h;
+  return p;
+}

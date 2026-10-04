@@ -28,7 +28,11 @@ export type Copy = {
   strip: { text: string; href: string };
   skip: string;
   brand: string;
-  nav: { visit: string; sound: string; dayNav: string };
+  /**
+   * The menu: the page's main sections, one list for the header and the
+   * footer's "Sayfalar" column. `cta` marks the item drawn as the tile button.
+   */
+  nav: { visit: string; sound: string; dayNav: string; menu: string; pages: { label: string; href: string; cta?: boolean }[] };
   loader: { label: string };
   /** Chapter names and copy. Their hours come from lib/onikitas/chapters.ts. */
   chapters: Record<ChapterId, { name: string; title: string; body: string }>;
@@ -41,6 +45,12 @@ export type Copy = {
     villaPrefix: string;
     cta: string;
     lightsAt: (time: string) => string;
+    /** Moves the panel to the other side of the screen (label names where it goes). */
+    side: { toLeft: string; toRight: string };
+    /** Leaves the close-up of the selected house. */
+    closeUp: string;
+    /** After "Bu evi gör" in the registry: back to that house's row. */
+    backToList: string;
   };
   tip: { loves: (time: string) => string };
   registry: {
@@ -89,14 +99,6 @@ export type Copy = {
       ok: string;
     };
   };
-  footer: {
-    fiction: string;
-    made: string;
-    back: string;
-    creditsTitle: string;
-    groups: { fonts: string; textures: string; code: string };
-    procedural: string;
-  };
   fallback: { stills: string };
 };
 
@@ -127,7 +129,17 @@ export const tr: Copy = {
   strip: { text: "Konsept çalışma — rasitburucu.com", href: "/tr" },
   skip: "İçeriğe geç",
   brand: "Onikitaş",
-  nav: { visit: "Ziyaret", sound: "Ses", dayNav: "Günün saatleri" },
+  nav: {
+    visit: "Ziyaret",
+    sound: "Ses",
+    dayNav: "Günün saatleri",
+    menu: "Menü",
+    pages: [
+      { label: "Gün", href: "#safak" },
+      { label: "Evler", href: "#evler" },
+      { label: "Ziyaret", href: "#ziyaret", cta: true },
+    ],
+  },
   loader: { label: "Sahne hazırlanıyor" },
   chapters: {
     safak: {
@@ -174,6 +186,9 @@ export const tr: Copy = {
     villaPrefix: "Villa",
     cta: "Bu ışıkta ziyaret iste",
     lightsAt: (time) => `${time} ışığında`,
+    side: { toLeft: "Paneli sola al", toRight: "Paneli sağa al" },
+    closeUp: "Yakın planı kapat",
+    backToList: "Listeye dön",
   },
   tip: { loves: (time) => `En güzel saati ${time}` },
   registry: {
@@ -232,14 +247,58 @@ export const tr: Copy = {
       ok: "Tamam",
     },
   },
-  footer: {
-    fiction:
-      "Onikitaş kurgusal bir projedir. Adı, evleri, saatleri ve bu sayfadaki bütün bilgiler bir konsept çalışma için yazıldı.",
-    made: "Tasarım ve geliştirme: rasitburucu.com",
-    back: "rasitburucu.com'a dön",
-    creditsTitle: "Künye",
-    groups: { fonts: "Yazı tipleri", textures: "Dokular", code: "Yazılım" },
-    procedural: "Arazi, evler, zeytinler, deniz ve gökyüzü tarayıcıda kodla üretilir; hazır üç boyutlu model yoktur.",
-  },
   fallback: { stills: "Hareket azaltıldı: sahne, günün saatlerinden seçilmiş durağan karelerle gösteriliyor." },
+};
+
+// The footer's copy lives apart from `tr`: only the (server-rendered) footer
+// reads it, so none of it ships in the page's JavaScript.
+export type FooterCopy = {
+  /** Fictional contact data for the footer: district-level address, a 000-block phone. */
+  contact: { address: string[]; hours: string; directions: string; mapsHref: string; phone: string; phoneHref: string; email: string };
+  footer: {
+    brandName: string;
+    place: string;
+    visitTitle: string;
+    contactTitle: string;
+    pagesTitle: string;
+    note: string;
+    creditsTitle: string;
+    rows: { made: string; render: string; photos: string; fonts: string; year: string };
+    madeBy: string;
+    render: string;
+    textures: string;
+    code: string;
+    noPhotos: string;
+    year: string;
+    copyright: string;
+  };
+};
+
+export const footerCopy: FooterCopy = {
+  contact: {
+    address: ["Yalıkavak", "Bodrum, Muğla"],
+    hours: "Satış ofisi her gün 10.00–19.00, randevuyla.",
+    directions: "Yol tarifi",
+    mapsHref: "https://www.openstreetmap.org/search?query=Yal%C4%B1kavak%20Bodrum",
+    phone: "0252 000 48 12",
+    phoneHref: "tel:+902520004812",
+    email: "satis@onikitas.example",
+  },
+  footer: {
+    brandName: "Onikitaş Villaları",
+    place: "Yalıkavak, Bodrum",
+    visitTitle: "Ziyaret",
+    contactTitle: "İletişim",
+    pagesTitle: "Sayfalar",
+    note: "Onikitaş kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Adres, telefon, evlerin bilgileri, saatleri ve satış durumları örnektir; formlar hiçbir yere gönderilmez.",
+    creditsTitle: "Proje künyesi",
+    rows: { made: "Tasarım ve geliştirme:", render: "3B ve render:", photos: "Fotoğraflar:", fonts: "Yazı karakterleri:", year: "Yıl:" },
+    madeBy: "Raşit Burucu",
+    render: "Arazi, evler, zeytinler, deniz ve gökyüzü tarayıcıda WebGL ile kodla üretilir; hazır üç boyutlu model yoktur.",
+    textures: "Dokular",
+    code: "Yazılım",
+    noPhotos: "Fotoğraf kullanılmadı.",
+    year: "2026",
+    copyright: "© 2026 Onikitaş · Konsept çalışma — rasitburucu.com",
+  },
 };

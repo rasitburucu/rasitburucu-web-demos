@@ -1,6 +1,6 @@
 import { Fragment } from "react";
-import { tr } from "@/content/onikitas/tr";
-import { credits, type CreditGroup } from "@/content/onikitas/credits";
+import { footerCopy, tr } from "@/content/onikitas/tr";
+import { credits } from "@/content/onikitas/credits";
 import { chapters, formatHour, sectionVh } from "@/lib/onikitas/chapters";
 import { Sundial } from "./Sundial";
 import { Registry } from "./Registry";
@@ -108,43 +108,103 @@ export function Chapters() {
   );
 }
 
-const GROUPS: CreditGroup[] = ["fonts", "textures", "code"];
-
+/** Footer: brand, visit, contact, pages (the menu's list), then the concept note, the project credits and the copyright line. */
 export function Footer() {
+  const f = footerCopy.footer;
+  const c = footerCopy.contact;
+  const fonts = credits.filter((x) => x.group === "fonts");
+  const textures = credits.filter((x) => x.group === "textures");
+  const code = credits.filter((x) => x.group === "code");
+  const list = (items: typeof credits) => (
+    <ul>
+      {items.map((x) => (
+        <li key={x.name}>
+          <a href={x.url} rel="noreferrer">
+            {x.name}
+          </a>
+          , {x.author} ({x.licence}). {x.use}.
+        </li>
+      ))}
+    </ul>
+  );
   return (
-    <footer className="oki-footer">
-      <div className="oki-footer__grid">
-        <div className="oki-footer__lead">
+    <footer className="oki-footer" id="iletisim">
+      <div className="oki-footer__top">
+        <div className="oki-footer__brand-col">
           <p className="oki-footer__brand">{tr.brand}</p>
-          <p>{tr.footer.fiction}</p>
-          <p>{tr.footer.procedural}</p>
+          <p className="oki-footer__name">{f.brandName}</p>
+          <p className="oki-footer__muted">{f.place}</p>
+        </div>
+        <div className="oki-footer__col">
+          <h2>{f.visitTitle}</h2>
+          <address>
+            {c.address.map((l) => (
+              <span key={l}>{l}</span>
+            ))}
+          </address>
+          <p className="oki-footer__muted">{c.hours}</p>
           <p>
-            {tr.footer.made}.{" "}
-            <a href={tr.strip.href}>{tr.footer.back}</a>
+            <a href={c.mapsHref} target="_blank" rel="noopener noreferrer">
+              {c.directions}
+            </a>
           </p>
         </div>
-        <div className="oki-footer__credits">
-          <h2>{tr.footer.creditsTitle}</h2>
-          {GROUPS.map((g) => (
-            <div key={g} className="oki-footer__group">
-              <h3>{tr.footer.groups[g]}</h3>
-              <ul>
-                {credits
-                  .filter((c) => c.group === g)
-                  .map((c) => (
-                    <li key={c.name}>
-                      <a href={c.url} rel="noreferrer">
-                        {c.name}
-                      </a>
-                      <span>
-                        {c.author}, {c.licence}
-                      </span>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          ))}
+        <div className="oki-footer__col">
+          <h2>{f.contactTitle}</h2>
+          <p>
+            <a href={c.phoneHref}>{c.phone}</a>
+          </p>
+          <p>
+            <a href={`mailto:${c.email}`}>{c.email}</a>
+          </p>
         </div>
+        <div className="oki-footer__col">
+          <h2>{f.pagesTitle}</h2>
+          <ul>
+            {tr.nav.pages.map((p) => (
+              <li key={p.href}>
+                <a href={p.href}>{p.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className="oki-footer__base">
+        <p className="oki-footer__note">{f.note}</p>
+        <details className="oki-credits">
+          <summary>{f.creditsTitle}</summary>
+          <dl>
+            <div>
+              <dt>{f.rows.made}</dt>
+              <dd>
+                <a href={tr.strip.href}>{f.madeBy}</a>
+              </dd>
+            </div>
+            <div>
+              <dt>{f.rows.render}</dt>
+              <dd>
+                <p>{f.render}</p>
+                <p className="oki-credits__sub">{f.textures}</p>
+                {list(textures)}
+                <p className="oki-credits__sub">{f.code}</p>
+                {list(code)}
+              </dd>
+            </div>
+            <div>
+              <dt>{f.rows.photos}</dt>
+              <dd>{f.noPhotos}</dd>
+            </div>
+            <div>
+              <dt>{f.rows.fonts}</dt>
+              <dd>{list(fonts)}</dd>
+            </div>
+            <div>
+              <dt>{f.rows.year}</dt>
+              <dd>{f.year}</dd>
+            </div>
+          </dl>
+        </details>
+        <p className="oki-footer__copy">{f.copyright}</p>
       </div>
     </footer>
   );

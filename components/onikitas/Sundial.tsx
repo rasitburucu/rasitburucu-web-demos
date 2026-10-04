@@ -4,7 +4,14 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { emit, on, store } from "@/lib/onikitas/store";
 import { DIAL_MAX, DIAL_MIN, formatHour, parseHour } from "@/lib/onikitas/chapters";
 import { tr, villas } from "@/content/onikitas/tr";
-import { VisitDialog } from "./VisitDialog";
+import { goTo } from "@/lib/onikitas/goto";
+import dynamic from "next/dynamic";
+
+// The visit form loads on first use (warmed when the request button is
+// approached), so the page's first JavaScript does not carry it; once loaded it
+// stays mounted and keeps an unfinished request, as before.
+const loadDialog = () => import("./VisitDialog");
+const VisitDialog = dynamic(() => loadDialog().then((m) => m.VisitDialog), { ssr: false });
 
 // The one conversion: pick the light, pick the house, ask for a visit. The
 // request opens a modal form (VisitDialog); in this concept nothing is sent.
@@ -40,10 +47,21 @@ const LABELS = Array.from({ length: DIAL_MAX - DIAL_MIN + 1 }, (_, i) => DIAL_MI
 /** A house's best hour, on the dial. */
 const bestHour = (i: number) => snap(parseHour(villas[i].hour));
 
+/** The registry row's "Bu evi gör" button of a house, whichever layout is showing. */
+const rowButton = (i: number) => {
+  const a = document.getElementById(`evler-gor-${i}`);
+  return a && a.offsetParent ? a : document.getElementById(`evler-kart-gor-${i}`);
+};
+
 export function Sundial() {
   // opens on the selected house's best hour (Villa VII: 20:00)
   const [hour, setHour] = useState(() => bestHour(store.selected));
   const [sel, setSel] = useState(store.selected);
+  // the close-up (camera at the house), the way back to the registry, the panel's side
+  const [focus, setFocus] = useState(store.focus);
+  const [fromList, setFromList] = useState(store.fromList);
+  const [side, setSide] = useState(store.panel);
+  const [scene, setScene] = useState(false);
   // once the visitor moves the sun, picking a house no longer moves it
   const own = useRef(false);
   const svg = useRef<SVGSVGElement>(null);
@@ -51,6 +69,7 @@ export function Sundial() {
   const dragging = useRef(false);
   const cta = useRef<HTMLButtonElement>(null);
   const [asking, setAsking] = useState(false);
+  const [dialogWanted, setDialogWanted] = useState(false);
   const closeAsk = useCallback(() => setAsking(false), []);
   // latest value for key repeat, which can outrun a render
   const hourRef = useRef(hour);
@@ -74,6 +93,25 @@ export function Sundial() {
       }),
     [commit],
   );
+  useEffect(() => {
+    const sync = () => {
+      setFocus(store.focus);
+      setFromList(store.fromList);
+      // the close-up exists only where the 3D scene runs (not on the stills)
+      const webgl = document.documentElement.dataset.mode === "webgl";
+      setScene(webgl);
+      // while the camera is at a house, the evening question steps aside so
+      // the house can fill the screen beside the panel (back on closing)
+      document.documentElement.dataset.close = webgl && store.dialOn && store.focus >= 0 ? "true" : "false";
+    };
+    sync();
+    const offF = on("focus", sync);
+    const offD = on("dial", sync);
+    return () => {
+      offF();
+      offD();
+    };
+  }, []);
 
   const fromPointer = (e: React.PointerEvent) => {
     const el = svg.current;
@@ -105,7 +143,28 @@ export function Sundial() {
 
   const choose = (i: number) => {
     store.selected = i;
+    store.focus = i;
     emit("selected");
+    emit("focus");
+  };
+  const closeUp = () => {
+    store.focus = -1;
+    emit("focus");
+  };
+  const backToList = () => {
+    const i = store.fromList;
+    store.focus = -1;
+    store.fromList = -1;
+    emit("focus");
+    // the row lands a third of the way down the screen, its button focused
+    goTo(rowButton(i)?.id ?? "evler", () => rowButton(i), Math.round(window.innerHeight * 0.35));
+  };
+  const flipSide = () => {
+    const next = store.panel === "r" ? "l" : "r";
+    store.panel = next;
+    document.documentElement.dataset.panel = next;
+    setSide(next);
+    emit("panel");
   };
   const onRadioKey = (e: React.KeyboardEvent, i: number) => {
     let n = i;
@@ -136,7 +195,21 @@ export function Sundial() {
   // bigger circle once the hour passed 13:30 and the arc left the panel.)
 
   return (
-    <div className="oki-dial">
+    <div
+      className="oki-dial"
+      onKeyDown={(e) => {
+        // Escape leaves the close-up (not while the visit form is open)
+        if (e.key !== "Escape" || store.focus < 0 || (e.target as Element).closest("dialog")) return;
+        e.preventDefault();
+        closeUp();
+      }}
+    >
+      <button type="button" className="oki-dial__side" data-panel-side onClick={flipSide}>
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" data-dir={side === "r" ? "l" : "r"}>
+          <path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+        </svg>
+        {side === "r" ? tr.dial.side.toLeft : tr.dial.side.toRight}
+      </button>
       <div
         ref={face}
         className="oki-dial__face"
@@ -244,12 +317,27 @@ export function Sundial() {
           type="button"
           className="oki-cta"
           aria-haspopup="dialog"
-          onClick={() => setAsking(true)}
+          onPointerEnter={() => void loadDialog()}
+          onFocus={() => void loadDialog()}
+          onClick={() => {
+            setDialogWanted(true);
+            setAsking(true);
+          }}
         >
           {tr.dial.cta}
         </button>
+        {scene && focus >= 0 ? (
+          <button type="button" className="oki-dial__text" data-close-up onClick={closeUp}>
+            {tr.dial.closeUp}
+          </button>
+        ) : null}
+        {fromList >= 0 ? (
+          <button type="button" className="oki-dial__text" data-back-list onClick={backToList}>
+            {tr.dial.backToList}
+          </button>
+        ) : null}
       </div>
-      <VisitDialog open={asking} onClose={closeAsk} villa={sel} time={time} returnFocus={cta} />
+      {dialogWanted ? <VisitDialog open={asking} onClose={closeAsk} villa={sel} time={time} returnFocus={cta} /> : null}
     </div>
   );
 }

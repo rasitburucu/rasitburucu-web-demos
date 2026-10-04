@@ -50,7 +50,11 @@ vec3 oki_sky(vec3 d){
   return c;
 }`;
 
-// ---------- Villas: clay -> limewash / travertine / wood ----------
+// ---------- Villas: clay -> limewash / travertine / wood / stone / paint ----------
+// Kinds (see villa.ts KIND): 0 limewash, 1 travertine, 3 oak, 4 rubble stone,
+// 5 painted shutters (louvred), 6 dark voids and steel, 7 terracotta, 8 linen,
+// 9 painted window frames. Patterns follow the house's own axes (aLp, the
+// local position), so paving joints and stone courses run with the walls.
 
 export function villaMaterial() {
   return new CustomShaderMaterial({
@@ -59,10 +63,10 @@ export function villaMaterial() {
     metalness: 0,
     uniforms: U,
     vertexShader: /* glsl */ `
-      attribute float aKind; attribute float aVilla;
-      varying float vKind; varying float vVilla; varying vec3 vWp; varying vec3 vWn;
+      attribute float aKind; attribute float aVilla; attribute vec3 aLp;
+      varying float vKind; varying float vVilla; varying vec3 vWp; varying vec3 vWn; varying vec3 vLp;
       void main(){
-        vKind = aKind; vVilla = aVilla;
+        vKind = aKind; vVilla = aVilla; vLp = aLp;
         vWp = (modelMatrix * vec4(position, 1.0)).xyz;
         vWn = normalize(mat3(modelMatrix) * normal);
       }`,
@@ -70,7 +74,7 @@ export function villaMaterial() {
       uniform sampler2D uPlaster; uniform sampler2D uTrav; uniform vec3 uLightDir;
       uniform float uHover; uniform float uSelected; uniform float uSelectAmt; uniform float uTime;
       uniform sampler2D uGround; uniform float uGroundN; uniform float uWorld;
-      varying float vKind; varying float vVilla; varying vec3 vWp; varying vec3 vWn;
+      varying float vKind; varying float vVilla; varying vec3 vWp; varying vec3 vWn; varying vec3 vLp;
       ${NOISE}${REVEAL}${CLAY}${TRIPLANAR}
       void main(){
         vec3 n = normalize(vWn);
@@ -78,20 +82,52 @@ export function villaMaterial() {
         float bias = ndl * 2.6 - 0.8;
         float r = oki_reveal(vWp, bias);
         float pl = oki_tri(uPlaster, vWp, n, 0.42).r;
+        // the face's normal in the house's frame (flat faces: from the local position's slopes)
+        vec3 an = abs(normalize(cross(dFdx(vLp), dFdy(vLp))));
         vec3 lime = vec3(0.905, 0.878, 0.83) * (0.84 + 0.2 * pl);
         vec3 trav = mix(vec3(0.68, 0.63, 0.55), oki_tri(uTrav, vWp, n, 0.22), 0.42);
-        vec3 wood = vec3(0.26, 0.2, 0.14) * (0.8 + 0.4 * oki_noise(vWp.xz * 8.0));
-        // rubble garden walls: irregular courses of Bodrum stone, cap stones on top
-        vec3 an = abs(n);
-        vec2 sc = vec2((an.x > an.z ? vWp.z : vWp.x) * 3.1, vWp.y * 4.6);
+        if (vKind > 0.5 && vKind < 1.5 && an.y > 0.6) {
+          // paving: 30 x 20 slabs in running bond, joints and a tone per slab,
+          // faded out before they could shimmer at a distance
+          vec2 q = vLp.xz / vec2(0.3, 0.2);
+          q.x += 0.5 * mod(floor(q.y), 2.0);
+          vec2 d = (0.5 - abs(fract(q) - 0.5)) * vec2(0.3, 0.2);
+          vec2 fw = fwidth(vLp.xz);
+          float j = max(1.0 - smoothstep(0.006, 0.006 + fw.x * 1.5, d.x), 1.0 - smoothstep(0.006, 0.006 + fw.y * 1.5, d.y));
+          float fade = 1.0 - smoothstep(0.012, 0.045, max(fw.x, fw.y));
+          trav *= mix(1.0, (0.93 + 0.11 * oki_hash(floor(q) + vVilla * 7.0)) * (1.0 - 0.32 * j), fade);
+        }
+        vec3 wood = vec3(0.26, 0.2, 0.14) * (0.8 + 0.4 * oki_noise(vWp.xz * 8.0 + vWp.y * 3.0));
+        // rubble walls: irregular courses of Bodrum stone, cap stones on top
+        vec2 sc = vec2((an.x > an.z ? vLp.z : vLp.x) * 3.1, vLp.y * 4.6);
         float row = floor(sc.y);
         float sh = oki_hash(vec2(row, 7.0)) * 3.0;
         vec2 f = fract(vec2(sc.x + sh, sc.y));
         float joint = smoothstep(0.0, 0.16, min(min(f.x, 1.0 - f.x) * 1.5, min(f.y, 1.0 - f.y)));
         vec3 stone = mix(vec3(0.5, 0.46, 0.4), vec3(0.68, 0.63, 0.55), oki_hash(vec2(floor(sc.x + sh), row))) * mix(0.7, 1.0, joint);
         stone = mix(stone, trav, step(0.6, an.y));
-        vec3 real = vKind < 0.5 ? lime : (vKind < 1.5 ? trav : (vKind < 3.5 ? wood : stone));
-        vec3 clay = OKI_CLAY * (0.985 + 0.03 * pl);
+        // each house its own shutter paint: Aegean blue-grey, sage, weathered oak
+        float hv = fract(vVilla * 0.618 + 0.11);
+        vec3 paint = hv < 0.34 ? vec3(0.3, 0.41, 0.46) : (hv < 0.67 ? vec3(0.41, 0.45, 0.37) : vec3(0.4, 0.31, 0.22));
+        paint *= 0.9 + 0.14 * pl;
+        vec3 shutter = paint;
+        {
+          // louvres: horizontal slats, flattened to their mean where too fine to draw
+          float u = vLp.y * 20.0;
+          float lfw = fwidth(u);
+          float slat = 0.8 + 0.2 * smoothstep(0.15, 0.6, fract(u));
+          shutter *= mix(0.9, slat, (1.0 - smoothstep(0.3, 0.6, lfw)) * (1.0 - an.y));
+        }
+        vec3 real = lime;
+        if (vKind > 0.5 && vKind < 1.5) real = trav;
+        else if (vKind > 2.5 && vKind < 3.5) real = wood;
+        else if (vKind > 3.5 && vKind < 4.5) real = stone;
+        else if (vKind > 4.5 && vKind < 5.5) real = shutter;
+        else if (vKind > 5.5 && vKind < 6.5) real = vec3(0.06, 0.055, 0.05);
+        else if (vKind > 6.5 && vKind < 7.5) real = vec3(0.6, 0.33, 0.21) * (0.86 + 0.22 * pl);
+        else if (vKind > 7.5 && vKind < 8.5) real = vec3(0.86, 0.83, 0.77);
+        else if (vKind > 8.5) real = paint;
+        vec3 clay = OKI_CLAY * (0.985 + 0.03 * pl) * (vKind > 5.5 && vKind < 6.5 ? 0.55 : 1.0);
         vec3 col = mix(clay, real, r);
         // contact shade: walls darken towards the ground they stand in (the
         // maquette's contour layer in clay, the real ground once revealed), so

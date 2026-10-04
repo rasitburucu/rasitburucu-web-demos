@@ -24,7 +24,8 @@ function focusLater(get: () => HTMLElement | null) {
   );
 }
 
-export function goTo(id: string, focus?: () => HTMLElement | null) {
+/** `offset`: stop this many pixels above the target (a row lands mid-screen, not under the header). */
+export function goTo(id: string, focus?: () => HTMLElement | null, offset = 0) {
   const target = document.getElementById(id);
   if (!target) return false;
   const sel = FOCUS_FOR[id];
@@ -36,14 +37,15 @@ export function goTo(id: string, focus?: () => HTMLElement | null) {
     // just moved natively (touch, focus, scrollIntoView) and lands short.
     const y = window.scrollY;
     if (Math.abs(lenis.animatedScroll - y) > 1) lenis.scrollTo(y, { immediate: true, force: true });
-    lenis.scrollTo(target.getBoundingClientRect().top + y, {
+    lenis.scrollTo(target.getBoundingClientRect().top + y - offset, {
       duration: 1.8,
       onComplete: () => {
         if (getFocus) focusLater(getFocus);
       },
     });
   } else {
-    target.scrollIntoView({ block: "start" });
+    if (offset) window.scrollTo(0, target.getBoundingClientRect().top + window.scrollY - offset);
+    else target.scrollIntoView({ block: "start" });
     if (getFocus) focusLater(getFocus);
   }
   return true;

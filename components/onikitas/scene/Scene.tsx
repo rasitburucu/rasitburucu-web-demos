@@ -5,12 +5,13 @@ import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState }
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import { PerformanceMonitor, useTexture } from "@react-three/drei";
 import { addLoad, emit, on, store, type Tier } from "@/lib/onikitas/store";
-import { depthMap, FOCUS, makeTrees } from "@/lib/onikitas/site";
+import { depthMap, FOCUS, makeTrees, villaSites } from "@/lib/onikitas/site";
 import { asset } from "@/lib/asset";
-import { buildBackdrop, buildMaquette, buildTerrain, buildTreeGeometry, buildVillas, treeMatrices } from "./build";
+import { buildBackdrop, buildMaquette, buildTerrain, buildTreeGeometry, treeMatrices } from "./build";
+import { buildVillas, LOD_FAR } from "./villa";
 import { maquetteMaterial, skyMaterial, terrainMaterial, treeMaterial, U, villaMaterial, wallMaterial, waterMaterial, windowMaterial } from "./materials";
 import { createLight, sampleLight } from "./palette";
-import { cameraGoal, wallFrame } from "./rig";
+import { aboveGround, cameraGoal, closeGoal, wallFrame } from "./rig";
 import { addLeafLayer, leafSheet, leafTexture } from "./leaves";
 
 // seg: real terrain grid; maq: contour maquette grid (its flat sheets need
@@ -126,9 +127,10 @@ function World({ tier }: { tier: Tier }) {
       made.push(backdrop);
       if (!alive) return;
       const villas = await step("villas", () => buildVillas());
-      made.push(villas.solid, villas.windows, villas.pools);
+      made.push(...villas.near, ...villas.far, villas.windows, villas.pools);
       if (!alive) return;
-      const { treeGeo, mats } = await step("trees", () => ({ treeGeo: buildTreeGeometry(), mats: treeMatrices(makeTrees(q.trees)) }));
+      // the grove, plus the young olives in the houses' jars
+      const { treeGeo, mats } = await step("trees", () => ({ treeGeo: buildTreeGeometry(), mats: treeMatrices(makeTrees(q.trees)).concat(villas.olives) }));
       made.push(treeGeo);
       if (!alive) return;
       const sheet = leafSheet();
@@ -223,11 +225,34 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
     m.lookAt(f.wall.clone().sub(f.dir));
   }, []);
 
+  // one LOD per house, at the house: the near level (every detail) within
+  // LOD_FAR of the camera, the far level (massing, reveals, shutters) beyond
+  const houses = useMemo(() => {
+    const g = new THREE.Group();
+    villaSites.forEach((v, i) => {
+      const lod = new THREE.LOD();
+      lod.position.set(v.x, v.y, v.z);
+      const near = new THREE.Mesh(built.villas.near[i], materials.villa);
+      const far = new THREE.Mesh(built.villas.far[i], materials.villa);
+      for (const m of [near, far]) {
+        m.castShadow = true;
+        m.receiveShadow = true;
+        m.userData.villa = i;
+      }
+      lod.addLevel(near, 0);
+      lod.addLevel(far, LOD_FAR, 0.06);
+      g.add(lod);
+    });
+    return g;
+  }, [built, materials.villa]);
+
+  const villaOf = (e: ThreeEvent<PointerEvent | MouseEvent>) => {
+    const id = e.object.userData.villa;
+    return typeof id === "number" ? id : -1;
+  };
   const onMove = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    const g = built.villas.solid;
-    const a = g.attributes.aVilla as THREE.BufferAttribute;
-    const id = e.face ? a.getX(e.face.a) : -1;
+    const id = villaOf(e);
     if (store.hover !== id) {
       store.hover = id;
       emit("hover");
@@ -241,13 +266,17 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
   };
   const onClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
-    const a = built.villas.solid.attributes.aVilla as THREE.BufferAttribute;
-    const id = e.face ? a.getX(e.face.a) : -1;
+    const id = villaOf(e);
     if (id < 0) return;
     store.hover = id;
     emit("hover");
     store.selected = id;
     emit("selected");
+    // with the dial on screen, picking a house also brings the camera to it
+    if (store.dialOn) {
+      store.focus = id;
+      emit("focus");
+    }
   };
 
   // hidden until every shader is compiled, so no frame stalls on a compile
@@ -276,15 +305,7 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
       <mesh rotation-x={-Math.PI / 2} material={materials.sea} renderOrder={-1}>
         <planeGeometry args={[4000, 4000, 1, 1]} />
       </mesh>
-      <mesh
-        geometry={built.villas.solid}
-        material={materials.villa}
-        castShadow
-        receiveShadow
-        onPointerMove={onMove}
-        onPointerOut={onOut}
-        onClick={onClick}
-      />
+      <primitive object={houses} onPointerMove={onMove} onPointerOut={onOut} onClick={onClick} />
       <mesh geometry={built.villas.windows} material={materials.windows} />
       <mesh geometry={built.villas.pools} material={materials.pool} receiveShadow={false} />
       <instancedMesh
@@ -337,11 +358,32 @@ function Sun({ tier }: { tier: Tier }) {
   }, [scene, target, q.shadow, q.radius]);
 
   const L = useMemo(() => createLight(), []);
+  const fitK = useRef(-1);
   useFrame(() => {
     const l = light.current;
     const h = hemi.current;
     if (!l || !h) return;
     sampleLight(U.uHour.value, L);
+    // close-up: the shadow map closes in on the framed house, so pergola slats
+    // and parapets draw crisp shadows (2048 texels over ~30 units, not ~130)
+    const k = store.zoom;
+    if (Math.abs(k - fitK.current) > 1e-4) {
+      fitK.current = k;
+      const cam = l.shadow.camera;
+      const hx = THREE.MathUtils.lerp(66, 15, k);
+      const hy = THREE.MathUtils.lerp(58, 15, k);
+      cam.left = -hx;
+      cam.right = hx;
+      cam.top = hy;
+      cam.bottom = -hy;
+      cam.updateProjectionMatrix();
+      const [zx, zy, zz] = store.zoomAt;
+      target.position.set(
+        THREE.MathUtils.lerp(FOCUS.x, zx, k),
+        THREE.MathUtils.lerp(FOCUS.y - 4, zy, k),
+        THREE.MathUtils.lerp(FOCUS.z - 2, zz, k),
+      );
+    }
     l.position.copy(target.position).addScaledVector(L.lightDir, 130);
     l.color.copy(L.sun);
     l.intensity = L.sunI;
@@ -375,6 +417,13 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
   const goal = useMemo(() => ({ pos: new THREE.Vector3(), tgt: new THREE.Vector3() }), []);
   const cur = useMemo(() => ({ pos: new THREE.Vector3(), tgt: new THREE.Vector3(), init: false }), []);
   const s = useRef({ hour: store.hour, reveal: store.reveal, sel: 0 });
+  // close-up: the wanted pose, the travelling pose (eased from house to house
+  // on a raised arc), the amount, and the lens shift towards the free side
+  const close = useMemo(
+    () => ({ want: { pos: new THREE.Vector3(), tgt: new THREE.Vector3() }, pos: new THREE.Vector3(), tgt: new THREE.Vector3(), at: -1, d0: 0, z: 0 }),
+    [],
+  );
+  const shift = useRef({ x: 0, y: 0, on: false });
 
   useEffect(() => {
     const portrait = size.width / size.height < 0.9;
@@ -397,18 +446,57 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
     const h = s.current.hour;
     const wind = 0.22 + 0.9 * THREE.MathUtils.smoothstep(h, 13.8, 15.6) * (1 - THREE.MathUtils.smoothstep(h, 18.6, 20.2));
     U.uWind.value = damp(U.uWind.value, wind, 2, dt);
-    U.uHover.value = store.hover;
-    U.uSelected.value = store.selected;
     s.current.sel = damp(s.current.sel, store.chapter === 5 ? 1 : 0, 3, dt);
-    U.uSelectAmt.value = s.current.sel;
     U.uPointer.value.set(
       damp(U.uPointer.value.x, store.px, 3, dt),
       damp(U.uPointer.value.y, store.py, 3, dt),
     );
 
-    cameraGoal(store.chapter, store.t, goal, s.current.sel, store.selected, size.width / size.height < 0.9, size.width / size.height);
-    // pointer parallax, gentler at the wall
-    const par = store.chapter === 0 && store.t < 0.5 ? 0.06 : 0.9;
+    const aspect = size.width / size.height;
+    const portrait = aspect < 0.9;
+    cameraGoal(store.chapter, store.t, goal, s.current.sel, store.selected, portrait, aspect);
+
+    // close-up of the focused house, only while the dial is on screen
+    const want = !still && store.dialOn && store.focus >= 0;
+    close.z = damp(close.z, want ? 1 : 0, 2.2, dt);
+    if (close.z < 0.002 && !want) close.z = 0;
+    const free = store.dialOn ? store.free : null;
+    if (store.focus >= 0) {
+      closeGoal(store.focus, close.want, aspect, Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), free);
+      if (close.at < 0 || close.z < 0.05) {
+        // nothing on screen to travel from: start there
+        close.pos.copy(close.want.pos);
+        close.tgt.copy(close.want.tgt);
+        close.d0 = 0;
+      } else if (close.at !== store.focus) {
+        close.d0 = close.pos.distanceTo(close.want.pos);
+      }
+      close.at = store.focus;
+      const kk = 1 - Math.exp(-2.4 * dt);
+      close.pos.lerp(close.want.pos, kk);
+      close.tgt.lerp(close.want.tgt, kk);
+    }
+    const e = close.z * close.z * (3 - 2 * close.z);
+    if (e > 0) {
+      const p = close.pos.clone();
+      // house to house: rise over the slope on the way (an arc, highest halfway)
+      if (close.d0 > 0.5) {
+        const left = p.distanceTo(close.want.pos);
+        const prog = THREE.MathUtils.clamp(1 - left / close.d0, 0, 1);
+        p.y += 1.4 * close.d0 * prog * (1 - prog) * 0.5;
+      }
+      goal.pos.lerp(p, e);
+      goal.tgt.lerp(close.tgt, e);
+    }
+    store.zoom = e;
+    if (close.at >= 0) store.zoomAt = [close.tgt.x, close.tgt.y, close.tgt.z];
+    // the focused house keeps its own colours up close (no selection tint)
+    U.uSelectAmt.value = s.current.sel * (1 - e);
+    U.uSelected.value = store.selected;
+    U.uHover.value = e > 0.5 && store.hover === store.focus ? -1 : store.hover;
+
+    // pointer parallax, gentler at the wall and up close
+    const par = (store.chapter === 0 && store.t < 0.5 ? 0.06 : 0.9) * (1 - 0.75 * e);
     const fwd = goal.tgt.clone().sub(goal.pos).normalize();
     const right = fwd.clone().cross(camera.up).normalize();
     goal.pos.addScaledVector(right, U.uPointer.value.x * par).addScaledVector(camera.up, U.uPointer.value.y * par * 0.5);
@@ -422,8 +510,25 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
       cur.pos.lerp(goal.pos, kk);
       cur.tgt.lerp(goal.tgt, kk);
     }
+    if (e > 0) aboveGround(cur.pos);
     camera.position.copy(cur.pos);
     camera.lookAt(cur.tgt);
+
+    // lens shift: the frame's centre moves into the part of the screen the dial
+    // panel leaves free (sideways always, down to the free band up close)
+    const tx = free ? (free[0] + free[2]) / 2 - 0.5 : 0;
+    const ty = free ? ((free[1] + free[3]) / 2 - 0.5) * e : 0;
+    const sh = shift.current;
+    sh.x = damp(sh.x, tx, 2.6, dt);
+    sh.y = damp(sh.y, ty, 2.6, dt);
+    if (Math.abs(sh.x) > 1e-4 || Math.abs(sh.y) > 1e-4) {
+      camera.setViewOffset(size.width, size.height, -sh.x * size.width, -sh.y * size.height, size.width, size.height);
+      sh.on = true;
+    } else if (sh.on) {
+      camera.clearViewOffset();
+      sh.on = false;
+    }
+
     const w = wallRef.current;
     if (w) w.visible = store.chapter === 0;
     void state;
@@ -450,8 +555,15 @@ function Ready({ world, onCompiled }: { world: React.RefObject<THREE.Group | nul
     let alive = true;
     const t0 = performance.now();
     const meshes: THREE.Object3D[] = [];
+    // one mesh per material is enough: the twenty-four house meshes share one
+    const seen = new Set<THREE.Material>();
     world.current?.traverse((o) => {
-      if ((o as THREE.Mesh).isMesh) meshes.push(o);
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const mat = m.material as THREE.Material;
+      if (seen.has(mat)) return;
+      seen.add(mat);
+      meshes.push(o);
     });
     (async () => {
       for (const m of meshes) {
