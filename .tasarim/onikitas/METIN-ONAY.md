@@ -47,3 +47,17 @@ Künye tablosundaki "Cephe" sütunu aynı kısa adları kullanır: Güneybatı, 
 Değişmeyen ama kontrol edilen: İkindi gövdesi ("yarımadanın kuzeybatı rüzgârına açık") yeni yönle tutarlı. Öğle gövdesi ("Her avluyu evin kuzeyine aldık") cepheden bağımsız, olduğu gibi kaldı.
 
 **ONAYLANDI:** Raşit, 2026-10-04 (bu dosyadaki bütün satırlar; firik tabağı olduğu gibi kalır).
+
+---
+
+# İkinci tur (2026-10-05, gelistir2/onikitas): ONAY BEKLİYOR
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Sağdaki gün listesi, Yatsı saati (ve ekran okuyucu etiketi "Yatsı, saat …") | 19:40 | 20:30 | Akşam bölümü artık 20:00'de bitiyor (kadranın açıldığı saat, Villa VII'nin en güzel saati). Yatsı 19:40'ta başlarken saat 20:00 "Akşam" etiketiyle yazıyordu; güneş sahnede 20:15'te batıyor, gece 20:30'da başlıyor |
+| Sol alttaki saat, Akşam bölümünün sonu | 19:40 | 20:00 | Aynı neden. Her bölümün saati artık bir sonraki bölümün başladığı dakikaya varmadan durur (ör. Şafak 06:29'da biter, 06:30 "Sabah" yazar) |
+| Kadranın açılış saati | 19:40 (her ev için) | Seçili evin en güzel saati (Villa VII: 20:00) | Kadranla evin künyesi çelişiyordu. Bir ev seçilince güneş o evin saatine gider; ziyaretçi güneşi kendisi sürüklediyse artık dokunulmaz |
+| Kadranın saat aralığı (sayılar) | 06 … 21 (05:00–22:00) | 15 16 17 18 19 20 21 (15:00–21:00), çeyrek saat çentikleri | Bütün evlerin en güzel saati 16:10–20:15 arasında; dar aralık güneşi daha ince ayarlatıyor |
+| "On iki ev" bölümü, telefonda kartların altı | (yok; 12 kart alt alta) | Hepsini göster | Telefonda ilk 4 kart görünür, düğme kalan 8'i açar ve odağı 5. karta taşır |
+
+Not: Bölüm adları, başlıklar, gövde metinleri değişmedi.

@@ -22,6 +22,8 @@ export const store = {
   selected: 6,
   /** Dial override (null = follow scroll). */
   dialHour: null as number | null,
+  /** The dial is on screen (and its hour, once set, drives the scene). */
+  dialOn: false,
   tone: "light" as "light" | "dark",
   /** Loader milestones reached (0..12). */
   load: 0,

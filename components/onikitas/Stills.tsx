@@ -25,7 +25,7 @@ export function Stills({ active, webglReady }: { active: boolean; webglReady: bo
   useEffect(() => {
     if (!active) return;
     const update = () => {
-      const i = store.chapter === 5 && store.dialHour !== null ? nearest(store.dialHour) : store.chapter;
+      const i = store.dialOn && store.dialHour !== null ? nearest(store.dialHour) : store.chapter;
       setIndex(i);
       setWanted((w) => Array.from(new Set([...w, i, Math.min(FRAMES.length - 1, i + 1)])));
     };

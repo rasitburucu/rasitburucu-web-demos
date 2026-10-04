@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { tr, villas } from "@/content/onikitas/tr";
 import { emit, store } from "@/lib/onikitas/store";
 import { goTo } from "@/lib/onikitas/goto";
@@ -8,6 +9,10 @@ import { goTo } from "@/lib/onikitas/goto";
 // the night. A table on wide screens, one card per house on narrow ones. Each
 // house can be sent to the sundial: it becomes the selected villa there, the
 // day scrolls back to the evening and focus lands on that house's stone.
+// Phones show the first four cards and a "show all" button (twelve cards are
+// about eight screens of scrolling).
+
+const FIRST = 4;
 
 const selectedStone = () => document.querySelector<HTMLElement>("[data-dial-panel] [role='radio'][aria-checked='true']");
 
@@ -20,6 +25,12 @@ function see(i: number) {
 export function Registry() {
   const r = tr.registry;
   const c = r.cols;
+  const [all, setAll] = useState(false);
+  const showAll = () => {
+    setAll(true);
+    // the first newly shown card takes focus, so keyboard users land on it
+    requestAnimationFrame(() => document.getElementById(`evler-${FIRST}`)?.focus());
+  };
   return (
     <section id="evler" className="oki-registry" aria-labelledby="evler-title">
       <div className="oki-registry__inner">
@@ -85,12 +96,12 @@ export function Registry() {
           </tbody>
         </table>
 
-        <ol className="oki-registry__cards">
+        <ol className="oki-registry__cards" id="evler-kartlar" data-all={all ? "true" : "false"}>
           {villas.map((v, i) => (
-            <li key={v.no} data-status={v.status}>
+            <li key={v.no} data-status={v.status} data-more={i >= FIRST ? "true" : undefined}>
               <article aria-labelledby={`evler-${i}`}>
                 <div className="oki-card__head">
-                  <h3 id={`evler-${i}`}>
+                  <h3 id={`evler-${i}`} tabIndex={-1}>
                     {tr.dial.villaPrefix} {v.no}
                   </h3>
                   <span className="oki-status" data-status={v.status}>
@@ -133,6 +144,11 @@ export function Registry() {
             </li>
           ))}
         </ol>
+        {!all ? (
+          <button type="button" className="oki-registry__more" aria-controls="evler-kartlar" aria-expanded="false" onClick={showAll}>
+            {r.showAll}
+          </button>
+        ) : null}
 
         <p className="oki-registry__note">{r.note}</p>
       </div>

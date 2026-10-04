@@ -328,18 +328,8 @@ html:not(.js) .oki-stills img[data-i="0"] {
   font-variant-numeric: lining-nums tabular-nums;
   margin: 0.1em 0 0.18em -0.04em;
 }
-.oki-hud::before,
-.oki-days::before {
-  content: "";
-  position: absolute;
-  inset: -55% -45% -40%;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 84%, transparent), color-mix(in srgb, var(--scrim-c) 52%, transparent) 58%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
-}
-.oki-days::before {
-  inset: -22% -30% -18% -40%;
-}
+/* The clock and the hour list sit on the side rails (see "side rails" below),
+   not on glows of their own. */
 
 .oki-root:has(.oki-dial-panel[data-on="true"]) .oki-days {
   opacity: 0;
@@ -598,15 +588,15 @@ html.js .oki-copy:not([data-on="true"]) .oki-copy__body {
   bottom: clamp(1rem, 5vh, 3.5rem);
   width: min(28rem, 92vw);
   padding: 1.4rem 1.5rem 1.2rem;
-  background: rgba(242, 238, 230, 0.93);
-  -webkit-backdrop-filter: blur(12px) saturate(1.05);
-  backdrop-filter: blur(12px) saturate(1.05);
-  border: 1px solid rgba(59, 58, 46, 0.32);
-  outline: 1px solid rgba(59, 58, 46, 0.14);
-  outline-offset: -7px;
+  /* a flat travertine plate: the stone's own texture under a limewash, one
+     hairline frame, no glass, no lift */
+  background:
+    linear-gradient(rgb(240 235 225 / 0.8), rgb(240 235 225 / 0.8)),
+    var(--trav-tex, none) center / 320px;
+  background-color: #ebe3d4;
+  border: 1px solid rgba(59, 58, 46, 0.34);
   color: var(--olive);
   pointer-events: auto;
-  box-shadow: 0 24px 60px -30px rgba(59, 42, 30, 0.45);
   transition: opacity 0.9s var(--ease-out), visibility 0.9s var(--ease-out), translate 0.9s var(--ease-out);
   --focus: var(--tile-ink);
 }
@@ -615,12 +605,7 @@ html.js .oki-dial-panel:not([data-on="true"]) {
   visibility: hidden;
   translate: 0 16px;
 }
-@media (prefers-reduced-transparency: reduce) {
-  .oki-dial-panel {
-    background: var(--lime);
-    backdrop-filter: none;
-  }
-}
+
 .oki-dial {
   -webkit-user-select: none;
   user-select: none;
@@ -728,19 +713,20 @@ html.oki-noselect * {
   color: var(--olive);
   cursor: pointer;
   border-radius: 50% 46% 54% 48% / 58% 52% 46% 42%;
-  background: radial-gradient(circle at 36% 28%, #f3ecdf, #d8ccb8 58%, #bcae95);
-  box-shadow: inset -1px -2px 3px rgba(59, 58, 46, 0.22), 0 2px 2px -1px rgba(59, 58, 46, 0.3);
-  transition: transform 0.25s var(--ease-out), background 0.25s var(--ease-out), color 0.25s var(--ease-out);
+  /* flat stones cut from the same plate: a fill and a hairline, no relief */
+  background: #f6f2ea;
+  box-shadow: inset 0 0 0 1px rgba(59, 58, 46, 0.3);
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
 }
 .oki-pebble:nth-child(3n) { border-radius: 46% 54% 44% 56% / 52% 44% 56% 48%; }
 .oki-pebble:nth-child(4n + 1) { border-radius: 54% 44% 50% 50% / 46% 56% 44% 54%; }
 .oki-pebble:hover {
-  transform: translateY(-2px);
+  box-shadow: inset 0 0 0 1px rgba(59, 58, 46, 0.7);
 }
 .oki-pebble[aria-checked="true"] {
-  background: radial-gradient(circle at 36% 28%, #cf7650, var(--tile) 60%, #93401f);
+  background: var(--tile);
   color: var(--paper);
-  transform: translateY(-3px);
+  box-shadow: none;
 }
 .oki-dial__choice {
   margin-top: 1rem;
@@ -1802,7 +1788,8 @@ html.js .oki-loader[data-leaving="true"] {
 }
 html[data-past="true"] .oki-header::before {
   inset: 0;
-  background: color-mix(in srgb, var(--scrim-c) 94%, transparent);
+  /* solid: rows scrolling under the header never show through it */
+  background: var(--night);
   box-shadow: 0 1px 0 color-mix(in srgb, currentColor 18%, transparent);
 }
 /* keyboard focus inside the registry never lands under the fixed header */
@@ -1816,5 +1803,196 @@ html[data-past="true"] .oki-header::before {
   .oki-pebble {
     min-height: 34px;
     font-size: 0.86rem;
+  }
+}
+
+/* ---------- side rails (2026-10-04, second round) ----------
+   One flat limewash strip on the side the copy stands on, full height, with a
+   single soft inner edge: light falling on the text side, not a glow behind
+   each block. The opposite side keeps a narrow, lighter strip for the clock or
+   the hour list. The rails slide (transform only) when the copy changes side.
+   Contrast (measured, see .tasarim/onikitas/TASARIM.md): 76% limewash keeps
+   body ink above 4.5:1 over the darkest scene pixel behind it; the narrow
+   strip (65%) does the same for the 13px hour list and the clock's name.
+   Phones: a top band sized to each copy, a short bottom band for the clock. */
+
+.oki-rail {
+  --rail-f: 10rem;
+  --rail-c: color-mix(in srgb, var(--scrim-c) 76%, transparent);
+  --rail-w: calc(var(--pad) + min(33rem, 40vw) + 1rem + var(--rail-f));
+  --rail-n: calc(var(--pad) + 13rem + var(--rail-f));
+  --rail-fade:
+    var(--rail-c) 0,
+    var(--rail-c) calc(100% - var(--rail-f)),
+    color-mix(in srgb, var(--scrim-c) 64%, transparent) calc(100% - var(--rail-f) * 0.8),
+    color-mix(in srgb, var(--scrim-c) 36%, transparent) calc(100% - var(--rail-f) * 0.52),
+    color-mix(in srgb, var(--scrim-c) 12%, transparent) calc(100% - var(--rail-f) * 0.24),
+    transparent 100%;
+  position: fixed;
+  top: 0;
+  height: 100lvh;
+  width: var(--rail-w);
+  z-index: var(--z-scene);
+  pointer-events: none;
+  opacity: 0;
+  transition: translate 0.9s var(--ease-io), opacity 0.9s var(--ease-out);
+}
+.oki-rail[data-s="l"] {
+  left: 0;
+  background: linear-gradient(to right, var(--rail-fade));
+  translate: calc(var(--rail-n) - var(--rail-w)) 0;
+}
+.oki-rail[data-s="r"] {
+  right: 0;
+  background: linear-gradient(to left, var(--rail-fade));
+  translate: calc(var(--rail-w) - var(--rail-n)) 0;
+}
+.oki-rail[data-s="b"] {
+  display: none;
+}
+/* narrow strips: lighter, for the clock and the hour list */
+html[data-side="l"] .oki-rail[data-s="r"],
+html[data-side="r"] .oki-rail[data-s="l"],
+html[data-side="c"] .oki-rail[data-s="l"],
+html[data-side="c"] .oki-rail[data-s="r"] {
+  opacity: 0.86;
+}
+/* the copy's side: full width, full strength */
+html[data-side="l"] .oki-rail[data-s="l"],
+html[data-side="r"] .oki-rail[data-s="r"],
+html[data-side="s"]:has(#safak .oki-copy[data-on="true"]) .oki-rail[data-s="l"] {
+  opacity: 1;
+  translate: 0 0;
+}
+/* dawn: once the headline leaves, the olive shadows on the wall stand bare */
+html[data-side="s"] .oki-rail[data-s="l"] {
+  translate: 0 0;
+}
+/* the dial covers the right side and the clock is hidden: no right strip */
+.oki-root:has(.oki-dial-panel[data-on="true"]) .oki-rail[data-s="r"] {
+  opacity: 0;
+}
+html[data-past="true"] .oki-rail {
+  opacity: 0;
+}
+/* the rails take over from the per-block bed once scripts run */
+html.js .oki-copy::before {
+  display: none;
+}
+
+/* the dial prints the hour itself: the big clock steps aside (every width) */
+.oki-root:has(.oki-dial-panel[data-on="true"]) .oki-hud {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 899px) {
+  .oki-rail[data-s="l"],
+  .oki-rail[data-s="r"] {
+    display: none;
+  }
+  .oki-rail[data-s="b"] {
+    display: block;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: auto;
+    height: 9.5rem;
+    translate: none;
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--scrim-c) 66%, transparent) 0,
+      color-mix(in srgb, var(--scrim-c) 66%, transparent) 55%,
+      color-mix(in srgb, var(--scrim-c) 30%, transparent) 80%,
+      transparent 100%
+    );
+  }
+  html:is([data-side="l"], [data-side="r"], [data-side="c"]) .oki-rail[data-s="b"] {
+    opacity: 1;
+  }
+  .oki-root:has(.oki-dial-panel[data-on="true"]) .oki-rail[data-s="b"],
+  html[data-past="true"] .oki-rail[data-s="b"] {
+    opacity: 0;
+  }
+  /* each copy: a full-width band from the top edge down past its last line */
+  html.js .oki-copy::before,
+  html.js .oki-chapter--safak .oki-copy::before {
+    display: block;
+    inset: -104px -1.25rem -3.25rem;
+    -webkit-mask-image: none;
+    mask-image: none;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--scrim-c) 88%, transparent) 0,
+      color-mix(in srgb, var(--scrim-c) 88%, transparent) calc(100% - 3.25rem),
+      color-mix(in srgb, var(--scrim-c) 55%, transparent) calc(100% - 2rem),
+      color-mix(in srgb, var(--scrim-c) 18%, transparent) calc(100% - 0.9rem),
+      transparent 100%
+    );
+  }
+  html.js .oki-chapter--safak .oki-copy::before {
+    inset: -110px -1.25rem -3.25rem;
+  }
+}
+
+/* ---------- registry: out of the night, four cards on phones ---------- */
+
+/* the night scene sinks into the registry's navy instead of ending on a line */
+.oki-registry::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 45vh;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--night) 0%, transparent) 0%,
+    color-mix(in srgb, var(--night) 22%, transparent) 30%,
+    color-mix(in srgb, var(--night) 62%, transparent) 62%,
+    color-mix(in srgb, var(--night) 90%, transparent) 86%,
+    var(--night) 100%
+  );
+}
+.oki-registry__more {
+  display: none;
+}
+@media (max-width: 1023px) {
+  html.js .oki-registry__cards[data-all="false"] > li[data-more] {
+    display: none;
+  }
+  .oki-registry__more {
+    appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 0.9rem;
+    padding: 0 1.2rem;
+    border: 1px solid #f2eee6;
+    background: transparent;
+    color: var(--lime);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+  }
+  .oki-registry__more:hover {
+    background: var(--lime);
+    color: var(--night);
+  }
+  html:not(.js) .oki-registry__more {
+    display: none;
+  }
+  .oki-registry__cards h3:focus {
+    outline: none;
+  }
+  .oki-registry__cards h3:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 4px;
   }
 }

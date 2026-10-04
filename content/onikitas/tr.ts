@@ -53,6 +53,8 @@ export type Copy = {
     see: string;
     /** Sold houses: ask about a similar one instead. */
     seeSimilar: string;
+    /** Phones: reveal the cards after the first four. */
+    showAll: string;
     note: string;
   };
   visit: {
@@ -192,6 +194,7 @@ export const tr: Copy = {
     m2: (n) => `${n} m²`,
     see: "Bu evi gör",
     seeSimilar: "Benzerini sorun",
+    showAll: "Hepsini göster",
     note: "Örnek bilgiler; Onikitaş kurgusal bir projedir. Fiyat bilgisi görüşmede paylaşılır.",
   },
   visit: {

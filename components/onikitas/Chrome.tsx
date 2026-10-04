@@ -23,6 +23,10 @@ export function Chrome() {
           </a>
         </nav>
       </header>
+      {/* flat limewash rails behind the copy, the clock and the hour list */}
+      <div className="oki-rail" data-s="l" aria-hidden="true" />
+      <div className="oki-rail" data-s="r" aria-hidden="true" />
+      <div className="oki-rail" data-s="b" aria-hidden="true" />
       <div className="oki-hud" aria-hidden="true">
         <p className="oki-hud__name" data-clock-name>
           {tr.chapters.safak.name}
