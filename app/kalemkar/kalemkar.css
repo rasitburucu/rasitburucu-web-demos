@@ -420,8 +420,19 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-root { font-size: 16.5px; --kk-header: 58px; }
   .kk-strip { font-size: 12.5px; }
   .kk-strip-in { padding-block: 7px; }
-  .kk-hide-sm, .kk-flow-close { display: none; }
+  .kk-hide-sm { display: none; }
+  /* Booking pages: "Vazgeç" stays on phones as a plain text link beside the menu button. */
+  .kk-header-in { gap: 8px; }
+  .kk-header-act { gap: 2px; }
+  .kk-flow-close { min-height: 44px; padding: 0 6px; border: 0; background: none; font-size: 14.5px; }
   .kk-logo-word { font-size: 19px; }
+}
+@media (max-width: 380px) {
+  .kk-logo-word { font-size: 15.5px; }
+  .kk-flow-close { font-size: 14px; }
+  .kk-menu-btn { gap: 8px; padding-left: 4px; }
+}
+@media (max-width: 767px) {
   .kk-mbar {
     display: flex; position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; gap: 10px; align-items: center;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--kk-bg); border-top: 1px solid var(--kk-line);
