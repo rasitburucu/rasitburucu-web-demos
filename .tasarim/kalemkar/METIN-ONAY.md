@@ -31,3 +31,19 @@ Toplam: 5 satır.
 Toplam bu tur: 2 satır. **ONAY BEKLİYOR.**
 
 **ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.
+
+
+# 2026-10-05 üçüncü tur
+
+Ortak üst şerit / künye kuralına göre (ortak-kunye-nav.md). Kaynak: `content/kalemkar/tr.ts` (`strip`, `footer`).
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Üst şerit (`strip.text`, `strip.href`) | Konsept çalışma. Kalemkâr hayali bir restorandır; fiyatlar ve doluluk örnektir, formlar hiçbir yere gönderilmez. (rasitburucu.com, /tr bağlantısı; telefonda bağlantı gizliydi) | Konsept çalışma — rasitburucu.com (bağlantı https://rasitburucu.com; her boyutta aynı) | Dört sitede tek ve aynı üst şerit. Uzun cümle alt bilgideki konsept notuna taşındı. |
+| Alt bilgi, ikinci sütun başlığı (`footer.reach`) | Ulaşın | İletişim | Ortak künye şablonu: Ziyaret / İletişim / Sayfalar. |
+| Alt bilgi, "Sayfalar" listesi (`footer.links`) | Güz sofrası, Rezervasyon, Özel davet | Sofra, Şef, Ev, Özel davet, Rezervasyon | Üst menüyle aynı liste (tek kaynak); menü etiketleri değişmedi, Rezervasyon üst menüde "Masanızı ayırın" düğmesi. |
+| Alt bilgi, konsept notu (`footer.note`) | Kalemkâr, rasitburucu.com için hazırlanmış bir konsept çalışmadır. Restoran, şef, fiyatlar, doluluk ve alıntılar hayalidir. | Kalemkâr kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Şef, alıntılar, adres, telefon, fiyatlar ve doluluk örnektir; formlar hiçbir yere gönderilmez. | Ortak konsept notu kalıbı. Şef/alıntı bilgisi korundu. |
+| Alt bilgi, açılır başlık (`footer.credits`) ve içindeki not (`creditsNote`, kaldırıldı) | Görseller ve yazı tipleri. İçinde: "Yemek ve mekân fotoğrafları Pexels'ten, lisansı sayfalarından okundu. Bakır sini ve tepsi bu çalışma için Blender'da modellendi." | Proje künyesi. Satırlar: Tasarım ve geliştirme: Raşit Burucu · 3B ve render: Bakır sini ve tezgâh tepsisi bu çalışma için Blender'da modellendi ve render alındı; kazıma deseni Python ile çizildi. Işık HDRI'si: Studio Small 09, Poly Haven (CC0). · Fotoğraflar: (mevcut kaynak listesi) · Yazı karakterleri: (Young Serif, Geologica) · Yıl: 2026 | Ortak künye şablonu: sabit etiketler ve sıra. Fotoğraf, yazı tipi ve HDRI bilgisi mevcut `credits.ts`'den; render satırı o dosyadaki "Blender + Python" notundan. |
+| Alt bilgi, son satır (`footer.copyright`, yeni) | (yoktu) | © 2026 Kalemkâr · Konsept çalışma — rasitburucu.com | Ortak telif satırı. |
+
+Toplam bu tur: 6 satır. **ONAY BEKLİYOR.**

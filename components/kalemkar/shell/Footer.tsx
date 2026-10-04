@@ -5,13 +5,15 @@ import { Rosette } from "../ui/Rosette";
 
 const f = tr.footer;
 const c = tr.contact;
+const k = f.kunye;
 
 export function Strip() {
   return (
     <div className="kk-strip" role="note">
       <div className="kk-wrap kk-strip-in">
-        <p>{tr.strip.text}</p>
-        <a href={tr.strip.href}>{tr.strip.link}</a>
+        <p>
+          {tr.strip.text} <a href={tr.strip.href}>{tr.strip.link}</a>
+        </p>
       </div>
     </div>
   );
@@ -20,6 +22,7 @@ export function Strip() {
 export function Footer() {
   const photos = credits.filter((x) => x.group === "photo");
   const fonts = credits.filter((x) => x.group === "font");
+  const hdri = credits.find((x) => x.group === "hdri");
   return (
     <footer className="kk-footer" id="iletisim">
       <div className="kk-wrap">
@@ -69,22 +72,71 @@ export function Footer() {
           </div>
         </div>
 
+        <p className="kk-footer-note">{f.note}</p>
+
         <details className="kk-credits">
           <summary>{f.credits}</summary>
-          <p className="kk-muted">{f.creditsNote}</p>
-          <ul>
-            {[...photos, ...fonts].map((x) => (
-              <li key={x.title}>
-                <a href={x.url} target="_blank" rel="noopener noreferrer">
-                  {x.title}
+          <dl className="kk-kunye">
+            <div>
+              <dt>{k.design}</dt>
+              <dd>
+                <a href={k.designHref} target="_blank" rel="noopener noreferrer">
+                  {k.designBy}
                 </a>
-                , {x.author} ({x.licence}). {x.use}.
-              </li>
-            ))}
-          </ul>
+              </dd>
+            </div>
+            <div>
+              <dt>{k.render}</dt>
+              <dd>
+                {k.renderText}{" "}
+                {hdri && (
+                  <>
+                    <a href={hdri.url} target="_blank" rel="noopener noreferrer">
+                      {hdri.title}
+                    </a>
+                    , {hdri.author} ({hdri.licence}).
+                  </>
+                )}
+              </dd>
+            </div>
+            <div>
+              <dt>{k.photos}</dt>
+              <dd>
+                <ul>
+                  {photos.map((x) => (
+                    <li key={x.title}>
+                      <a href={x.url} target="_blank" rel="noopener noreferrer">
+                        {x.title}
+                      </a>
+                      , {x.author} ({x.licence}). {x.use}.
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+            <div>
+              <dt>{k.fonts}</dt>
+              <dd>
+                <ul>
+                  {fonts.map((x) => (
+                    <li key={x.title}>
+                      <a href={x.url} target="_blank" rel="noopener noreferrer">
+                        {x.title}
+                      </a>
+                      , {x.author} ({x.licence}). {x.use}.
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+            <div>
+              <dt>{k.year}</dt>
+              <dd>{k.yearValue}</dd>
+            </div>
+          </dl>
         </details>
 
-        <p className="kk-footer-note">{f.note}</p>
+        <p className="kk-footer-copy">{f.copyright}</p>
       </div>
     </footer>
   );

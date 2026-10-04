@@ -121,7 +121,7 @@ html:has([data-demo="kalemkar"])[data-kk-menu="open"] { overflow: hidden; }
 
 /* ---------- strip + header ---------- */
 .kk-strip { position: relative; z-index: 3; background: var(--kk-surface-2); color: var(--kk-ink-2); font-size: 13px; line-height: 1.45; border-bottom: 1px solid var(--kk-line); }
-.kk-strip-in { display: flex; gap: 16px; justify-content: space-between; align-items: center; padding-block: 8px; }
+.kk-strip-in { display: flex; gap: 16px; align-items: center; padding-block: 8px; }
 .kk-strip p { margin: 0; }
 .kk-strip a { color: var(--kk-ink); white-space: nowrap; text-underline-offset: 0.2em; }
 .kk-sentinel { position: absolute; top: 80px; height: 1px; width: 1px; }
@@ -137,7 +137,6 @@ html:has([data-demo="kalemkar"])[data-kk-menu="open"] { overflow: hidden; }
 .kk-nav a:hover, .kk-nav a[aria-current="page"] { color: var(--kk-ink); }
 .kk-nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 0.4em; text-decoration-color: var(--kk-accent); }
 .kk-header-act { display: flex; align-items: center; gap: 10px; margin-left: 8px; }
-.kk-header[data-flow] .kk-header-act { margin-left: auto; }
 .kk-menu-btn { display: none; align-items: center; gap: 10px; min-height: 40px; padding: 0 6px 0 10px; background: none; border: 0; cursor: pointer; color: var(--kk-ink); font-size: 15px; }
 .kk-menu-lines { display: grid; gap: 6px; width: 20px; }
 .kk-menu-lines i { display: block; height: 1.5px; background: currentColor; transition: transform 220ms var(--kk-out); }
@@ -150,6 +149,9 @@ html:has([data-demo="kalemkar"])[data-kk-menu="open"] { overflow: hidden; }
 .kk-menu ul { list-style: none; margin: 0; padding: 0; }
 .kk-menu li a { display: block; padding: 10px 0; font-family: var(--kk-serif), Georgia, serif; font-size: 2.2rem; line-height: 1.1; text-decoration: none; border-bottom: 1px solid var(--kk-line); }
 .kk-menu .kk-btn { align-self: flex-start; }
+.kk-menu li a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--kk-accent); text-decoration-thickness: 2px; text-underline-offset: 0.2em; }
+.kk-btn[aria-current="page"] { text-decoration: underline; text-underline-offset: 0.3em; }
+.kk-flow-close { display: none; }
 .kk-menu-foot { color: var(--kk-ink-2); font-size: 15px; }
 .kk-mbar { display: none; }
 
@@ -294,13 +296,6 @@ html:not(.js) .kk-plate[data-i="0"] { opacity: 1; }
   0%, 100% { transform: translate(3%, 4%) scale(1.04); opacity: 1; }
   50% { transform: translate(6%, 10%) scale(1.1); opacity: 0.72; }
 }
-/* Course dots: nine small marks round the lower rim of the sini, one filled
-   per plate served; the plate on the sini now is the green one. */
-.kk-dots { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; transition: opacity var(--kk-t-state) var(--kk-out); }
-.kk-dots circle { r: 7px; fill: none; stroke: var(--kk-ink-3); stroke-width: 2px; transition: fill var(--kk-t-state), stroke var(--kk-t-state), r var(--kk-t-state) var(--kk-out); }
-.kk-dots circle[data-s="done"] { fill: var(--kk-ink); stroke: var(--kk-ink); }
-.kk-dots circle[data-s="now"] { r: 9px; fill: var(--kk-accent); stroke: var(--kk-accent); }
-.js .kk-serve:not([data-started]) .kk-dots { opacity: 0; }
 .kk-serve-num { font-family: var(--kk-serif), Georgia, serif; font-size: 2.4rem; line-height: 1; font-variant-numeric: tabular-nums; min-width: 3.4ch; }
 .kk-serve-num small { font-size: 1rem; color: var(--kk-ink-3); margin-left: 6px; }
 .kk-serve-steps { list-style: none; margin: 0; padding: 0; }
@@ -402,15 +397,20 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
 .kk-footer address { font-style: normal; display: grid; margin-bottom: 10px; }
 .kk-footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .kk-footer-col p { margin-bottom: 8px; }
-.kk-credits { margin-top: 56px; border-top: 1px solid var(--kk-line); padding-top: 18px; color: var(--kk-ink-2); font-size: 14px; }
+.kk-credits { margin-top: 20px; color: var(--kk-ink-2); font-size: 14px; }
 .kk-credits summary { cursor: pointer; color: var(--kk-ink); min-height: 32px; }
+.kk-kunye { margin: 12px 0 0; display: grid; gap: 14px; }
+.kk-kunye dt { color: var(--kk-ink); font-weight: 500; margin-bottom: 4px; }
+.kk-kunye dd { margin: 0; }
 .kk-credits ul { margin-top: 12px; gap: 6px; }
 .kk-credits a { text-underline-offset: 0.2em; }
-.kk-footer-note { margin-top: 28px !important; color: var(--kk-ink-3); font-size: 13.5px; max-width: 60em; }
+.kk-footer-note { margin-top: 56px !important; color: var(--kk-ink-3); font-size: 13.5px; max-width: 60em; }
+.kk-footer-copy { margin-top: 20px !important; color: var(--kk-ink-3); font-size: 13.5px; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 1080px) {
   .kk-nav { display: none; }
+  .kk-flow-close { display: inline-flex; }
   .kk-menu-btn { display: inline-flex; }
   .kk-header-act { margin-left: auto; }
   .kk-chef-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -420,9 +420,19 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-root { font-size: 16.5px; --kk-header: 58px; }
   .kk-strip { font-size: 12.5px; }
   .kk-strip-in { padding-block: 7px; }
-  .kk-strip a { display: none; }
   .kk-hide-sm { display: none; }
+  /* Booking pages: "Vazgeç" stays on phones as a plain text link beside the menu button. */
+  .kk-header-in { gap: 8px; }
+  .kk-header-act { gap: 2px; }
+  .kk-flow-close { min-height: 44px; padding: 0 6px; border: 0; background: none; font-size: 14.5px; }
   .kk-logo-word { font-size: 19px; }
+}
+@media (max-width: 380px) {
+  .kk-logo-word { font-size: 15.5px; }
+  .kk-flow-close { font-size: 14px; }
+  .kk-menu-btn { gap: 8px; padding-left: 4px; }
+}
+@media (max-width: 767px) {
   .kk-mbar {
     display: flex; position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; gap: 10px; align-items: center;
     padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--kk-bg); border-top: 1px solid var(--kk-line);
@@ -457,8 +467,6 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-serve-stage { --kk-band-sini: min(52vw, calc(33svh - var(--kk-header) - 40px)); top: var(--kk-header); z-index: 2; padding: 6px var(--kk-gutter) 8px; background: var(--kk-bg); margin-inline: calc(-1 * var(--kk-gutter)); display: flex; flex-direction: column; align-items: center; gap: 2px; }
   .kk-serve-stage::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 56px; background: linear-gradient(var(--kk-bg) 45%, rgba(23, 19, 15, 0)); pointer-events: none; }
   .kk-fly { width: var(--kk-band-sini); flex: none; }
-  .kk-dots circle { r: 16px; stroke-width: 4px; }
-  .kk-dots circle[data-s="now"] { r: 20px; }
   .kk-serve-count { flex-direction: row; align-items: baseline; justify-content: center; gap: 10px; width: 100%; min-width: 0; padding: 0; margin: 0; }
   .kk-serve-count .kk-btn { display: none; }
   .kk-serve-num { font-size: 1.05rem; min-width: 0; }
