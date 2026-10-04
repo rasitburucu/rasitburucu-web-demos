@@ -582,15 +582,15 @@ export class Riser {
       }
     if (!lift) {
       this.minH = this.maxH = height;
-      const post = mesh(rbox(0.26, height - 0.04, 0.26, 0.012), m.graphitePaint);
+      const post = mesh(rbox(0.26, height - 0.04, 0.26, 0.012), m.pedestal);
       post.position.y = 0.02 + (height - 0.04) / 2;
       g.add(post);
-      const top = mesh(rbox(0.36, 0.02, 0.36, 0.004), m.graphitePaint);
+      const top = mesh(rbox(0.36, 0.02, 0.36, 0.004), m.pedestal);
       top.position.y = height - 0.01;
       g.add(top);
       // gussets
       for (let i = 0; i < 4; i++) {
-        const gus = mesh(new THREE.BoxGeometry(0.006, 0.12, 0.1), m.graphitePaint);
+        const gus = mesh(new THREE.BoxGeometry(0.006, 0.12, 0.1), m.pedestal);
         const a = (i * Math.PI) / 2;
         gus.position.set(Math.cos(a) * 0.16, 0.08, Math.sin(a) * 0.16);
         gus.rotation.y = -a;
@@ -600,7 +600,7 @@ export class Riser {
       // Telescoping lift column: fixed outer section, moving inner section
       this.minH = 0.62;
       this.maxH = 1.32;
-      const outer = mesh(rbox(0.34, 0.58, 0.34, 0.01), m.graphitePaint);
+      const outer = mesh(rbox(0.34, 0.58, 0.34, 0.01), m.pedestal);
       outer.position.y = 0.02 + 0.29;
       g.add(outer);
       const band = mesh(new THREE.BoxGeometry(0.345, 0.03, 0.345), m.capDark);
@@ -613,7 +613,7 @@ export class Riser {
       const innerMesh = mesh(rbox(0.27, 0.8, 0.27, 0.008), m.alu);
       innerMesh.position.y = -0.4;
       inner.add(innerMesh);
-      const top = mesh(rbox(0.36, 0.02, 0.36, 0.004), m.graphitePaint);
+      const top = mesh(rbox(0.36, 0.02, 0.36, 0.004), m.pedestal);
       top.position.y = -0.01;
       inner.add(top);
       g.add(inner);

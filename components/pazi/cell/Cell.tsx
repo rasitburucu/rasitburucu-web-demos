@@ -18,13 +18,15 @@ type Props = {
   frameNarrow?: { x: number; y: number };
   operator?: boolean;
   zoom?: number;
+  /** Zoom below 900 px wide (defaults to zoom × 1.18). */
+  zoomNarrow?: number;
   /** Ask for the vector drawing even on capable devices (e.g. small previews). */
   vectorOnly?: boolean;
 };
 
 type Mode = "pending" | "webgl" | "vector";
 
-export function Cell({ className, frame, frameNarrow, operator, zoom, vectorOnly }: Props) {
+export function Cell({ className, frame, frameNarrow, operator, zoom, zoomNarrow, vectorOnly }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [mode, setMode] = useState<Mode>("pending");
   const [ready, setReady] = useState(false);
@@ -69,7 +71,7 @@ export function Cell({ className, frame, frameNarrow, operator, zoom, vectorOnly
             reduced,
             frame: frameX !== undefined && frameY !== undefined ? { x: frameX, y: frameY } : undefined,
             operator,
-            zoom: close > 0 ? close : (zoom ?? 1) * (narrow ? 1.18 : 1),
+            zoom: close > 0 ? close : narrow ? (zoomNarrow ?? (zoom ?? 1) * 1.18) : (zoom ?? 1),
             onFrame: () => {
               if (first) {
                 first = false;
@@ -87,7 +89,14 @@ export function Cell({ className, frame, frameNarrow, operator, zoom, vectorOnly
       if (!idle) window.clearTimeout(handle);
       engine?.dispose();
     };
-  }, [vectorOnly, operator, zoom, frameX, frameY, narrow]);
+  }, [vectorOnly, operator, zoom, zoomNarrow, frameX, frameY, narrow]);
+
+  // tell the page how the cell is drawn: the drag hint and the view/speed
+  // controls only make sense when the 3D cell is running
+  useEffect(() => {
+    if (vectorOnly) return;
+    if (cell.get().render !== mode) cell.set({ render: mode });
+  }, [mode, vectorOnly]);
 
   // the drawing shows the first pallet about 60% full; tell the status bar
   useEffect(() => {

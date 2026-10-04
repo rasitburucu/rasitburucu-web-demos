@@ -111,6 +111,7 @@ export const tr = {
     pause: "Durdur",
     play: "Sürdür",
     dragHint: "Zemindeki operatör işaretini sürükleyin.",
+    still: "Bu cihaz 3B hücreyi çalıştırmıyor; aynı hesapla çizilmiş durağan görünüm gösteriliyor.",
   },
 
   steps: {

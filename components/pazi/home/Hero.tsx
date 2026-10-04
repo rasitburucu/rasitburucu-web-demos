@@ -12,6 +12,7 @@ import { NumberField, Segmented } from "../ui/fields";
 
 export function Hero() {
   const config = useCell((s) => s.config);
+  const render = useCell((s) => s.render);
   const errors = useMemo(() => validate(config), [config]);
   const href = `/pazi/fizibilite/?${encodeConfig(config)}`;
   const f = tr.fields;
@@ -29,7 +30,7 @@ export function Hero() {
   return (
     <section className="pz-hero" aria-labelledby="pz-hero-title">
       <div className="pz-hero-stage">
-        <Cell frame={{ x: 0.71, y: 0.47 }} operator zoom={1.06} className="pz-hero-cell" />
+        <Cell frame={{ x: 0.71, y: 0.5 }} frameNarrow={{ x: 0.5, y: 0.4 }} operator zoom={1.38} zoomNarrow={2.1} className="pz-hero-cell" />
       </div>
       <div className="pz-wrap pz-hero-grid">
         <div className="pz-hero-copy">
@@ -90,7 +91,7 @@ export function Hero() {
       <div className="pz-hero-hmi">
         <div className="pz-wrap">
           <Hmi />
-          <p className="pz-hero-hint">{tr.view.dragHint}</p>
+          {render === "webgl" ? <p className="pz-hero-hint">{tr.view.dragHint}</p> : null}
         </div>
       </div>
     </section>

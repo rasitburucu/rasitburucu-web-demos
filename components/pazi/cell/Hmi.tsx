@@ -27,6 +27,7 @@ export function statusOf(f: ReturnType<typeof fit>): Status {
 export function Hmi({ controls = true }: { controls?: boolean }) {
   const f = useFit();
   const placed = useCell((s) => s.live.placed);
+  const render = useCell((s) => s.render);
   const h = tr.hmi;
   const per = Math.max(1, f.plan.perLayer);
   const layer = Math.min(f.stack.layers, Math.max(1, Math.ceil(placed / per)));
@@ -55,7 +56,7 @@ export function Hmi({ controls = true }: { controls?: boolean }) {
   }, [f, h, label]);
 
   return (
-    <div className="pz-hmi" data-status={st}>
+    <div className="pz-hmi" data-status={st} data-render={render}>
       <dl className="pz-hmi-cells" aria-label={h.label}>
         <div>
           <dt>{h.model}</dt>
@@ -94,7 +95,9 @@ export function Hmi({ controls = true }: { controls?: boolean }) {
           </dd>
         </div>
       </dl>
-      {controls ? <CellControls /> : null}
+      {/* without a running 3D cell the view and speed buttons would do nothing */}
+      {controls && render !== "vector" ? <CellControls /> : null}
+      {controls && render === "vector" ? <p className="pz-hmi-still">{tr.view.still}</p> : null}
       <p className="pz-sr" aria-live="polite">
         {summary}
       </p>

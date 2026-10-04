@@ -4,9 +4,13 @@
 // arm sets down one more layer on the pallet; each layer is one step. The arm's
 // joints are solved with the same two-link geometry as the 3D robot and eased
 // with CSS. Reduced motion: every layer is shown, the arm rests over the stack.
+// The layers are the product picked in the hero plate (bag by default), so the
+// drawing keeps telling the visitor's own case.
 
 import { useEffect, useRef, useState } from "react";
 import { tr } from "@/content/pazi/tr";
+import type { ProductKind } from "@/lib/pazi/plan";
+import { useCell } from "@/lib/pazi/store";
 
 const VW = 760;
 const H = 470; // floor line
@@ -14,7 +18,61 @@ const DECK = 30;
 const LAYER = 56;
 const PX = 230; // pallet left
 const PW = 400; // pallet width
-const BOXES = [3, 4, 3, 4, 3];
+// products per layer as seen from the side (alternate layers turn 90°)
+const PER_LAYER: Record<ProductKind, number[]> = {
+  torba: [2, 3, 2, 3, 2],
+  koli: [3, 4, 3, 4, 3],
+  shrink: [3, 4, 3, 4, 3],
+};
+// [current layer, placed layer, detail]
+const TONE: Record<ProductKind, [string, string, string]> = {
+  torba: ["#f3f1ea", "#e2e0d8", "#bdbab0"],
+  koli: ["#d6b285", "#c19a6b", "#a57c4c"],
+  shrink: ["#c3d4db", "#a9bfc8", "#7f98a4"],
+};
+
+/** One product seen from the side: a filled sack, a taped carton or a shrink-wrapped pack. */
+function Product({ kind, x, y, w, h, fill, detail }: { kind: ProductKind; x: number; y: number; w: number; h: number; fill: string; detail: string }) {
+  if (kind === "torba") {
+    // a filled sack: soft corners, a bulging middle, sewn seams at both ends
+    const r = Math.min(16, h / 2.6);
+    return (
+      <g>
+        <rect x={x} y={y + 3} width={w} height={h - 3} rx={r} fill={fill} stroke={detail} strokeWidth="1.2" />
+        <path d={`M${x + 10} ${y + h * 0.3} Q${x + w / 2} ${y + h * 0.12} ${x + w - 10} ${y + h * 0.3}`} fill="none" stroke="#fff" strokeOpacity="0.7" strokeWidth="2" />
+        <line x1={x + 9} y1={y + 9} x2={x + 9} y2={y + h - 6} stroke={detail} strokeDasharray="2 3" />
+        <line x1={x + w - 9} y1={y + 9} x2={x + w - 9} y2={y + h - 6} stroke={detail} strokeDasharray="2 3" />
+      </g>
+    );
+  }
+  if (kind === "shrink") {
+    // bottles under film: necks show through, a highlight runs along the film
+    const n = Math.max(2, Math.round(w / 34));
+    const bw = w / n;
+    return (
+      <g>
+        <rect x={x} y={y + 2} width={w} height={h - 3} rx="5" fill={fill} />
+        {Array.from({ length: n }, (_, k) => (
+          <path
+            key={k}
+            d={`M${x + k * bw + bw * 0.18} ${y + h - 2} V${y + h * 0.42} Q${x + k * bw + bw * 0.5} ${y + h * 0.16} ${x + k * bw + bw * 0.82} ${y + h * 0.42} V${y + h - 2}`}
+            fill="none"
+            stroke={detail}
+            strokeWidth="1.3"
+          />
+        ))}
+        <rect x={x + 6} y={y + 8} width={w - 12} height="3" rx="1.5" fill="#fff" opacity="0.55" />
+      </g>
+    );
+  }
+  return (
+    <g>
+      <rect x={x} y={y + 2} width={w} height={h - 3} fill={fill} />
+      <rect x={x} y={y + 2} width={w} height="4" fill="#000" opacity="0.06" />
+      <rect x={x + w / 2 - 9} y={y + 2} width="18" height="12" fill={detail} opacity="0.85" />
+    </g>
+  );
+}
 // arm (svg units)
 const SX = 96;
 const RISER = 120;
@@ -38,6 +96,7 @@ function solve(tx: number, ty: number) {
 
 export function Steps() {
   const s = tr.steps;
+  const kind = useCell((st) => st.config.kind);
   const [active, setActive] = useState(0);
   const [reduced, setReduced] = useState(false);
   const list = useRef<HTMLOListElement>(null);
@@ -85,18 +144,14 @@ export function Steps() {
                 <rect x="0" y="24" width={PW} height="6" fill="#cdb18a" />
               </g>
               {s.items.map((it, i) => {
-                const k = BOXES[i];
+                const k = PER_LAYER[kind][i];
                 const y = topOf(i);
                 const bw = (PW - (k - 1) * 3) / k;
                 const on = i <= shown;
                 return (
                   <g key={it.name} className="pz-layer" data-on={on ? "true" : "false"} style={{ "--d": "260ms" } as React.CSSProperties}>
                     {Array.from({ length: k }, (_, j) => (
-                      <g key={j}>
-                        <rect x={PX + j * (bw + 3)} y={y + 2} width={bw} height={LAYER - 3} fill={i === shown ? "#d6b285" : "#c19a6b"} />
-                        <rect x={PX + j * (bw + 3)} y={y + 2} width={bw} height="4" fill="#000" opacity="0.06" />
-                        <rect x={PX + j * (bw + 3) + bw / 2 - 9} y={y + 2} width="18" height="12" fill="#a57c4c" opacity="0.85" />
-                      </g>
+                      <Product key={`${kind}-${j}`} kind={kind} x={PX + j * (bw + 3)} y={y} w={bw} h={LAYER} fill={i === shown ? TONE[kind][0] : TONE[kind][1]} detail={TONE[kind][2]} />
                     ))}
                     <line x1={PX + PW + 22} y1={y + 2} x2={PX + PW + 22} y2={y + LAYER - 1} stroke={on ? "#151615" : "#9fa199"} />
                     <line x1={PX + PW + 16} y1={y + 2} x2={PX + PW + 28} y2={y + 2} stroke={on ? "#151615" : "#9fa199"} />
@@ -107,7 +162,7 @@ export function Steps() {
                 );
               })}
               {/* riser and base */}
-              <rect x={SX - 26} y={H - RISER} width="52" height={RISER} fill="#34383a" />
+              <rect x={SX - 26} y={H - RISER} width="52" height={RISER} fill="#c9cbc6" stroke="#151615" strokeWidth="1.2" />
               <rect x={SX - 40} y={H - 4} width="80" height="4" fill="#151615" />
               <rect x={SX - 20} y={SY} width="40" height={D1 + 2} rx="4" fill="#e3e4df" stroke="#151615" strokeWidth="1.2" />
               {/* arm: upper arm → forearm → wrist, nested so each joint turns about its own pin */}
