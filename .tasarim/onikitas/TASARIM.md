@@ -102,7 +102,7 @@ Ne değişti: (1) efekt katmanı ısınırken renderer ACES ton eşlemesini koru
 | 6 | THREE.Clock uyarısı, D3D "gradient in loop" gölgelendirici uyarısı | Kütüphane içi / önceden beri | Zararsız, izlenecek |
 | 7 | Öğle metni "Her avluyu evin kuzeyine aldık" sahnede gösterilmiyor | Kapsam dışı | Kabul |
 | 8 | ~~Villa ayrıntısı~~ | Kapandı (üçüncü tur, `scene/villa.ts`) | |
-| 9 | Durağan kareler (yazılım çizici ve hareket azaltma yedeği) eski kutu villaları ve akşamı 19:40 ışığıyla gösteriyor | Kareler sahneden yeniden çekilmedi (bu turun listesinde yoktu) | 7 kareyi `?still=n` ile GPU açık yeniden çek |
+| 9 | ~~Durağan kareler eski villaları ve 19:40 akşamını gösteriyor~~ | Kapandı (üçüncü tur, ayrı commit): 7 kare yeni sahneden, GPU açık, `?still=n` ile; yakalamada her ev yakın seviyede (tam ayrıntı); akşam karesi 20:00; kareler yalnız sahne (şerit/perde yok), metin zemini canlıdaki gibi DOM'da. 1600×1000 webp, 28–95 KB | |
 | 10 | ~~Metin şeridi sahneyi örtüyor~~ | Kapandı (üçüncü tur: yalnız metin zemini) | |
 | 11 | İlk boyamayla çakışan ~140 ms'lik React canlandırma görevi (soğuk tarayıcı) | Ortak Next/React yükü, demoya özgü değil | Kabul; FCP sonrası TBT'ye girmiyor |
 | 12 | Telefon ölçümü masaüstü GPU'sunda öykünme; orta sınıf Android'de TBT ölçülmedi | Cihaz yok | Yayından sonra PageSpeed Insights ya da gerçek telefon |

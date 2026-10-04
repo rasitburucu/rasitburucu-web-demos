@@ -240,7 +240,9 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
         m.userData.villa = i;
       }
       lod.addLevel(near, 0);
-      lod.addLevel(far, LOD_FAR, 0.06);
+      // still capture (?still=n) renders every house at its near level: the
+      // stills stand in for the scene where it cannot run, details included
+      lod.addLevel(far, store.still >= 0 ? 1e9 : LOD_FAR, 0.06);
       g.add(lod);
     });
     return g;
