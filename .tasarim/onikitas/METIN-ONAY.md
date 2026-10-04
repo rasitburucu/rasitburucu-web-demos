@@ -45,3 +45,5 @@ Saatler artık tek yerden geliyor (`lib/onikitas/chapters.ts`, bölümün başla
 Künye tablosundaki "Cephe" sütunu aynı kısa adları kullanır: Güneybatı, Batı, Kuzeybatı.
 
 Değişmeyen ama kontrol edilen: İkindi gövdesi ("yarımadanın kuzeybatı rüzgârına açık") yeni yönle tutarlı. Öğle gövdesi ("Her avluyu evin kuzeyine aldık") cepheden bağımsız, olduğu gibi kaldı.
+
+**ONAYLANDI:** Raşit, 2026-10-04 (bu dosyadaki bütün satırlar; firik tabağı olduğu gibi kalır).

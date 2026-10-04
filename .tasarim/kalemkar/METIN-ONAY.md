@@ -17,3 +17,5 @@ Toplam: 5 satır.
 | Yer | Durum | Öneri |
 |---|---|---|
 | Firik tabağı | Fotoğraf değişmedi: Pexels'te tepeden çekilmiş, tabakta boş alan bırakan "firik + kuzu" karesi bulunamadı. Bulunan iyi kuzu karesi (36678405) firiksiz; firik kareleri kuzusuz. | Metni fotoğrafa uydurmuyoruz. Gerçek müşteride tek çekim günü çözer. İstersen sonraki turda yalnız kuzu görünen kareyle "Kuzu, firik, acı portakal" sırası düşünülebilir; karar senin. |
+
+**ONAYLANDI:** Raşit, 2026-10-04 (bu dosyadaki bütün satırlar; firik tabağı olduğu gibi kalır).
