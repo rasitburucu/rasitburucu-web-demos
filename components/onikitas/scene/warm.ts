@@ -77,9 +77,14 @@ export function useWarmComposer(ref: React.RefObject<EffectComposer | null>) {
       let count = 0;
 
       // 1. the scene, as the composer's render pass will draw it
+      // one mesh per material (the twenty-four house meshes share one)
       const meshes: THREE.Mesh[] = [];
+      const seen = new Set<THREE.Material | THREE.Material[]>();
       scene.traverse((o) => {
-        if ((o as THREE.Mesh).isMesh) meshes.push(o as THREE.Mesh);
+        const m = o as THREE.Mesh;
+        if (!m.isMesh || seen.has(m.material)) return;
+        seen.add(m.material);
+        meshes.push(m);
       });
       for (const m of meshes) {
         if (!alive) break;

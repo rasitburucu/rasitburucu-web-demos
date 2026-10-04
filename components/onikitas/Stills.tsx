@@ -10,7 +10,8 @@ import { asset } from "@/lib/asset";
 // reduced motion, for browsers without WebGL2 and as the no-JS backdrop.
 
 const FRAMES = chapters.map((c) => asset(`/onikitas/frames/${c.id}.webp`));
-const HOURS = [5.7, 7.0, 10.0, 13.0, 16.5, 19.67, 21.3];
+// the hour each frame shows (the evening frame is the dial's opening hour, 20:00)
+const HOURS = [5.7, 7.0, 10.0, 13.0, 16.5, 20.0, 21.3];
 
 function nearest(h: number) {
   let best = 0;

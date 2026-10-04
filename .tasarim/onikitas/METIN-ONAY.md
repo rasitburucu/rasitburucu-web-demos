@@ -63,3 +63,31 @@ Değişmeyen ama kontrol edilen: İkindi gövdesi ("yarımadanın kuzeybatı rü
 Not: Bölüm adları, başlıklar, gövde metinleri değişmedi.
 
 **ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.
+
+---
+
+# 2026-10-05 üçüncü tur (gelistir3/onikitas): ONAY BEKLİYOR
+
+Ortak kural (üst şerit, menü, künye) ve kadran paneli. Üst şerit zaten "Konsept çalışma — rasitburucu.com" olduğu için değişmedi. Bölüm başlıkları ve gövde metinleri değişmedi.
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Üst menü (masaüstü) | (yalnız "Ziyaret" düğmesi) | Gün · Evler · Ziyaret | Ortak kural 2: tek sayfanın ana bölümleri menüde |
+| Üst menü (telefon) | (yok) | "Menü" düğmesi; panelde Gün · Evler · Ziyaret | Aynı kural; "Ziyaret" düğmesi telefonda da görünür kalır |
+| Alt bilgi, marka sütunu | Onikitaş (yazı logosu) | Onikitaş (yazı logosu) / Onikitaş Villaları / Yalıkavak, Bodrum | Künye şablonu 1 |
+| Alt bilgi, Ziyaret sütunu | (yok) | Ziyaret · Yalıkavak · Bodrum, Muğla · "Satış ofisi her gün 10.00–19.00, randevuyla." · Yol tarifi | Künye şablonu 2; adres ilçe düzeyinde, saatler örnek |
+| Alt bilgi, İletişim sütunu | (yok) | İletişim · 0252 000 48 12 · satis@onikitas.example | Künye şablonu 3; 000 bloklu kurgusal numara, gerçek kişiye denk gelmeyen adres |
+| Alt bilgi, Sayfalar sütunu | (yok) | Sayfalar · Gün · Evler · Ziyaret | Menüyle aynı liste, tek kaynak |
+| Konsept notu | Onikitaş kurgusal bir projedir. Adı, evleri, saatleri ve bu sayfadaki bütün bilgiler bir konsept çalışma için yazıldı. | Onikitaş kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Adres, telefon, evlerin bilgileri, saatleri ve satış durumları örnektir; formlar hiçbir yere gönderilmez. | Künye şablonu 5 (ortak kalıp) |
+| Künye başlığı | Künye (her zaman açık) | Proje künyesi (açılır) | Künye şablonu 6 |
+| Künye, tasarım satırı | Tasarım ve geliştirme: rasitburucu.com. rasitburucu.com'a dön | Tasarım ve geliştirme: Raşit Burucu (rasitburucu.com bağlantısı) | Sabit etiket |
+| Künye, 3B satırı | Arazi, evler, zeytinler, deniz ve gökyüzü tarayıcıda kodla üretilir; hazır üç boyutlu model yoktur. | 3B ve render: Arazi, evler, zeytinler, deniz ve gökyüzü tarayıcıda WebGL ile kodla üretilir; hazır üç boyutlu model yoktur. Altında "Dokular" ve "Yazılım" listeleri | Sabit etiket; dokular ve yazılım bu satıra taşındı |
+| Künye, fotoğraf satırı | (yok) | Fotoğraflar: Fotoğraf kullanılmadı. | Sabit etiket |
+| Künye, yazı karakterleri | Yazı tipleri (başlık) | Yazı karakterleri: (satır etiketi) | Sabit etiket |
+| Künye, her kaynağın kullanım yeri | (dosyada vardı, gösterilmiyordu) | Başlıklar ve saat · Onikitaş yazısı · Metin ve arayüz · Kireç duvar ve cepheler · Teraslar ve havuz kenarları · WebGL · Sahne · Işık sonrası işlem · Ortam gölgesi · Maketten gerçeğe geçiş malzemesi · Yumuşak kaydırma | Şablon "nerede kullanıldı" istiyor (credits.ts'deki metin, değişmedi) |
+| Künye, yıl ve telif | (yok) | Yıl: 2026 · "© 2026 Onikitaş · Konsept çalışma — rasitburucu.com" | Künye şablonu 6–7 |
+| Kadran paneli, sağ üst düğme | (yok) | Paneli sola al / Paneli sağa al | E maddesi: panel iki yana alınabilir |
+| Kadran paneli, yakın plan | (yok) | Yakın planı kapat | D maddesi: seçili evin yakın planından yamaca dönüş (Esc de kapatır) |
+| Kadran paneli, künyeden gelince | (yok) | Listeye dön | G maddesi: "Bu evi gör" sonrası aynı satıra dönüş |
+
+Not: Yakın plan açıkken "Evinizi hangi ışıkta görmek istersiniz?" sorusu ekrandan geçici olarak çekilir (ev panelin yanındaki alanı doldursun diye), "Yakın planı kapat" ile geri gelir. Metin değişmedi.

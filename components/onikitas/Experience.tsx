@@ -109,12 +109,71 @@ function useDirector(mode: Mode) {
     let heights: number[] = [];
     let vh = window.innerHeight;
 
+    // the part of the screen the dial panel and the evening question leave to
+    // the scene: the camera centres its frame (and a close-up) there
+    const measureFree = () => {
+      if (!dial || !store.dialOn) {
+        store.free = null;
+        return;
+      }
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const p = dial.getBoundingClientRect();
+      // the evening question is out of the way during a close-up: the header's foot is the top
+      const q = root.dataset.close === "true" ? ({ bottom: 96 } as DOMRect) : copies[5]?.getBoundingClientRect();
+      if (p.width > W * 0.7) {
+        // phones: the band between the question and the panel
+        const y0 = q ? q.bottom + 16 : H * 0.3;
+        const y1 = Math.max(y0 + 80, p.top - 12);
+        store.free = [0, y0 / H, 1, Math.min(1, y1 / H)];
+      } else {
+        // wide screens: beside the panel, under the question
+        const left = p.left < W / 2;
+        const y0 = q ? Math.min(q.bottom + 12, H * 0.62) : H * 0.3;
+        store.free = [left ? (p.right + 16) / W : 0, y0 / H, left ? 1 : (p.left - 16) / W, 1];
+      }
+    };
+    // each copy's text bed hugs its lines, not the copy's box: the widest
+    // line's left and right edges, measured from the rendered text
+    const fitBeds = () => {
+      const range = document.createRange();
+      for (const el of copies) {
+        if (!el) continue;
+        const box = el.getBoundingClientRect();
+        if (!box.width) continue;
+        let l = Infinity;
+        let r = -Infinity;
+        const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+        for (let n = walk.nextNode(); n; n = walk.nextNode()) {
+          if (!n.textContent?.trim() || n.parentElement?.closest(".sr-only")) continue;
+          range.selectNodeContents(n);
+          for (const rc of range.getClientRects()) {
+            if (rc.width < 1) continue;
+            l = Math.min(l, rc.left);
+            r = Math.max(r, rc.right);
+          }
+        }
+        // links and buttons are boxes wider than their words
+        el.querySelectorAll("a").forEach((a) => {
+          const rc = a.getBoundingClientRect();
+          l = Math.min(l, rc.left);
+          r = Math.max(r, rc.right);
+        });
+        if (!Number.isFinite(l)) continue;
+        el.style.setProperty("--bed-l", `${Math.max(0, Math.round(l - box.left))}px`);
+        el.style.setProperty("--bed-r", `${Math.max(0, Math.round(box.right - r))}px`);
+      }
+    };
     const measure = () => {
       vh = window.innerHeight;
       tops = sections.map((s) => s.getBoundingClientRect().top + window.scrollY);
       heights = sections.map((s) => s.offsetHeight);
+      measureFree();
+      fitBeds();
     };
     measure();
+    const offPanel = on("panel", () => requestAnimationFrame(measureFree));
+    const offFocus = on("focus", () => requestAnimationFrame(measureFree));
     const ro = new ResizeObserver(measure);
     ro.observe(document.body);
     document.fonts?.ready.then(measure);
@@ -169,10 +228,20 @@ function useDirector(mode: Mode) {
         }
       }
       if (dialOn !== dialShown) {
+        // leaving the evening ends a visit from the registry: no way back to offer
+        if (!dialOn && store.fromList >= 0) {
+          store.fromList = -1;
+          emit("focus");
+        }
         dialShown = dialOn;
         store.dialOn = dialOn;
         if (dial) dial.dataset.on = dialOn ? "true" : "false";
         emit("dial");
+        // phones drop the evening body under the dial: the bed and the free band change
+        requestAnimationFrame(() => {
+          measureFree();
+          fitBeds();
+        });
       }
 
       const minute = Math.round(store.hour * 60);
@@ -206,6 +275,8 @@ function useDirector(mode: Mode) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as HTMLElement | null)?.closest?.("a[href^='#']") as HTMLAnchorElement | null;
       if (!a) return;
+      // the phone menu panel closes once a section is picked
+      a.closest("details")?.removeAttribute("open");
       const id = a.getAttribute("href")!.slice(1);
       if (!lenis && id !== "ziyaret" && id !== "evler") return;
       if (goTo(id)) e.preventDefault();
@@ -217,6 +288,8 @@ function useDirector(mode: Mode) {
       ro.disconnect();
       window.removeEventListener("pointermove", onPointer);
       document.removeEventListener("click", onClick);
+      offPanel();
+      offFocus();
       lenis?.destroy();
     };
   }, [mode]);

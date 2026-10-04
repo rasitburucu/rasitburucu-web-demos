@@ -1,6 +1,6 @@
 # Onikitaş: tasarım kaydı ve borç tablosu
 
-Güncelleme: 2026-10-05, dal `gelistir2/onikitas` (önceki: 2026-10-04, `gelistir/onikitas`). Yön bilgisi: `~/.claude/plans/imdi-senden-yle-bir-replicated-donut.md` (Onikitaş v2), son eleştiri `_web-atolyesi/onikitas-elestiri-2026-10-04/ELESTIRI.md`.
+Güncelleme: 2026-10-05, dal `gelistir3/onikitas` (üçüncü tur; önceki: `gelistir2/onikitas`, `gelistir/onikitas`). Yön bilgisi: `~/.claude/plans/imdi-senden-yle-bir-replicated-donut.md` (Onikitaş v2), son eleştiri `_web-atolyesi/onikitas-elestiri-2026-10-04/ELESTIRI.md`.
 
 Dokunulmayanlar (Raşit'in kararı): ilk ekrandaki kemer, Pinyon Script logo, DM Serif Display + Instrument Sans, palet (badana / traverten / kiremit), gün akışının bölüm yapısı, VisitDialog ve Registry işlevi.
 
@@ -19,20 +19,39 @@ Dokunulmayanlar (Raşit'in kararı): ilk ekrandaki kemer, Pinyon Script logo, DM
 | Kaide | teras duvarı 0,5 (eski 0,9), kaide derinliği 3,6; pad ağırlığı `w⁴/(1−w)`: kendi kenarında ev her zaman kazanır, alttaki komşu zemini aşağı çekip kaideyi havada bırakamaz | `lib/onikitas/site.ts` |
 | Temas gölgesi | evler zemin yükseklik dokusunu okur (`uGround`, yarım float), zemine 0,85 birim kala %52'ye kadar kararır; teras duvarı dibinde zemin %68 | `materials.ts` |
 | Havuz | açık taban, duvara doğru koyulaşan su, karo çizgisi, hareketli ışık ağı, fresnel yansıma | `materials.ts` |
-| Kamera | yakın plan kaldırıldı; anahtarlar `getPoint` ile bölüm sınırına oturur; her gündüz anahtarında deniz kadrajın altında | `scene/rig.ts` |
+| Kamera | anahtarlar `getPoint` ile bölüm sınırına oturur; her gündüz anahtarında deniz kadrajın altında. Üçüncü tur: kadran açıkken seçilen eve yakın plan (`closeGoal`: 29° yükseklik, 30° yan açı, yan engel/arazi testiyle seçilir; mesafe evin pad'ini panelin bıraktığı boş alana sığdırır), evden eve geçişte yükselen yay, yere çarpmaz (`aboveGround`), lens kaydırması (`setViewOffset`) çerçeve merkezini boş alana taşır | `scene/rig.ts`, `Scene.tsx` Director |
 | Mobil kadraj | gündüz `PORTRAIT_DOLLY` 0,7, `PORTRAIT_LIFT` −1,5; gece `NIGHT_FIT` −0,4, `NIGHT_LIFT` 13 | `scene/rig.ts` |
 | Sis | 140 → 1100 (uzak sırt düz bir kama değil, sırt olarak okunur) | `Scene.tsx` |
 | Bölüm saatleri | 05:41, 06:30, 07:45, 11:45, 14:30, 17:45, 20:30 (tek kaynak); Akşam 20:00'de biter; her bölümün saati bir sonrakinin başladığı dakikadan bir dakika önce durur | `lib/onikitas/chapters.ts` `hourFor` |
 | Kadran | 15:00–21:00, çeyrek saat çentiği, saat etiketi her saat; seçili evin en güzel saatinde açılır, ev seçimi güneşi o saate götürür (ziyaretçi sürüklediyse götürmez); seçilen saat bölümden çıkınca da saklanır | `Sundial.tsx`, `Experience.tsx` |
 | Kadran kartı | tek 1 px çerçeve, düz traverten plaka (traverten dokusu %80 badana altında), gölge ve cam yok; taşlar düz dolgu + kıl çizgi, seçili taş düz kiremit | `onikitas.css` |
-| Metin zemini | radyal lekeler kaldırıldı. Masaüstü: metin tarafında tam boy düz badana şeridi (%76, tek yumuşak iç kenar 10 rem), karşı tarafta dar şerit (%65) saat ya da gün listesi için; bölüm taraf değiştirince şeritler kayar (yalnız transform). Telefon: her metin için üst kenardan inen tam genişlik bant, saat için kısa alt bant | `onikitas.css` "side rails", `Chrome.tsx` |
+| Metin zemini | Üçüncü tur: şeritler, üst perde ve tam genişlik bantlar kaldırıldı; sahne her yerde net. Yalnız metnin altında yumuşak zemin: metnin en geniş satırını saran kutu + 24–48 px taşma, 16–24 px yumuşak kenar (`--bed-x/y/f`); yoğunluk %86 (kuşluk/ikindi %90, saat %90, şafak %80, telefon %88, logo ve menü %86). Satır kenarları `Experience.tsx` `fitBeds` ile ölçülür | `onikitas.css` "text beds" |
 | Mürekkep tonu | koyu zemine geçiş 18:00 yerine 19:24 (altın saat açık şeritle kalır) | `Experience.tsx` |
 | Kayıt bölümü | üstünde 45vh gece rengine geçiş; geçmiş başlık zemini düz `--night`; telefonda ilk 4 kart + "Hepsini göster" | `onikitas.css`, `Registry.tsx` |
 | İlk başlık | şafak h1 harf animasyonsuz, gövde metni yükleme beklemeden görünür | `Chapters.tsx`, `onikitas.css` |
 | Ziyaret düğmesi | gölge yok | `onikitas.css` |
 | Durağan kareler | 7 kare yeni sahneden yeniden çekildi (1600×1000 webp, 29–93 KB) | `public/onikitas/frames/` |
+| Villalar (üçüncü tur) | Her ev mimari maket: 0,16 kalın cephe duvarı, içe gömülü pencere ve kapılar, doğrama (kayıt, orta dikme, kayıt kirişi, kapı alt tablası), taş söve ve denizlik, eşik, panjur (pier genişse duvara yatık, dar ise 90° açık; panjur boyası eve göre üç renk, panjur çıtaları shader'da), parapet harpuşta taşı, çörten, çatı döşemesi, merdiven kulübesi kapısı ve sedir, havalandırmalı baca başı ve şapkası, pergola taban taşları, masa ve bank, havuz kopingesi ve merdiveni, şezlong, teras basamakları (plinte bir, istinat duvarından üç), bahçe duvarı harpuştası, küp ve küpte genç zeytin (ağaç örneklemesine eklenir). Traverten derzleri (30×20, şaşırtmalı) ve moloz taş dizileri evin kendi eksenine göre (`aLp`). Seed'li varyant: panjur yok/hepsi/zemin, söve var/yok, meşe/boyalı doğrama, şapka, küp sayısı, şezlong, masa | `scene/villa.ts`, `materials.ts` |
+| Villa LOD | Ev başına THREE.LOD: yakın seviye 42 birim içinde (bütün ayrıntı), uzak seviye kütle + gerçek pencere boşlukları + panjur + pergola. Kutular doğrudan dizilere yazılır (parça başına geometri yok); 12 evin iki seviyesi 31–34 ms | `scene/villa.ts` |
+| Gölge yakın planda | Yakın plan oranında gölge kamerası ±66 → ±15 birime daralır ve eve kayar (2048 dokuda pergola çıtaları net) | `Scene.tsx` Sun |
+| Kadran paneli | "Paneli sola/sağa al" (masaüstü); panel solda iken akşam sorusu sağa geçer. Yakın plan açıkken soru geçici çekilir. "Yakın planı kapat", Esc; künyeden gelindiyse "Listeye dön" (satır ekranın üçte birine gelir, düğmesi odaklanır) | `Sundial.tsx`, `Experience.tsx` |
+| Menü ve künye | Menü: Gün, Evler, Ziyaret (masaüstü sözcük, telefonda `<details>` panel). Künye ortak şablona göre; künye metni `footerCopy` ayrı dışa aktarım (sayfa JS'ine girmez) | `Chrome.tsx`, `Chapters.tsx` Footer |
+| Ziyaret formu | İlk kullanımda yüklenir (`next/dynamic`, düğmeye yaklaşınca ısınır); bir kez yüklenince bağlı kalır, yarım talep korunur | `Sundial.tsx` |
+| Gece metni | 19vh → 13vh (telefon 104 → 98 px): bağlantılarla ilk evler arasında ince boşluk | `onikitas.css` |
 
 ## Ölçüm
+
+### Üçüncü tur (2026-10-05, GPU açık, `ekran/gelistir3/perf-once.txt`, `perf-sonra2.txt`)
+
+| Ölçüt | Önce (3 koşu) | Sonra (5 koşu) |
+|---|---|---|
+| İlk boyamaya kadar inen JS | 404 KB / 119 KB gzip / 102 KB br | 399 KB / 118 KB / 101 KB |
+| Toplam JS, masaüstü yüksek kademe | 1731 / 550 / 480 KB | 1740 / 554 / 484 KB (villa.ts, sahne paketinde) |
+| TBT masaüstü | 60 ms | 75 ms (62–95) |
+| TBT telefon kademesi (öykünme) | 37 ms | 66 ms (63–70) |
+| Villa kurulumu | 22 ms | 31–34 ms (iki LOD, 12 ev) |
+| Okunurluk (32 metin bloğu, eşik hepsi için 4,5:1) | şeritle | en düşük 7,37:1 (masaüstü menü "Gün"); `ekran/gelistir3/kontrast.txt` |
+
 
 ### Performans: hangi sayı neyi ölçüyor (2026-10-05)
 
@@ -82,8 +101,11 @@ Ne değişti: (1) efekt katmanı ısınırken renderer ACES ton eşlemesini koru
 | 5 | Kamera artık bölüm sınırlarına oturuyor (`getPoint`); bazı bölümler arası geçiş eskisinden biraz hızlı | Her gündüz karesinde deniz şartı | Telefonda kaydırma hissine bak |
 | 6 | THREE.Clock uyarısı, D3D "gradient in loop" gölgelendirici uyarısı | Kütüphane içi / önceden beri | Zararsız, izlenecek |
 | 7 | Öğle metni "Her avluyu evin kuzeyine aldık" sahnede gösterilmiyor | Kapsam dışı | Kabul |
-| 8 | Gerçek evrede villa ayrıntısı (içe gömülü pencere ve söve, pergola gölgesi, traverten teras dokusu) yapılmadı | Bu turda performans, kadran, zemin ve kayıt öncelikliydi | Ayrı tur; pencereyi cepheden 0,12 içe al + söve çerçevesi, pergola çıtalarını gölge haritasına sok, teras malzemesine `uTrav` |
-| 9 | Durağan kare "aksam" 19:40 ışığıyla çekili; saat artık 20:00 yazıyor | Kareler sahneden yeniden çekilmedi | `?still=5` ile yeniden çek (GPU açık) |
-| 10 | Masaüstünde metin şeridi sahnenin metin tarafını %76 badanayla örtüyor (eski lekeler de örtüyordu, ama yalnız metnin çevresini) | Okunurluk ≥4,5:1 şartı | Gerçek ekranda bak; çok ağır gelirse şerit genişliği `--rail-w` ile daraltılır |
+| 8 | ~~Villa ayrıntısı~~ | Kapandı (üçüncü tur, `scene/villa.ts`) | |
+| 9 | ~~Durağan kareler eski villaları ve 19:40 akşamını gösteriyor~~ | Kapandı (üçüncü tur, ayrı commit): 7 kare yeni sahneden, GPU açık, `?still=n` ile; yakalamada her ev yakın seviyede (tam ayrıntı); akşam karesi 20:00; kareler yalnız sahne (şerit/perde yok), metin zemini canlıdaki gibi DOM'da. 1600×1000 webp, 28–95 KB | |
+| 10 | ~~Metin şeridi sahneyi örtüyor~~ | Kapandı (üçüncü tur: yalnız metin zemini) | |
 | 11 | İlk boyamayla çakışan ~140 ms'lik React canlandırma görevi (soğuk tarayıcı) | Ortak Next/React yükü, demoya özgü değil | Kabul; FCP sonrası TBT'ye girmiyor |
 | 12 | Telefon ölçümü masaüstü GPU'sunda öykünme; orta sınıf Android'de TBT ölçülmedi | Cihaz yok | Yayından sonra PageSpeed Insights ya da gerçek telefon |
+| 13 | Yakın planda akşam sorusu geçici olarak çekiliyor | Ev panelin yanındaki alanı doldursun diye (D maddesi) | Raşit beğenmezse soru kalır, ev alt yarıya sığar |
+| 14 | Telefon kademesi TBT 37 → 66 ms (öykünme) | Ev başına iki LOD geometrisi | Eşik 300 ms; gerçek telefonda bak |
+| 15 | Yakın plan yalnız kadran açıkken; gündüz bölümlerinde eve tıklamak yalnız seçer | Kapsam: D maddesi akşam bölümü | Kabul |
