@@ -38,7 +38,10 @@ export function Announce() {
     <div className="rv-announce" role="region" aria-label={t.lead}>
       <div className="rv-wrap rv-announce-in">
         <p>
-          <strong>{t.lead}</strong> <span className="rv-announce-text">{text ?? " "}</span>
+          <strong>
+            <span className="rv-hide-sm">{t.lead}</span>
+            <span className="rv-show-sm">{t.leadShort}</span>
+          </strong> <span className="rv-announce-text">{text ?? " "}</span>
           <span className="rv-announce-short">{short}</span>
         </p>
         <Link href="/revak/kabul/bursluluk/" className="rv-announce-cta">

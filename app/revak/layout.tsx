@@ -39,7 +39,9 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-const JS_FLAG = `document.documentElement.classList.add('js')`;
+// js: scripts run. rv-live: the home walk will run (motion allowed), so its scroll
+// length is laid out before the first paint and never shifts the page later.
+const JS_FLAG = `(function(d){d.classList.add('js');try{if(matchMedia('(prefers-reduced-motion: no-preference)').matches)d.classList.add('rv-live')}catch(e){}})(document.documentElement)`;
 
 export default function RevakLayout({ children }: { children: React.ReactNode }) {
   return (
