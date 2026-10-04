@@ -19,3 +19,13 @@ Toplam: 5 satır.
 | Firik tabağı | Fotoğraf değişmedi: Pexels'te tepeden çekilmiş, tabakta boş alan bırakan "firik + kuzu" karesi bulunamadı. Bulunan iyi kuzu karesi (36678405) firiksiz; firik kareleri kuzusuz. | Metni fotoğrafa uydurmuyoruz. Gerçek müşteride tek çekim günü çözer. İstersen sonraki turda yalnız kuzu görünen kareyle "Kuzu, firik, acı portakal" sırası düşünülebilir; karar senin. |
 
 **ONAYLANDI:** Raşit, 2026-10-04 (bu dosyadaki bütün satırlar; firik tabağı olduğu gibi kalır).
+
+
+# Geliştirme turu 2 (2026-10-04, jüri düzeltmeleri)
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Rezervasyon özeti, menü satırı (`flow.sum.plates`; ekran okuyucu özeti dahil) | Menü: Sofra | Menü: Sofra, 9 tabak (Kısa sofra: 6, Tezgâh: 12) | Sininin ortasındaki noktalar menünün tabak sayısı; sayı hiçbir yerde yazmıyordu. Artık nokta sayısı satırdaki sayıyla aynı. |
+| Telefonda servis şeridi (yeni satır, `content/kalemkar/menu.ts` tabak adları) | Yalnız "7 / 9" | 7 / 9  Kuzu incik, taze ot sosu | Pasif metin artık okunur olduğu için şeritte hangi tabağın sinide olduğu da yazılı. Yeni metin yok, mevcut tabak adı. |
+
+Toplam bu tur: 2 satır. **ONAY BEKLİYOR.**

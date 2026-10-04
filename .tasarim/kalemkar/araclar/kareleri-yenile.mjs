@@ -8,7 +8,7 @@
 // is levelled to the common mid-tone.
 //
 // Sources (not committed): scripts/.raw/kalemkar/<pexels-id>.jpg (w=2200)
-//   node .tasarim/kalemkar/araclar/kareleri-yenile.mjs domates salata salon
+//   node .tasarim/kalemkar/araclar/kareleri-yenile.mjs domates salata salon incik
 import sharp from "sharp";
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 
@@ -63,6 +63,9 @@ const dishes = [
   { key: "domates", id: "8112428", food: [0.529, 0.477, 0.29], plate: [0.34, 0.5, 0.14, 0.26] },
   // Shredded cabbage with dill and red shreds, a small mound on a plain plate.
   { key: "salata", id: "29930364", food: [0.509, 0.503, 0.168], plate: [0.5, 0.64, 0.1, 0.2], sat: 1.05 },
+  // Lamb shank (gelistir2 jury round): the source's white plate showed between and beside the meat.
+  // Circle narrowed to 88 % (was 0.27) and the white repainted as the house glaze.
+  { key: "incik", id: "12312118", food: [0.395, 0.582, 0.2376], plate: [0.3, 0.46, 0.14, 0.26] },
 ];
 
 const PLATE = 1000; // px, whole plate

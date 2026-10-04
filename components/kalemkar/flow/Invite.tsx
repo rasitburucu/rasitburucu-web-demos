@@ -126,7 +126,7 @@ export function Invite() {
 
       <h2 className="kk-flow-sub">{t.budget}</h2>
       <ChipRadio<string> label={t.budget} value={budget} onChange={setBudget} options={t.budgets.map((o) => ({ value: o, label: o }))} />
-      <p className="kk-hint">{tr.sampleLong}</p>
+      <p className="kk-hint kk-hint--gap">{tr.sampleLong}</p>
 
       <TextField id="kk-i-note" label={t.note} value={note} onChange={setNote} multiline maxLength={600} optional />
 
