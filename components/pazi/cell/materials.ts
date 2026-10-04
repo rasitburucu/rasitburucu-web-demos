@@ -324,13 +324,15 @@ export function screenCanvas() {
 
 export function makeMaterials() {
   return {
-    paint: new THREE.MeshPhysicalMaterial({ color: COLORS.paint, roughness: 0.36, metalness: 0, clearcoat: 0.4, clearcoatRoughness: 0.35 }),
+    paint: new THREE.MeshPhysicalMaterial({ color: COLORS.paint, roughness: 0.46, metalness: 0, clearcoat: 0.18, clearcoatRoughness: 0.5 }),
     capDark: new THREE.MeshStandardMaterial({ color: COLORS.capDark, roughness: 0.62, metalness: 0.05 }),
     capRing: new THREE.MeshStandardMaterial({ color: "#9a9ea2", roughness: 0.28, metalness: 1 }),
     metal: new THREE.MeshStandardMaterial({ color: "#b9bcbf", roughness: 0.3, metalness: 1 }),
     alu: new THREE.MeshStandardMaterial({ color: "#c7cacc", roughness: 0.42, metalness: 0.85 }),
     anodized: new THREE.MeshStandardMaterial({ color: "#3d4145", roughness: 0.42, metalness: 0.7 }),
     graphitePaint: new THREE.MeshStandardMaterial({ color: "#34383a", roughness: 0.55, metalness: 0.2 }),
+    /** Robot pedestal and lift column: the same matte white family as the arm, a shade greyer so the two read apart. */
+    pedestal: new THREE.MeshStandardMaterial({ color: "#c9cbc6", roughness: 0.62, metalness: 0.05 }),
     rubber: new THREE.MeshStandardMaterial({ color: "#1d1e1f", roughness: 0.82 }),
     foam: new THREE.MeshStandardMaterial({ color: "#232425", roughness: 0.95 }),
     hose: new THREE.MeshStandardMaterial({ color: "#2b2e30", roughness: 0.5 }),

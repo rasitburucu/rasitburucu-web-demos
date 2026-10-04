@@ -74,6 +74,16 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 
 İlk tur: ağırlıklı 7,3 (Tasarım 7,4 · Kullanılabilirlik 6,8 · Yaratıcılık 7,7 · İçerik 7,2), karar DÜZELT. Uygulanan düzeltmeler: mobilde ölçü plakası 3B'nin önüne alındı ve ± düğmeleri geri geldi; ana sayfa 25 kg torba ile açılıyor (plakada ürün tipi seçimi); robot ışığı, gölge hatası ve kol incelmesi düzeltildi; plaka rakamları büyütüldü; azaltılmış harekette palet %60; HMI üst kenarı sarıdan grafite; güvenlik planı başlıkla hizalandı. İkinci puanlama yapılmadı.
 
+## Geliştirme turu (2026-10-04, jüri 7,3 → hedef 7,6+)
+
+- Telefonda (≤900 px) hücre ölçü plakasının üstünde, `clamp(220px, 32vw, 300px)` yükseklikte kısa kadraj (`zoomNarrow` 2,1, `frameNarrow` y 0,4); HMI şeridi plakanın hemen altında. Durağan çizim telefonda 1,6 ölçek.
+- Durağan çizim modu (`cell.render === "vector"`, `lib/pazi/store.ts`): sürükleme ipucu ve görünüm/hız/durdur düğmeleri gizli; HMI şeridinde `tr.view.still` notu. Yüklenirken (`pending`) düğmeler `visibility: hidden`.
+- Kahraman ekran yüksekliğine bağlı: başlık `clamp(2.45rem, min(5vw, 7.6svh), 5.6rem)`, plaka aralığı `--pz-hero-gap` ve alan yüksekliği `--pz-field-h` svh ile; `max-height: 880px` altında "devam" düğmesi ağırlık/hız satırına girer. İpucu şeridin üstünde yüzer. HMI şeridinin alt kenarı: 1280×720 → 718, 1366×768 → 761, 1440×900 → 892, 1536×864 → 856, 1920×1080 → 1047 (önce 1440×900'de 953).
+- Robot: kol mat beyaz (`paint` clearcoat 0,18), ayak/asansör kolonu açık gri `pedestal #c9cbc6`; koyu yalnız eklem kapakları, flanş, taban plakası. Kahramanda zoom 1,06 → 1,38 (palet kadrajda ~%27–30 büyük); vektör çizim 1,3 ölçek, açık ayak, kalın beyaz kol.
+- Durma bölgesi bandı dinlenirken düz sarı; siyah-sarı tarama yalnız operatör işareti yavaş/iç bölgedeyken (`engine.showZone`, IsoCell `zone`). Operatör işaretinin varsayılan yeri kadraj içine alındı (boş palet tarafı, bölge dışı); kahraman metin sütunu artık yalnız kendi öğelerinde tıklama alır, işaret sürüklenebilir.
+- "Kat kat kurulum": çizim kahramanda seçilen ürünü dizer (torba varsayılan; koli, shrink); bölüm yüksekliği 1440×900'de 1977 → 1137 px (−%42). Mobilde 1483 → 1369.
+- Ölçüm (yerel, `dogrula.py`): LCP masaüstü 340 ms / mobil 184 ms, CLS 0 / 0, konsol hatası 0, yatay taşma yok. GPU açık ekranlar: `ekran/gelistir-2026-10-04/gpu/`.
+
 ## Bilinen borçlar ve kararlar
 
 | Konu | Neden ertelendi | Ne zaman |
@@ -85,3 +95,6 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 | Gerçek cihaz performansı | Ölçüm masaüstü GPU'da; orta sınıf telefonda denenmedi | Raşit telefonda bakınca |
 | IFR %59 verisi | Doğrulanamadı, siteye konmadı | Kaynak doğrulanırsa |
 | Fiyat | Bilerek yok; kullanıcı teklif tutarını girer | Karar verildi |
+| 1024×768'de HMI şeridi 3 px taşıyor | Turun hedef ölçüleri dışında; dar sütunda alt başlık bir satır uzuyor | İsteğe bağlı cila |
+| Operatör iç bölgedeyken durum hücresi "Uygun" kalıyor (robot ışığı kırmızı, tarama görünüyor) | Turun iş listesinde yok | Gerekirse |
+| `site_sokum.py --headed` bu makinede yine durağan çizime düşüyor | Betik GPU bayrağı açmıyor; 3B kanıtı ayrı Playwright çekimiyle (`--enable-gpu`) alındı | Eklenti tarafında |

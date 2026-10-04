@@ -22,6 +22,8 @@ export type CellState = {
   operator: { x: number; z: number } | null;
   /** Zone the operator stands in (set by whoever owns the geometry). */
   zone: Zone;
+  /** How the page's live cell is drawn: 3D canvas, or the still vector drawing (no capable GPU). */
+  render: "pending" | "webgl" | "vector";
   /** Live counters published by the engine (or the static fallback). */
   live: { station: 0 | 1; placed: number; layer: number; waiting: number };
 };
@@ -59,6 +61,7 @@ export const cell = createStore({
   paused: false,
   operator: null,
   zone: "out",
+  render: "pending",
   live: { station: 0, placed: 0, layer: 0, waiting: 0 },
 });
 

@@ -105,6 +105,9 @@ export class CellEngine {
   private py = 0.25;
   private layerH = 0.25;
   private zones = { stop: { ex: 1, ez: 1 }, slow: { ex: 2, ez: 2 } };
+  /** Stop-zone band: plain yellow at rest, black/yellow hazard only while someone is inside a zone. */
+  private stopPlain?: THREE.Mesh;
+  private stopHazard?: THREE.Mesh;
   private marker?: THREE.Group;
   private markerRing?: THREE.Mesh;
   private screen = screenCanvas();
@@ -586,6 +589,13 @@ export class CellEngine {
     hz.position.y = 0.002;
     hz.receiveShadow = true;
     g.add(hz);
+    const plain = new THREE.Mesh(stopG.clone(), m.tape);
+    plain.position.y = 0.002;
+    plain.receiveShadow = true;
+    g.add(plain);
+    this.stopHazard = hz;
+    this.stopPlain = plain;
+    this.showZone(this.store.get().zone);
     const slowG = roundRectStrip((ex + 0.95) * 2, (ez + 0.95) * 2, 0.6, 0.06, 10);
     const sl = new THREE.Mesh(slowG, m.tape);
     sl.position.y = 0.002;
@@ -1368,12 +1378,23 @@ export class CellEngine {
   private placeMarker() {
     if (!this.marker) return;
     const op = this.store.get().operator;
-    const p = op ?? { x: this.zones.slow.ex + 0.55, z: this.zones.slow.ez - 0.2 };
+    // default spot: just outside the slow zone on the empty-pallet side, which stays in frame
+    // next to the hero copy (the front-right corner falls under the status strip)
+    const p = op ?? { x: -(this.zones.slow.ex + 0.45), z: -(this.zones.slow.ez - 0.3) };
     this.marker.position.x = p.x;
     this.marker.position.z = p.z;
     const zone = this.zoneAt(p.x, p.z);
     (this.markerRing!.material as THREE.MeshStandardMaterial).color.set(zone === "out" ? "#ecece6" : "#f5a800");
+    this.showZone(zone);
     if (this.store.get().zone !== zone) this.store.set({ zone });
+  }
+
+  /** The hazard pattern is a warning, not decoration: it appears only while the operator is in a zone. */
+  private showZone(zone: Zone) {
+    if (!this.stopHazard || !this.stopPlain) return;
+    const warn = zone !== "out";
+    this.stopHazard.visible = warn;
+    this.stopPlain.visible = !warn;
   }
 
   private pick(e: PointerEvent) {

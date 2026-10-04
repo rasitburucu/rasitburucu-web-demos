@@ -205,11 +205,19 @@
 
 /* -------------------------------------------------------------------- hero */
 
+/* The hero fits the viewport height, so the HMI strip sits fully on the first
+   screen (1440×900 and 1280×720): headline size and the plate's spacing are
+   tied to svh, and the drag hint floats above the strip instead of below it. */
 .pz-hero {
   position: relative;
   display: grid;
   grid-template-rows: 1fr auto;
-  min-height: max(700px, min(calc(100svh - var(--pz-header-h) - var(--pz-strip-h)), 960px));
+  min-height: max(560px, min(calc(100svh - var(--pz-header-h) - var(--pz-strip-h)), 960px));
+  --pz-hero-gap: clamp(8px, 1.4svh, 12px);
+  --pz-field-h: clamp(44px, 5.6svh, 50px);
+}
+.pz-hero .pz-display {
+  font-size: clamp(2.45rem, min(5vw, 7.6svh), 5.6rem);
 }
 .pz-hero-stage {
   position: absolute;
@@ -220,6 +228,11 @@
   left: 40%;
   bottom: 90px;
 }
+/* the drawing matches the 3D framing: robot and pallet about 30% larger */
+.pz-hero-cell .pz-iso {
+  transform: scale(1.3);
+  transform-origin: 50% 58%;
+}
 .pz-hero-grid {
   position: relative;
   z-index: 1;
@@ -227,32 +240,46 @@
   display: grid;
   grid-template-columns: minmax(0, 58%) 1fr;
   align-content: start;
-  padding-top: clamp(24px, 4vh, 52px);
-  padding-bottom: 24px;
+  padding-top: clamp(16px, 3.4svh, 52px);
+  padding-bottom: clamp(14px, 2.4svh, 24px);
   pointer-events: none;
 }
+/* only the copy itself takes the pointer: the floor beside it (and the
+   operator marker on it) stays draggable */
 .pz-hero-copy {
+  pointer-events: none;
+}
+.pz-hero-copy > * {
   pointer-events: auto;
+}
+.pz-hero-copy > h1 {
+  width: fit-content;
 }
 .pz-hero-line {
   display: block;
 }
 .pz-hero-sub {
-  margin: 16px 0 18px;
-  max-width: 44ch;
+  margin: clamp(10px, 1.8svh, 16px) 0 clamp(12px, 2svh, 18px);
+  max-width: 540px;
 }
 .pz-plate {
   max-width: 540px;
-  padding: 14px 18px 16px;
+  padding: clamp(10px, 1.5svh, 14px) 18px clamp(12px, 1.8svh, 16px);
   background: color-mix(in srgb, var(--pz-panel) 94%, transparent);
   border: 1.5px solid var(--pz-ink);
   border-radius: var(--pz-radius);
   box-shadow: 6px 6px 0 rgba(21, 22, 21, 0.08);
   display: grid;
-  gap: 12px;
+  gap: var(--pz-hero-gap, 12px);
 }
 .pz-plate .pz-seg-opt span:not(.pz-sr) {
   min-height: 40px;
+}
+.pz-hero .pz-plate .pz-num-box {
+  height: var(--pz-field-h, 50px);
+}
+.pz-hero .pz-plate .pz-times {
+  height: calc(var(--pz-field-h, 50px) + 2px);
 }
 .pz-plate-head {
   display: flex;
@@ -311,12 +338,43 @@
 .pz-hero-hmi {
   position: relative;
   z-index: 2;
+  padding-bottom: clamp(4px, 1.2svh, 12px);
+}
+.pz-hero-hmi .pz-wrap {
+  position: relative;
 }
 .pz-hero-hint {
-  margin: 8px 0 14px;
+  position: absolute;
+  right: var(--pz-gutter);
+  bottom: 100%;
+  margin: 0 0 8px;
+  padding: 2px 6px;
   font-size: 0.8125rem;
   color: var(--pz-ink-2);
   text-align: right;
+  background: color-mix(in srgb, var(--pz-floor) 84%, transparent);
+  pointer-events: none;
+}
+/* short desktop screens: the button joins the weight / rate row */
+@media (min-width: 901px) and (max-height: 880px) {
+  .pz-hero .pz-plate {
+    max-width: 640px;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+  }
+  .pz-hero .pz-plate > :not(.pz-plate-row):not(.pz-plate-actions) {
+    grid-column: 1 / -1;
+  }
+  .pz-hero .pz-plate-row {
+    grid-column: 1 / 3;
+  }
+  .pz-hero .pz-plate-actions .pz-btn-lg {
+    min-height: var(--pz-field-h, 50px);
+    padding: 0 18px;
+  }
+  .pz-hero .pz-plate-note {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -325,15 +383,22 @@
     flex-direction: column;
     min-height: 0;
   }
+  /* cause and effect on one screen: a short frame of the cell sits directly
+     above the plate, the status strip directly below it */
   .pz-hero-stage {
     position: relative;
     inset: auto;
-    height: min(82vw, 440px);
-    order: 3;
+    height: clamp(220px, 32vw, 300px);
+    order: 2;
+    margin-top: 12px;
   }
   .pz-hero-cell .pz-cell-vector {
     left: 0;
     bottom: 0;
+  }
+  .pz-hero-cell .pz-iso {
+    transform: scale(1.6);
+    transform-origin: 50% 54%;
   }
   .pz-hero-grid,
   .pz-hero-copy {
@@ -352,16 +417,19 @@
   }
   .pz-hero-hmi {
     order: 4;
+    padding-bottom: 0;
   }
   .pz-plate {
-    order: 2;
-    margin: 18px var(--pz-gutter) 0;
+    order: 3;
+    margin: 0 var(--pz-gutter) 16px;
     max-width: none;
   }
   .pz-plate-note {
     display: none;
   }
   .pz-hero-hint {
+    position: static;
+    margin: 8px 0 14px;
     text-align: left;
   }
 }
@@ -486,6 +554,18 @@
   background: var(--pz-yellow);
   color: var(--pz-ink);
 }
+.pz-hmi[data-render="pending"] .pz-hmi-ctrl {
+  visibility: hidden;
+}
+.pz-hmi-still {
+  align-self: center;
+  margin: 0;
+  padding: 8px 18px;
+  max-width: 48ch;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--pz-on-ink-2);
+}
 .pz-hmi :focus-visible {
   outline: 3px solid var(--pz-yellow);
   outline-offset: -3px;
@@ -513,6 +593,10 @@
     width: 100%;
     padding: 10px 12px 12px;
   }
+  .pz-hmi-still {
+    max-width: none;
+    padding: 10px 12px 12px;
+  }
   .pz-hmi-group {
     flex: 1 1 auto;
   }
@@ -525,7 +609,7 @@
 /* ------------------------------------------------------------------- steps */
 
 .pz-steps {
-  padding: clamp(80px, 11vw, 160px) 0 clamp(64px, 8vw, 120px);
+  padding: clamp(56px, 7vw, 104px) 0 clamp(48px, 5.5vw, 80px);
 }
 .pz-steps-grid {
   display: grid;
@@ -534,7 +618,7 @@
 }
 .pz-steps-sticky {
   position: sticky;
-  top: calc(var(--pz-header-h) + 48px);
+  top: calc(var(--pz-header-h) + 32px);
 }
 .pz-steps-svg {
   width: 100%;
@@ -566,7 +650,7 @@
   transform: translateY(-60px);
 }
 .pz-steps-copy .pz-lead {
-  margin: 20px 0 40px;
+  margin: 16px 0 28px;
 }
 .pz-steps-list {
   list-style: none;
@@ -578,8 +662,8 @@
   display: grid;
   grid-template-columns: 56px 1fr;
   gap: 8px;
-  padding: 28px 0 34px;
-  min-height: 34vh;
+  padding: 20px 0 22px;
+  min-height: 17vh;
   border-bottom: 1px solid var(--pz-line-soft);
   transition: opacity 260ms var(--pz-ease);
 }
@@ -643,7 +727,7 @@
   }
   .pz-steps-list li {
     min-height: 0;
-    padding: 22px 0 26px;
+    padding: 16px 0 18px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

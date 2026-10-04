@@ -47,10 +47,12 @@ const WOOD: [string, string, string] = ["#cdb18a", "#a88e68", "#957c58"];
 const STEEL: [string, string, string] = ["#c7cacc", "#9fa3a6", "#8c9093"];
 const PAINT: [string, string, string] = ["#f0f0ec", "#d2d3ce", "#bfc0bb"];
 const GRAPHITE: [string, string, string] = ["#4a4e51", "#34383a", "#2a2d2f"];
+const PEDESTAL: [string, string, string] = ["#dcddd8", "#bfc1bc", "#aeb0ab"];
 
 export function IsoCell({ config: override }: { config?: Config }) {
   const stored = useCell((s) => s.config);
   const lock = useCell((s) => s.lock);
+  const zone = useCell((s) => s.zone);
   const config = override ?? stored;
   const f = useMemo(() => fit(config, lock), [config, lock]);
   const { L: Lmm, W: Wmm } = palletSize(config);
@@ -114,8 +116,9 @@ export function IsoCell({ config: override }: { config?: Config }) {
   return (
     <svg className="pz-iso" viewBox={`${minX.toFixed(0)} ${minY.toFixed(0)} ${(maxX - minX).toFixed(0)} ${(maxY - minY).toFixed(0)}`} preserveAspectRatio="xMidYMid meet" role="presentation">
       <polygon points={rect(ex + 0.95, ez + 0.95)} fill="none" stroke="#f5a800" strokeWidth="5" strokeLinejoin="round" />
-      <polygon points={rect(ex, ez)} fill="none" stroke="#151615" strokeWidth="6" strokeDasharray="10 8" strokeLinejoin="round" />
-      <polygon points={rect(ex, ez)} fill="none" stroke="#f5a800" strokeWidth="6" strokeDasharray="10 8" strokeDashoffset="9" strokeLinejoin="round" />
+      {/* stop zone: plain yellow band at rest; the black/yellow hazard only while someone is inside */}
+      <polygon points={rect(ex, ez)} fill="none" stroke="#f5a800" strokeWidth="6" strokeLinejoin="round" />
+      {zone !== "out" ? <polygon points={rect(ex, ez)} fill="none" stroke="#151615" strokeWidth="6" strokeDasharray="10 8" strokeLinejoin="round" /> : null}
       {stations.map((st, si) => (
         <g key={si}>
           <polygon
@@ -138,16 +141,20 @@ export function IsoCell({ config: override }: { config?: Config }) {
           <Box key={z} x={0} y={0.74} z={z} w={g} h={y} d={u} tone={tone} />
         ))}
       </g>
-      <Box x={0} y={0} z={0} w={0.28} h={riserH} d={0.28} tone={GRAPHITE} />
-      <Box x={0} y={riserH} z={0} w={0.2} h={link.d1} d={0.2} tone={PAINT} />
+      {/* matte white arm on a light pedestal; dark only at the joint caps */}
+      <Box x={0} y={0} z={0} w={0.28} h={riserH} d={0.28} tone={PEDESTAL} />
+      <Box x={0} y={riserH} z={0} w={0.24} h={link.d1} d={0.24} tone={PAINT} />
       <g strokeLinecap="round" strokeLinejoin="round" fill="none">
-        <polyline points={pts([sh, elP, wrP])} strokeWidth="19" stroke="#151615" />
-        <polyline points={pts([sh, elP, wrP])} strokeWidth="15" stroke="#eeeeea" />
-        <polyline points={pts([wrP, toolP])} strokeWidth="13" stroke="#151615" />
-        <polyline points={pts([wrP, toolP])} strokeWidth="9" stroke="#eeeeea" />
+        <polyline points={pts([sh, elP, wrP])} strokeWidth="27" stroke="#8f918b" />
+        <polyline points={pts([sh, elP, wrP])} strokeWidth="24" stroke="#f0f0ec" />
+        <polyline points={pts([wrP, toolP])} strokeWidth="18" stroke="#8f918b" />
+        <polyline points={pts([wrP, toolP])} strokeWidth="15" stroke="#f0f0ec" />
       </g>
       {[sh, elP, wrP].map((p, i) => (
-        <circle key={i} cx={p[0]} cy={p[1]} r={i === 0 ? 12 : 10} fill="#2a2d2f" stroke="#9a9ea2" strokeWidth="1.5" />
+        <g key={i}>
+          <circle cx={p[0]} cy={p[1]} r={i === 0 ? 15 : 13} fill="#f0f0ec" stroke="#8f918b" strokeWidth="1.5" />
+          <circle cx={p[0]} cy={p[1]} r={i === 0 ? 9 : 7.5} fill="#2a2d2f" stroke="#9a9ea2" strokeWidth="1.2" />
+        </g>
       ))}
       {/* the tool, at the size the fit gave it (lib/pazi/gripper.ts) */}
       <Box x={tx} y={ty - 0.235} z={tz} w={f.grip.plate.w / 1000} h={0.035} d={f.grip.plate.l / 1000} tone={f.grip.family === "pence" ? STEEL : GRAPHITE} />
