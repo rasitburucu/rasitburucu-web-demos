@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Hanken_Grotesk, Newsreader } from "next/font/google";
+import { Hanken_Grotesk, Marcellus } from "next/font/google";
 import "./revak.css";
 import "./almanak.css";
 import { tr } from "@/content/revak/tr";
@@ -9,13 +9,12 @@ import { Footer, Strip } from "@/components/revak/shell/Footer";
 import { Reveal } from "@/components/revak/shell/Reveal";
 import { RouteSignal, SmoothScroll } from "@/components/revak/shell/Motion";
 
-// Newsreader: an optical-size serif with bookish numerals, for headlines and
-// the few large numbers. Hanken Grotesk: a calm grotesk for forms and body.
-// Both with latin-ext for ğ ş ı İ.
-const serif = Newsreader({
+// Marcellus: a flared, glyphic face drawn from Roman inscriptions; the school's
+// names read as if cut into the arcade's lintel. One weight, no italic.
+// Hanken Grotesk: a calm grotesk for forms and body. Both with latin-ext for ğ ş ı İ.
+const serif = Marcellus({
   subsets: ["latin", "latin-ext"],
-  style: ["normal", "italic"],
-  axes: ["opsz"],
+  weight: "400",
   variable: "--rv-serif",
   display: "swap",
 });
@@ -27,9 +26,11 @@ const sans = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://rasitburucu.com"),
   title: tr.meta.title,
   description: tr.meta.description,
   robots: { index: false, follow: false },
+  openGraph: { title: tr.meta.title, description: tr.meta.description, locale: "tr_TR", type: "website" },
 };
 
 export const viewport: Viewport = {

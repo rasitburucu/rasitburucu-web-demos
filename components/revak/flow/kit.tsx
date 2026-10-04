@@ -433,8 +433,8 @@ export function FlowShell({
       first.current = false;
       return;
     }
-    h1.current?.focus();
     window.scrollTo({ top: 0, behavior: "auto" });
+    h1.current?.focus({ preventScroll: true });
   }, [step]);
 
   return (
@@ -547,17 +547,50 @@ export function Review({ sections }: { sections: { title: string; onEdit: () => 
 export function useFocusOnMount<T extends HTMLElement>() {
   const ref = useRef<T>(null);
   useEffect(() => {
-    ref.current?.focus();
     window.scrollTo({ top: 0, behavior: "auto" });
+    ref.current?.focus({ preventScroll: true });
   }, []);
   return ref;
 }
 
-export function SealMark() {
+/**
+ * The registry seal. Without a name: a small check stamp. With the child's
+ * name (ön kayıt): a round wet-ink seal with the name in the centre, the
+ * payoff of "every child known by name".
+ */
+export function SealMark({ name, ring, label }: { name?: string; ring?: string; label?: string } = {}) {
+  if (!name || !ring)
+    return (
+      <div className="rv-seal-mark" aria-hidden="true">
+        <Icon name="check" size={30} />
+      </div>
+    );
+  const shown = name.toLocaleUpperCase("tr");
+  const size = shown.length > 9 ? 15 : shown.length > 6 ? 19 : 23;
   return (
-    <div className="rv-seal-mark" aria-hidden="true">
-      <Icon name="check" size={30} />
-    </div>
+    <svg className="rv-seal-stamp" viewBox="0 0 160 160" role="img" aria-label={label}>
+      <defs>
+        <path id="rv-seal-ring" d="M80 80 m-58 0 a58 58 0 1 1 116 0 a58 58 0 1 1 -116 0" />
+        <filter id="rv-seal-ink" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n" />
+          <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.1 1.35" result="speck" />
+          <feComposite in="SourceGraphic" in2="speck" operator="in" />
+        </filter>
+      </defs>
+      <g filter="url(#rv-seal-ink)" fill="none" stroke="currentColor">
+        <circle cx="80" cy="80" r="74" strokeWidth="3.5" />
+        <circle cx="80" cy="80" r="46" strokeWidth="1.5" />
+        <text fill="currentColor" stroke="none" fontSize="12.5">
+          <textPath href="#rv-seal-ring" textLength="358" lengthAdjust="spacing">
+            {ring}
+          </textPath>
+        </text>
+        <path d="M66 58 V50 A14 14 0 0 1 94 50 V58" strokeWidth="2" />
+        <text x="80" y={86 + size * 0.3} fill="currentColor" stroke="none" fontSize={size} textAnchor="middle">
+          {shown}
+        </text>
+      </g>
+    </svg>
   );
 }
 

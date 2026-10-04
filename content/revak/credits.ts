@@ -4,11 +4,12 @@
 // on 2026-09-28. Unsplash candidates from the moodboard were not used: their pages
 // sit behind a bot check, so their licence could not be verified.
 // Originals are graded and resized by scripts/process-revak-images.mjs.
+// The arcade renders (keys revak, revakWide, the walk's arch faces, the OG card) are
+// our own: modelled and rendered in Blender by scripts/revak-blender/revak_scene.py.
 
 export type Credit = { group: "photo" | "font"; key?: string; author: string; title: string; url: string; licence: string; use: string };
 
 export const credits: Credit[] = [
-  { group: "photo", key: "hero", author: "Minsu B", title: "View of Distant Statue Standing at End of Colonnade", url: "https://www.pexels.com/photo/view-of-distant-statue-standing-at-end-of-colonnade-11932099/", licence: "Pexels License", use: "Ana sayfa girişi" },
   { group: "photo", key: "anaokulu", author: "Kaboompics", title: "Child Sitting with Toy Blocks", url: "https://www.pexels.com/photo/child-sitting-with-toy-blocks-7269710/", licence: "Pexels License", use: "Anaokulu kemeri" },
   { group: "photo", key: "ilkokul", author: "Pixabay", title: "White Graphing Notebook", url: "https://www.pexels.com/photo/white-graphing-notebook-207756/", licence: "Pexels License", use: "İlkokul kemeri" },
   { group: "photo", key: "ortaokul", author: "Gustavo Fring", title: "Close-up of Lab Worker Looking at Specimen under Microscope", url: "https://www.pexels.com/photo/close-up-of-lab-worker-looking-at-specimen-under-microscope-8770717/", licence: "Pexels License", use: "Ortaokul kemeri" },
@@ -23,14 +24,12 @@ export const credits: Credit[] = [
   { group: "photo", key: "pool", author: "Kindel Media", title: "Olympic Swimming Pool with Blue Lane Lines", url: "https://www.pexels.com/photo/olympic-swimming-pool-with-blue-lane-lines-8688149/", licence: "Pexels License", use: "Havuz" },
   { group: "photo", key: "court", author: "Mathias Reding", title: "Sports ground with basketball hoop", url: "https://www.pexels.com/photo/sports-ground-with-basketball-hoop-5331954/", licence: "Pexels License", use: "Basketbol" },
   { group: "photo", key: "chess", author: "Vlada Karpovich", title: "Man in Black Jacket Playing Chess", url: "https://www.pexels.com/photo/man-in-black-jacket-playing-chess-6202994/", licence: "Pexels License", use: "Satranç" },
-  { group: "photo", key: "campus", author: "Willian Justen de Vasconcellos", title: "Historic Red Brick Building in NYC Sunlight", url: "https://www.pexels.com/photo/historic-red-brick-building-in-nyc-sunlight-32715517/", licence: "Pexels License", use: "Kampüs önizlemesi" },
-  { group: "photo", key: "kampusHero", author: "Paul G", title: "Brick Building with Arched Windows", url: "https://www.pexels.com/photo/brick-building-with-arched-windows-13787808/", licence: "Pexels License", use: "Kampüs sayfası girişi" },
   { group: "photo", key: "kabul", author: "Serhat HAYTAOĞLU", title: "Arched Antique Colonnade", url: "https://www.pexels.com/photo/arched-antique-colonnade-17113072/", licence: "Pexels License", use: "Kabul sayfası" },
   { group: "photo", key: "lab", author: "Jiri Ikonomidis", title: "Flasks in a Lab", url: "https://www.pexels.com/photo/flasks-in-a-lab-15509862/", licence: "Pexels License", use: "Fen laboratuvarları" },
   { group: "photo", key: "dining", author: "Henry Wagner", title: "Sunlit Empty Cafeteria with Wooden Benches", url: "https://www.pexels.com/photo/sunlit-empty-cafeteria-with-wooden-benches-34316837/", licence: "Pexels License", use: "Yemekhane" },
   { group: "photo", key: "garden", author: "Candid Flaneur", title: "Serene Garden Pathway with Lush Greenery", url: "https://www.pexels.com/photo/serene-garden-pathway-with-lush-greenery-32416206/", licence: "Pexels License", use: "Bahçeler" },
   { group: "photo", key: "classroom", author: "Rajiv Salunkhe", title: "Game of Shadows!", url: "https://www.pexels.com/photo/game-of-shadows-27916160/", licence: "Pexels License", use: "Sınıf" },
   { group: "photo", key: "corridor", author: "Hoàng Xuân", title: "Sunlit School Corridor with Shadows", url: "https://www.pexels.com/photo/sunlit-school-corridor-with-shadows-29636314/", licence: "Pexels License", use: "Koridor" },
-  { group: "font", author: "Production Type", title: "Newsreader", url: "https://fonts.google.com/specimen/Newsreader", licence: "SIL Open Font License 1.1", use: "Başlıklar" },
+  { group: "font", author: "Astigmatic (Brian J. Bonislawsky)", title: "Marcellus", url: "https://fonts.google.com/specimen/Marcellus", licence: "SIL Open Font License 1.1", use: "Başlıklar" },
   { group: "font", author: "Alfredo Marco Pradil", title: "Hanken Grotesk", url: "https://fonts.google.com/specimen/Hanken+Grotesk", licence: "SIL Open Font License 1.1", use: "Metin ve arayüz" },
 ];

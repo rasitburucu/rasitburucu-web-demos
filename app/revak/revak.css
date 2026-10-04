@@ -41,6 +41,8 @@
   font-size: 1.0625rem;
   line-height: 1.6;
   font-kerning: normal;
+  font-synthesis: none;
+  caret-color: var(--rv-seal);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -298,7 +300,10 @@ html[data-rv-menu="open"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 28px;
+  min-height: 28px;
+  padding: 5px var(--rv-gutter);
+  text-align: center;
+  line-height: 1.35;
   background: var(--rv-ink);
   color: var(--rv-stone);
   font-size: 0.78rem;
@@ -748,7 +753,7 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   font-family: var(--rv-f-serif);
   font-size: clamp(1.4rem, 1.1rem + 0.9vw, 2rem);
   line-height: 1.25;
-  font-style: italic;
+  font-style: normal;
 }
 .rv-alumni-quote cite {
   display: block;
@@ -989,7 +994,7 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   display: block;
   font-size: 3rem;
   font-weight: 400;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.012em;
   color: var(--rv-seal);
 }
 .rv-ev-date span {
@@ -1602,7 +1607,7 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   font-size: clamp(2.6rem, 1.4rem + 4.4vw, 5.6rem);
   line-height: 1;
   letter-spacing: -0.028em;
-  font-style: italic;
+  font-style: normal;
 }
 .rv-day-head p {
   max-width: 40ch;
@@ -1684,7 +1689,7 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   font-family: var(--rv-f-serif);
   font-size: clamp(4rem, 2.5rem + 5vw, 8rem);
   line-height: 0.9;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.012em;
   color: var(--rv-stone);
   font-variant-numeric: lining-nums;
 }
@@ -2054,7 +2059,7 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   font-weight: 400;
   font-size: clamp(3rem, 2rem + 3vw, 5rem);
   line-height: 1;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.012em;
   font-variant-numeric: lining-nums tabular-nums;
 }
 .rv-countdown-nums span {
@@ -3001,15 +3006,16 @@ select.rv-input {
 }
 .rv-done h1 {
   font-size: clamp(2.6rem, 1.6rem + 3.6vw, 4.8rem);
-  line-height: 1.02;
+  line-height: 1.08;
+  padding-bottom: 0.12em;
   letter-spacing: -0.025em;
   max-width: 14ch;
 }
 .rv-done h1:focus {
   outline: none;
 }
-.rv-done-lede {
-  margin-top: 1.25rem;
+.rv-root .rv-done-lede {
+  margin-top: 1rem;
   font-size: 1.2rem;
   max-width: 48ch;
   color: #2c3544;
@@ -3027,6 +3033,30 @@ select.rv-input {
 @media (prefers-reduced-motion: no-preference) {
   .rv-seal-mark {
     animation: rv-stamp 0.6s var(--rv-ease) both;
+  }
+}
+.rv-seal-stamp {
+  display: block;
+  width: clamp(128px, 16vw, 168px);
+  height: auto;
+  margin-bottom: 1.5rem;
+  color: var(--rv-seal);
+  font-family: var(--rv-f-serif);
+  transform: rotate(-7deg);
+  mix-blend-mode: multiply;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rv-seal-stamp {
+    animation: rv-press 0.52s cubic-bezier(0.2, 0.9, 0.3, 1) 0.15s both;
+  }
+}
+@keyframes rv-press {
+  from {
+    opacity: 0;
+    transform: scale(1.35) rotate(-13deg);
+  }
+  60% {
+    opacity: 1;
   }
 }
 @keyframes rv-stamp {

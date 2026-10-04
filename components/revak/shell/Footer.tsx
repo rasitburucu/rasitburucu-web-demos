@@ -60,6 +60,7 @@ export function Footer() {
           <p className="rv-footer-note">{f.note}</p>
           <details className="rv-credits">
             <summary>{f.creditsTitle}</summary>
+            <p>{f.renders}</p>
             <p>{f.creditsLead}</p>
             <ul>
               {photos.map((p) => (
@@ -83,7 +84,9 @@ export function Footer() {
 export function Strip() {
   return (
     <div className="rv-strip">
-      <a href={tr.strip.href}>{tr.strip.text}</a>
+      <p>
+        {tr.strip.text} <a href={tr.strip.href}>{tr.strip.link}</a>
+      </p>
     </div>
   );
 }

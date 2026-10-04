@@ -193,7 +193,7 @@ export function OnKayitFlow() {
               onChange={(x) => f.set("sinif", x as string)}
               options={c.siniflar[v.kademe].map((s) => ({ value: s.id, label: s.label }))}
             />
-          ) : (
+          ) : f.shown("kademe") ? null : (
             <p className="rv-hint" id="rv-f-sinif">
               {t.s1.sinifPick}
             </p>
@@ -348,7 +348,7 @@ function Done({ refNo, v }: { refNo: string; v: V }) {
   const bursOk = !Number.isNaN(target) && target >= 5 && target <= 12;
   return (
     <div className="rv-wrap rv-done">
-      <SealMark />
+      <SealMark name={v.ad.trim()} ring={d.seal(v.yil)} label={d.sealLabel(v.ad.trim())} />
       <h1 ref={h} tabIndex={-1}>
         {d.title}
       </h1>

@@ -26,7 +26,7 @@ export default function KampusPage() {
       </section>
 
       <div className="rv-wrap rv-kampus-hero">
-        <Photo k="kampusHero" priority sizes="(max-width: 1400px) 100vw, 1300px" alt={k.heroAlt} />
+        <Photo k="avlu" priority sizes="(max-width: 1400px) 100vw, 1300px" alt={k.heroAlt} />
       </div>
 
       <section className="rv-section rv-fac" aria-labelledby="rv-fac-title">

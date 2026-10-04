@@ -8,3 +8,4 @@ next-env.d.ts
 .dev.vars
 scripts/.raw/
 .preview/
+.tasarim/*/ekran/

@@ -19,3 +19,20 @@ export function scrollToY(y: number, immediate = false) {
   if (lenis) lenis.scrollTo(y, immediate ? { immediate: true } : { duration: 1.2 });
   else window.scrollTo({ top: y, behavior: immediate || prefersReduced() ? "auto" : "smooth" });
 }
+
+/* One frame driver. <SmoothScroll/> runs Lenis on its own rAF loop; the home
+   walk hands Lenis to gsap.ticker while it is mounted, so the scroll position
+   and the scrubbed timeline advance in the same tick. */
+let external = false;
+export function runLenisLoop(l: Lenis) {
+  let id = 0;
+  const loop = (t: number) => {
+    if (!external) l.raf(t);
+    id = requestAnimationFrame(loop);
+  };
+  id = requestAnimationFrame(loop);
+  return () => cancelAnimationFrame(id);
+}
+export const setExternalRaf = (on: boolean) => {
+  external = on;
+};

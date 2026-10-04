@@ -247,5 +247,48 @@
       1200
     ],
     "source": "29636314"
+  },
+  "revak": {
+    "file": "revak",
+    "w": 1200,
+    "h": 1500,
+    "widths": [
+      480,
+      800,
+      1200
+    ],
+    "source": "blender"
+  },
+  "revakWide": {
+    "file": "revakWide",
+    "w": 1600,
+    "h": 900,
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "source": "blender"
+  },
+  "avlu": {
+    "file": "avlu",
+    "w": 1600,
+    "h": 900,
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "source": "blender"
+  },
+  "aksamBahce": {
+    "file": "aksamBahce",
+    "w": 900,
+    "h": 1500,
+    "widths": [
+      480,
+      900
+    ],
+    "source": "blender"
   }
 }

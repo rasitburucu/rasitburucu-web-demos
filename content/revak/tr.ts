@@ -17,7 +17,7 @@ export const tr = {
       "Sarıyer Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar en fazla 18 öğrenci, IB Diploma Programı, üç dil. Kampüs turu planlayın, ön kayıt yaptırın.",
   },
 
-  strip: { text: "Konsept çalışma — rasitburucu.com", href: "/tr" },
+  strip: { text: "Konsept çalışma: Revak Okulları hayali bir okuldur. Rakamlar örnektir, formlar hiçbir yere gönderilmez.", link: "rasitburucu.com", href: "/tr" },
   skip: "İçeriğe geç",
   crumb: "Bulunduğunuz sayfa",
 
@@ -66,14 +66,10 @@ export const tr = {
 
   hero: {
     title: "Her çocuğun adıyla tanındığı okul.",
-    // Hand-set line breaks for the display setting; the second line is set in italic.
-    titleLines: ["Her çocuğun", "adıyla", "tanındığı okul."],
-    masthead: ["Revak Okulları", "Anaokulundan liseye", "Zekeriyaköy, Sarıyer", "2027-2028 kabul dönemi"],
-    caption: "Lev. 0 — Revak, sabah ışığında",
-    sub: "Sınıflarımız 18 öğrenciyi geçmez; her öğrencinin kendi danışman öğretmeni vardır. Çocuğunuzun nasıl öğrendiğini, neye sevindiğini biz de biliriz.",
+    sub: "Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar 18 öğrenciyi geçmez, her öğrencinin bir danışmanı var.",
+    season: "2027-2028 kabul dönemi açık.",
     primary: "Ön kayıt yaptırın",
     secondary: "Kampüs turu planlayın",
-    imageAlt: "Taş kemerlerin altından geçen gölgeli bir revak",
   },
 
   sentence: {
@@ -95,11 +91,10 @@ export const tr = {
 
   proof: {
     title: "Kısaca Revak.",
-    folio: "§ 01",
     // One typographic paragraph: each numeral sits in the running text.
     lines: [
       { pre: "Her sınıfta en fazla ", big: "18", post: " öğrenci." },
-      { pre: "Anaokulunda başlayan ", big: "3", post: " dil." },
+      { pre: "Anaokulunda ", big: "2", post: " dil, 5. sınıfta üçüncüsü." },
       { pre: "", big: "2014", post: "'ten beri IB Diploma Programı." },
       { pre: "Anaokulundan liseye ", big: "1", post: " kampüs." },
     ],
@@ -118,15 +113,14 @@ export const tr = {
   },
 
   levels: {
-    folio: "§ 02",
     title: "Revak boyunca",
     plate: "Lev.",
     rulerLabel: "Kademeler",
     ageLabel: "yaş",
     exit: {
       title: "Revağın sonunda, dünya.",
-      text: "2026'da 92 mezun. 71'i yurt içinde, 21'i yurt dışında bir üniversitede.",
-      link: "Mezunlarımız nereye gitti",
+      text: "On beş yıl aynı kapıdan girip çıkan çocuk, buradan kendi seçtiği bir üniversiteye yürür.",
+      link: "Üniversite rehberliği nasıl işliyor",
     },
     intro:
       "Anaokulundan liseye dört kademe, tek bir çatı altında. Çocuğunuz büyüdükçe okul da onunla birlikte değişir; onu tanıyan yüzler değişmez.",
@@ -140,8 +134,7 @@ export const tr = {
         size: "14 çocuk, iki öğretmen",
         lang: "İngilizce her gün, oyunla",
         line: "Kendi bahçesi olan ayrı bir bina. Günün yarısı açık havada, yarısı atölyede geçer.",
-        quote: "Sabah kapıda her çocuğu adıyla karşılarız. Günün geri kalanı o selamla başlar.",
-        who: "Defne Yalçın, anaokulu öğretmeni",
+        moment: "Sabah kapıda her çocuk adıyla karşılanır; gün o selamla başlar.",
         image: img("anaokulu"),
       },
       ilkokul: {
@@ -150,8 +143,7 @@ export const tr = {
         size: "En fazla 18 öğrenci",
         lang: "Haftada 10 saat İngilizce",
         line: "Okuma saatiyle başlayan günler, her dönem bir çalgı, haftada iki gün yüzme.",
-        quote: "Okumayı sevdirmek için acele etmeyiz. Her çocuğun kendi hızında bir kitabı olur.",
-        who: "Elif Sönmez, 2. sınıf öğretmeni",
+        moment: "Her gün 08.40'ta yirmi dakika okuma. Herkesin kendi hızında bir kitabı var.",
         image: img("ilkokul"),
       },
       ortaokul: {
@@ -160,8 +152,7 @@ export const tr = {
         size: "En fazla 18 öğrenci",
         lang: "İngilizce ve Almanca ya da İspanyolca",
         line: "Haftada en az bir fen dersi laboratuvarda. Her öğrenci her hafta küçük bir projeyi sunar.",
-        quote: "Deneyi önce yanlış yapmalarına izin veririz. Doğrusunu kendileri bulunca unutmazlar.",
-        who: "Burak Tan, fen bilimleri öğretmeni",
+        moment: "Deney önce yanlış yapılabilir. Doğrusunu kendisi bulan öğrenci unutmaz.",
         image: img("ortaokul"),
       },
       lise: {
@@ -170,15 +161,13 @@ export const tr = {
         size: "En fazla 18, IB sınıflarında 16",
         lang: "İngilizce, ikinci dil, isteğe bağlı üçüncü",
         line: "Ulusal program ve IB Diploma Programı. Üniversite danışmanlığı 9. sınıfta başlar.",
-        quote: "Üniversite tercihini son sınıfa bırakmayız. 9. sınıftan itibaren her öğrenciyle birlikte düşünürüz.",
-        who: "Zeynep Arıkan, üniversite danışmanı",
-        image: img("lise"),
+        moment: "Üniversite planı son sınıfta değil, 9. sınıfta danışmanla ilk görüşmede başlar.",
+        image: img("classroom"),
       },
-    } as Record<Kademe, { name: string; range: string; size: string; lang: string; line: string; quote: string; who: string; image: ImageKey }>,
+    } as Record<Kademe, { name: string; range: string; size: string; lang: string; line: string; moment: string; image: ImageKey }>,
   },
 
   approach: {
-    folio: "§ 04",
     title: "Üç alışkanlık, anaokulundan mezuniyete.",
     imageAlt: "Deftere kurşun kalemle not alan bir el",
     items: [
@@ -197,42 +186,20 @@ export const tr = {
     ],
   },
 
-  alumni: {
-    folio: "§ 03",
-    title: "2026 mezunlarımız",
-    intro: "92 mezunumuzun 71'i yurt içinde, 21'i yurt dışında bir üniversiteye yerleşti.",
-    tabs: { home: "Yurt içi", abroad: "Yurt dışı" },
-    tabsLabel: "Yerleşme bölgesi",
-    home: [
-      { name: "Boğaziçi Üniversitesi", n: 9 },
-      { name: "Koç Üniversitesi", n: 8 },
-      { name: "İstanbul Teknik Üniversitesi", n: 7 },
-      { name: "Orta Doğu Teknik Üniversitesi", n: 6 },
-      { name: "Bilkent Üniversitesi", n: 6 },
-      { name: "Sabancı Üniversitesi", n: 5 },
-      { name: "Galatasaray Üniversitesi", n: 3 },
-      { name: "Hacettepe Üniversitesi Tıp Fakültesi", n: 3 },
+  guidance: {
+    title: "Üniversite tercihi dört yılda yazılır.",
+    intro: "Her öğrenci 9. sınıfta bir üniversite danışmanıyla eşleşir. Yurt içi ve yurt dışı başvurular için ayrı ekipler çalışır; veli her adımda masadadır.",
+    steps: [
+      { grade: "9. sınıf", title: "Tanışma", text: "Danışmanla ilk görüşme: ilgi alanları, ders seçimi ve ulusal program ya da IB kararı için ön hazırlık." },
+      { grade: "10. sınıf", title: "Keşif", text: "Üniversite tanıtım günleri, yaz okulları ve bir haftalık meslek gözlemi. Yurt dışını düşünenler için dil sınavı takvimi." },
+      { grade: "11. sınıf", title: "Kısa liste", text: "Liste veliyle birlikte konuşulur. Deneme sınavları, portfolyo ve başvuru yazıları başlar." },
+      { grade: "12. sınıf", title: "Başvuru", text: "Başvuru ve tercih dönemi. Danışman, veliyle birlikte en az üç kez oturup listeyi yeniden düşünür." },
     ],
-    homeRest: "ve 24 mezunumuz 14 üniversitede daha",
-    abroad: [
-      { name: "Technische Universität München", n: 3 },
-      { name: "University of Toronto", n: 3 },
-      { name: "TU Delft", n: 2 },
-      { name: "King's College London", n: 2 },
-      { name: "Università Bocconi", n: 2 },
-      { name: "Maastricht University", n: 2 },
-      { name: "University of Edinburgh", n: 2 },
-    ],
-    abroadRest: "ve 5 mezunumuz 5 üniversitede daha",
-    quote: "Tercih listemi üç kez baştan yazdım. Danışmanım üçünde de oturup benimle yeniden düşündü.",
-    who: "Ece, 2026 mezunu",
-    whoDetail: "Boğaziçi Üniversitesi, Moleküler Biyoloji",
-    link: "Üniversite rehberliği nasıl işliyor",
+    link: "Rehberlikle ilgili sorular",
     linkHref: "/revak/kabul/#sss",
   },
 
   clubs: {
-    folio: "§ 05",
     title: "Ders bittiğinde",
     intro: "Otuzdan fazla kulüp ve takım var. Her öğrenci yılda en az birine katılır; çoğu ikiye.",
     items: [
@@ -246,13 +213,12 @@ export const tr = {
       { name: "Basketbol", range: "3-12. sınıf", image: img("court") },
       { name: "Satranç", range: "1-12. sınıf", image: img("chess") },
     ],
-    more: "ve 21 kulüp daha",
+    more: "ve 23 kulüp daha",
   },
 
   campusPreview: {
-    folio: "§ 06",
     title: "Zekeriyaköy'de, ormanın kıyısında 48 dönüm.",
-    imageAlt: "Kampüsün avlusu ve çevresindeki binalar",
+    imageAlt: "Bahçeden bakınca taş revak: kemerler, servi ağaçları ve arkada orman",
     facilities: [
       { name: "Yarı olimpik kapalı havuz", text: "Yüzme anaokulundan itibaren ders programında." },
       { name: "Üç katlı kütüphane", text: "38.000 kitap, lise için akşam 19.00'a kadar açık." },
@@ -263,7 +229,6 @@ export const tr = {
   },
 
   events: {
-    folio: "§ 07",
     title: "Yaklaşan etkinlikler",
     filterLabel: "Etkinlik türü",
     filters: { all: "Tümü", onsite: "Yerinde", online: "Çevrim içi" },
@@ -292,7 +257,7 @@ export const tr = {
         month: "Ekim",
         weekday: "Çarşamba",
         title: "Veli semineri: Ergenlikte ekran ve uyku",
-        text: "Psikolojik danışmanımız Dr. Seda Kılınç ile bir saatlik söyleşi ve soru-cevap.",
+        text: "Psikolojik danışmanlık birimimizle bir saatlik söyleşi ve soru-cevap.",
         where: "Çevrim içi",
         time: "19.00-20.00",
         start: "19.00",
@@ -345,25 +310,7 @@ export const tr = {
     ],
   },
 
-  voices: {
-    folio: "§ 08",
-    title: "Velilerimizden",
-    items: [
-      {
-        quote: "Oğlumun matematik öğretmeni, onun neden sessizleştiğini benden önce fark etti. O telefonu unutmuyorum.",
-        who: "Aslı D.",
-        role: "6. sınıf velisi",
-      },
-      {
-        quote: "Üç çocuğumuz da burada okudu. En büyüğü artık üniversitede ve hâlâ danışman öğretmenine yazıyor.",
-        who: "Kerem ve Nil T.",
-        role: "Mezun ve lise velisi",
-      },
-    ],
-  },
-
   faq: {
-    folio: "§ 09",
     title: "Velilerin en çok sorduğu sorular",
     intro: "Burada cevabını bulamadığınız her soru için kabul ofisimiz hafta içi 08.30-17.30 arasında telefonda.",
     feeCta: "Ücret bilgisini alın",
@@ -450,9 +397,10 @@ export const tr = {
     kvkk: "KVKK aydınlatma metni",
     directions: "Yol tarifi",
     creditsTitle: "Görseller ve yazı karakterleri",
+    renders: "Revak sahnesi ve kemer görselleri bu site için Blender'da modellenip işlendi; dış kaynak kullanılmadı.",
     creditsLead: "Fotoğraflar Pexels lisansıyla kullanılmıştır:",
-    fonts: "Yazı karakterleri: Newsreader (Production Type) ve Hanken Grotesk (Alfredo Marco Pradil), SIL Open Font License.",
-    note: "Revak Okulları kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Kişiler, rakamlar ve yerleştirme sonuçları temsilidir.",
+    fonts: "Yazı karakterleri: Marcellus (Astigmatic) ve Hanken Grotesk (Alfredo Marco Pradil), SIL Open Font License.",
+    note: "Revak Okulları kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Rakamlar, tarihler ve programlar örnektir; formlar hiçbir yere gönderilmez.",
     copyright: "© 2026 Revak Okulları",
   },
 
@@ -468,6 +416,14 @@ export const tr = {
     ],
   },
 
+  notFound: {
+    metaTitle: "Sayfa bulunamadı | Revak Okulları",
+    title: "Bu kemerin ardında bir oda yok.",
+    text: "Aradığınız sayfa taşınmış ya da hiç olmamış olabilir. Revağa geri dönün ya da başvurunun ilk adımına geçin.",
+    home: "Ana sayfaya dönün",
+    apply: "Ön kayıt",
+  },
+
   /* ---------------- kampüs ---------------- */
 
   kampus: {
@@ -475,7 +431,7 @@ export const tr = {
     title: "Bir günün tamamı, tek bir bahçede.",
     intro:
       "Zekeriyaköy'deki kampüsümüz 48 dönüm. Anaokulunun kendi bahçesi, lisenin kendi binası var; kütüphane, sahne, havuz ve yemekhane herkesin.",
-    heroAlt: "Kampüs binasının kemerli cephesi",
+    heroAlt: "Bahçeden bakınca taş revak ve arkada orman, sabah güneşinde",
     facilitiesTitle: "Her tesisin bir dersi var.",
     facilities: [
       { name: "Fen laboratuvarları", text: "Altı laboratuvar, iki öğrenciye bir mikroskop. Ortaokulda haftada en az bir ders laboratuvarda geçer.", image: img("lab") },
@@ -495,13 +451,13 @@ export const tr = {
       cta: "Bu günü yerinde görün",
       ctaNote: "En yakın boş tur saati seçili olarak açılır.",
       ilkokul: [
-        { time: "08.10", title: "Kapıda karşılama", text: "Servisler 08.10'da kampüste. Nöbetçi öğretmen her çocuğu adıyla karşılar.", image: img("kampusHero") },
+        { time: "08.10", title: "Kapıda karşılama", text: "Servisler 08.10'da kampüste. Nöbetçi öğretmen her çocuğu adıyla karşılar.", image: img("revak") },
         { time: "08.40", title: "Okuma saati", text: "Güne yirmi dakikalık okumayla başlarız. Herkes kendi kitabıyla, sınıfın kitaplığından ya da evden.", image: img("ilkokul") },
         { time: "10.20", title: "İngilizce", text: "Ana dili İngilizce olan öğretmenle, dört kişilik gruplarda konuşma çalışması.", image: img("writing") },
         { time: "12.00", title: "Öğle yemeği ve bahçe", text: "Öğretmenler çocuklarla aynı masada yer. Ardından bahçede kırk dakika.", image: img("dining") },
         { time: "13.30", title: "Sanat ya da yüzme", text: "Haftanın iki günü havuzda, üç günü atölyede ya da müzik odasında.", image: img("ceramics") },
         { time: "15.40", title: "Kulüpler ve etüt", text: "Satranç, seramik, orkestra, tiyatro. İsteyen öğrenci ödevini etüt saatinde bitirir.", image: img("chess") },
-        { time: "16.30", title: "Servise biniş", text: "Servis kampüsten çıktığında veli uygulaması size haber verir.", image: img("campus") },
+        { time: "16.30", title: "Servise biniş", text: "Servis kampüsten çıktığında veli uygulaması size haber verir.", image: img("revakWide") },
       ],
       lise: [
         { time: "07.45", title: "Kütüphane açılır", text: "Erken gelen öğrenciler için lise kütüphanesi ilk dersten önce açık.", image: img("library") },
@@ -794,6 +750,8 @@ export const tr = {
         ],
         tour: "Kampüs turu da planlayın",
         tourText: "Bilgileriniz hazır; yalnızca gün ve saat seçmeniz yeterli.",
+        seal: (yil: string) => `REVAK OKULLARI · ÖN KAYIT · ${yil} · `,
+        sealLabel: (name: string) => `${name} için basılmış ön kayıt mührü`,
         burs: "Bursluluk sınavına da başvurun",
         bursText: "Çocuğunuzun sınıfı sınava girmeye uygun.",
       },
@@ -856,14 +814,14 @@ export const tr = {
         meetOnsite: "Ana giriş, Revak Kapısı",
         meetOnline: "Görüntülü görüşme bağlantısı turdan bir gün önce e-postanıza gelir.",
         host: "Sizi karşılayacak",
-        hostName: "Selin Aksoy, kabul ofisi",
+        hostName: "Kabul ofisinden bir öğretmenimiz",
         guests: (n: number) => (n === 1 ? "1 kişi" : `${n} kişi`),
         ics: "Takvime ekleyin",
         directions: "Yol tarifi",
         change: "Saati değiştirin",
         icsTitle: "Revak Okulları kampüs turu",
         icsTitleOnline: "Revak Okulları çevrim içi tur",
-        icsDesc: "Sizi karşılayacak: Selin Aksoy, kabul ofisi. Telefon: 0212 000 19 87",
+        icsDesc: "Sizi kabul ofisinden bir öğretmenimiz karşılayacak. Telefon: 0212 000 19 87",
         location: "Revak Okulları, Çamlık Yolu No: 12, Zekeriyaköy, Sarıyer, İstanbul",
         onKayit: "Ön kaydı da şimdi yaptırın",
       },

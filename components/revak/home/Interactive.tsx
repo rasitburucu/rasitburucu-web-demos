@@ -1,68 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { tr } from "@/content/revak/tr";
 import { downloadIcs } from "@/lib/revak/ics";
 import { istanbul, nearestSlots } from "@/lib/revak/schedule";
 import { shortDate } from "@/lib/revak/format";
 import { Icon } from "../ui/Icon";
 import { Photo } from "../ui/Photo";
-
-/* ---------- alumni: domestic / abroad tabs ---------- */
-
-export function AlumniTabs() {
-  const a = tr.alumni;
-  const [tab, setTab] = useState<"home" | "abroad">("home");
-  const id = useId();
-  const tabs = ["home", "abroad"] as const;
-  const refs = useRef<(HTMLButtonElement | null)[]>([]);
-  const list = tab === "home" ? a.home : a.abroad;
-  return (
-    <div>
-      <div
-        className="rv-tabs"
-        role="tablist"
-        aria-label={a.tabsLabel}
-        onKeyDown={(e) => {
-          if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-          const next = tab === "home" ? "abroad" : "home";
-          setTab(next);
-          refs.current[tabs.indexOf(next)]?.focus();
-        }}
-      >
-        {tabs.map((k, i) => (
-          <button
-            key={k}
-            ref={(el) => {
-              refs.current[i] = el;
-            }}
-            type="button"
-            role="tab"
-            id={`${id}-${k}`}
-            aria-selected={tab === k}
-            aria-controls={`${id}-panel`}
-            tabIndex={tab === k ? 0 : -1}
-            onClick={() => setTab(k)}
-          >
-            {a.tabs[k]}
-          </button>
-        ))}
-      </div>
-      <div role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-${tab}`}>
-        <ul className="rv-uni">
-          {list.map((u) => (
-            <li key={u.name}>
-              <span>{u.name}</span>
-              <span>{u.n}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="rv-uni-rest">{tab === "home" ? a.homeRest : a.abroadRest}</p>
-      </div>
-    </div>
-  );
-}
 
 /* ---------- clubs: the row in focus shows its photograph ---------- */
 

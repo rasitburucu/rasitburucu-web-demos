@@ -3,6 +3,10 @@
 import dims from "./image-dims.json";
 
 const meta = {
+  revak: { alt: "Taş revağın içinden, çocuk göz hizasından bakış; sabah güneşi kemerlerin gölgesini zemine düşürüyor", pos: "50% 50%" },
+  revakWide: { alt: "Avluya açılan taş revak, sabah güneşinde", pos: "50% 55%" },
+  avlu: { alt: "Bahçeden bakınca taş revak, servi ağaçları ve arkada orman", pos: "50% 60%" },
+  aksamBahce: { alt: "Akşam ışığında revağın sonundaki bahçe ve serviler", pos: "50% 60%" },
   hero: { alt: "Taş kemerlerin altından geçen gölgeli bir revak", pos: "50% 60%" },
   anaokulu: { alt: "Ahşap bloklarla kule kuran bir çocuğun elleri", pos: "50% 55%" },
   ilkokul: { alt: "Kareli deftere kalemle yazan bir öğrencinin elleri", pos: "40% 50%" },

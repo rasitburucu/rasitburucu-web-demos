@@ -1,19 +1,13 @@
 import Link from "next/link";
 import { tr } from "@/content/revak/tr";
 import { Icon } from "./Icon";
-import { Folio } from "./Folio";
 
 type Group = (typeof tr.faq.groups)[number];
 
 /** Native <details>: works without JavaScript, keyboard and screen readers for free. */
-export function Faq({ title, groups, id = "sss", folio }: { title: string; groups: Group[]; id?: string; folio?: string }) {
+export function Faq({ title, groups, id = "sss" }: { title: string; groups: Group[]; id?: string }) {
   return (
-    <section className={folio ? "rv-section" : "rv-section rv-rule"} id={id} aria-labelledby={`${id}-title`}>
-      {folio && (
-        <div className="rv-wrap">
-          <Folio n={folio} />
-        </div>
-      )}
+    <section className="rv-section rv-rule" id={id} aria-labelledby={`${id}-title`}>
       <div className="rv-wrap rv-faq-grid">
         <div className="rv-faq-intro">
           <h2 className="rv-h2" id={`${id}-title`}>

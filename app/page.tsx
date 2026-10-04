@@ -3,6 +3,8 @@ import Link from "next/link";
 const demos = [
   { href: "/onikitas", name: "Onikitaş", note: "Bodrum'da 12 villalık kurgusal konut projesi" },
   { href: "/revak", name: "Revak Okulları", note: "İstanbul'da anaokulundan liseye kurgusal özel okul; ön kayıt, tur ve bursluluk akışlarıyla" },
+  { href: "/kalemkar", name: "Kalemkâr", note: "Gaziantep'te tek menülü kurgusal şef restoranı; bakır sini üstünde rezervasyon akışıyla" },
+  { href: "/pazi", name: "Pazı Robotik", note: "Gebze'de kurgusal cobot paletleme entegratörü; canlı robot hücresi ve ön fizibilite akışıyla" },
 ];
 
 export default function Index() {

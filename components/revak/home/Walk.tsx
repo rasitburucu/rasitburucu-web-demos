@@ -7,7 +7,8 @@ import { tr } from "@/content/revak/tr";
 import { IMAGES } from "@/content/revak/images";
 import { KADEMELER, useShared } from "@/lib/revak/store";
 import { gsap, ScrollTrigger, SplitText, useGSAP } from "@/lib/revak/motion";
-import { getLenis, scrollToY } from "@/lib/revak/lenis";
+import { getLenis, scrollToY, setExternalRaf } from "@/lib/revak/lenis";
+import { asset } from "@/lib/asset";
 import { archNavigate } from "../shell/Motion";
 import { Photo, srcSet } from "../ui/Photo";
 
@@ -19,6 +20,8 @@ const ROMAN = ["I", "II", "III", "IV"];
  *
  * A static stone wall with one monumental arch window. Inside the window a
  * colonnade recedes to a vanishing point; scrolling walks the camera forward.
+ * Each arch face is our Blender render of cut limestone (voussoirs, keystone,
+ * impost, coursed piers), in a morning and an evening light that cross-fade.
  * Every third arch frames one level (Anaokulu → Lise) and holds while its
  * name is set letter by letter on the wall beside it. The sun turns from
  * morning to evening across the walk (tint + floor light + jamb shade).
@@ -38,19 +41,33 @@ const COUNT = EXIT; // arches 1..EXIT
 const Z_FAR = 10.5; // hidden beyond this depth
 const Z_NEAR = -1.35; // hidden once this far behind the camera
 const JOINTS = 14; // floor joints (one every 0.75 unit)
-const HOLD = 0.8; // timeline length of a stop at a level
-const MOVE = 1.8; // timeline length of the walk between two levels
+const HOLD = 1.1; // timeline length of a stop at a level
+const MOVE = 1.25; // timeline length of the walk between two levels
+const OFF = 0.55; // the camera stops this far before a level arch, so the arch frames its photograph
 
 // Arch geometry in "u" (u = 0.88% of the window width): hole 100 × 166.7,
 // piers 40, lintel 26. Portal box 180 × 192.7; eye height 0.34 of the hole.
 const HOLE = "M40 192.7 V76 A50 50 0 0 1 140 76 V192.7 Z";
-const shifted = (dx: number) => `M${40 + dx} 192.7 V76 A50 50 0 0 1 ${140 + dx} 76 V192.7 Z`;
 const BOX = "M0 0 H180 V192.7 H0 Z";
+
+// The rendered faces (scripts/revak-blender): transparent opening, 180 x 192.7 u.
+const FACE_SIZES = "(max-width: 860px) 70vw, 60vw";
+const faceSet = (name: string, fmt: "avif" | "webp") =>
+  [720, 1440].map((w) => `${asset(`/revak/walk/${name}-${w}.${fmt}`)} ${w}w`).join(", ");
+
+function Face({ name, cls }: { name: string; cls: string }) {
+  return (
+    <picture className={cls}>
+      <source type="image/avif" srcSet={faceSet(name, "avif")} sizes={FACE_SIZES} />
+      <img src={asset(`/revak/walk/${name}-720.webp`)} srcSet={faceSet(name, "webp")} sizes={FACE_SIZES} width={1440} height={1542} alt="" loading="lazy" decoding="async" />
+    </picture>
+  );
+}
 
 // Age at each stop: the first day of each level, then graduation at the open arch.
 const AGES = [3, 6, 10, 14, 18];
 const ageAt = (c: number) => {
-  const x = (c - FIRST) / SPACING; // 0..4 between the stops
+  const x = (c + OFF - FIRST) / SPACING; // 0..4 between the stops
   if (x <= 0) return AGES[0];
   const i = Math.min(3, Math.floor(x));
   return Math.round(AGES[i] + (AGES[i + 1] - AGES[i]) * Math.min(1, x - i));
@@ -65,6 +82,14 @@ function Portal({ p }: { p: number }) {
   return (
     <div className={exit ? "rv-portal is-exit" : "rv-portal"} data-p={p} style={{ zIndex: 200 - p }}>
       <span className="rv-portal-sun" />
+      {exit && (
+        <div className="rv-portal-photo rv-portal-photo--exit">
+          <picture>
+            <source type="image/avif" srcSet={srcSet("aksamBahce", "avif")} sizes="(max-width: 860px) 60vw, 30vw" />
+            <img src={srcSet("aksamBahce", "webp").split(" ")[0]} srcSet={srcSet("aksamBahce", "webp")} sizes="(max-width: 860px) 60vw, 30vw" width={IMAGES.aksamBahce.w} height={IMAGES.aksamBahce.h} alt="" loading="lazy" decoding="async" />
+          </picture>
+        </div>
+      )}
       {img && k && (
         <div className="rv-portal-photo" data-k={k}>
           <picture>
@@ -83,19 +108,14 @@ function Portal({ p }: { p: number }) {
           </picture>
         </div>
       )}
+      <Face name="kemer-sabah" cls="rv-portal-face rv-portal-face--am" />
+      <Face name="kemer-aksam" cls="rv-portal-face rv-portal-face--pm" />
       <svg viewBox="0 0 180 192.7" aria-hidden="true" focusable="false">
         <defs>
           <clipPath id={`rv-hole-${p}`}>
             <path d={HOLE} />
           </clipPath>
         </defs>
-        <path className="rv-portal-face" fillRule="evenodd" d={`${BOX} ${HOLE}`} />
-        <path className="rv-portal-line" d="M0 76 H40 M140 76 H180 M0 184 H40 M140 184 H180" />
-        <g clipPath={`url(#rv-hole-${p})`}>
-          <path className="rv-sh rv-sh--am" fillRule="evenodd" d={`${BOX} ${shifted(-8)}`} />
-          <path className="rv-sh rv-sh--pm" fillRule="evenodd" d={`${BOX} ${shifted(8)}`} />
-        </g>
-        <path className="rv-portal-edge" d={HOLE} />
         <path className="rv-portal-haze" fillRule="evenodd" d={`${BOX} ${HOLE}`} />
       </svg>
     </div>
@@ -136,15 +156,13 @@ export function Walk() {
           {Array.from({ length: COUNT }, (_, i) => (
             <Portal key={i + 1} p={i + 1} />
           ))}
+          <div className="rv-walk-under" />
           <div className="rv-walk-tint rv-walk-tint--am" />
           <div className="rv-walk-tint rv-walk-tint--pm" />
         </div>
 
         <div className="rv-walk-copy">
           <header className="rv-walk-head">
-            <p className="rv-folio">
-              <span>{t.folio}</span> {tr.brand.full}
-            </p>
             <h2 id="rv-walk-title" className="rv-walk-title">
               {t.title}
             </h2>
@@ -165,9 +183,6 @@ export function Walk() {
                 <li key={k} className="rv-chapter" data-k={k}>
                   <figure className="rv-chapter-plate">
                     <Photo k={l.image} arch reveal={false} sizes="(max-width: 860px) 80vw, 36vw" />
-                    <figcaption aria-hidden="true">
-                      {t.plate} {i + 1} — {IMAGES[l.image].alt}
-                    </figcaption>
                   </figure>
                   <div className="rv-chapter-text">
                     <p className="rv-chapter-folio">
@@ -188,10 +203,7 @@ export function Walk() {
                         <dd>{l.lang}</dd>
                       </div>
                     </dl>
-                    <blockquote className="rv-chapter-quote">
-                      <p>{l.quote}</p>
-                      <footer>{l.who}</footer>
-                    </blockquote>
+                    <p className="rv-chapter-moment">{l.moment}</p>
                     <Link
                       href={href}
                       className="rv-btn rv-btn--seal rv-chapter-cta"
@@ -217,7 +229,7 @@ export function Walk() {
           <div className="rv-walk-exit">
             <p className="rv-walk-exit-title">{t.exit.title}</p>
             <p>{t.exit.text}</p>
-            <a href="#mezunlar" className="rv-textlink">
+            <a href="#rehberlik" className="rv-textlink">
               {t.exit.link}
             </a>
           </div>
@@ -257,6 +269,11 @@ function build(section: HTMLElement, mobile: boolean) {
   const tocBtns = Array.from(section.querySelectorAll<HTMLButtonElement>(".rv-walk-toc button"));
   const tocFill = section.querySelector<HTMLElement>(".rv-walk-toc-bar > span")!;
   const age = section.querySelector<HTMLElement>(".rv-walk-age")!;
+  const under = section.querySelector<HTMLElement>(".rv-walk-under")!;
+  const levelOf = portals.map((p) => {
+    const n = Number(p.dataset.p);
+    return (n - FIRST) % SPACING === 0 && n < EXIT ? (n - FIRST) / SPACING : -1;
+  });
   const ageN = section.querySelector<HTMLElement>(".rv-walk-age-n")!;
   let shownAge = -1;
 
@@ -272,11 +289,18 @@ function build(section: HTMLElement, mobile: boolean) {
   const cam = { c: 0.6 };
   const sun = { v: 0 };
   let current = -2;
+  let tocAt = -2;
   let lastSun = "";
   let lastEnd = "";
 
   const render = () => {
     const c = cam.c;
+    // walking: a step every 0.75 units, still at the stops
+    let stopDist = Infinity;
+    for (let i = 0; i < 4; i++) stopDist = Math.min(stopDist, Math.abs(c + OFF - (FIRST + i * SPACING)));
+    const walk = gsap.utils.clamp(0, 1, (stopDist - 0.1) / 0.5);
+    const bob = Math.sin((c / 0.75) * Math.PI * 2) * 2.2 * walk;
+    let shade = 0;
     for (let i = 0; i < portals.length; i++) {
       const z = i + 1 - c;
       const el = portals[i];
@@ -286,15 +310,26 @@ function build(section: HTMLElement, mobile: boolean) {
       }
       if (el.style.visibility) el.style.visibility = "";
       const s = 1 / (1 + z * K);
-      el.style.transform = `scale(${s.toFixed(4)})`;
+      el.style.transform = `translate3d(0, ${(bob * s).toFixed(2)}px, 0) scale(${s.toFixed(4)})`;
+      // passing under an arch: its shadow falls over the camera
+      if (z > -0.45 && z < 0.35) shade = Math.max(shade, 1 - Math.abs(z + 0.05) / 0.4);
       // behind the camera: fade out; far away: fade in from the haze
       const o = z < -0.55 ? Math.max(0, 1 - (-0.55 - z) / 0.8) : z > Z_FAR - 1.5 ? Math.max(0, (Z_FAR - z) / 1.5) : 1;
       el.style.opacity = o.toFixed(3);
       const hz = haze[i];
       if (hz) hz.style.opacity = Math.min(0.78, Math.max(0, z) * 0.085).toFixed(3);
       const ph = photos[i];
-      if (ph) ph.style.opacity = (z >= 0 ? 1 : Math.max(0, 1 + z / 0.4)).toFixed(3);
+      if (ph) {
+        // one photograph at a time: the passed one leaves before the next one appears
+        let po = 1;
+        if (levelOf[i] >= 0) {
+          if (z < 0.3) po = gsap.utils.clamp(0, 1, (z + 0.1) / 0.4);
+          else if (z > 1.75 && levelOf[i] > 0) po = gsap.utils.clamp(0, 1, (2.35 - z) / 0.6);
+        }
+        ph.style.opacity = po.toFixed(3);
+      }
     }
+    under.style.opacity = (shade * 0.32).toFixed(3);
     const beyond = EXIT - c; // no floor joints past the open arch: the world starts there
     for (let j = 0; j < joints.length; j++) {
       // joints every 0.75 unit, wrapping so a fixed set covers the whole walk
@@ -310,19 +345,23 @@ function build(section: HTMLElement, mobile: boolean) {
     if (sunV !== lastSun) stage.style.setProperty("--sun", (lastSun = sunV));
     if (endV !== lastEnd) stage.style.setProperty("--end", (lastEnd = endV));
 
-    // which level is in front of us (for pointer events, focus and the TOC)
+    // which level is in front of us (pointer events and focus)
     let near = -1;
-    for (let i = 0; i < 4; i++) if (Math.abs(c - (FIRST + i * SPACING)) < SPACING * 0.42) near = i;
+    for (let i = 0; i < 4; i++) if (Math.abs(c + OFF - (FIRST + i * SPACING)) < SPACING * 0.42) near = i;
     if (near !== current) {
       current = near;
       chapters.forEach((ch, i) => ch.toggleAttribute("data-on", i === near));
-      tocBtns.forEach((b, i) => (i === near ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current")));
+    }
+    // the TOC marks the last level reached, so it never runs ahead of the age
+    const reached = c + OFF < FIRST - 0.35 ? -1 : Math.min(3, Math.floor((c + OFF - FIRST + 0.35) / SPACING));
+    if (reached !== tocAt) {
+      tocAt = reached;
+      tocBtns.forEach((b, i) => (i === reached ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current")));
     }
     // the age shows only while walking: fades in away from a stop, out near one
-    let dist = Infinity;
-    for (let i = 0; i < 4; i++) dist = Math.min(dist, Math.abs(c - (FIRST + i * SPACING)));
-    const walking = c > FIRST - 0.2 && c < EXIT - 0.6;
-    age.style.opacity = walking ? gsap.utils.clamp(0, 1, (dist - 0.45) / 0.5).toFixed(3) : "0";
+    // the age holds the left column for the whole walk between two levels
+    const walking = c + OFF > FIRST - 0.2 && c < EXIT - 0.6;
+    age.style.opacity = walking ? gsap.utils.clamp(0, 1, (stopDist - 0.3) / 0.25).toFixed(3) : "0";
     const a = ageAt(c);
     if (a !== shownAge) {
       shownAge = a;
@@ -341,7 +380,7 @@ function build(section: HTMLElement, mobile: boolean) {
   tl.to({}, { duration: 0.55 });
   chapters.forEach((ch) => gsap.set(ch.querySelectorAll(".rv-chapter-text > :not(h3)"), { opacity: 0, y: 14 }));
   gsap.set(exit, { opacity: 0, y: 14 });
-  splits.forEach((s) => gsap.set(s.chars, { yPercent: 160 }));
+  splits.forEach((s) => gsap.set(s.chars, { yPercent: 220, autoAlpha: 0 }));
 
   // head leaves as the walk starts
   tl.to(head, { opacity: 0, y: -18, duration: 0.5, ease: "power1.in" }, "intro+=0.55");
@@ -351,16 +390,16 @@ function build(section: HTMLElement, mobile: boolean) {
     const ch = chapters[i];
     const rest = ch.querySelectorAll(".rv-chapter-text > :not(h3)");
     const moveStart = tl.duration();
-    tl.to(cam, { c: at, duration: MOVE, ease: "sine.inOut" }, moveStart);
+    tl.to(cam, { c: at - OFF, duration: MOVE, ease: "sine.inOut" }, moveStart);
     tl.to(sun, { v: (i + 0.5) / 4.4, duration: MOVE, ease: "none" }, moveStart);
     // arrive: letters rise, then the rest settles
-    tl.to(splits[i].chars, { yPercent: 0, duration: 0.55, ease: "power3.out", stagger: { amount: 0.28 } }, moveStart + MOVE - 0.5);
-    tl.to(rest, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out", stagger: 0.06 }, moveStart + MOVE - 0.2);
+    tl.to(splits[i].chars, { yPercent: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out", stagger: { amount: 0.2 } }, moveStart + MOVE * 0.85 - 0.1);
+    tl.to(rest, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.05 }, moveStart + MOVE * 0.85 + 0.1);
     tl.addLabel(`k${i}`, moveStart + MOVE + 0.1);
     tl.to({}, { duration: HOLD });
     // leave
     const leave = tl.duration();
-    tl.to(splits[i].chars, { yPercent: -160, duration: 0.4, ease: "power2.in", stagger: { amount: 0.12 } }, leave);
+    tl.to(splits[i].chars, { yPercent: -220, autoAlpha: 0, duration: 0.4, ease: "power2.in", stagger: { amount: 0.12 } }, leave);
     tl.to(rest, { opacity: 0, y: -10, duration: 0.3, ease: "power1.in" }, leave);
   }
   const outStart = tl.duration();
@@ -370,7 +409,7 @@ function build(section: HTMLElement, mobile: boolean) {
   tl.addLabel("exit");
   tl.to({}, { duration: 0.5 });
 
-  const unit = mobile ? 0.42 : 0.5; // viewport heights of scroll per timeline second
+  const unit = mobile ? 0.36 : 0.42; // viewport heights of scroll per timeline second
   const st = ScrollTrigger.create({
     trigger: section,
     start: "top top",
@@ -391,9 +430,16 @@ function build(section: HTMLElement, mobile: boolean) {
     { clipPath: "inset(0% 0% 0% 0%)", ease: "none", scrollTrigger: { trigger: section, start: "top 85%", end: "top 15%", scrub: 0.4 } },
   );
 
+  // One frame driver: Lenis advances inside gsap.ticker while the walk is mounted.
   const lenis = getLenis();
   const onLenis = () => ScrollTrigger.update();
-  lenis?.on("scroll", onLenis);
+  const tick = (time: number) => lenis?.raf(time * 1000);
+  if (lenis) {
+    lenis.on("scroll", onLenis);
+    setExternalRaf(true);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
+  }
 
   const yOf = (label: string) => st.labelToScroll(label);
   const onToc = (e: Event) => {
@@ -411,7 +457,11 @@ function build(section: HTMLElement, mobile: boolean) {
   render();
 
   return () => {
-    lenis?.off("scroll", onLenis);
+    if (lenis) {
+      lenis.off("scroll", onLenis);
+      gsap.ticker.remove(tick);
+      setExternalRaf(false);
+    }
     tocBtns.forEach((b) => b.removeEventListener("click", onToc));
     section.removeEventListener("focusin", onFocus);
     open.scrollTrigger?.kill();
@@ -426,6 +476,7 @@ function build(section: HTMLElement, mobile: boolean) {
     joints.forEach((j) => (j.style.transform = ""));
     chapters.forEach((c) => c.removeAttribute("data-on"));
     age.style.opacity = "";
+    under.style.opacity = "";
     ageN.textContent = "3";
   };
 }

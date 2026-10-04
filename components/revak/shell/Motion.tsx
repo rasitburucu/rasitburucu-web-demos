@@ -3,7 +3,7 @@
 import Lenis from "lenis";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-import { prefersReduced, setLenis } from "@/lib/revak/lenis";
+import { prefersReduced, runLenisLoop, setLenis } from "@/lib/revak/lenis";
 import { useFlowMode } from "./Header";
 
 /**
@@ -18,9 +18,11 @@ export function SmoothScroll() {
 
   useEffect(() => {
     if (flow || prefersReduced()) return;
-    const lenis = new Lenis({ autoRaf: true, lerp: 0.1, anchors: { offset: -96 } });
+    const lenis = new Lenis({ lerp: 0.1, anchors: { offset: -96 } });
     setLenis(lenis);
+    const stop = runLenisLoop(lenis);
     return () => {
+      stop();
       setLenis(null);
       lenis.destroy();
     };

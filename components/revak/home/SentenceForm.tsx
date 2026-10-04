@@ -15,7 +15,7 @@ const ROUTES: Record<string, string> = {
 };
 
 /** "Çocuğum [kademe] için [niyet] istiyorum." — routes into the right flow with the level set. */
-export function SentenceForm() {
+export function SentenceForm({ season }: { season?: string }) {
   const router = useRouter();
   const { shared, update } = useShared();
   const [kademe, setKademe] = useState<Kademe>("ilkokul");
@@ -27,9 +27,12 @@ export function SentenceForm() {
 
   return (
     <div className="rv-sentence">
-      <span className="rv-sentence-label" id="rv-sentence-label">
-        {t.label}
-      </span>
+      <p className="rv-sentence-head">
+        <span className="rv-sentence-label" id="rv-sentence-label">
+          {t.label}
+        </span>
+        {season && <span className="rv-sentence-season">{season}</span>}
+      </p>
       <form
         aria-labelledby="rv-sentence-label"
         onSubmit={(e) => {
