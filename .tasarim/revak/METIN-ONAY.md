@@ -24,3 +24,5 @@ Revak telefon şeridi kısa kalır; karşılığında ön kayıt formunun gönde
 
 Not: sihirbazın pasif "Devam edin" düğmesi, tur sayfasındaki "Bu kademeyi tanıyın" bağlantısının telefonda altta yinelenmesi ve bölüm başlıklarının küçülmesi yeni metin gerektirmedi (mevcut `sinifPick`, `errors.kademe`, `levels.more` kullanıldı).
 
+
+**ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.

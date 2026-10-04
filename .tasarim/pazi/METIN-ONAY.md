@@ -11,3 +11,5 @@ Raşit'in onayını bekleyen yeni ya da değişen Türkçe kullanıcı metinleri
 **ONAYLANDI:** Raşit, 2026-10-04 (yalnız `view.still` satırı; firik tabağı olduğu gibi kalır).
 
 **ONAY BEKLİYOR:** 2026-10-04 (gelistir2) tarihli iki satır.
+
+**ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.

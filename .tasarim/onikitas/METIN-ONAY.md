@@ -61,3 +61,5 @@ Değişmeyen ama kontrol edilen: İkindi gövdesi ("yarımadanın kuzeybatı rü
 | "On iki ev" bölümü, telefonda kartların altı | (yok; 12 kart alt alta) | Hepsini göster | Telefonda ilk 4 kart görünür, düğme kalan 8'i açar ve odağı 5. karta taşır |
 
 Not: Bölüm adları, başlıklar, gövde metinleri değişmedi.
+
+**ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.

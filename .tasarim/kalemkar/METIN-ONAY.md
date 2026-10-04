@@ -29,3 +29,5 @@ Toplam: 5 satır.
 | Telefonda servis şeridi (yeni satır, `content/kalemkar/menu.ts` tabak adları) | Yalnız "7 / 9" | 7 / 9  Kuzu incik, taze ot sosu | Pasif metin artık okunur olduğu için şeritte hangi tabağın sinide olduğu da yazılı. Yeni metin yok, mevcut tabak adı. |
 
 Toplam bu tur: 2 satır. **ONAY BEKLİYOR.**
+
+**ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.
