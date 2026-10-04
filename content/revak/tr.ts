@@ -251,6 +251,18 @@ export const tr = {
     ],
   },
 
+  // The end of the walk: the arch is laid stone by stone, the keystone seats last, and a
+  // parent can carve the child's name into the inscription stone (never sent, never stored).
+  keystone: {
+    title: "Son taş oturunca kemer kendini taşır.",
+    // the inscription when no name is carved: the school's word, in two lines
+    motto: ["Her çocuk", "adıyla tanınır."],
+    label: "Çocuğunuzun adı",
+    submit: "Taşa kazıyın",
+    note: "Bu bir tasarım örneği; ad hiçbir yere gönderilmez.",
+    carved: (n: string) => `Kitabede şimdi ${n} yazıyor.`,
+  },
+
   guidance: {
     title: "Üniversite tercihi dört yılda yazılır.",
     intro: "Her öğrenci 9. sınıfta bir üniversite danışmanıyla eşleşir. Yurt içi ve yurt dışı başvurular için ayrı ekipler çalışır; veli her adımda masadadır.",

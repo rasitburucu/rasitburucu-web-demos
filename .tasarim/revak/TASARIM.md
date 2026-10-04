@@ -201,3 +201,12 @@ Ekranlar: `ekran/gelistir-2026-10-04/` (dogrula çıktısı; `sheet-walk-d.png`,
 |---|---|---|
 | Gerçek telefonda kare hızı | Bu makinede Chrome emülasyonu (4×/6× CPU) yürüyüşte kare kaçırmıyor; takılmanın kaynağı büyük olasılıkla telefon GPU'su ve Safari (bulanıklık, karışım modları, katman belleği). Laboratuvar ölçümü yalnız göstergedir | Raşit telefonunda ve tablette denesin |
 | Küçük telefonda (360×740) "Revak boyunca" başlığı pencereye biniyor | Önceden de biniyordu; sözlük satırı iki satır daha ekledi | Raşit görmek isterse başlık boyutu kararı |
+
+## 2026-10-05 üçüncü tur, imza an: kilit taşı + kitabe
+| Konu | Ne yapıldı |
+|---|---|
+| Yer | Yürüyüşün hemen ardı, rehberlikten önce (`components/revak/home/Keystone.tsx`, `#kilit-tasi`) |
+| Kilit taşı | 2,5 ekranlık bölümde yapışkan sahne (pin yok, yükseklik ilk boyamadan `html.rv-live` ile). Ayaklar hazır; 8 kemer taşı iki yandan sırayla kendi yarıçapı boyunca dönerek yerine oturur, kilit taşı yukarıdan hızlanarak iner; oturduğu anda kemer 2,5 birim çöküp toparlanır, derzlerden 6 toz bulutu. Sonra kemerin taşıdığı duvar, korniş ve kitabe iner, ardından cümle ve form. Her taş ayrı küçük SVG, konumu % ile; hareket yalnız transform/opaklık (birleştirilmiş katman), SVG öznitelik animasyonu yok |
+| Kitabe | Marcellus büyük harf, oyuk görünümü (koyu iç, alt kenarda ışık, üst kenarda gölge). Ad boşken okulun sözü iki satır. Ad: tek satır, 24 harfe kadar sığacak boyut (`--n`), Türkçe büyük harf `tr-TR` ile (i → İ, ı → I). Kazıma: harf başına 80 ms, keski izi + taş kırıntısı (CSS, transform/opaklık) |
+| Gizlilik | Ad yalnız React durumunda; form gönderilmez, `autocomplete=off`, localStorage yok |
+| Ölçüm (4× CPU, telefon 390×844 DPR3) | Bölüm boyunca kaydırma: ana iş parçacığı kare başına 1,9 ms (6×'te 3,7 ms), kare aralığı p95 6,1 ms (kare kaçırma yok), raster görevi 11 (taşlar yeniden boyanmıyor), yazılım GPU'da kare başına 1,2 ms (yürüyüş 3,2 ms) |

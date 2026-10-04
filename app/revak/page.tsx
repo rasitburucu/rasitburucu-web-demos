@@ -3,6 +3,7 @@ import { preload } from "react-dom";
 import { tr } from "@/content/revak/tr";
 import { SentenceForm } from "@/components/revak/home/SentenceForm";
 import { Walk } from "@/components/revak/home/Walk";
+import { Keystone } from "@/components/revak/home/Keystone";
 import { ClubList, EventTable, NearestSlots } from "@/components/revak/home/Interactive";
 import { Photo, srcSet } from "@/components/revak/ui/Photo";
 import { Faq } from "@/components/revak/ui/Faq";
@@ -63,6 +64,9 @@ export default function RevakHome() {
 
       {/* 3. Signature: the walk through the arcade */}
       <Walk />
+
+      {/* 3b. Where the walk ends: the arch is laid, the keystone seats, the name is carved */}
+      <Keystone />
 
       {/* 4. Where the walk ends: university guidance, grade by grade (no placement numbers) */}
       <section className="rv-section rv-guide" id="rehberlik" aria-labelledby="rv-guide-title">

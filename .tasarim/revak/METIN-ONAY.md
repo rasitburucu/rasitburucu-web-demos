@@ -43,3 +43,14 @@ Not: sihirbazın pasif "Devam edin" düğmesi, tur sayfasındaki "Bu kademeyi ta
 | Künye başlığı (`footer.kunye.title`) | Görseller ve yazı karakterleri | Proje künyesi | Künye şablonu |
 | Künye satırları (`footer.kunye`) | Render notu, "Fotoğraflar Pexels lisansıyla kullanılmıştır:", tek cümlelik font notu | Tasarım ve geliştirme: Raşit Burucu · 3B ve render: (aynı render notu) · Fotoğraflar: yazar, lisans, kullanıldığı yer · Yazı karakterleri: ad, tasarımcı, lisans · Yıl: 2026 | Künye şablonu, sabit sıra ve etiketler; bilgi credits.ts'den |
 | Telif satırı (`footer.copyright`) | © 2026 Revak Okulları | © 2026 Revak Okulları · Konsept çalışma — rasitburucu.com | Künye şablonu |
+
+### 2026-10-05 üçüncü tur: imza an (kilit taşı + kitabe)
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Kilit taşı oturunca beliren cümle, bölüm başlığı (`keystone.title`) | (yoktu) | Son taş oturunca kemer kendini taşır. | Raşit'in istediği imza an: eğitim tamamlanınca yapı ayakta durur |
+| Kitabe, ad yazılmamışken (`keystone.motto`, büyük harfle kazılı) | (yoktu) | Her çocuk / adıyla tanınır. | Okulun sözü; ana başlık "Her çocuğu adıyla tanıyan okul." ile aynı fikir. Örnek ad yok |
+| Ad alanının etiketi (`keystone.label`) | (yoktu) | Çocuğunuzun adı | |
+| Düğme (`keystone.submit`) | (yoktu) | Taşa kazıyın | |
+| Alanın altındaki not (`keystone.note`) | (yoktu) | Bu bir tasarım örneği; ad hiçbir yere gönderilmez. | Raşit'in istediği not |
+| Ekran okuyucu duyurusu, görünmez (`keystone.carved`) | (yoktu) | Kitabede şimdi {ad} yazıyor. | Kazınan adı ekran okuyucuya bildirir |
