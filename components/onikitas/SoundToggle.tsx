@@ -110,14 +110,21 @@ export function SoundToggle() {
   };
 
   return (
-    <button type="button" className="oki-sound" aria-pressed={on} onClick={toggle}>
-      <span className="oki-sound__bars" aria-hidden="true" data-on={on ? "true" : "false"}>
-        <i />
-        <i />
-        <i />
-        <i />
-      </span>
-      <span>{on ? tr.nav.soundOn : tr.nav.soundOff}</span>
+    // A toggle with one fixed name ("Ses"); the pressed state carries on/off,
+    // the speaker shows waves when on and a cross when off.
+    <button type="button" className="oki-sound" aria-pressed={on} onClick={toggle} data-on={on ? "true" : "false"}>
+      <svg className="oki-sound__icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" fill="currentColor" />
+        {on ? (
+          <g fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <path className="oki-sound__wave" d="M15.2 9.2a4 4 0 0 1 0 5.6" />
+            <path className="oki-sound__wave oki-sound__wave--far" d="M17.8 6.8a7.4 7.4 0 0 1 0 10.4" />
+          </g>
+        ) : (
+          <path d="M15.5 9.5l5 5M20.5 9.5l-5 5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        )}
+      </svg>
+      <span>{tr.nav.sound}</span>
     </button>
   );
 }

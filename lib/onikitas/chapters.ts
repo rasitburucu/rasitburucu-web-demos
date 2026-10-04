@@ -6,22 +6,30 @@ export type Chapter = {
   /** Hour at the top of the chapter and at its end. */
   from: number;
   to: number;
-  /** Section height in svh. Longer = slower day. */
+  /**
+   * Scroll length of the chapter in svh (t runs 0..1 over it). Longer = slower
+   * day. The section itself is 100svh taller (its sticky screen) and overlaps
+   * the next section by that 100svh, so no stretch of scroll holds a frozen
+   * frame: the whole page is sum(vh) + 100svh.
+   */
   vh: number;
   /** Part of the chapter (0..1) over which the hour advances; the rest holds. */
   span: [number, number];
 };
 
 export const chapters: Chapter[] = [
-  { id: "safak", from: 5.683, to: 6.5, vh: 240, span: [0.25, 1] },
-  { id: "sabah", from: 6.5, to: 7.8, vh: 170, span: [0, 1] },
-  { id: "kusluk", from: 7.8, to: 11.8, vh: 250, span: [0, 1] },
-  { id: "ogle", from: 11.8, to: 14.4, vh: 180, span: [0, 1] },
-  { id: "ikindi", from: 14.4, to: 17.8, vh: 200, span: [0, 1] },
-  { id: "aksam", from: 17.8, to: 19.667, vh: 300, span: [0, 0.4] },
+  { id: "safak", from: 5.683, to: 6.5, vh: 130, span: [0.25, 1] },
+  { id: "sabah", from: 6.5, to: 7.8, vh: 80, span: [0, 1] },
+  { id: "kusluk", from: 7.8, to: 11.8, vh: 150, span: [0, 1] },
+  { id: "ogle", from: 11.8, to: 14.4, vh: 90, span: [0, 1] },
+  { id: "ikindi", from: 14.4, to: 17.8, vh: 100, span: [0, 1] },
+  { id: "aksam", from: 17.8, to: 19.667, vh: 180, span: [0, 0.4] },
   // night: the lamps come on over the first 55%, then the slope holds, calm
-  { id: "yatsi", from: 19.667, to: 21.5, vh: 340, span: [0, 0.55] },
+  { id: "yatsi", from: 19.667, to: 21.5, vh: 90, span: [0, 0.55] },
 ];
+
+/** Height of a chapter section in svh: its scroll length plus the sticky screen. */
+export const sectionVh = (c: Chapter) => c.vh + 100;
 
 /** Fixed framings for still capture (?still=n): [chapter, t]. */
 export const STILLS: [number, number][] = [

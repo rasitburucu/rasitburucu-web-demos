@@ -1,8 +1,9 @@
 import { Fragment } from "react";
 import { tr } from "@/content/onikitas/tr";
 import { credits, type CreditGroup } from "@/content/onikitas/credits";
-import { chapters } from "@/lib/onikitas/chapters";
+import { chapters, sectionVh } from "@/lib/onikitas/chapters";
 import { Sundial } from "./Sundial";
+import { Registry } from "./Registry";
 
 /** Letters rise out of a mask when the chapter becomes active. Real text for AT. */
 function Split({ text, id, as: Tag = "h2" }: { text: string; id: string; as?: "h1" | "h2" }) {
@@ -40,11 +41,11 @@ export function Chapters() {
             data-chapter={i}
             data-name={copy.name}
             className={`oki-chapter oki-chapter--${c.id}`}
-            style={{ height: `${c.vh}svh` }}
+            style={{ height: `${sectionVh(c)}svh` }}
             aria-labelledby={`${c.id}-title`}
           >
             {c.id === "aksam" ? (
-              <span id="ziyaret" className="oki-anchor" style={{ top: `${Math.round((c.vh - 100) * 0.62)}svh` }} aria-hidden="true" />
+              <span id="ziyaret" className="oki-anchor" style={{ top: `${Math.round(c.vh * 0.62)}svh` }} aria-hidden="true" />
             ) : null}
             <div className="oki-sticky">
               <div className="oki-copy" data-copy data-on={i === 0 ? "true" : undefined}>
@@ -53,6 +54,16 @@ export function Chapters() {
                 </p>
                 <Split text={copy.title} id={`${c.id}-title`} as={i === 0 ? "h1" : "h2"} />
                 <p className="oki-copy__body">{copy.body}</p>
+                {c.id === "yatsi" ? (
+                  <p className="oki-close">
+                    <a href="#ziyaret" className="oki-close__visit">
+                      {tr.close.visit}
+                    </a>
+                    <a href="#evler" className="oki-close__homes">
+                      {tr.close.homes}
+                    </a>
+                  </p>
+                ) : null}
               </div>
               {c.id === "aksam" ? (
                 <div className="oki-dial-panel" data-dial-panel id="ziyaret-panel">
@@ -63,6 +74,7 @@ export function Chapters() {
           </section>
         );
       })}
+      <Registry />
     </main>
   );
 }

@@ -5,6 +5,7 @@ import { Component, useEffect, useState, type ReactNode } from "react";
 import Lenis from "lenis";
 import { addLoad, emit, on, store, type Tier } from "@/lib/onikitas/store";
 import { formatHour, hourFor, revealFor, STILLS } from "@/lib/onikitas/chapters";
+import { goTo } from "@/lib/onikitas/goto";
 import { Loader } from "./Loader";
 import { Stills } from "./Stills";
 import { VillaTip } from "./VillaTip";
@@ -51,17 +52,21 @@ function detectTier(renderer: string): Tier {
 }
 
 // Copy windows (chapter-local t) during which each chapter's text is shown.
+// Sized against the chapter lengths in lib/onikitas/chapters.ts so that no
+// stretch without words is longer than about half a screen (the longest,
+// şafak into sabah, is ~52svh while the camera walks through the arch).
 const COPY_WINDOW: [number, number][] = [
-  [-1, 0.34],
-  [0.1, 0.86],
-  [0.12, 0.8],
-  [0.1, 0.86],
-  [0.1, 0.86],
+  [-1, 0.62],
+  [0.04, 0.85],
+  [0.06, 0.82],
+  [0.06, 0.85],
+  [0.06, 0.85],
   // akşam: the question stays up while the dial is in use
-  [0.05, 1.5],
-  [0.12, 1.5],
+  [0.03, 1.5],
+  // yatsı: the closing line and its links stay until the registry arrives
+  [0.08, 1.5],
 ];
-const DIAL_WINDOW: [number, number] = [0.38, 1.5];
+const DIAL_WINDOW: [number, number] = [0.3, 1.5];
 /** Evening tone switch (decimal hours), with a small hysteresis band. */
 const TONE_DARK_FROM = 18.0;
 const TONE_LIGHT_BELOW = 17.85;
@@ -117,6 +122,7 @@ function useDirector(mode: Mode) {
     let lastMinute = -1;
     let lastChapter = -1;
     let lastTone = "";
+    let lastPast = false;
     const shown = copies.map(() => false);
     let dialShown = false;
     let raf = 0;
@@ -124,6 +130,13 @@ function useDirector(mode: Mode) {
     const frame = () => {
       raf = requestAnimationFrame(frame);
       const y = lenis ? lenis.scroll : window.scrollY;
+      // past the day: the header gets a solid bed so it never sits on the registry
+      const last = tops.length - 1;
+      const past = last >= 0 && y >= tops[last] + heights[last] - 96;
+      if (past !== lastPast) {
+        lastPast = past;
+        root.dataset.past = past ? "true" : "false";
+      }
       let c = 0;
       for (let i = 0; i < tops.length; i++) if (y >= tops[i] - 1) c = i;
       const range = Math.max(1, heights[c] - vh);
@@ -182,16 +195,15 @@ function useDirector(mode: Mode) {
     };
     raf = requestAnimationFrame(frame);
 
-    // in-page links go through Lenis so the day scrolls, not jumps
+    // in-page links go through Lenis so the day scrolls, not jumps, and land
+    // keyboard focus on the control they lead to (see lib/onikitas/goto.ts)
     const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as HTMLElement | null)?.closest?.("a[href^='#']") as HTMLAnchorElement | null;
-      if (!a || !lenis) return;
+      if (!a) return;
       const id = a.getAttribute("href")!.slice(1);
-      const target = document.getElementById(id);
-      if (!target) return;
-      e.preventDefault();
-      const offset = target.dataset.scrollOffset ? Number(target.dataset.scrollOffset) * vh : 0;
-      lenis.scrollTo(target, { offset, duration: 1.8 });
+      if (!lenis && id !== "ziyaret" && id !== "evler") return;
+      if (goTo(id)) e.preventDefault();
     };
     document.addEventListener("click", onClick);
 

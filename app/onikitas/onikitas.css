@@ -264,8 +264,8 @@ html:not(.js) .oki-stills img[data-i="0"] {
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0 1rem;
+  gap: 0.45rem;
+  padding: 0 1rem 0 0.8rem;
   cursor: pointer;
   min-height: 44px;
   border: 1px solid color-mix(in srgb, currentColor 34%, transparent);
@@ -275,27 +275,18 @@ html:not(.js) .oki-stills img[data-i="0"] {
 .oki-sound:hover {
   border-color: currentColor;
 }
-.oki-sound__bars {
-  display: inline-flex;
-  align-items: flex-end;
-  gap: 2px;
-  height: 12px;
+.oki-sound__icon {
+  flex: none;
 }
-.oki-sound__bars i {
-  width: 2px;
-  height: 3px;
-  background: currentColor;
-  transition: height 0.3s var(--ease-out);
+.oki-sound[data-on="true"] .oki-sound__wave {
+  animation: oki-wave 1.4s ease-in-out infinite alternate;
 }
-.oki-sound__bars[data-on="true"] i {
-  animation: oki-bars 1.1s ease-in-out infinite alternate;
+.oki-sound[data-on="true"] .oki-sound__wave--far {
+  animation-delay: -0.7s;
 }
-.oki-sound__bars[data-on="true"] i:nth-child(2) { animation-delay: -0.4s; }
-.oki-sound__bars[data-on="true"] i:nth-child(3) { animation-delay: -0.8s; }
-.oki-sound__bars[data-on="true"] i:nth-child(4) { animation-delay: -0.2s; }
-@keyframes oki-bars {
-  from { height: 3px; }
-  to { height: 12px; }
+@keyframes oki-wave {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
 }
 
 /* ---------- day clock + hour navigation ---------- */
@@ -391,9 +382,16 @@ html:not(.js) .oki-stills img[data-i="0"] {
 
 /* ---------- chapters ---------- */
 
+/* No z-index here: the registry inside main has to rise above the fixed day
+   clock (z-hud), as the footer does. DOM order already puts main over the
+   fixed canvas. */
 .oki-main {
   position: relative;
-  z-index: var(--z-main);
+}
+/* Each chapter's sticky screen overlaps the next chapter: the scene never
+   holds still for a whole screen while one section scrolls out. */
+html.js .oki-chapter + .oki-chapter {
+  margin-top: -100svh;
 }
 .oki-chapter {
   position: relative;
@@ -419,12 +417,26 @@ html:not(.js) .oki-stills img[data-i="0"] {
   color: var(--ink);
   transition: opacity 0.9s var(--ease-out), visibility 0.9s, color 0.8s var(--ease-out);
 }
+/* The scrim is a soft-edged rectangle, not a radial glow: its solid core
+   covers the whole text block (corners included) and only the margin around
+   it feathers out. 86% limewash over the darkest scene pixel keeps body ink at
+   about 7:1; the night variant (lime on near-black) is above 10:1. */
 .oki-copy::before {
+  /* wide, eased feather: the bed reads as light falling on the copy, not a card */
+  --feather: 8rem;
   content: "";
   position: absolute;
-  inset: -30% -28%;
+  inset: -8.25rem -9rem;
   z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 88%, transparent), color-mix(in srgb, var(--scrim-c) 62%, transparent) 58%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
+  background: color-mix(in srgb, var(--scrim-c) 86%, transparent);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, rgb(0 0 0 / 0.12) calc(var(--feather) * 0.3), rgb(0 0 0 / 0.5) calc(var(--feather) * 0.6), rgb(0 0 0 / 0.86) calc(var(--feather) * 0.85), #000 var(--feather), #000 calc(100% - var(--feather)), rgb(0 0 0 / 0.86) calc(100% - var(--feather) * 0.85), rgb(0 0 0 / 0.5) calc(100% - var(--feather) * 0.6), rgb(0 0 0 / 0.12) calc(100% - var(--feather) * 0.3), transparent),
+    linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.12) calc(var(--feather) * 0.3), rgb(0 0 0 / 0.5) calc(var(--feather) * 0.6), rgb(0 0 0 / 0.86) calc(var(--feather) * 0.85), #000 var(--feather), #000 calc(100% - var(--feather)), rgb(0 0 0 / 0.86) calc(100% - var(--feather) * 0.85), rgb(0 0 0 / 0.5) calc(100% - var(--feather) * 0.6), rgb(0 0 0 / 0.12) calc(100% - var(--feather) * 0.3), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, rgb(0 0 0 / 0.12) calc(var(--feather) * 0.3), rgb(0 0 0 / 0.5) calc(var(--feather) * 0.6), rgb(0 0 0 / 0.86) calc(var(--feather) * 0.85), #000 var(--feather), #000 calc(100% - var(--feather)), rgb(0 0 0 / 0.86) calc(100% - var(--feather) * 0.85), rgb(0 0 0 / 0.5) calc(100% - var(--feather) * 0.6), rgb(0 0 0 / 0.12) calc(100% - var(--feather) * 0.3), transparent),
+    linear-gradient(to bottom, transparent, rgb(0 0 0 / 0.12) calc(var(--feather) * 0.3), rgb(0 0 0 / 0.5) calc(var(--feather) * 0.6), rgb(0 0 0 / 0.86) calc(var(--feather) * 0.85), #000 var(--feather), #000 calc(100% - var(--feather)), rgb(0 0 0 / 0.86) calc(100% - var(--feather) * 0.85), rgb(0 0 0 / 0.5) calc(100% - var(--feather) * 0.6), rgb(0 0 0 / 0.12) calc(100% - var(--feather) * 0.3), transparent);
+  mask-composite: intersect;
   pointer-events: none;
   transition: opacity 0.9s var(--ease-out);
 }
@@ -476,10 +488,11 @@ html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-ch {
 }
 .oki-copy__body {
   margin-top: 1.8rem;
-  max-width: 34ch;
-  font-size: clamp(1rem, 0.35vw + 0.92rem, 1.1875rem);
+  max-width: 36ch;
+  font-size: clamp(1.0625rem, 0.25vw + 0.95rem, 1.125rem);
+  font-weight: 500;
   line-height: 1.55;
-  color: var(--ink-soft);
+  color: var(--ink);
   transition: opacity 1s var(--ease-out) 0.35s, transform 1s var(--ease-out) 0.35s;
 }
 html.js .oki-copy:not([data-on="true"]) .oki-copy__body,
@@ -495,9 +508,11 @@ html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-copy__body {
   translate: 0 -46%;
   width: min(36rem, 44vw);
 }
+/* dawn: the copy sits on the plain limewash wall, a lighter bed is enough */
 .oki-chapter--safak .oki-copy::before {
-  inset: -24% -22%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 70%, transparent), color-mix(in srgb, var(--scrim-c) 40%, transparent) 60%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
+  --feather: 7rem;
+  inset: -7rem -7.5rem;
+  background: color-mix(in srgb, var(--scrim-c) 74%, transparent);
 }
 .oki-chapter--kusluk .oki-copy,
 .oki-chapter--ikindi .oki-copy {
@@ -522,6 +537,42 @@ html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-copy__body {
 }
 .oki-chapter--yatsi .oki-copy__body {
   margin-inline: auto;
+}
+
+/* closing call under the night line */
+.oki-close {
+  margin-top: 1.75rem !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1.75rem;
+}
+.oki-root .oki-close__visit {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 1.35rem;
+  background: var(--tile);
+  color: var(--paper);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.25s;
+}
+.oki-root .oki-close__visit:hover {
+  background: var(--tile-ink);
+}
+.oki-close__homes {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent) !important;
+}
+.oki-close__homes:hover {
+  text-decoration-color: currentColor !important;
 }
 
 /* ---------- the sundial ---------- */
@@ -993,17 +1044,8 @@ html[data-capture="true"] .oki-stills {
     padding: 0 1rem;
   }
   .oki-sound {
-    padding: 0;
-  }
-  .oki-sound span:last-child {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  .oki-sound {
     min-width: 44px;
+    padding: 0 0.7rem 0 0.55rem;
     justify-content: center;
   }
   .oki-days {
@@ -1042,8 +1084,9 @@ html[data-capture="true"] .oki-stills {
   /* narrow screens put the copy over the busiest part of the scene */
   .oki-copy::before,
   .oki-chapter--safak .oki-copy::before {
-    inset: -40% -22% -34%;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 92%, transparent), color-mix(in srgb, var(--scrim-c) 74%, transparent) 60%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
+    --feather: 1.75rem;
+    inset: -2rem -1.25rem;
+    background: color-mix(in srgb, var(--scrim-c) 88%, transparent);
   }
   .oki-title {
     font-size: clamp(2rem, 8.6vw, 2.75rem);
@@ -1053,7 +1096,7 @@ html[data-capture="true"] .oki-stills {
   }
   .oki-copy__body {
     margin-top: 1.25rem;
-    font-size: 1rem;
+    font-size: 1.0625rem;
   }
   /* the dial owns the lower screen; keep only the question above it */
   .oki-root:has(.oki-dial-panel[data-on="true"]) .oki-chapter--aksam .oki-copy__body {
@@ -1116,7 +1159,8 @@ html[data-capture="true"] .oki-stills {
     transform: none;
   }
   .oki-loader__horizon,
-  .oki-sound__bars[data-on="true"] i {
+  .oki-sound[data-on="true"] .oki-sound__wave,
+  .oki-visit-dialog[open] {
     animation: none;
   }
   html.js .oki-loader {
@@ -1133,12 +1177,7 @@ html[data-capture="true"] .oki-stills {
 /* busy mid-day terrain: give the copy a denser limewash bed */
 .oki-chapter--kusluk .oki-copy::before,
 .oki-chapter--ikindi .oki-copy::before {
-  inset: -38% -26%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--scrim-c) 94%, transparent), color-mix(in srgb, var(--scrim-c) 72%, transparent) 55%, color-mix(in srgb, var(--scrim-c) 0%, transparent));
-}
-.oki-chapter--kusluk .oki-copy__body,
-.oki-chapter--ikindi .oki-copy__body {
-  color: var(--ink);
+  background: color-mix(in srgb, var(--scrim-c) 90%, transparent);
 }
 
 /* at dawn the headline and the arch own the screen: hold the hour index and
@@ -1159,5 +1198,583 @@ html[data-capture="true"] .oki-stills {
 @media (pointer: coarse) {
   .oki-pebble {
     min-height: 44px;
+  }
+}
+
+/* ---------- loader, return visit in the same tab ---------- */
+
+html.js .oki-loader[data-quick="true"] {
+  transition: opacity 0.35s linear;
+}
+html.js .oki-loader[data-quick="true"][data-leaving="true"] {
+  clip-path: none;
+  opacity: 0;
+}
+.oki-loader[data-quick="true"] .oki-stone {
+  transition: none;
+}
+.oki-loader[data-quick="true"] .oki-loader__horizon {
+  animation: none;
+}
+
+/* ---------- "On iki ev": the registry ---------- */
+
+.oki-registry {
+  position: relative;
+  z-index: var(--z-footer);
+  background: var(--night);
+  color: var(--lime);
+  padding: 16vh var(--pad) 12vh;
+  border-bottom: 1px solid #f2eee61f;
+  --focus: var(--tile-light);
+}
+.oki-registry__inner {
+  max-width: 1400px;
+}
+.oki-registry__head {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 1.25rem clamp(2rem, 6vw, 6rem);
+  align-items: end;
+}
+.oki-registry__head h2 {
+  font-family: var(--font-display), serif;
+  font-size: clamp(2.4rem, 4.4vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.oki-registry__head h2:focus {
+  outline: none;
+}
+.oki-registry__head h2:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 6px;
+}
+.oki-registry__head p {
+  max-width: 44ch;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: #ddd7ca;
+}
+.oki-registry__table {
+  width: 100%;
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.oki-registry__table th,
+.oki-registry__table td {
+  padding: 0.85rem 0.7rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #f2eee624;
+}
+.oki-registry__table thead th {
+  padding-top: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #b6bfc3;
+  border-bottom-color: #f2eee666;
+  white-space: nowrap;
+}
+.oki-registry__table [data-num] {
+  text-align: right;
+}
+.oki-registry__table th:first-child,
+.oki-registry__table td:first-child {
+  padding-left: 0;
+}
+.oki-registry__table th:last-child,
+.oki-registry__table td:last-child {
+  padding-right: 0;
+  text-align: right;
+}
+.oki-registry__table tbody th {
+  font-weight: 400;
+}
+.oki-registry__no {
+  font-family: var(--font-display), serif;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+.oki-registry__table tbody tr {
+  transition: background 0.25s;
+}
+.oki-registry__table tbody tr:hover {
+  background: #f2eee60d;
+}
+.oki-registry__table tr[data-status="satildi"] td:not(:last-child),
+.oki-registry__table tr[data-status="satildi"] th {
+  color: #b6bfc3;
+}
+.oki-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.oki-status::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #a7c79a;
+}
+.oki-status[data-status="opsiyonlu"] {
+  color: var(--tile-light);
+}
+.oki-status[data-status="opsiyonlu"]::before {
+  background: var(--tile-light);
+}
+.oki-status[data-status="satildi"] {
+  color: #b6bfc3;
+  font-weight: 500;
+}
+.oki-status[data-status="satildi"]::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px #b6bfc3;
+}
+.oki-see {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid #f2eee699;
+  background: transparent;
+  color: var(--lime);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+.oki-see:hover {
+  background: var(--lime);
+  color: var(--night);
+  border-color: var(--lime);
+}
+.oki-registry__cards {
+  display: none;
+}
+.oki-registry__note {
+  margin-top: 2rem !important;
+  max-width: 60ch;
+  font-size: 0.875rem;
+  color: #c9c4b8;
+}
+
+@media (max-width: 1023px) {
+  .oki-registry {
+    padding-top: 12vh;
+  }
+  .oki-registry__head {
+    grid-template-columns: 1fr;
+  }
+  .oki-registry__table {
+    display: none;
+  }
+  .oki-registry__cards {
+    list-style: none;
+    margin: 2.25rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: 0.9rem;
+  }
+  .oki-registry__cards article {
+    height: 100%;
+    display: grid;
+    align-content: start;
+    padding: 1.1rem 1.1rem 1.15rem;
+    border: 1px solid #f2eee633;
+  }
+  .oki-card__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .oki-card__head h3 {
+    font-family: var(--font-display), serif;
+    font-size: 1.6rem;
+    line-height: 1.1;
+  }
+  .oki-registry__cards dl {
+    margin: 1rem 0 1.15rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem 1rem;
+  }
+  .oki-registry__cards dt {
+    font-size: 0.8125rem;
+    color: #b6bfc3;
+  }
+  .oki-registry__cards dd {
+    margin: 0.1rem 0 0;
+    font-size: 0.9375rem;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .oki-registry__cards .oki-see {
+    width: 100%;
+    min-height: 48px;
+    align-self: end;
+  }
+}
+
+/* ---------- visit request (modal dialog) ---------- */
+
+html:has(.oki-visit-dialog[open]) {
+  overflow: hidden;
+}
+.oki-visit-dialog {
+  --ink: var(--olive);
+  --ink-soft: #4a483d;
+  --focus: var(--tile-ink);
+  width: min(38rem, calc(100vw - 1.5rem));
+  max-width: none;
+  max-height: calc(100dvh - 1.5rem);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--olive);
+  overflow: auto;
+  overscroll-behavior: contain;
+  visibility: visible;
+  -webkit-user-select: text;
+  user-select: text;
+  font-family: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
+}
+.oki-visit-dialog[open] {
+  animation: oki-sheet-in 0.45s var(--ease-out);
+}
+@keyframes oki-sheet-in {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.oki-visit-dialog::backdrop {
+  background: rgba(12, 22, 30, 0.64);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.oki-sheet {
+  position: relative;
+  padding: 2.1rem 2.25rem 2rem;
+  background: var(--lime);
+  border: 1px solid rgba(59, 58, 46, 0.32);
+  outline: 1px solid rgba(59, 58, 46, 0.14);
+  outline-offset: -7px;
+  box-shadow: 0 30px 80px -30px rgba(8, 14, 18, 0.7);
+}
+.oki-sheet__close {
+  appearance: none;
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--olive);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.oki-sheet__close:hover {
+  background: rgba(59, 58, 46, 0.09);
+}
+.oki-sheet__title {
+  padding-right: 2.75rem;
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.75rem, 3.4vw, 2.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.005em;
+}
+.oki-sheet__title:focus {
+  outline: none;
+}
+.oki-sheet__lead {
+  margin-top: 0.5rem !important;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+.oki-sheet__summary {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem 0.9rem;
+  background: var(--paper);
+  border: 1px solid rgba(59, 58, 46, 0.24);
+}
+.oki-sheet__kicker {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--olive-soft);
+}
+.oki-sheet__pick {
+  margin-top: 0.15rem !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.7rem;
+  font-size: 0.9375rem;
+}
+.oki-sheet__villa {
+  font-family: var(--font-display), serif;
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+.oki-sheet__note {
+  margin-top: 0.4rem !important;
+  font-size: 0.875rem;
+  color: var(--tile-ink);
+}
+.oki-field {
+  margin: 1.35rem 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.oki-field legend,
+.oki-field > label,
+.oki-contact__row label {
+  display: block;
+  padding: 0;
+  margin-bottom: 0.45rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.oki-field__hint {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--olive-soft);
+}
+.oki-days-pick legend .oki-field__hint {
+  margin-left: 0.35rem;
+}
+.oki-contact > .oki-field__hint {
+  margin: -0.25rem 0 0.6rem !important;
+}
+.oki-visit-dialog input[type="text"],
+.oki-visit-dialog input[type="tel"],
+.oki-visit-dialog input[type="email"] {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(59, 58, 46, 0.72);
+  border-radius: 0;
+  background: var(--paper);
+  color: var(--olive);
+  font: inherit;
+  font-size: 1rem;
+}
+.oki-visit-dialog input[aria-invalid="true"] {
+  border-color: var(--tile-ink);
+  box-shadow: inset 0 0 0 1px var(--tile-ink);
+}
+.oki-contact__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+.oki-contact__row label {
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+.oki-err {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.45rem !important;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #8f3a1c;
+}
+.oki-err::before {
+  content: "";
+  flex: none;
+  width: 0.45rem;
+  height: 0.45rem;
+  margin-top: 0.45em;
+  background: currentColor;
+  rotate: 45deg;
+}
+.oki-days-pick__months {
+  margin-bottom: 0.5rem !important;
+  font-size: 0.8125rem;
+  color: var(--olive-soft);
+}
+.oki-days-pick__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.oki-days-pick__wd {
+  padding-bottom: 0.15rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--olive-soft);
+}
+.oki-day,
+.oki-people__opt {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  background: var(--paper);
+  border: 1px solid rgba(59, 58, 46, 0.26);
+  font-size: 0.9375rem;
+  font-variant-numeric: lining-nums tabular-nums;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.oki-day[data-weekend] {
+  background: #fbf4e8;
+}
+.oki-day input,
+.oki-people__opt input {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.oki-day__n {
+  display: grid;
+  justify-items: center;
+  line-height: 1.1;
+}
+.oki-day__n small {
+  font-size: 0.6875rem;
+  color: var(--olive-soft);
+}
+.oki-day:hover,
+.oki-people__opt:hover {
+  border-color: var(--olive);
+}
+.oki-day:has(input:checked),
+.oki-people__opt:has(input:checked) {
+  background: var(--tile);
+  border-color: var(--tile);
+  color: var(--paper);
+}
+.oki-day:has(input:checked) small {
+  color: var(--paper);
+}
+.oki-day:has(input:focus-visible),
+.oki-people__opt:has(input:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  z-index: 1;
+}
+.oki-days-pick[data-invalid="true"] .oki-days-pick__grid {
+  outline: 1px solid var(--tile-ink);
+  outline-offset: 3px;
+}
+.oki-people__row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+.oki-people__opt {
+  min-height: 48px;
+  font-family: var(--font-display), serif;
+  font-size: 1.2rem;
+}
+.oki-sheet__privacy {
+  margin-top: 1.4rem !important;
+  font-size: 0.8125rem;
+  color: var(--olive-soft);
+}
+.oki-sheet__actions {
+  margin-top: 0.9rem;
+  display: flex;
+  gap: 1rem;
+}
+.oki-sheet__receipt {
+  margin: 1.4rem 0 0;
+  display: grid;
+}
+.oki-sheet__receipt > div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(59, 58, 46, 0.18);
+}
+.oki-sheet__receipt > div:last-child {
+  border-bottom: 1px solid rgba(59, 58, 46, 0.18);
+}
+.oki-sheet__receipt dt {
+  font-size: 0.875rem;
+  color: var(--olive-soft);
+}
+.oki-sheet__receipt dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.oki-sheet__notsent {
+  margin-top: 1.25rem !important;
+  padding: 0.6rem 0.85rem;
+  border-left: 3px solid var(--tile);
+  background: rgba(181, 83, 44, 0.08);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+@media (max-width: 599px) {
+  .oki-sheet {
+    padding: 1.6rem 1.1rem 1.4rem;
+  }
+  .oki-sheet__close {
+    top: 0.35rem;
+    right: 0.35rem;
+  }
+  .oki-contact__row {
+    grid-template-columns: 1fr;
+  }
+  .oki-sheet__actions .oki-cta {
+    width: 100%;
+  }
+  .oki-sheet__receipt > div {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+  }
+}
+
+/* a leaving loader never takes clicks, whatever its exit animation */
+html.js .oki-loader[data-leaving="true"] {
+  pointer-events: none;
+}
+
+/* ---------- after the day: header over the registry and footer ---------- */
+.oki-header::before {
+  transition: inset 0.4s var(--ease-out), background 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+}
+html[data-past="true"] .oki-header::before {
+  inset: 0;
+  background: color-mix(in srgb, var(--scrim-c) 94%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, currentColor 18%, transparent);
+}
+/* keyboard focus inside the registry never lands under the fixed header */
+.oki-registry tr,
+.oki-registry li,
+.oki-registry__head,
+.oki-footer a {
+  scroll-margin-top: 112px;
+}
+@media (min-width: 900px) {
+  .oki-pebble {
+    min-height: 34px;
+    font-size: 0.86rem;
   }
 }

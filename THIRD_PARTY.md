@@ -53,3 +53,15 @@ Taş revak sahnesi (giriş görseli, kampüs bandı, kampüs sayfası girişi, O
 | Marcellus (Astigmatic, Brian J. Bonislawsky), latin ve latin-ext | font | https://fonts.google.com/specimen/Marcellus (next/font/google) | SIL OFL 1.1 | Hayır | 2026-10-04 | Başlıklar, mühür |
 | Hanken Grotesk (Alfredo Marco Pradil), latin ve latin-ext | font | https://fonts.google.com/specimen/Hanken+Grotesk (next/font/google) | SIL OFL 1.1 | Hayır | 2026-09-28 | Gövde ve arayüz |
 | Fotoğraflar (21 adet, kademe kemerleri, kulüpler, tesisler) | görsel | pexels.com (tek tek bağlantılar `content/revak/credits.ts`) | Pexels License | Hayır (yine de alt bilgide anılıyor) | 2026-09-28 | Kademe kemerleri, kulüp listesi, kampüs sayfası |
+
+## Onikitaş Villaları (`/web/onikitas/`)
+
+Arazi, evler, zeytinler, deniz, gökyüzü, yaprak gölgeleri ve isteğe bağlı ortam sesi tarayıcıda kodla üretilir; indirilmiş 3B model, HDRI ya da ses dosyası yok. Tam liste sitede alt bilgideki "Künye" bölümünde (`content/onikitas/credits.ts`).
+
+| Varlık | Tür | Kaynak URL | Lisans | Atıf gerekiyor mu | Tarih | Nerede kullanıldı |
+|---|---|---|---|---|---|---|
+| DM Serif Display (Colophon Foundry), latin ve latin-ext | font | https://fonts.google.com/specimen/DM+Serif+Display (next/font/google) | SIL OFL 1.1 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Başlıklar, saat, güneş saati |
+| Pinyon Script (Nicole Fally), latin ve latin-ext | font | https://fonts.google.com/specimen/Pinyon+Script (next/font/google) | SIL OFL 1.1 | Hayır (yine de künyede anılıyor) | 2026-10-04 | "Onikitaş" yazısı (başlık, açılış, alt bilgi) |
+| Instrument Sans (Instrument), latin ve latin-ext | font | https://fonts.google.com/specimen/Instrument+Sans (next/font/google) | SIL OFL 1.1 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Metin ve arayüz |
+| White Plaster Rough 01 (Poly Haven) | doku | https://polyhaven.com/a/white_plaster_rough_01 | CC0 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Kireç duvar ve cepheler |
+| Travertine 009 (ambientCG) | doku | https://ambientcg.com/view?id=Travertine009 | CC0 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Teraslar ve havuz kenarları |

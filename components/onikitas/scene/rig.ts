@@ -47,6 +47,9 @@ const WF = wallFrame();
 const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const tmp = new THREE.Vector3();
 
+/** Portrait screens: how far (world units) the aim rises over the maquette. */
+const PORTRAIT_LIFT = 7;
+
 /** Tangent of half the landscape camera's vertical field of view (38deg). */
 const TAN_HALF = Math.tan((19 * Math.PI) / 180);
 
@@ -69,6 +72,7 @@ export function cameraGoal(chapter: number, t: number, out: { pos: THREE.Vector3
     // after the arch, ease the aim onto the chapter-1 target
     const blend = smooth(0.7, 1, t);
     out.tgt.lerp(keys[1].tgt, blend);
+    if (portrait) out.tgt.y += PORTRAIT_LIFT * blend;
     return out;
   }
   const c = Math.min(chapter, chapters.length - 1);
@@ -83,6 +87,9 @@ export function cameraGoal(chapter: number, t: number, out: { pos: THREE.Vector3
     out.pos.add(tmp.set(0, -1 * drift, -7 * drift));
     out.tgt.y += 1.2 * drift;
   }
+  // portrait, maquette hours: aim a little higher so the village, not the flat
+  // model sea, fills the lower half under the copy; gone once kuşluk is real
+  if (portrait && c <= 2) out.tgt.y += PORTRAIT_LIFT * (c < 2 ? 1 : 1 - smooth(0.1, 0.7, t));
   if (sel > 0.001 && selected >= 0) {
     const v = villaSites[selected];
     tmp.set(v.x, v.y + 1.2, v.z);

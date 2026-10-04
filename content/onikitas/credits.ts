@@ -16,11 +16,19 @@ export type Credit = {
 export const credits: Credit[] = [
   {
     group: "fonts",
-    name: "Bodoni Moda",
-    author: "Owen Earl (indestructible type*)",
+    name: "DM Serif Display",
+    author: "Colophon Foundry",
     licence: "SIL Open Font License 1.1",
-    url: "https://fonts.google.com/specimen/Bodoni+Moda",
+    url: "https://fonts.google.com/specimen/DM+Serif+Display",
     use: "Başlıklar ve saat",
+  },
+  {
+    group: "fonts",
+    name: "Pinyon Script",
+    author: "Nicole Fally",
+    licence: "SIL Open Font License 1.1",
+    url: "https://fonts.google.com/specimen/Pinyon+Script",
+    use: "Onikitaş yazısı",
   },
   {
     group: "fonts",

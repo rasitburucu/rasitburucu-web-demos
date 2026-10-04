@@ -4,13 +4,23 @@
 
 export type ChapterId = "safak" | "sabah" | "kusluk" | "ogle" | "ikindi" | "aksam" | "yatsi";
 
+export type VillaStatus = "satista" | "opsiyonlu" | "satildi";
+
 export type VillaCopy = {
   /** Roman numeral, also the villa's name. */
   no: string;
   facing: string;
+  /** Facing, short form for the registry table. */
+  dir: string;
   /** The hour this house "loves", HH:MM. Fictional. */
   hour: string;
   line: string;
+  /** Fictional facts for the registry ("On iki ev"). No prices, by rule. */
+  area: number;
+  beds: number;
+  plot: number;
+  pool: string;
+  status: VillaStatus;
 };
 
 export type Copy = {
@@ -18,9 +28,11 @@ export type Copy = {
   strip: { text: string; href: string };
   skip: string;
   brand: string;
-  nav: { visit: string; soundOn: string; soundOff: string; dayNav: string };
+  nav: { visit: string; sound: string; dayNav: string };
   loader: { time: string; label: string };
   chapters: Record<ChapterId, { name: string; time: string; title: string; body: string }>;
+  /** Closing links under the night chapter. */
+  close: { visit: string; homes: string };
   dial: {
     label: string;
     hint: string;
@@ -30,6 +42,50 @@ export type Copy = {
     lightsAt: (time: string) => string;
   };
   tip: { loves: (time: string) => string };
+  registry: {
+    title: string;
+    lead: string;
+    caption: string;
+    cols: { no: string; dir: string; area: string; beds: string; plot: string; pool: string; hour: string; status: string };
+    status: Record<VillaStatus, string>;
+    m2: (n: number) => string;
+    see: string;
+    /** Sold houses: ask about a similar one instead. */
+    seeSimilar: string;
+    note: string;
+  };
+  visit: {
+    title: string;
+    lead: string;
+    summary: string;
+    lightAt: (time: string) => string;
+    statusNote: Record<Exclude<VillaStatus, "satista">, string>;
+    date: string;
+    dateHint: string;
+    weekdays: string[];
+    name: string;
+    contact: string;
+    contactHint: string;
+    phone: string;
+    email: string;
+    people: string;
+    peopleCount: (n: number) => string;
+    privacy: string;
+    submit: string;
+    close: string;
+    errDate: string;
+    errName: string;
+    errContact: string;
+    errPhone: string;
+    errEmail: string;
+    done: {
+      title: string;
+      body: string;
+      rows: { villa: string; light: string; date: string; people: string; name: string; contact: string };
+      notSent: string;
+      ok: string;
+    };
+  };
   footer: {
     fiction: string;
     made: string;
@@ -42,18 +98,18 @@ export type Copy = {
 };
 
 export const villas: VillaCopy[] = [
-  { no: "I", facing: "Güneydoğuya bakar", hour: "06:10", line: "Yamaçta güne ilk uyanan ev." },
-  { no: "II", facing: "Güneydoğuya bakar", hour: "08:30", line: "Kahvaltı terasına sabah güneşi tam oturur." },
-  { no: "III", facing: "Güneye bakar", hour: "11:00", line: "Havuzu gün içinde en erken ısınan ev." },
-  { no: "IV", facing: "Güneye bakar", hour: "13:20", line: "Kuzeydeki avlusu öğle sıcağında bile serin." },
-  { no: "V", facing: "Güneye bakar", hour: "09:40", line: "Zeytinliğin hemen kıyısında." },
-  { no: "VI", facing: "Güneye bakar", hour: "15:00", line: "Çardağı ikindi güneşini süzer." },
-  { no: "VII", facing: "Batıya bakar", hour: "18:40", line: "Gün batımını salondan izlersiniz." },
-  { no: "VIII", facing: "Güneye bakar", hour: "17:30", line: "Akşam meltemini ilk o alır." },
-  { no: "IX", facing: "Güneybatıya bakar", hour: "07:20", line: "Yamacın en üstünde, en geniş manzarayla." },
-  { no: "X", facing: "Güneydoğuya bakar", hour: "12:10", line: "Denizle arasında yalnızca zeytin ağaçları var." },
-  { no: "XI", facing: "Güneye bakar", hour: "19:10", line: "Çatı terası gün batımı için tasarlandı." },
-  { no: "XII", facing: "Güneybatıya bakar", hour: "20:05", line: "Günün son ışığı onun duvarına düşer." },
+  { no: "I", facing: "Güneydoğuya bakar", dir: "Güneydoğu", hour: "06:10", line: "Yamaçta güne ilk uyanan ev.", area: 210, beds: 3, plot: 640, pool: "Özel", status: "satista" },
+  { no: "II", facing: "Güneydoğuya bakar", dir: "Güneydoğu", hour: "08:30", line: "Kahvaltı terasına sabah güneşi tam oturur.", area: 245, beds: 4, plot: 720, pool: "Özel, ısıtmalı", status: "satildi" },
+  { no: "III", facing: "Güneye bakar", dir: "Güney", hour: "11:00", line: "Havuzu gün içinde en erken ısınan ev.", area: 185, beds: 3, plot: 590, pool: "Özel", status: "satista" },
+  { no: "IV", facing: "Güneye bakar", dir: "Güney", hour: "13:20", line: "Kuzeydeki avlusu öğle sıcağında bile serin.", area: 260, beds: 4, plot: 780, pool: "Özel", status: "opsiyonlu" },
+  { no: "V", facing: "Güneye bakar", dir: "Güney", hour: "09:40", line: "Zeytinliğin hemen kıyısında.", area: 230, beds: 4, plot: 700, pool: "Özel", status: "satista" },
+  { no: "VI", facing: "Güneye bakar", dir: "Güney", hour: "15:00", line: "Çardağı ikindi güneşini süzer.", area: 275, beds: 4, plot: 820, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "VII", facing: "Batıya bakar", dir: "Batı", hour: "18:40", line: "Gün batımını salondan izlersiniz.", area: 320, beds: 5, plot: 960, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "VIII", facing: "Güneye bakar", dir: "Güney", hour: "17:30", line: "Akşam meltemini ilk o alır.", area: 240, beds: 4, plot: 730, pool: "Özel", status: "satildi" },
+  { no: "IX", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "07:20", line: "Yamacın en üstünde, en geniş manzarayla.", area: 300, beds: 5, plot: 910, pool: "Özel, ısıtmalı", status: "opsiyonlu" },
+  { no: "X", facing: "Güneydoğuya bakar", dir: "Güneydoğu", hour: "12:10", line: "Denizle arasında yalnızca zeytin ağaçları var.", area: 195, beds: 3, plot: 610, pool: "Özel", status: "satista" },
+  { no: "XI", facing: "Güneye bakar", dir: "Güney", hour: "19:10", line: "Çatı terası gün batımı için tasarlandı.", area: 285, beds: 4, plot: 870, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "XII", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "20:05", line: "Günün son ışığı onun duvarına düşer.", area: 310, beds: 5, plot: 940, pool: "Özel, ısıtmalı", status: "satista" },
 ];
 
 export const tr: Copy = {
@@ -65,7 +121,7 @@ export const tr: Copy = {
   strip: { text: "Konsept çalışma — rasitburucu.com", href: "/tr" },
   skip: "İçeriğe geç",
   brand: "Onikitaş",
-  nav: { visit: "Ziyaret", soundOn: "Sesi kapat", soundOff: "Sesi aç", dayNav: "Günün saatleri" },
+  nav: { visit: "Ziyaret", sound: "Ses", dayNav: "Günün saatleri" },
   loader: { time: "05:41", label: "Sahne hazırlanıyor" },
   chapters: {
     safak: {
@@ -90,13 +146,13 @@ export const tr: Copy = {
       name: "Öğle",
       time: "13:00",
       title: "En sıcak saatte bile avlunuz gölgede.",
-      body: "Her avluyu evin kuzeyine aldık. Öğle güneşinde bile avlunun yarısı, havuzun da uzun kenarı gölgede kalır.",
+      body: "Her avluyu evin kuzeyine aldık. Öğle güneşinde bile avlunun yarısı gölgede kalır.",
     },
     ikindi: {
       name: "İkindi",
       time: "16:30",
       title: "İkindi meltemi, klimadan iyidir.",
-      body: "Evler, yarımadanın kuzeybatı rüzgârına açık konumlandı; pencereleri açmanız yeter. Her evin gün içinde en güzel göründüğü bir saat var, evlerin üzerine gelip tanışın.",
+      body: "Evler, yarımadanın kuzeybatı rüzgârına açık konumlandı. Akşamüstü pencereleri açmanız, evi serinletmeye yeter.",
     },
     aksam: {
       name: "Akşam",
@@ -111,6 +167,7 @@ export const tr: Copy = {
       body: "Yamaç sessizleşir, geriye denizin sesi kalır. Onikitaş, 2027 yazında ilk sahiplerini ağırlıyor.",
     },
   },
+  close: { visit: "Ziyaret planla", homes: "Evleri tek tek inceleyin" },
   dial: {
     label: "Ziyaret saati",
     hint: "Güneşi sürükleyerek saati seçin.",
@@ -120,6 +177,61 @@ export const tr: Copy = {
     lightsAt: (time) => `${time} ışığında`,
   },
   tip: { loves: (time) => `En güzel saati ${time}` },
+  registry: {
+    title: "On iki ev, tek tek.",
+    lead: "Her evin alanı, oda sayısı, cephesi ve gün içinde en güzel göründüğü saat. Beğendiğiniz evi seçin, ziyaretinizi o eve göre planlayalım.",
+    caption: "On iki villanın cephesi, alanı, oda sayısı, arsası, havuzu, en güzel saati ve satış durumu",
+    cols: {
+      no: "Villa",
+      dir: "Cephe",
+      area: "Kapalı alan",
+      beds: "Yatak odası",
+      plot: "Arsa",
+      pool: "Havuz",
+      hour: "En güzel saati",
+      status: "Durum",
+    },
+    status: { satista: "Satışta", opsiyonlu: "Opsiyonlu", satildi: "Satıldı" },
+    m2: (n) => `${n} m²`,
+    see: "Bu evi gör",
+    seeSimilar: "Benzerini sorun",
+    note: "Örnek bilgiler; Onikitaş kurgusal bir projedir. Fiyat bilgisi görüşmede paylaşılır.",
+  },
+  visit: {
+    title: "Ziyaretinizi planlayalım.",
+    lead: "Seçtiğiniz evi, seçtiğiniz ışıkta birlikte gezelim.",
+    summary: "Seçiminiz",
+    lightAt: (time) => `${time} ışığında`,
+    statusNote: {
+      opsiyonlu: "Bu ev için bir opsiyon var. Ziyarette güncel durumu birlikte konuşuruz.",
+      satildi: "Bu ev satıldı. Ziyarette aynı cepheye bakan evleri gösteririz.",
+    },
+    date: "Hangi gün gelirsiniz?",
+    dateHint: "Önümüzdeki 30 gün",
+    weekdays: ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"],
+    name: "Ad soyad",
+    contact: "Size nasıl ulaşalım?",
+    contactHint: "Telefon ya da e-posta; biri yeterli.",
+    phone: "Telefon",
+    email: "E-posta",
+    people: "Kaç kişi gelirsiniz?",
+    peopleCount: (n) => `${n} kişi`,
+    privacy: "Bilgileriniz yalnızca bu sekmede tutulur, hiçbir yere gönderilmez.",
+    submit: "Ziyaret talebini hazırla",
+    close: "Kapat",
+    errDate: "Ziyaret için bir gün seçin.",
+    errName: "Adınızı ve soyadınızı yazın.",
+    errContact: "Telefon numaranızı ya da e-posta adresinizi yazın.",
+    errPhone: "Telefon numarası en az 10 haneli olmalı.",
+    errEmail: "Geçerli bir e-posta adresi yazın.",
+    done: {
+      title: "Talebiniz hazır.",
+      body: "Satış ofisimiz bir iş günü içinde sizi arar, ziyaret saatini birlikte netleştirirsiniz.",
+      rows: { villa: "Ev", light: "Işık", date: "Gün", people: "Kişi", name: "Ad soyad", contact: "İletişim" },
+      notSent: "Konsept: hiçbir bilgi gönderilmedi.",
+      ok: "Tamam",
+    },
+  },
   footer: {
     fiction:
       "Onikitaş kurgusal bir projedir. Adı, evleri, saatleri ve bu sayfadaki bütün bilgiler bir konsept çalışma için yazıldı.",

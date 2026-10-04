@@ -290,9 +290,19 @@ export function waterMaterial(pool: boolean) {
         // foam where the sea touches the rocks
         float shore = (1.0 - smoothstep(0.0, 0.05, depth)) * inside * (1.0 - uPool);
         col = mix(col, vec3(0.8, 0.82, 0.8) * (0.4 + 0.6 * day), shore * smoothstep(0.35, 0.7, oki_noise(vWp.xz * 1.4 + uTime * 0.3)));
-        // clay: a flat plaster base, lit softly by the low sun
-        vec3 acrylic = vec3(0.5, 0.58, 0.64) * (0.78 + 0.22 * clamp(uLightDir.y * 3.0, 0.0, 1.0));
-        vec3 clay = mix(acrylic, sky, fres * 0.55) + uSunColor * spec * 0.6;
+        // clay: the maquette's sea is a sheet of board engraved with offshore
+        // contour lines (like the land's layers, one hairline per pixel at any
+        // distance, faded where they would crowd). It pales towards the coast,
+        // so the shore meets the clay softly instead of as a hard cut.
+        float cx = (vWp.x + 3.0) / 21.0;
+        float off = vWp.z - (17.0 - 11.0 * exp(-cx * cx) + 3.2 * sin(vWp.x * 0.052 + 0.8) + 1.4 * sin(vWp.x * 0.13 + 2.1));
+        float iu = off / 3.2;
+        float ifw = max(fwidth(iu), 1e-4);
+        float idl = abs(fract(iu + 0.5) - 0.5);
+        float iso = (1.0 - smoothstep(ifw * 0.6, ifw * 1.7, idl)) * (1.0 - smoothstep(0.16, 0.38, ifw)) * smoothstep(0.8, 2.0, off);
+        vec3 board = mix(OKI_CLAY * 0.93, vec3(0.55, 0.62, 0.67), 0.42 + 0.3 * smoothstep(3.0, 70.0, off));
+        vec3 acrylic = board * (0.8 + 0.2 * clamp(uLightDir.y * 3.0, 0.0, 1.0)) * (1.0 - iso * 0.14);
+        vec3 clay = mix(acrylic, sky, fres * 0.3) + uSunColor * spec * 0.4;
         if (uPool > 0.5) clay = OKI_CLAY * 0.95;
         float r = oki_reveal(vWp, 0.0);
         // stay under the bloom threshold (1.05): the glitter reads as light, not sparks

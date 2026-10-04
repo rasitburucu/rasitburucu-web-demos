@@ -4,9 +4,10 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { emit, on, store } from "@/lib/onikitas/store";
 import { DIAL_MAX, DIAL_MIN, formatHour } from "@/lib/onikitas/chapters";
 import { tr, villas } from "@/content/onikitas/tr";
+import { VisitDialog } from "./VisitDialog";
 
-// The one conversion: pick the light, pick the house. The request button is a
-// showpiece in this concept (no form, no e-mail, no server).
+// The one conversion: pick the light, pick the house, ask for a visit. The
+// request opens a modal form (VisitDialog); in this concept nothing is sent.
 //
 // Geometry, in viewBox units (400 x 236). One radius for the sun's path; the
 // ticks sit outside it, the hour labels well inside it, so the sun's halo can
@@ -41,6 +42,9 @@ export function Sundial() {
   const svg = useRef<SVGSVGElement>(null);
   const face = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
+  const cta = useRef<HTMLButtonElement>(null);
+  const [asking, setAsking] = useState(false);
+  const closeAsk = useCallback(() => setAsking(false), []);
   // latest value for key repeat, which can outrun a render
   const hourRef = useRef(hour);
   const groupId = useId();
@@ -222,10 +226,17 @@ export function Sundial() {
       </p>
 
       <div className="oki-dial__actions">
-        <button type="button" className="oki-cta">
+        <button
+          ref={cta}
+          type="button"
+          className="oki-cta"
+          aria-haspopup="dialog"
+          onClick={() => setAsking(true)}
+        >
           {tr.dial.cta}
         </button>
       </div>
+      <VisitDialog open={asking} onClose={closeAsk} villa={sel} time={time} returnFocus={cta} />
     </div>
   );
 }
