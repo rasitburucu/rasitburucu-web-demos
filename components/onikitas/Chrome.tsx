@@ -1,5 +1,5 @@
 import { tr } from "@/content/onikitas/tr";
-import { chapters } from "@/lib/onikitas/chapters";
+import { chapters, formatHour } from "@/lib/onikitas/chapters";
 import { SoundToggle } from "./SoundToggle";
 
 /** Honesty strip, header, the day clock and the hour navigation. */
@@ -28,7 +28,7 @@ export function Chrome() {
           {tr.chapters.safak.name}
         </p>
         <p className="oki-hud__clock" data-clock>
-          {tr.chapters.safak.time}
+          {formatHour(chapters[0].from)}
         </p>
       </div>
       <nav className="oki-days" aria-label={tr.nav.dayNav}>
@@ -36,7 +36,7 @@ export function Chrome() {
           {chapters.map((c, i) => (
             <li key={c.id}>
               <a href={`#${c.id}`} data-tick data-active={i === 0 ? "true" : "false"}>
-                <span className="oki-days__time">{tr.chapters[c.id].time}</span>
+                <span className="oki-days__time">{formatHour(c.from)}</span>
                 <span className="oki-days__name">{tr.chapters[c.id].name}</span>
               </a>
             </li>

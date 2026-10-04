@@ -261,7 +261,6 @@ html:not(.js) .oki-stills img[data-i="0"] {
   font-size: 0.9375rem;
   font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 10px 24px -14px rgba(60, 28, 12, 0.7);
   transition: background 0.25s var(--ease-out), transform 0.25s var(--ease-out);
 }
 .oki-root .oki-visit:hover {
@@ -495,8 +494,7 @@ html.js .oki-copy:not([data-on="true"]) {
     opacity 0.9s var(--ease-out) calc(var(--i) * 16ms),
     filter 1s var(--ease-out) calc(var(--i) * 16ms);
 }
-html.js .oki-copy:not([data-on="true"]) .oki-ch,
-html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-ch {
+html.js .oki-copy:not([data-on="true"]) .oki-ch {
   transform: translateY(0.42em);
   opacity: 0;
   filter: blur(8px);
@@ -511,8 +509,9 @@ html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-ch {
   color: var(--ink);
   transition: opacity 1s var(--ease-out) 0.35s, transform 1s var(--ease-out) 0.35s;
 }
-html.js .oki-copy:not([data-on="true"]) .oki-copy__body,
-html.js:not([data-loaded="true"]) .oki-chapter--safak .oki-copy__body {
+/* the dawn copy is the first paint (and the largest on phones): it stands
+   from the start, no fade, so it is counted the moment it lands */
+html.js .oki-copy:not([data-on="true"]) .oki-copy__body {
   opacity: 0;
   transform: translateY(10px);
   transition-delay: 0s;

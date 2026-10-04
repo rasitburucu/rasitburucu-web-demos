@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { on, store } from "@/lib/onikitas/store";
 import { tr } from "@/content/onikitas/tr";
+import { chapters, formatHour } from "@/lib/onikitas/chapters";
 
 // Twelve stones drop onto the horizon, one per real loading milestone
 // (fonts, scene code, textures, geometry, shader compile, first frames).
@@ -104,7 +105,7 @@ export function Loader({ mode }: { mode: "pending" | "webgl" | "stills" }) {
       <span className="sr-only">{tr.loader.label}</span>
       <div className="oki-loader__inner" aria-hidden="true">
         <p className="oki-loader__brand">{tr.brand}</p>
-        <p className="oki-loader__time">{tr.loader.time}</p>
+        <p className="oki-loader__time">{formatHour(chapters[0].from)}</p>
         <div className="oki-loader__ground">
           <div className="oki-loader__stones">
             {STONES.map((s, i) => (

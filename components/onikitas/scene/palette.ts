@@ -17,11 +17,12 @@ type Key = {
 
 const KEYS: Key[] = [
   { h: 5.0, zenith: "#1f2c3a", horizon: "#6e6a74", sun: "#ff9e7a", sunI: 0.0, sky: "#56647a", ground: "#3a3630", hemiI: 0.35, stars: 0.6 },
-  // dawn: the sky fill carries ~30% less blue than a pure blue hour would, so
-  // the limewash maquette in the arch reads chalk-white, not grey-blue; the
-  // warm horizon and the peach sun keep the hour
-  { h: 5.683, zenith: "#50657b", horizon: "#e9c2a6", sun: "#ffb088", sunI: 1.9, sky: "#a2aab8", ground: "#95877a", hemiI: 0.98, stars: 0.12 },
-  { h: 6.5, zenith: "#7086a0", horizon: "#ecd2bc", sun: "#ffc89e", sunI: 3.0, sky: "#b7c0cb", ground: "#9a8c7c", hemiI: 0.78, stars: 0 },
+  // dawn: the sun is still behind the ridge, so the maquette faces us in its
+  // own shade. The fill is warm (sky a pale travertine, the ground bounce a
+  // sandstone), so that shade reads as warm stone, never cold violet-grey;
+  // the peach sun only rims the crests and the layer edges
+  { h: 5.683, zenith: "#50657b", horizon: "#e9c2a6", sun: "#ffb088", sunI: 1.9, sky: "#dbd1c4", ground: "#bba78e", hemiI: 1.08, stars: 0.12 },
+  { h: 6.5, zenith: "#7086a0", horizon: "#ecd2bc", sun: "#ffc89e", sunI: 3.0, sky: "#dcd7ce", ground: "#b9a790", hemiI: 0.98, stars: 0 },
   { h: 8.0, zenith: "#83a0b8", horizon: "#e9e1d4", sun: "#ffead2", sunI: 3.6, sky: "#c3cfda", ground: "#a89b88", hemiI: 0.66, stars: 0 },
   { h: 12.0, zenith: "#779cb8", horizon: "#ebe9e3", sun: "#fff8ee", sunI: 3.7, sky: "#c8d3dd", ground: "#ada08c", hemiI: 0.6, stars: 0 },
   { h: 16.0, zenith: "#7e9db5", horizon: "#ede3d3", sun: "#ffecd6", sunI: 3.6, sky: "#c4cdd4", ground: "#ab9b80", hemiI: 0.64, stars: 0 },
@@ -93,8 +94,10 @@ const MOON = new THREE.Vector3(0.55, 0.62, 0.4).normalize();
 const tmp = new THREE.Vector3();
 
 function dirFrom(az: number, el: number, out: THREE.Vector3) {
-  // az measured from north (-z) clockwise toward east (+x)
-  return out.set(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el));
+  // compass azimuth, clockwise from north. The slope faces west over the bay:
+  // north is -x, east -z (behind the ridge), south +x, west +z (the sea). The
+  // sun rises behind the hill and sets over the water, in front of the houses.
+  return out.set(-Math.cos(az) * Math.cos(el), Math.sin(el), -Math.sin(az) * Math.cos(el));
 }
 
 export function sampleLight(hour: number, out: Light) {

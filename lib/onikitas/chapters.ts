@@ -1,6 +1,10 @@
 import type { ChapterId } from "@/content/onikitas/tr";
 
-/** One scroll chapter = one stretch of the Bodrum day. Hours are decimal. */
+/**
+ * One scroll chapter = one stretch of the Bodrum day. Hours are decimal. The
+ * single source for the day's times: the hour ruler, the clock and the screen
+ * reader labels all print `from` (see formatHour).
+ */
 export type Chapter = {
   id: ChapterId;
   /** Hour at the top of the chapter and at its end. */
@@ -20,10 +24,10 @@ export type Chapter = {
 export const chapters: Chapter[] = [
   { id: "safak", from: 5.683, to: 6.5, vh: 130, span: [0.25, 1] },
   { id: "sabah", from: 6.5, to: 7.8, vh: 80, span: [0, 1] },
-  { id: "kusluk", from: 7.8, to: 11.8, vh: 150, span: [0, 1] },
-  { id: "ogle", from: 11.8, to: 14.4, vh: 90, span: [0, 1] },
-  { id: "ikindi", from: 14.4, to: 17.8, vh: 100, span: [0, 1] },
-  { id: "aksam", from: 17.8, to: 19.667, vh: 180, span: [0, 0.4] },
+  { id: "kusluk", from: 7.75, to: 11.75, vh: 150, span: [0, 1] },
+  { id: "ogle", from: 11.75, to: 14.5, vh: 90, span: [0, 1] },
+  { id: "ikindi", from: 14.5, to: 17.75, vh: 100, span: [0, 1] },
+  { id: "aksam", from: 17.75, to: 19.667, vh: 180, span: [0, 0.4] },
   // night: the lamps come on over the first 55%, then the slope holds, calm
   { id: "yatsi", from: 19.667, to: 21.5, vh: 90, span: [0, 0.55] },
 ];

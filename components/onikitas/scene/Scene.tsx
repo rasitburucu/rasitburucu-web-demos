@@ -7,19 +7,21 @@ import { PerformanceMonitor, useTexture } from "@react-three/drei";
 import { addLoad, emit, on, store, type Tier } from "@/lib/onikitas/store";
 import { depthMap, FOCUS, makeTrees } from "@/lib/onikitas/site";
 import { asset } from "@/lib/asset";
-import { buildBackdrop, buildTerrain, buildTreeGeometry, buildVillas, treeMatrices } from "./build";
-import { skyMaterial, terrainMaterial, treeMaterial, U, villaMaterial, wallMaterial, waterMaterial, windowMaterial } from "./materials";
+import { buildBackdrop, buildMaquette, buildTerrain, buildTreeGeometry, buildVillas, treeMatrices } from "./build";
+import { maquetteMaterial, skyMaterial, terrainMaterial, treeMaterial, U, villaMaterial, wallMaterial, waterMaterial, windowMaterial } from "./materials";
 import { createLight, sampleLight } from "./palette";
 import { cameraGoal, wallFrame } from "./rig";
 import { makeLeafTexture } from "./leaves";
 
+// seg: real terrain grid; maq: contour maquette grid (its flat sheets need
+// fewer cells; the cut edges are interpolated, so contours stay smooth)
 const Q = {
-  high: { seg: 256, trees: 520, shadow: 2048, radius: 3.5, dpr: [1, 1.5] as [number, number] },
-  mid: { seg: 192, trees: 360, shadow: 2048, radius: 2, dpr: [1, 1.25] as [number, number] },
-  low: { seg: 120, trees: 170, shadow: 1024, radius: 2, dpr: [1, 1] as [number, number] },
+  high: { seg: 256, maq: 200, trees: 520, shadow: 2048, radius: 3.5, dpr: [1, 1.5] as [number, number] },
+  mid: { seg: 192, maq: 160, trees: 360, shadow: 2048, radius: 2, dpr: [1, 1.25] as [number, number] },
+  low: { seg: 120, maq: 110, trees: 170, shadow: 1024, radius: 2, dpr: [1, 1] as [number, number] },
 };
 
-/** Depth range: tight enough that the sea never shimmers, wide enough for the fog (ends at 760). */
+/** Depth range: tight enough that the sea never shimmers, wide enough for the fog (ends at 1100). */
 const NEAR = 0.5;
 const FAR = 1200;
 
@@ -77,6 +79,7 @@ function Textures() {
 
 type Built = {
   terrain: THREE.BufferGeometry;
+  maquette: THREE.BufferGeometry;
   backdrop: THREE.BufferGeometry;
   villas: ReturnType<typeof buildVillas>;
   treeGeo: THREE.BufferGeometry;
@@ -103,8 +106,14 @@ function World({ tier }: { tier: Tier }) {
     (async () => {
       performance.mark("oki:build-start");
       await breathe();
-      const terrain = await step("terrain", () => buildTerrain(q.seg));
-      made.push(terrain);
+      const real = await step("terrain", () => buildTerrain(q.seg));
+      const terrain = real.geo;
+      made.push(terrain, real.ground);
+      U.uGround.value = real.ground;
+      U.uGroundN.value = real.texels;
+      if (!alive) return;
+      const maquette = await step("maquette", () => buildMaquette(q.maq));
+      made.push(maquette);
       if (!alive) return;
       const backdrop = await step("backdrop", () => {
         const size = 128;
@@ -128,13 +137,13 @@ function World({ tier }: { tier: Tier }) {
       if (!alive) return;
       performance.mark("oki:build-end");
       performance.measure("oki:build", "oki:build-start", "oki:build-end");
-      setBuilt({ terrain, backdrop, villas, treeGeo, mats });
+      setBuilt({ terrain, maquette, backdrop, villas, treeGeo, mats });
     })();
     return () => {
       alive = false;
       made.forEach((g) => g.dispose());
     };
-  }, [q.seg, q.trees]);
+  }, [q.seg, q.maq, q.trees]);
 
   return built ? <WorldMeshes built={built} tier={tier} /> : null;
 }
@@ -145,6 +154,7 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
   const materials = useMemo(
     () => ({
       terrain: terrainMaterial(),
+      maquette: maquetteMaterial(),
       villa: villaMaterial(),
       windows: windowMaterial(),
       tree: treeMaterial(),
@@ -170,7 +180,9 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
 
   // fog follows the horizon colour
   useLayoutEffect(() => {
-    scene.fog = new THREE.Fog("#e6bea4", 140, 760);
+    // far enough that the outer hills keep a little of their own tone and read
+    // as a ridge, instead of a flat wedge of horizon colour against the sky
+    scene.fog = new THREE.Fog("#e6bea4", 140, 1100);
     return () => {
       scene.fog = null;
     };
@@ -236,6 +248,15 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
   const world = useRef<THREE.Group>(null);
   const [shown, setShown] = useState(false);
 
+  // the model and the real ground each draw only while some of them shows
+  const maqRef = useRef<THREE.Mesh>(null);
+  const realRefs = useRef<(THREE.Mesh | null)[]>([]);
+  useFrame(() => {
+    const r = U.uReveal.value;
+    if (maqRef.current) maqRef.current.visible = r < 0.999 || !shown;
+    for (const m of realRefs.current) if (m) m.visible = r > 0.0005 || !shown;
+  });
+
   return (
     <>
       <group ref={world} visible={shown}>
@@ -243,8 +264,9 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
         <sphereGeometry args={[1000, 32, 16]} />
       </mesh>
       <mesh ref={wallRef} geometry={wall} material={materials.wall} name="wall" />
-      <mesh geometry={built.backdrop} material={materials.terrain} />
-      <mesh geometry={built.terrain} material={materials.terrain} receiveShadow />
+      <mesh ref={(m) => void (realRefs.current[0] = m)} geometry={built.backdrop} material={materials.terrain} />
+      <mesh ref={(m) => void (realRefs.current[1] = m)} geometry={built.terrain} material={materials.terrain} receiveShadow />
+      <mesh ref={maqRef} geometry={built.maquette} material={materials.maquette} castShadow receiveShadow />
       <mesh rotation-x={-Math.PI / 2} material={materials.sea} renderOrder={-1}>
         <planeGeometry args={[4000, 4000, 1, 1]} />
       </mesh>
@@ -289,10 +311,11 @@ function Sun({ tier }: { tier: Tier }) {
     scene.add(target);
     l.target = target;
     const cam = l.shadow.camera;
-    cam.left = -48;
-    cam.right = 48;
-    cam.top = 40;
-    cam.bottom = -40;
+    // wide enough for the whole village and the contour layers around it
+    cam.left = -66;
+    cam.right = 66;
+    cam.top = 58;
+    cam.bottom = -58;
     cam.near = 1;
     cam.far = 260;
     cam.updateProjectionMatrix();

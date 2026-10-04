@@ -1,15 +1,15 @@
 import { Fragment } from "react";
 import { tr } from "@/content/onikitas/tr";
 import { credits, type CreditGroup } from "@/content/onikitas/credits";
-import { chapters, sectionVh } from "@/lib/onikitas/chapters";
+import { chapters, formatHour, sectionVh } from "@/lib/onikitas/chapters";
 import { Sundial } from "./Sundial";
 import { Registry } from "./Registry";
 
 /** Letters rise out of a mask when the chapter becomes active. Real text for AT. */
-function Split({ text, id, as: Tag = "h2" }: { text: string; id: string; as?: "h1" | "h2" }) {
+function Split({ text, id }: { text: string; id: string }) {
   let i = 0;
   return (
-    <Tag className="oki-title" id={id}>
+    <h2 className="oki-title" id={id}>
       <span className="sr-only">{text}</span>
       <span aria-hidden="true" className="oki-title__vis">
         {text.split(" ").map((word, w, all) => (
@@ -25,7 +25,7 @@ function Split({ text, id, as: Tag = "h2" }: { text: string; id: string; as?: "h
           </Fragment>
         ))}
       </span>
-    </Tag>
+    </h2>
   );
 }
 
@@ -50,9 +50,17 @@ export function Chapters() {
             <div className="oki-sticky">
               <div className="oki-copy" data-copy data-on={i === 0 ? "true" : undefined}>
                 <p className="sr-only">
-                  {copy.name}, saat {copy.time}
+                  {copy.name}, saat {formatHour(c.from)}
                 </p>
-                <Split text={copy.title} id={`${c.id}-title`} as={i === 0 ? "h1" : "h2"} />
+                {i === 0 ? (
+                  // the first title is the page's largest paint: printed as is,
+                  // no letter-by-letter rise, so it counts the moment it lands
+                  <h1 className="oki-title" id={`${c.id}-title`}>
+                    {copy.title}
+                  </h1>
+                ) : (
+                  <Split text={copy.title} id={`${c.id}-title`} />
+                )}
                 <p className="oki-copy__body">{copy.body}</p>
                 {c.id === "yatsi" ? (
                   <p className="oki-close">

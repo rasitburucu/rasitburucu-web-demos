@@ -28,5 +28,6 @@ float oki_reveal(vec3 wp, float bias){ return smoothstep(-1.4, 1.4, oki_front(wp
 float oki_edge(vec3 wp, float bias){ float f = oki_front(wp) + bias; return exp(-f * f * 0.55); }
 `;
 
-// Clay of the maquette: a cool, slightly chalky plaster white.
-export const CLAY = /* glsl */ `const vec3 OKI_CLAY = vec3(0.86, 0.855, 0.84);`;
+// Clay of the maquette: model board, a chalky white with a little travertine
+// warmth in it, so its shaded side reads warm stone, not cold grey.
+export const CLAY = /* glsl */ `const vec3 OKI_CLAY = vec3(0.875, 0.858, 0.83);`;

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 import { CLAY, NOISE, REVEAL } from "./glsl";
-import { STEP, WORLD } from "@/lib/onikitas/site";
+import { STEP, STEP_OFF, WORLD } from "@/lib/onikitas/site";
 
 /** Uniform objects shared by every material: one write per frame updates all. */
 export const U = {
@@ -23,6 +23,9 @@ export const U = {
   uPlasterN: { value: null as THREE.Texture | null },
   uTrav: { value: null as THREE.Texture | null },
   uDepth: { value: null as THREE.Texture | null },
+  /** Real ground heights (see buildTerrain) and the texture's side in texels. */
+  uGround: { value: null as THREE.Texture | null },
+  uGroundN: { value: 2 },
   uWorld: { value: WORLD },
   uLeaves: { value: null as THREE.Texture | null },
   uPointer: { value: new THREE.Vector2() },
@@ -66,6 +69,7 @@ export function villaMaterial() {
     fragmentShader: /* glsl */ `
       uniform sampler2D uPlaster; uniform sampler2D uTrav; uniform vec3 uLightDir;
       uniform float uHover; uniform float uSelected; uniform float uSelectAmt; uniform float uTime;
+      uniform sampler2D uGround; uniform float uGroundN; uniform float uWorld;
       varying float vKind; varying float vVilla; varying vec3 vWp; varying vec3 vWn;
       ${NOISE}${REVEAL}${CLAY}${TRIPLANAR}
       void main(){
@@ -89,6 +93,14 @@ export function villaMaterial() {
         vec3 real = vKind < 0.5 ? lime : (vKind < 1.5 ? trav : (vKind < 3.5 ? wood : stone));
         vec3 clay = OKI_CLAY * (0.985 + 0.03 * pl);
         vec3 col = mix(clay, real, r);
+        // contact shade: walls darken towards the ground they stand in (the
+        // maquette's contour layer in clay, the real ground once revealed), so
+        // the plinths read as set into the slope, not resting on it
+        vec2 guv = ((vWp.xz / uWorld + 0.5) * (uGroundN - 1.0) + 0.5) / uGroundN;
+        float gr = texture(uGround, guv).r;
+        float gq = floor((gr - ${STEP_OFF.toFixed(3)}) / ${STEP.toFixed(3)}) * ${STEP.toFixed(3)} + ${STEP_OFF.toFixed(3)};
+        float above = vWp.y - mix(gq, gr, r);
+        col *= mix(0.52, 1.0, smoothstep(0.0, 0.85, above));
         float isH = 1.0 - step(0.5, abs(vVilla - uHover));
         float isS = (1.0 - step(0.5, abs(vVilla - uSelected))) * uSelectAmt;
         vec3 tile = vec3(0.71, 0.33, 0.17);
@@ -125,7 +137,7 @@ export function windowMaterial() {
   });
 }
 
-// ---------- Terrain: stacked contour layers -> hillside ----------
+// ---------- Terrain: the real hillside, uncovered by the reveal front ----------
 
 export function terrainMaterial() {
   return new CustomShaderMaterial({
@@ -134,19 +146,11 @@ export function terrainMaterial() {
     metalness: 0,
     uniforms: U,
     vertexShader: /* glsl */ `
-      attribute float aStepY; attribute vec3 aStepN; attribute float aPad;
+      attribute float aPad;
       varying vec3 vWp; varying vec3 vWn; varying float vPad; varying float vH;
-      ${NOISE}${REVEAL}
       void main(){
-        vec3 w0 = (modelMatrix * vec4(position, 1.0)).xyz;
-        float rv = oki_reveal(w0, 0.0);
-        vec3 p = position;
-        p.y = mix(aStepY, position.y, rv);
-        csm_Position = p;
-        vec3 nn = normalize(mix(aStepN, normal, rv));
-        csm_Normal = nn;
-        vWp = (modelMatrix * vec4(p, 1.0)).xyz;
-        vWn = nn; vPad = aPad; vH = position.y;
+        vWp = (modelMatrix * vec4(position, 1.0)).xyz;
+        vWn = normal; vPad = aPad; vH = position.y;
       }`,
     fragmentShader: /* glsl */ `
       varying vec3 vWp; varying vec3 vWn; varying float vPad; varying float vH;
@@ -157,21 +161,22 @@ export function terrainMaterial() {
         return oki_noise(p.zy * s) * w.x + oki_noise(p.xz * s) * w.y + oki_noise(p.xy * s) * w.z;
       }
       void main(){
+        // ahead of the front the contour maquette shows instead
+        float front = oki_front(vWp);
+        if (front < 0.0) discard;
         vec3 n = normalize(vWn);
         float slope = 1.0 - n.y;
         vec3 tw = pow(abs(n), vec3(4.0)); tw /= (tw.x + tw.y + tw.z);
-        float n1 = oki_fbm(vWp.xz * 0.07);
+        // the broad grass/maquis field, projected per face like the rest, so it
+        // does not smear into long streaks down the steep banks
+        float n1 = oki_fbm(vWp.xz * 0.07) * tw.y;
+        if (tw.x > 0.04) n1 += oki_fbm(vWp.zy * 0.07) * tw.x;
+        if (tw.z > 0.04) n1 += oki_fbm(vWp.xy * 0.07) * tw.z;
+        n1 /= tw.y + (tw.x > 0.04 ? tw.x : 0.0) + (tw.z > 0.04 ? tw.z : 0.0);
         float n2 = oki_tnoise(vWp, tw, 0.55);
         float n3 = oki_tnoise(vWp, tw, 2.6);
         float n4 = oki_tnoise(vWp + vec3(17.0, 0.0, 9.0), tw, 2.8) * 0.65 + n2 * 0.35;
-        // clay: plaster board, a hairline where each contour layer ends,
-        // one pixel wide at any distance and faded where the lines would crowd
-        float ph = vH / ${STEP.toFixed(3)};
-        float fw = max(fwidth(ph), 1e-4);
-        float dl = abs(fract(ph + 0.5) - 0.5);
-        float line = (1.0 - smoothstep(fw * 0.6, fw * 1.6, dl)) * (1.0 - smoothstep(0.18, 0.4, fw));
-        vec3 clay = OKI_CLAY * (0.975 + 0.035 * n3) * (1.0 - line * 0.08 * (1.0 - vPad));
-        // real: dry grass and maquis, bare earth on the banks, scattered limestone
+        // dry grass and maquis, bare earth on the banks, scattered limestone
         vec3 dry = vec3(0.36, 0.31, 0.21);
         vec3 maquis = vec3(0.12, 0.145, 0.085);
         vec3 earth = vec3(0.33, 0.255, 0.18);
@@ -185,14 +190,55 @@ export function terrainMaterial() {
         float grain = (n5 - 0.5) * (1.0 - smoothstep(0.05, 0.22, gw));
         vec3 real = mix(dry, maquis, smoothstep(0.34, 0.5, n1 + 0.18 * (n2 - 0.5) + grain * 0.08));
         real = mix(real, earth, smoothstep(0.2, 0.5, slope + (n2 - 0.5) * 0.3) * 0.75);
-        // limestone outcrops: about half as many as before, warmer and duller,
-        // so they read as rock in the scrub rather than torn white paper
+        // limestone outcrops, warm and dull: rock in the scrub, not torn paper
         float rk = smoothstep(0.77, 0.86, n4 + slope * 0.25 + (n3 - 0.5) * 0.1);
         real = mix(real, rock * (0.78 + 0.22 * n3), rk * 0.6);
         real = mix(real, vec3(0.6, 0.56, 0.48), 1.0 - smoothstep(0.35, 1.9, vH));
         real *= (0.86 + 0.28 * n3) * (1.0 + grain * 0.32);
-        float r = oki_reveal(vWp, 0.0);
-        csm_DiffuseColor = vec4(mix(clay, real, r), 1.0);
+        // trodden, shaded ground at the foot of each terrace wall
+        real *= mix(1.0, 0.68, smoothstep(0.82, 1.0, vPad));
+        float r = smoothstep(0.0, 1.4, front);
+        csm_DiffuseColor = vec4(mix(OKI_CLAY, real, r), 1.0);
+        csm_Emissive = vec3(1.0, 0.6, 0.32) * oki_edge(vWp, 0.0) * 0.85;
+      }`,
+  });
+}
+
+// ---------- Contour maquette: stacked board layers, cut edges showing ----------
+
+export function maquetteMaterial() {
+  return new CustomShaderMaterial({
+    baseMaterial: THREE.MeshStandardMaterial,
+    roughness: 0.94,
+    metalness: 0,
+    uniforms: U,
+    vertexShader: /* glsl */ `
+      varying vec3 vWp; varying vec3 vWn;
+      void main(){
+        vWp = (modelMatrix * vec4(position, 1.0)).xyz;
+        vWn = normal;
+      }`,
+    fragmentShader: /* glsl */ `
+      varying vec3 vWp; varying vec3 vWn;
+      ${NOISE}${REVEAL}${CLAY}
+      void main(){
+        float front = oki_front(vWp);
+        // behind the front the real ground covers the model
+        if (front > 1.4) discard;
+        vec3 n = normalize(vWn);
+        float side = 1.0 - step(0.5, abs(n.y));
+        // board sheets: a faint paper tooth on the tops
+        float tooth = oki_noise(vWp.xz * 3.1) * 0.6 + oki_noise(vWp.xz * 9.7) * 0.4;
+        vec3 top = OKI_CLAY * (0.975 + 0.04 * tooth);
+        // the cut edges: the board's core is a shade warmer and darker, and a
+        // hairline marks each sheet, so the layers count like a model's
+        float u = (vWp.y - ${STEP_OFF.toFixed(3)}) / ${STEP.toFixed(3)};
+        float fw = max(fwidth(u), 1e-4);
+        float dl = abs(fract(u + 0.5) - 0.5);
+        float joint = (1.0 - smoothstep(fw * 0.5, fw * 1.5, dl)) * (1.0 - smoothstep(0.25, 0.5, fw));
+        vec3 edge = OKI_CLAY * vec3(0.99, 0.96, 0.91) * (1.0 - joint * 0.3);
+        vec3 col = mix(top, edge, side);
+        csm_DiffuseColor = vec4(col, 1.0);
         csm_Emissive = vec3(1.0, 0.6, 0.32) * oki_edge(vWp, 0.0) * 0.85;
       }`,
   });
@@ -251,13 +297,16 @@ export function waterMaterial(pool: boolean) {
   return new THREE.ShaderMaterial({
     uniforms: { ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog), ...U, uPool: { value: pool ? 1 : 0 } },
     fog: true,
+    // the maquette's sea is a tinted acrylic sheet over the stepped sea floor
+    transparent: !pool,
     vertexShader: /* glsl */ `
       #include <common>
       #include <fog_pars_vertex>
-      varying vec3 vWp;
+      varying vec3 vWp; varying vec2 vUv;
       void main(){
         vec4 wp = modelMatrix * vec4(position, 1.0);
         vWp = wp.xyz;
+        vUv = uv;
         vec4 mvPosition = viewMatrix * wp;
         gl_Position = projectionMatrix * mvPosition;
         #include <fog_vertex>
@@ -266,12 +315,18 @@ export function waterMaterial(pool: boolean) {
       #include <common>
       #include <fog_pars_fragment>
       uniform float uTime; uniform float uPool; uniform sampler2D uDepth; uniform float uWorld; uniform vec3 uLightDir;
-      varying vec3 vWp;
+      varying vec3 vWp; varying vec2 vUv;
       ${NOISE}${REVEAL}${CLAY}${SKY_FN}
       vec2 waveGrad(vec2 p){
         float e = 0.06;
         float a = oki_noise(p), b = oki_noise(p + vec2(e, 0.0)), c = oki_noise(p + vec2(0.0, e));
         return vec2(b - a, c - a) / e;
+      }
+      // light focused by the ripples on the pool floor: a moving net of bright lines
+      float caustic(vec2 p, float t){
+        float a = 1.0 - abs(oki_noise(p + vec2(t * 0.31, t * 0.17)) * 2.0 - 1.0);
+        float b = 1.0 - abs(oki_noise(p * 1.37 - vec2(t * 0.23, -t * 0.29) + 4.1) * 2.0 - 1.0);
+        return pow(a, 7.0) + pow(b, 7.0) * 0.8;
       }
       void main(){
         vec3 V = normalize(cameraPosition - vWp);
@@ -285,7 +340,7 @@ export function waterMaterial(pool: boolean) {
         float lod2 = 1.0 - smoothstep(0.1, 0.35, fp);
         vec2 g = waveGrad(vWp.xz * s + vec2(uTime * 0.13, uTime * 0.07)) * 0.6 * lod1
                + waveGrad(vWp.xz * s * 2.7 - vec2(uTime * 0.09, -uTime * 0.16)) * 0.35 * lod2;
-        float amp = (uPool > 0.5 ? 0.05 : 0.11) / (1.0 + dist * 0.012);
+        float amp = (uPool > 0.5 ? 0.09 : 0.11) / (1.0 + dist * 0.012);
         vec3 N = normalize(vec3(-g.x * amp, 1.0, -g.y * amp));
         float fres = 0.02 + 0.98 * pow(1.0 - max(dot(N, V), 0.0), 5.0);
         vec3 R = reflect(-V, N);
@@ -293,34 +348,46 @@ export function waterMaterial(pool: boolean) {
         vec2 uv = vWp.xz / uWorld + 0.5;
         float inside = step(0.0, uv.x) * step(uv.x, 1.0) * step(0.0, uv.y) * step(uv.y, 1.0);
         float depth = uPool > 0.5 ? 0.25 : mix(1.0, texture(uDepth, uv).r, inside);
-        vec3 shallow = uPool > 0.5 ? vec3(0.05, 0.3, 0.34) : vec3(0.05, 0.28, 0.3);
-        vec3 deep = vec3(0.012, 0.05, 0.075);
-        vec3 body = mix(shallow, deep, smoothstep(0.0, 0.65, depth));
         float day = 1.0 - uNight;
-        body *= 0.12 + 0.88 * day * clamp(uLightDir.y * 2.5 + 0.35, 0.0, 1.0);
-        vec3 col = mix(body, sky, fres * (uPool > 0.5 ? 0.6 : 0.85));
+        float lit = 0.12 + 0.88 * day * clamp(uLightDir.y * 2.5 + 0.35, 0.0, 1.0);
+        vec3 body;
+        if (uPool > 0.5) {
+          // pool: pale limestone floor seen through clear water, darker towards
+          // the walls and the waterline tiles, sun nets moving on the floor
+          float ed = min(min(vUv.x, 1.0 - vUv.x), min(vUv.y, 1.0 - vUv.y));
+          float wall = 1.0 - smoothstep(0.0, 0.16, ed);
+          float tiles = 1.0 - smoothstep(0.0, 0.035, ed);
+          vec3 floorC = vec3(0.3, 0.62, 0.64);
+          body = mix(floorC, vec3(0.06, 0.32, 0.38), wall * 0.65);
+          body = mix(body, vec3(0.08, 0.2, 0.26), tiles * 0.7);
+          float sunUp = clamp(uLightDir.y * 2.0, 0.0, 1.0) * day;
+          body += vec3(0.55, 0.7, 0.62) * caustic(vWp.xz * 2.4, uTime) * 0.32 * sunUp * (1.0 - wall * 0.6) * lod1;
+          body *= lit;
+        } else {
+          vec3 shallow = vec3(0.05, 0.28, 0.3);
+          vec3 deep = vec3(0.012, 0.05, 0.075);
+          body = mix(shallow, deep, smoothstep(0.0, 0.65, depth)) * lit;
+        }
+        vec3 col = mix(body, sky, fres * (uPool > 0.5 ? 0.55 : 0.85));
         float spec = pow(max(dot(R, uLightDir), 0.0), uPool > 0.5 ? 140.0 : 160.0);
         col += uSunColor * spec * (uPool > 0.5 ? 1.0 : 1.4) * mix(1.0, 0.35, uNight);
         // foam where the sea touches the rocks
         float shore = (1.0 - smoothstep(0.0, 0.05, depth)) * inside * (1.0 - uPool);
         col = mix(col, vec3(0.8, 0.82, 0.8) * (0.4 + 0.6 * day), shore * smoothstep(0.35, 0.7, oki_noise(vWp.xz * 1.4 + uTime * 0.3)));
-        // clay: the maquette's sea is a sheet of board engraved with offshore
-        // contour lines (like the land's layers, one hairline per pixel at any
-        // distance, faded where they would crowd). It pales towards the coast,
-        // so the shore meets the clay softly instead of as a hard cut.
-        float cx = (vWp.x + 3.0) / 21.0;
-        float off = vWp.z - (17.0 - 11.0 * exp(-cx * cx) + 3.2 * sin(vWp.x * 0.052 + 0.8) + 1.4 * sin(vWp.x * 0.13 + 2.1));
-        float iu = off / 3.2;
-        float ifw = max(fwidth(iu), 1e-4);
-        float idl = abs(fract(iu + 0.5) - 0.5);
-        float iso = (1.0 - smoothstep(ifw * 0.6, ifw * 1.7, idl)) * (1.0 - smoothstep(0.16, 0.38, ifw)) * smoothstep(0.8, 2.0, off);
-        vec3 board = mix(OKI_CLAY * 0.93, vec3(0.55, 0.62, 0.67), 0.42 + 0.3 * smoothstep(3.0, 70.0, off));
-        vec3 acrylic = board * (0.8 + 0.2 * clamp(uLightDir.y * 3.0, 0.0, 1.0)) * (1.0 - iso * 0.14);
-        vec3 clay = mix(acrylic, sky, fres * 0.3) + uSunColor * spec * 0.4;
-        if (uPool > 0.5) clay = OKI_CLAY * 0.95;
+        // clay: a sheet of blue-grey acrylic laid over the maquette's stepped
+        // sea floor, which shows through it; past the board's edge the sheet
+        // lies on the table and turns opaque, and its cut edge catches the light
+        vec3 tint = vec3(0.37, 0.5, 0.58) * (0.8 + 0.2 * clamp(uLightDir.y * 3.0, 0.0, 1.0)) * (0.35 + 0.65 * day);
+        vec3 acrylic = mix(tint, sky, fres * 0.3) + uSunColor * spec * 0.5;
+        vec2 bd = abs(vWp.xz) - vec2(uWorld * 0.5);
+        float bfw = max(fwidth(vWp.x), 1e-3) * 1.5;
+        float rim = (1.0 - smoothstep(0.0, bfw, abs(max(bd.x, bd.y))));
+        acrylic += vec3(0.25) * rim * (0.3 + 0.7 * day);
+        float clayA = mix(1.0, 0.74 - 0.14 * fres, inside);
+        vec3 clay = uPool > 0.5 ? OKI_CLAY * 0.95 : acrylic;
         float r = oki_reveal(vWp, 0.0);
         // stay under the bloom threshold (1.05): the glitter reads as light, not sparks
-        gl_FragColor = vec4(min(mix(clay, col, r), vec3(0.97)), 1.0);
+        gl_FragColor = vec4(min(mix(clay, col, r), vec3(0.97)), uPool > 0.5 ? 1.0 : mix(clayA, 1.0, r));
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
         #include <fog_fragment>
