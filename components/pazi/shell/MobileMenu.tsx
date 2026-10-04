@@ -37,15 +37,30 @@ export function MobileMenu() {
       </button>
       <div id={id} className="pz-mmenu-panel" hidden={!open}>
         <ul>
-          {n.items.map((i) => (
-            <li key={i.href}>
-              <Link href={i.href} onClick={() => setOpen(false)}>
-                {i.label}
-              </Link>
-            </li>
-          ))}
+          {n.items.map((i) =>
+            "children" in i && i.children ? (
+              <li key={i.label} className="pz-mmenu-group">
+                <p className="pz-mmenu-head">{i.label}</p>
+                <ul>
+                  {i.children.map((c) => (
+                    <li key={c.href}>
+                      <Link href={c.href} onClick={() => setOpen(false)}>
+                        {c.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li key={i.label}>
+                <Link href={i.href!} onClick={() => setOpen(false)}>
+                  {i.label}
+                </Link>
+              </li>
+            ),
+          )}
           <li>
-            <Link href="/pazi/fizibilite/" className="pz-btn pz-btn-primary" onClick={() => setOpen(false)}>
+            <Link href={n.ctaHref} className="pz-btn pz-btn-primary" onClick={() => setOpen(false)}>
               {n.cta}
             </Link>
           </li>

@@ -33,7 +33,7 @@ export default function CreditsPage() {
         </tbody>
       </table>
       <p className="pz-flow-hint" style={{ marginTop: 24 }}>
-        {tr.footer.concept}
+        {tr.footer.note}
       </p>
     </section>
   );

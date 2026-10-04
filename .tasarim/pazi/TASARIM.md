@@ -97,4 +97,8 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 | Fiyat | Bilerek yok; kullanıcı teklif tutarını girer | Karar verildi |
 | 1024×768'de HMI şeridi 3 px taşıyor | Turun hedef ölçüleri dışında; dar sütunda alt başlık bir satır uzuyor | İsteğe bağlı cila |
 | ~~Operatör iç bölgedeyken durum hücresi "Uygun" kalıyor~~ | Kapandı (gelistir2, 2026-10-04): şerit bölgeyi yansıtıyor (Tam hız / Yavaşladı / Durdu), `aria-live="polite"` | Kapandı |
+| ~~Üst şerit, menü ve alt bilgi ortak kurala uymuyordu~~ | Kapandı (gelistir3, 2026-10-05): tek satır şerit; menü ve alt bilgi tüm sayfaları listeliyor; künye şablonu | Kapandı |
+| ~~Telefon menüsü açılınca panel görünmüyordu~~ | Kapandı (gelistir3): panel header'dan sarkıyor ve kendi içinde kayıyor | Kapandı |
+| ~~Atölye çiziminde robot tabanı ve cam odadaki masa yanlış sırada çiziliyordu~~ | Kapandı (gelistir3): `lib/pazi/iso-depth.ts` derinlik sıralaması Workshop ve IsoCell'de | Kapandı |
+| Konveyör, geniş torbada (G ≥ 600) palet köşesine geometrik olarak giriyor | Sıralama değil ölçü sorunu; istenmedi | Gerekirse |
 | `site_sokum.py --headed` bu makinede yine durağan çizime düşüyor | Betik GPU bayrağı açmıyor; 3B kanıtı ayrı Playwright çekimiyle (`--enable-gpu`) alındı | Eklenti tarafında |
