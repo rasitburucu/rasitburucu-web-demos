@@ -303,9 +303,6 @@ html[data-pz-menu="open"] {
 .pz-strip a {
   color: var(--pz-on-ink);
 }
-.pz-strip-by {
-  white-space: nowrap;
-}
 
 /* ----------------------------------------------------------------- header */
 
@@ -367,6 +364,7 @@ html[data-pz-menu="open"] {
   padding: 0;
 }
 .pz-nav a {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   min-height: 40px;
@@ -380,6 +378,61 @@ html[data-pz-menu="open"] {
 .pz-nav a:hover {
   background: var(--pz-floor-lo);
 }
+.pz-nav-group {
+  position: relative;
+}
+.pz-nav .pz-nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--pz-radius);
+  background: none;
+  color: inherit;
+  white-space: nowrap;
+  font: inherit;
+  font-weight: 600;
+  font-stretch: 104%;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+.pz-nav .pz-nav-toggle:hover,
+.pz-nav .pz-nav-toggle[aria-expanded="true"] {
+  background: var(--pz-floor-lo);
+}
+.pz-nav-caret {
+  flex: none;
+  transition: transform 160ms var(--pz-ease);
+}
+.pz-nav-toggle[aria-expanded="true"] .pz-nav-caret {
+  transform: rotate(180deg);
+}
+.pz-nav .pz-nav-sub {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 35;
+  display: grid;
+  gap: 0;
+  min-width: 100%;
+  width: max-content;
+  margin-top: 6px;
+  padding: 6px;
+  background: var(--pz-panel);
+  border: 2px solid var(--pz-ink);
+  border-top: 4px solid var(--pz-yellow);
+  border-radius: var(--pz-radius);
+}
+.pz-nav .pz-nav-sub[hidden] {
+  display: none;
+}
+.pz-nav .pz-nav-sub a {
+  display: flex;
+  min-height: 42px;
+  white-space: nowrap;
+}
 .pz-header-cta {
   min-height: 42px;
 }
@@ -387,7 +440,7 @@ html[data-pz-menu="open"] {
   display: none;
 }
 
-@media (max-width: 920px) {
+@media (max-width: 1040px) {
   .pz-nav,
   .pz-header-cta {
     display: none;
@@ -406,6 +459,7 @@ html[data-pz-menu="open"] {
     border-radius: var(--pz-radius);
     background: transparent;
     font-weight: 700;
+    white-space: nowrap;
     cursor: pointer;
   }
   .pz-mmenu-bars {
@@ -414,9 +468,14 @@ html[data-pz-menu="open"] {
     border-top: 2px solid currentColor;
     border-bottom: 2px solid currentColor;
   }
+  /* hangs from the header's bottom edge (the header's backdrop blur makes it the
+     containing block anyway) and scrolls inside the remaining screen height */
   .pz-mmenu-panel {
-    position: fixed;
-    inset: calc(var(--pz-header-h)) 0 0 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: calc(100dvh - var(--pz-header-h) - var(--pz-strip-h));
     z-index: 40;
     background: var(--pz-floor);
     padding: 24px var(--pz-gutter);
@@ -442,6 +501,39 @@ html[data-pz-menu="open"] {
     margin-top: 20px;
     width: 100%;
     min-height: 52px;
+  }
+  /* every page fits: the panel scrolls, the groups read as small lists */
+  .pz-mmenu-panel {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-bottom: 40px;
+  }
+  .pz-mmenu-panel > ul > li > a:not(.pz-btn) {
+    padding: 12px 0;
+    font-size: 1.5rem;
+  }
+  .pz-mmenu-head {
+    margin: 12px 0 0;
+    font-family: var(--pz-f-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--pz-ink-3);
+  }
+  .pz-mmenu-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+  }
+  .pz-mmenu-group a:not(.pz-btn) {
+    padding: 11px 0 11px 14px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-stretch: 108%;
+    border-left: 4px solid var(--pz-line-soft);
+    border-bottom: 1px solid var(--pz-line-soft);
   }
 }
 

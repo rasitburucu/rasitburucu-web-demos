@@ -1,5 +1,10 @@
 // Isometric cut-away of the Gebze trial workshop (concept drawing, not a real
 // plan): loading door, sample pallet, the trial cell, the video/report room.
+// Floor, walls and floor markings are drawn first; everything that stands in
+// the room goes through one depth sort so nothing nearer is hidden by what is
+// behind it (lib/pazi/iso-depth.ts).
+
+import { depthSort, type Aabb } from "@/lib/pazi/iso-depth";
 
 const C = Math.cos(Math.PI / 6);
 const S = 46;
@@ -20,18 +25,26 @@ function Box({ x, y, z, w, h, d, c }: { x: number; y: number; z: number; w: numb
   );
 }
 
+type Item = { key: string; box: Aabb; node: React.ReactNode };
+const bx = (x: number, y: number, z: number, w: number, h: number, d: number): Aabb => ({ x0: x, x1: x + w, y0: y, y1: y + h, z0: z, z1: z + d });
+const solid = (key: string, x: number, y: number, z: number, w: number, h: number, d: number, c: [string, string, string]): Item => ({
+  key,
+  box: bx(x, y, z, w, h, d),
+  node: <Box x={x} y={y} z={z} w={w} h={h} d={d} c={c} />,
+});
+
 const CARD: [string, string, string] = ["#d6b285", "#b48a5c", "#9f7a4f"];
 const WOOD: [string, string, string] = ["#cdb18a", "#a88e68", "#957c58"];
 const PANEL: [string, string, string] = ["#f2f2ee", "#dcddd7", "#cfd0ca"];
 const GRAPH: [string, string, string] = ["#4a4e51", "#34383a", "#2a2d2f"];
 const STEEL: [string, string, string] = ["#c7cacc", "#9fa3a6", "#8c9093"];
 
-function Pallet({ x, z, layers }: { x: number; z: number; layers: number }) {
-  const out = [<Box key="p" x={x} y={0} z={z} w={0.8} h={0.14} d={1.2} c={WOOD} />];
+function pallet(id: string, x: number, z: number, layers: number): Item[] {
+  const out = [solid(`${id}-p`, x, 0, z, 0.8, 0.14, 1.2, WOOD)];
   for (let k = 0; k < layers; k++)
     for (let i = 0; i < 2; i++)
-      for (let j = 0; j < 3; j++) out.push(<Box key={`${k}${i}${j}`} x={x + i * 0.4} y={0.14 + k * 0.25} z={z + j * 0.4} w={0.4} h={0.25} d={0.4} c={CARD} />);
-  return <g>{out}</g>;
+      for (let j = 0; j < 3; j++) out.push(solid(`${id}-${k}${i}${j}`, x + i * 0.4, 0.14 + k * 0.25, z + j * 0.4, 0.4, 0.25, 0.4, CARD));
+  return out;
 }
 
 function Marker({ p, n }: { p: P; n: number }) {
@@ -53,6 +66,59 @@ export function Workshop({ label }: { label: string }) {
   const maxX = iso(12, 0, 0)[0] + 30;
   const minY = iso(0, H, 0)[1] - 30;
   const maxY = iso(12, -0.3, 8)[1] + 20;
+  // Everything that stands in the room. Boxes carry their exact bounds; the arm
+  // and the two glass panes are given the box they occupy.
+  const A = { base: iso(7.05, 0.85, 4.5), elbow: iso(7.3, 1.9, 4.1), wrist: iso(8.1, 1.6, 4.4), tip: iso(8.1, 1.3, 4.4) };
+  const link1 = pts([A.base, A.elbow]);
+  const link2 = pts([A.elbow, A.wrist]);
+  const scene: Item[] = [
+    ...pallet("sample", 2.1, 5.6, 3),
+    solid("conveyor", 6.6, 0, 2.0, 0.5, 0.7, 2.2, STEEL),
+    ...pallet("left", 5.6, 3.9, 2),
+    ...pallet("right", 7.8, 3.9, 4),
+    solid("base", 6.9, 0, 4.35, 0.3, 0.7, 0.3, GRAPH),
+    {
+      // lower link, with the shoulder cap
+      key: "arm1",
+      box: { x0: 7.05, x1: 7.3, y0: 0.85, y1: 1.9, z0: 4.1, z1: 4.5 },
+      node: (
+        <g stroke="#e3e4df" strokeLinecap="round" fill="none">
+          <polyline points={link1} strokeWidth="9" stroke="#151615" opacity="0.25" transform="translate(3 4)" />
+          <polyline points={link1} strokeWidth="8" />
+          <circle cx={A.base[0]} cy={A.base[1]} r="4.5" fill="#2a2d2f" stroke="none" />
+        </g>
+      ),
+    },
+    {
+      // upper link, elbow, wrist and the short tool post
+      key: "arm2",
+      box: { x0: 7.3, x1: 8.1, y0: 1.3, y1: 1.9, z0: 4.1, z1: 4.4 },
+      node: (
+        <g stroke="#e3e4df" strokeLinecap="round" fill="none">
+          <polyline points={link2} strokeWidth="9" stroke="#151615" opacity="0.25" transform="translate(3 4)" />
+          <polyline points={link2} strokeWidth="8" />
+          <line x1={A.wrist[0]} y1={A.wrist[1]} x2={A.tip[0]} y2={A.tip[1]} strokeWidth="5" />
+          <circle cx={A.elbow[0]} cy={A.elbow[1]} r="4.5" fill="#2a2d2f" stroke="none" />
+          <circle cx={A.wrist[0]} cy={A.wrist[1]} r="4.5" fill="#2a2d2f" stroke="none" />
+        </g>
+      ),
+    },
+    // video and report room: back panel, the side pane behind the furniture, the
+    // furniture, then the front pane in front of it
+    solid("room-back", 9.6, 0, 0.2, 2.2, 2.6, 0.08, PANEL),
+    {
+      key: "room-glass-side",
+      box: bx(9.6, 0, 0.2, 0, 2.6, 2.4),
+      node: <polygon points={pts([iso(9.6, 0, 0.2), iso(9.6, 0, 2.6), iso(9.6, 2.6, 2.6), iso(9.6, 2.6, 0.2)])} fill="rgba(170,200,214,0.3)" stroke="#151615" strokeWidth="0.8" />,
+    },
+    solid("room-screen", 10.2, 1.1, 0.3, 1.0, 0.6, 0.04, GRAPH),
+    solid("room-desk", 10.1, 0, 1.0, 1.2, 0.74, 0.8, PANEL),
+    {
+      key: "room-glass-front",
+      box: bx(9.6, 0, 2.6, 2.2, 2.6, 0),
+      node: <polygon points={pts([iso(9.6, 0, 2.6), iso(11.8, 0, 2.6), iso(11.8, 2.6, 2.6), iso(9.6, 2.6, 2.6)])} fill="rgba(170,200,214,0.35)" stroke="#151615" strokeWidth="0.8" />,
+    },
+  ];
   return (
     <svg viewBox={`${minX} ${minY} ${maxX - minX} ${maxY - minY}`} className="pz-ws" role="img" aria-label={label}>
       {/* slab */}
@@ -78,30 +144,12 @@ export function Workshop({ label }: { label: string }) {
       </defs>
       {/* walkway tape */}
       <polyline points={pts([iso(1.6, 0, 8), iso(1.6, 0, 1.4), iso(12, 0, 1.4)])} fill="none" stroke="#f5a800" strokeWidth="3" />
-      {/* sample pallet by the door */}
-      <Pallet x={2.1} z={5.6} layers={3} />
-      {/* trial cell */}
+      {/* trial cell: floor markings first, the machines go into the depth sort */}
       <polygon points={pts([iso(4.4, 0, 2.4), iso(9.6, 0, 2.4), iso(9.6, 0, 6.6), iso(4.4, 0, 6.6)])} fill="none" stroke="#f5a800" strokeWidth="3" />
       <polygon points={pts([iso(5.0, 0, 3.0), iso(9.0, 0, 3.0), iso(9.0, 0, 6.0), iso(5.0, 0, 6.0)])} fill="none" stroke="#151615" strokeWidth="2.4" strokeDasharray="6 5" />
-      <Box x={6.6} y={0} z={2.0} w={0.5} h={0.7} d={2.2} c={STEEL} />
-      <Pallet x={5.6} z={3.9} layers={2} />
-      <Pallet x={7.8} z={3.9} layers={4} />
-      <Box x={6.9} y={0} z={4.35} w={0.3} h={0.7} d={0.3} c={GRAPH} />
-      {/* arm */}
-      <g stroke="#e3e4df" strokeLinecap="round" fill="none">
-        <polyline points={pts([iso(7.05, 0.85, 4.5), iso(7.3, 1.9, 4.1), iso(8.1, 1.6, 4.4)])} strokeWidth="9" stroke="#151615" opacity="0.25" transform="translate(3 4)" />
-        <polyline points={pts([iso(7.05, 0.85, 4.5), iso(7.3, 1.9, 4.1), iso(8.1, 1.6, 4.4)])} strokeWidth="8" />
-        <line x1={iso(8.1, 1.6, 4.4)[0]} y1={iso(8.1, 1.6, 4.4)[1]} x2={iso(8.1, 1.3, 4.4)[0]} y2={iso(8.1, 1.3, 4.4)[1]} strokeWidth="5" />
-      </g>
-      {[iso(7.05, 0.85, 4.5), iso(7.3, 1.9, 4.1), iso(8.1, 1.6, 4.4)].map((p, i) => (
-        <circle key={i} cx={p[0]} cy={p[1]} r="4.5" fill="#2a2d2f" />
+      {depthSort(scene).map((it) => (
+        <g key={it.key}>{it.node}</g>
       ))}
-      {/* video and report room, glass front */}
-      <Box x={9.6} y={0} z={0.2} w={2.2} h={2.6} d={0.08} c={PANEL} />
-      <polygon points={pts([iso(9.6, 0, 2.6), iso(11.8, 0, 2.6), iso(11.8, 2.6, 2.6), iso(9.6, 2.6, 2.6)])} fill="rgba(170,200,214,0.35)" stroke="#151615" strokeWidth="0.8" />
-      <polygon points={pts([iso(9.6, 0, 0.2), iso(9.6, 0, 2.6), iso(9.6, 2.6, 2.6), iso(9.6, 2.6, 0.2)])} fill="rgba(170,200,214,0.3)" stroke="#151615" strokeWidth="0.8" />
-      <Box x={10.1} y={0} z={1.0} w={1.2} h={0.74} d={0.8} c={PANEL} />
-      <Box x={10.2} y={1.1} z={0.3} w={1.0} h={0.6} d={0.04} c={GRAPH} />
       <Marker p={iso(0, 2.0, 6.2)} n={1} />
       <Marker p={iso(2.5, 0.9, 6.2)} n={2} />
       <Marker p={iso(7.4, 2.0, 4.2)} n={3} />

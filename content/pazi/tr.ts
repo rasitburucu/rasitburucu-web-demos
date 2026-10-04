@@ -5,6 +5,9 @@
 
 import type { Config, GripperId, GripperSpec, ModelId, PatternId, ProductKind, Warning } from "@/lib/pazi/plan";
 
+export type NavLink = { label: string; href: string };
+export type NavItem = { label: string; href?: string; children?: NavLink[] };
+
 export const tr = {
   meta: {
     title: "Pazı Robotik | Hat sonu paletleme hücreleri",
@@ -17,27 +20,50 @@ export const tr = {
     short: "Pazı",
     city: "Gebze, Kocaeli",
     email: "muhendislik@pazirobotik.com.tr",
+    phone: "0262 000 42 18",
+    phoneHref: "tel:+902620004218",
     trialEmail: "deneme@pazirobotik.com.tr",
     meaning: "Pazı: kolun yükü kaldıran kası.",
   },
   skip: "İçeriğe geç",
-  concept: {
-    text: "Konsept çalışma. Pazı Robotik hayali bir markadır; ürünler, değerler ve senaryolar örnektir.",
-    by: "Tasarım:",
-    author: "Raşit Burucu",
-    href: "https://rasitburucu.com/tr",
+  // Top strip: one line on every screen size (shared rule of the four concept sites).
+  strip: {
+    text: "Konsept çalışma —",
+    link: "rasitburucu.com",
+    href: "https://rasitburucu.com",
   },
   nav: {
     label: "Ana menü",
     home: "Pazı Robotik ana sayfa",
+    // Every page of the site is reachable from here: the home-page sections, the
+    // three model sheets, "Biz kimiz" and "Kaynaklar". The footer's "Sayfalar" is
+    // this same list (flattened); the feasibility page is the button.
     items: [
-      { label: "Modeller", href: "/pazi/#modeller" },
+      {
+        label: "Modeller",
+        children: [
+          { label: "Üç model, karşılaştırma", href: "/pazi/#modeller" },
+          { label: "P12 föyü", href: "/pazi/modeller/p12/" },
+          { label: "P20 föyü", href: "/pazi/modeller/p20/" },
+          { label: "P30 föyü", href: "/pazi/modeller/p30/" },
+        ],
+      },
       { label: "Nasıl kurulur", href: "/pazi/#kurulum" },
       { label: "Güvenlik", href: "/pazi/#guvenlik" },
       { label: "Deneme hücresi", href: "/pazi/#deneme" },
       { label: "Biz kimiz", href: "/pazi/biz-kimiz/" },
-    ],
+      {
+        label: "Daha fazla",
+        children: [
+          { label: "Örnek işler", href: "/pazi/#senaryolar" },
+          { label: "Tasarruf", href: "/pazi/#tasarruf" },
+          { label: "Servis", href: "/pazi/#servis" },
+          { label: "Kaynaklar ve lisanslar", href: "/pazi/kaynaklar/" },
+        ],
+      },
+    ] satisfies NavItem[],
     cta: "Ön fizibilite",
+    ctaHref: "/pazi/fizibilite/",
     menu: "Menü",
     close: "Menüyü kapat",
   },
@@ -166,7 +192,9 @@ export const tr = {
     id: "guvenlik",
     title: "Çit yok, sınır var.",
     lead: "Alan tarayıcı insanı görür: yaklaşınca robot yavaşlar, iç bölgeye girince durur. Deneyin.",
-    howto: "Operatör işaretini plan üzerinde sürükleyin ya da aşağıdaki düğmeleri kullanın. Klavyede işarete gelip ok tuşlarıyla da taşıyabilirsiniz.",
+    howto: "Zemindeki ayak izi işaretini plan üzerinde sürükleyin; klavyede işarete gelip ok tuşlarıyla da taşıyabilirsiniz.",
+    buttonsLead: "Ya da işareti tek tıkla bir bölgeye gönderin:",
+    drag: "Sürükleyin",
     marker: "Operatör işareti",
     places: { out: "Hücrenin dışında", slow: "Uyarı bölgesinde", stop: "Koruma bölgesinde" },
     status: { out: "Tam hız", slow: "Yavaşladı", stop: "Durdu" },
@@ -251,18 +279,25 @@ export const tr = {
 
   footer: {
     title: "Hat sonunuzu birlikte ölçelim.",
+    visit: "Ziyaret",
     contact: "İletişim",
     pages: "Sayfalar",
-    links: [
-      { label: "Ön fizibilite", href: "/pazi/fizibilite/" },
-      { label: "Biz kimiz", href: "/pazi/biz-kimiz/" },
-      { label: "P12 föyü", href: "/pazi/modeller/p12/" },
-      { label: "P20 föyü", href: "/pazi/modeller/p20/" },
-      { label: "P30 föyü", href: "/pazi/modeller/p30/" },
-    ],
-    credits: "Kaynaklar ve lisanslar",
-    privacy: "Bu demo hiçbir veri toplamaz. Formlar e-posta taslağı açar; sunucuya bir şey gönderilmez.",
-    concept: "Konsept çalışma: Pazı Robotik, ürünleri, adresi ve senaryoları hayalidir. Tasarım ve kod: Raşit Burucu.",
+    note: "Pazı Robotik kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Adres, telefon, ürünler, rakamlar ve senaryolar örnektir; formlar hiçbir yere gönderilmez.",
+    kunye: {
+      title: "Proje künyesi",
+      design: "Tasarım ve geliştirme:",
+      designBy: "Raşit Burucu",
+      designHref: "https://rasitburucu.com",
+      three: "3B ve render:",
+      threeText: "Robot ve hücre sahnesi tarayıcıda three.js (WebGL) ile kodla üretildi; hazır 3B model kullanılmadı.",
+      photos: "Fotoğraflar:",
+      photosText: "Fotoğraf kullanılmadı.",
+      fonts: "Yazı karakterleri:",
+      fontsText: "Archivo (Omnibus-Type) ve Martian Mono (Evil Martians), SIL Open Font License 1.1.",
+      year: "Yıl:",
+      yearText: "2026",
+    },
+    copyright: "© 2026 Pazı Robotik · Konsept çalışma — rasitburucu.com",
   },
 
   warnings: {
@@ -530,6 +565,12 @@ export const tr = {
 };
 
 export type Tr = typeof tr;
+
+/** The menu's pages as one flat list (footer "Sayfalar", mobile menu), the feasibility page last. */
+export const navPages: NavLink[] = [
+  ...tr.nav.items.flatMap((i): NavLink[] => (i.children ? i.children : i.href ? [{ label: i.label, href: i.href }] : [])),
+  { label: tr.nav.cta, href: tr.nav.ctaHref },
+];
 
 /** Example configurations behind the three scenarios (values are examples). */
 /** The home page opens on the headline's own case: a 25 kg bag. */
