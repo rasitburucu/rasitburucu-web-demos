@@ -4,15 +4,15 @@ Projeye giren her dış varlık buraya yazılır. Kaynak kodu bulunan açık kay
 
 ## Kalemkâr (`/web/kalemkar/`)
 
-Ayrıntılı kaynak listesi: `content/kalemkar/credits.ts`. Fotoğrafların lisansı ve yazarı her fotoğrafın Pexels sayfasından okundu (2026-10-04). Yapay zekâ üretimi görsel kullanılmadı.
+Ayrıntılı kaynak listesi: `content/kalemkar/credits.ts`. Fotoğrafların lisansı ve yazarı her fotoğrafın Pexels sayfasından okundu (2026-10-04). Domates, lahana ve salon kareleri aynı gün yenilendi (eski kareler 33793968, 27612521, 14350482 kaldırıldı). Yapay zekâ üretimi görsel kullanılmadı.
 
 | Varlık | Tür | Kaynak URL | Lisans | Atıf gerekiyor mu | Tarih | Nerede kullanıldı |
 |---|---|---|---|---|---|---|
-| Fresh Tomato and Herb Salad Top View (Fatma) | görsel | https://www.pexels.com/photo/fresh-tomato-and-herb-salad-top-view-33793968/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Bahçe domatesi |
+| Sliced Tomato with Soy Sauce on White Ceramic Bowl (Rachel Claire) | görsel | https://www.pexels.com/photo/sliced-tomato-with-soy-sauce-on-white-ceramic-bowl-8112428/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Bahçe domatesi |
 | Gourmet Roasted Eggplant Dish with Herbs (Anat Landa) | görsel | https://www.pexels.com/photo/gourmet-roasted-eggplant-dish-with-herbs-38431254/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Köz patlıcan |
 | A Flatlay Shot of a Bowl of Soup on a Rustic Background (Teja J) | görsel | https://www.pexels.com/photo/a-flatlay-shot-of-a-bowl-of-soup-on-a-rustic-background-7160694/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Mercimek |
 | Delicious Bulgur and Meat Dish with Orange Garnish (Anat Landa) | görsel | https://www.pexels.com/photo/delicious-bulgur-and-meat-dish-with-orange-garnish-38431255/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Firik |
-| A bowl of food with vegetables and herbs (Collab Media) | görsel | https://www.pexels.com/photo/a-bowl-of-food-with-vegetables-and-herbs-27612521/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Kış lahanası |
+| Fresh Coleslaw on Colorful Geometric Background (Husien Bisky) | görsel | https://www.pexels.com/photo/fresh-coleslaw-on-colorful-geometric-background-29930364/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Kış lahanası |
 | Herb and Meat on Hummus (Vincent Rivaud) | görsel | https://www.pexels.com/photo/herb-and-meat-on-hummus-19328883/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Humus, kavurma |
 | Close-Up Shot of a Meal on a Plate (Pixie Pannier) | görsel | https://www.pexels.com/photo/close-up-shot-of-a-meal-on-a-plate-12312118/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Kuzu incik |
 | Delicious Baked Quince with Spices in Cast Iron Skillet (Carpe Jugulum) | görsel | https://www.pexels.com/photo/36865387/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Ayva |
@@ -21,7 +21,7 @@ Ayrıntılı kaynak listesi: `content/kalemkar/credits.ts`. Fotoğrafların lisa
 | Artisan Crafting Metal Plate with Hammer (Rüveyda Akkaya) | görsel | https://www.pexels.com/photo/artisan-crafting-metal-plate-with-hammer-39184450/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Menü sayfası |
 | Historic Ottoman Architecture in Gaziantep (İrfan Simsar) | görsel | https://www.pexels.com/photo/historic-ottoman-architecture-in-gaziantep-38698119/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Ev, avlu |
 | Ancient Stone Archway in Historic Building (Gökay Nafiz Gürdal) | görsel | https://www.pexels.com/photo/ancient-stone-archway-in-historic-building-33743439/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Özel oda |
-| Brown Cellar Interior with a Window and an Open Door (Buğra) | görsel | https://www.pexels.com/photo/brown-cellar-interior-with-a-window-and-an-open-door-14350482/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Salon |
+| Historic Stone Interior in Mardin, Türkiye (Nursena Hisoğlu) | görsel | https://www.pexels.com/photo/historic-stone-interior-in-mardin-turkiye-36108014/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Salon |
 | Grilling Over Glowing Coals in Diyarbakır (Cemrecan Yurtman) | görsel | https://www.pexels.com/photo/grilling-over-glowing-coals-in-diyarbakir-29132437/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Şefin tezgâhı |
 | Pistachios are a good source of protein (Ebubekir) | görsel | https://www.pexels.com/photo/pistachios-are-a-good-source-of-protein-27532710/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Menü sayfası, kaynaklar |
 | Photograph of Lit Candles (Thirdman) | görsel | https://www.pexels.com/photo/photograph-of-lit-candles-7956569/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Rezervasyon onayı |

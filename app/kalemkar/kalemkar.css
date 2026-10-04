@@ -14,7 +14,7 @@ html:has([data-demo="kalemkar"])[data-kk-menu="open"] { overflow: hidden; }
   --kk-surface-2: #2c241d;
   --kk-ink: #eee5d6;
   --kk-ink-2: #b3a794;
-  --kk-ink-3: #8a7f6f;
+  --kk-ink-3: #a09482; /* 6.2:1 on --kk-bg, 5.1:1 on --kk-surface-2 */
   --kk-line: rgba(238, 229, 214, 0.14);
   --kk-line-2: rgba(238, 229, 214, 0.26);
   --kk-accent: #9db26a;
@@ -165,7 +165,12 @@ html:has([data-demo="kalemkar"])[data-kk-menu="open"] { overflow: hidden; }
 
 .kk-sentence-wrap { margin-top: 40px; }
 .kk-sentence { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
-.kk-sentence-line { font-family: var(--kk-serif), Georgia, serif; font-size: clamp(1.25rem, 1.65vw, 1.6rem); line-height: 1.55; }
+/* The dates arrive after the first paint (the placeholder "bir akşam" turns
+   into "Perşembe, 8 Ekim"). The sentence takes its own row, so the button never
+   wraps under it; where the column is narrow, the day select keeps the width of
+   the longest label ("Cumartesi, 31 Ekim") so the line does not rewrap. */
+.kk-sentence-line { flex: 1 0 100%; font-family: var(--kk-serif), Georgia, serif; font-size: clamp(1.25rem, 1.65vw, 1.6rem); line-height: 1.55; }
+@media (max-width: 1080px) { .kk-inline--day select { min-width: calc(10.6em + 28px); } }
 .kk-inline { position: relative; display: inline-block; }
 .kk-inline select {
   appearance: none; -webkit-appearance: none; background: none; border: 0; border-bottom: 1.5px solid var(--kk-accent);
@@ -289,12 +294,18 @@ html:not(.js) .kk-plate[data-i="0"] { opacity: 1; }
   0%, 100% { transform: translate(3%, 4%) scale(1.04); opacity: 1; }
   50% { transform: translate(6%, 10%) scale(1.1); opacity: 0.72; }
 }
+/* Course dots: nine small marks round the lower rim of the sini, one filled
+   per plate served; the plate on the sini now is the green one. */
+.kk-dots { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; transition: opacity var(--kk-t-state) var(--kk-out); }
+.kk-dots circle { r: 7px; fill: none; stroke: var(--kk-ink-3); stroke-width: 2px; transition: fill var(--kk-t-state), stroke var(--kk-t-state), r var(--kk-t-state) var(--kk-out); }
+.kk-dots circle[data-s="done"] { fill: var(--kk-ink); stroke: var(--kk-ink); }
+.kk-dots circle[data-s="now"] { r: 9px; fill: var(--kk-accent); stroke: var(--kk-accent); }
+.js .kk-serve:not([data-started]) .kk-dots { opacity: 0; }
 .kk-serve-num { font-family: var(--kk-serif), Georgia, serif; font-size: 2.4rem; line-height: 1; font-variant-numeric: tabular-nums; min-width: 3.4ch; }
 .kk-serve-num small { font-size: 1rem; color: var(--kk-ink-3); margin-left: 6px; }
 .kk-serve-steps { list-style: none; margin: 0; padding: 0; }
-.kk-step { min-height: 82svh; display: flex; align-items: center; }
-.kk-step:first-child { min-height: 60svh; }
-.kk-step:last-child { min-height: 92svh; }
+.kk-step { min-height: 60svh; display: flex; align-items: center; }
+.kk-step:last-child { min-height: 70svh; }
 .kk-step-in { max-width: 30em; opacity: 0.36; transition: opacity 420ms var(--kk-out); }
 .kk-step[data-active] .kk-step-in, html:not(.js) .kk-step-in { opacity: 1; }
 .kk-step-thumb { display: none; }
@@ -435,8 +446,13 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-serve-head { order: 0; padding: 0 0 24px; }
   .kk-serve-stage { order: 1; justify-self: stretch; }
   .kk-serve-steps { order: 2; }
-  .kk-serve-stage { top: var(--kk-header); z-index: 2; padding: 8px 0 14px; background: linear-gradient(var(--kk-bg) 82%, rgba(23, 19, 15, 0)); margin-inline: calc(-1 * var(--kk-gutter)); padding-inline: var(--kk-gutter); display: flex; align-items: center; gap: 12px; }
-  .kk-fly { width: min(56vw, 34svh); flex: none; }
+  /* Sini and counter on one row; the solid band and the fade under it keep
+     the previous plate's text from showing through. */
+  .kk-serve-stage { top: var(--kk-header); z-index: 2; padding: 8px 0 12px; background: var(--kk-bg); margin-inline: calc(-1 * var(--kk-gutter)); padding-inline: var(--kk-gutter); display: flex; align-items: center; gap: 20px; }
+  .kk-serve-stage::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 56px; background: linear-gradient(var(--kk-bg) 45%, rgba(23, 19, 15, 0)); pointer-events: none; }
+  .kk-fly { width: 40vw; flex: none; }
+  .kk-dots circle { r: 16px; stroke-width: 4px; }
+  .kk-dots circle[data-s="now"] { r: 20px; }
   .kk-serve-count { flex-direction: column; align-items: flex-start; padding: 0; margin: 0; }
   .kk-serve-count .kk-btn { display: none; }
   .kk-step { min-height: 44svh; align-items: flex-start; padding-top: 2svh; }
@@ -724,6 +740,10 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-sum div { grid-template-columns: 1fr; padding: 0; border: 0; gap: 0; }
   .kk-sum dt { display: none; }
   .kk-sum div[data-empty] { display: none; }
+  /* Notes keep their label inline: "2 misafir" alone does not say what. */
+  .kk-sum div[data-k="notes"] { display: flex; gap: 0.3em; }
+  .kk-sum div[data-k="notes"] dt { display: inline; font-size: 13.5px; line-height: 1.35; }
+  .kk-sum div[data-k="notes"] dt::after { content: ":"; }
   .kk-flow-page, .kk-invite-page { padding-top: 0; }
   .kk-sum dd { font-size: 13.5px; line-height: 1.35; color: var(--kk-ink-2); }
   .kk-sum div:first-child dd { color: var(--kk-ink); font-size: 14.5px; }

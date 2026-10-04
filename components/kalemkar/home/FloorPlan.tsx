@@ -16,7 +16,7 @@ import type { ImageKey } from "@/content/kalemkar/images";
 
 type Area = "salon" | "tezgah" | "ozel" | "avlu";
 const h = tr.house;
-const PHOTO: Record<Area, ImageKey> = { salon: "kiler", tezgah: "ocak", ozel: "kubbe", avlu: "ev" };
+const PHOTO: Record<Area, ImageKey> = { salon: "salon", tezgah: "ocak", ozel: "kubbe", avlu: "ev" };
 const href = (a: Area) => `${tr.base}/rezervasyon/?deneyim=${a}`;
 
 // Small round tables in the salon: 11, in two staggered rows, kept clear of the room label.
@@ -103,8 +103,10 @@ export function FloorPlan() {
 
             <Link href={href("ozel")} className="kk-plan-area" {...props("ozel")} onClick={onAreaClick("ozel")} aria-label={`${h.areas.ozel.name}. ${h.areas.ozel.meta}`}>
               <rect x="60" y="250" width="240" height="330" />
-              <path d="M60 250 L300 580 M300 250 L60 580" className="kk-plan-vault" />
+              {/* The dome seen from above: its base ring and the ribs as arcs meeting at the crown. */}
               <ellipse cx="180" cy="415" rx="96" ry="120" className="kk-plan-vault" />
+              <path d="M180 295 Q120 415 180 535 M180 295 Q240 415 180 535 M180 295 V535" className="kk-plan-vault" />
+              <circle cx="180" cy="415" r="9" className="kk-plan-vault" />
               <rect x="150" y="296" width="60" height="226" rx="6" className="kk-plan-furn" />
               {ROOM_CHAIRS.map((y) => (
                 <g key={y} className="kk-plan-furn">

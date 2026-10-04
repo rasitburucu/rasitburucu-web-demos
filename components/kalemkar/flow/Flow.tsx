@@ -607,7 +607,7 @@ export function Flow() {
               </div>
             )}
             {notesCount > 0 && (
-              <div>
+              <div data-k="notes">
                 <dt>{f.sum.notes}</dt>
                 <dd>{f.sum.guestNotes(notesCount)}</dd>
               </div>
