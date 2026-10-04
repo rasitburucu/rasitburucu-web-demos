@@ -335,9 +335,14 @@ function StepResult({ lock }: { lock: ModelId | null }) {
             <p>{tr.models.fit[f.model!.id]}</p>
           </div>
           <dl className="pz-result-list">
-            <div>
-              <dt>{r.gripper}</dt>
-              <dd>{tr.grippers[f.gripper]}</dd>
+            <div className="pz-wide">
+              <dt>
+                {r.gripper} <span className="pz-est">{r.sample}</span>
+              </dt>
+              <dd>
+                {tr.grippers[f.gripper]}
+                <span className="pz-result-sub">{tr.gripSize(f.grip)}</span>
+              </dd>
             </div>
             <div>
               <dt>
@@ -361,7 +366,7 @@ function StepResult({ lock }: { lock: ModelId | null }) {
               </dt>
               <dd className="pz-mono">{`${fmt1(f.cell.w)} × ${fmt1(f.cell.d)} m (${fmt1(f.cell.area)} m²)`}</dd>
             </div>
-            <div>
+            <div className="pz-wide">
               <dt>{r.options}</dt>
               <dd>{opts.length ? opts.join(", ") : r.none}</dd>
             </div>
@@ -375,6 +380,15 @@ function StepResult({ lock }: { lock: ModelId | null }) {
         <div className="pz-result pz-result-custom">
           <p className="pz-result-name">{r.customTitle}</p>
           <p>{r.customText}</p>
+          <dl className="pz-result-list">
+            <div className="pz-wide">
+              <dt>{r.gripper}</dt>
+              <dd>
+                {f.grip.warning ? tr.gripCustom : tr.grippers[f.gripper]}
+                <span className="pz-result-sub">{f.grip.warning ? `${r.gripNearest}: ${tr.gripSize(f.grip)}` : tr.gripSize(f.grip)}</span>
+              </dd>
+            </div>
+          </dl>
           <a className="pz-btn pz-btn-primary" href={`mailto:${tr.brand.email}?subject=${encodeURIComponent(fl.send.subject)}`}>
             {fl.send.engineer}
           </a>

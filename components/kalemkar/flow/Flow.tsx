@@ -50,7 +50,9 @@ export function Flow() {
   const [lost, setLost] = useState<string | null>(null);
   const [plusMode, setPlusMode] = useState(false);
   const headRef = useRef<HTMLHeadingElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
+  const lastStep = useRef(1);
 
   // Query parameters from the floor plan (?deneyim=) and a lost confirmation.
   useEffect(() => {
@@ -69,14 +71,31 @@ export function Flow() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready]);
 
-  // Move focus to the step heading on every step change (not on first load).
+  // Move focus to the step heading on every step change (not on first load),
+  // and bring the new step in from the side it lies on: forward from the
+  // right, back from the left, children 30 ms apart. Reduced motion: a fade.
   useEffect(() => {
+    const dir = step >= lastStep.current ? 1 : -1;
+    lastStep.current = step;
     if (firstRender.current) {
       firstRender.current = false;
       return;
     }
     headRef.current?.focus({ preventScroll: true });
-    window.scrollTo({ top: 0, behavior: reduced() ? "auto" : "smooth" });
+    const calm = reduced();
+    window.scrollTo({ top: 0, behavior: calm ? "auto" : "smooth" });
+    const kids = Array.from(bodyRef.current?.children ?? []).slice(0, 8) as HTMLElement[];
+    kids.forEach((el, i) =>
+      el.animate(
+        calm
+          ? [{ opacity: 0 }, { opacity: 1 }]
+          : [
+              { opacity: 0, transform: `translateX(${dir * 12}px)` },
+              { opacity: 1, transform: "none" },
+            ],
+        { duration: calm ? 120 : 380, delay: calm ? 0 : i * 30, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "backwards" },
+      ),
+    );
   }, [step, branch]);
 
   const isPlus = b.kisi > 6 || plusMode;
@@ -110,6 +129,23 @@ export function Flow() {
   const deposit = DEPOSIT * b.kisi;
   const notesCount = b.misafirler.filter((g) => g.notlar.length || g.diger.trim()).length;
   const marks = b.misafirler.map((g) => g.notlar.length > 0 || !!g.diger.trim());
+
+  // Phones: the summary sini is a 112 px thumbnail. When the table changes
+  // (party size, room, an allergy mark) it grows to 180 px for two seconds so
+  // the covers can be read, then settles back.
+  const [peek, setPeek] = useState(false);
+  const peekKey = `${b.deneyim}:${Math.min(b.kisi, 14)}:${marks.slice(0, b.kisi).join("")}`;
+  const peekFirst = useRef(true);
+  useEffect(() => {
+    if (peekFirst.current) {
+      peekFirst.current = false;
+      return;
+    }
+    if (!matchMedia("(max-width: 899px)").matches) return;
+    setPeek(true);
+    const t = window.setTimeout(() => setPeek(false), 2000);
+    return () => window.clearTimeout(t);
+  }, [peekKey]);
 
   /* ---------- step validity ---------- */
   const dayOk = !!dayInfo && (dayInfo.status === "bos" || dayInfo.status === "az");
@@ -222,6 +258,11 @@ export function Flow() {
           <h1 className="kk-flow-title">{f.title}</h1>
           <p className="kk-muted">{f.sub}</p>
           {branch === null && (
+            <div className="kk-progress" aria-hidden="true">
+              <i style={{ transform: `scaleX(${step / TOTAL})` }} />
+            </div>
+          )}
+          {branch === null && (
             <ol className="kk-steps" aria-label={f.step(step, TOTAL)}>
               {f.steps.map((name, i) => {
                 const n = i + 1;
@@ -255,7 +296,7 @@ export function Flow() {
             }}
           />
         ) : (
-          <div className="kk-flow-step">
+          <div className="kk-flow-step" ref={bodyRef}>
             <p className="kk-flow-count">{f.step(step, TOTAL)}</p>
 
             {step === 1 && (
@@ -287,6 +328,7 @@ export function Flow() {
                 <h3 className="kk-flow-sub">{f.experience.peopleTitle}</h3>
                 <ChipRadio<number | "plus">
                   label={f.experience.howMany}
+                  className="kk-chips kk-chips--people"
                   value={isPlus ? "plus" : b.kisi}
                   onChange={(v) => {
                     if (v === "plus") {
@@ -534,7 +576,7 @@ export function Flow() {
         )}
       </div>
 
-      <aside className="kk-flow-side" aria-label={f.summaryLabel}>
+      <aside className="kk-flow-side" aria-label={f.summaryLabel} data-peek={peek || undefined}>
         <div className="kk-flow-sini">{sini}</div>
         <div className="kk-flow-summary">
           <p className="kk-sr" aria-live="polite">

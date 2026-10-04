@@ -13,6 +13,7 @@ const t = tr.announce;
 /** Scholarship-exam notice. Dates are resolved after mount from the visitor's clock. */
 export function Announce() {
   const [text, setText] = useState<string | null>(null);
+  const [short, setShort] = useState("");
   const [closed, setClosed] = useState(false);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export function Announce() {
       const s = nextExam(now);
       if (!s) return setText("");
       setText(t.text(dayMonth(s.iso), WEEKDAYS[parseIso(s.iso).getDay()], dayMonth(s.deadline), daysUntil(s.deadline, now)));
+      setShort(t.short(dayMonth(s.iso)));
     };
     tick();
     const id = setInterval(tick, 60_000);
@@ -37,9 +39,11 @@ export function Announce() {
       <div className="rv-wrap rv-announce-in">
         <p>
           <strong>{t.lead}</strong> <span className="rv-announce-text">{text ?? " "}</span>
+          <span className="rv-announce-short">{short}</span>
         </p>
         <Link href="/revak/kabul/bursluluk/" className="rv-announce-cta">
-          {t.cta}
+          <span className="rv-hide-sm">{t.cta}</span>
+          <span className="rv-show-sm">{t.ctaShort}</span>
         </Link>
         <button
           type="button"

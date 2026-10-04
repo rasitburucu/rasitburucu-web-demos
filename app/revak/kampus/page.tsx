@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { tr } from "@/content/revak/tr";
+import { menu, plan } from "@/content/revak/yasam";
 import { Photo } from "@/components/revak/ui/Photo";
-import { DayTimeline, RouteCheck } from "@/components/revak/kampus/Interactive";
+import { Crumb, CtaBand, Sample } from "@/components/revak/ui/Bits";
+import { DayTimeline, RouteCheck, RouteRules } from "@/components/revak/kampus/Interactive";
+import { CampusPlan } from "@/components/revak/kampus/Plan";
+import { MenuBook } from "@/components/revak/kampus/MenuBook";
 
 const k = tr.kampus;
 
@@ -13,9 +17,7 @@ export default function KampusPage() {
     <>
       <section className="rv-pagehead" aria-labelledby="rv-kampus-title">
         <div className="rv-wrap">
-          <nav className="rv-crumb" aria-label={tr.crumb}>
-            <Link href="/revak/">{tr.brand.full}</Link> / {tr.nav.items[2].label}
-          </nav>
+          <Crumb current={tr.nav.groups[2].label} />
           <div className="rv-pagehead-grid">
             <h1 className="rv-display" id="rv-kampus-title">
               {k.title}
@@ -26,7 +28,7 @@ export default function KampusPage() {
       </section>
 
       <div className="rv-wrap rv-kampus-hero">
-        <Photo k="avlu" priority sizes="(max-width: 1400px) 100vw, 1300px" alt={k.heroAlt} />
+        <Photo k="bahceYolu" priority sizes="(max-width: 1400px) 100vw, 1300px" alt={k.heroAlt} />
       </div>
 
       <section className="rv-section rv-fac" aria-labelledby="rv-fac-title">
@@ -46,68 +48,68 @@ export default function KampusPage() {
         </div>
       </section>
 
+      {/* The campus plan: an ink drawing with keystone markers instead of a 360° tour */}
+      <section className="rv-section rv-rule rv-plan-sec" id="plan" aria-labelledby="rv-plan-title">
+        <div className="rv-wrap">
+          <div className="rv-plan-head">
+            <h2 className="rv-h2" id="rv-plan-title">
+              {plan.title}
+            </h2>
+            <p className="rv-kd-intro">{plan.intro}</p>
+          </div>
+          <CampusPlan />
+        </div>
+      </section>
+
       <DayTimeline />
 
-      <section className="rv-section rv-transport" id="servis" aria-labelledby="rv-transport-title">
+      {/* Lunch: two weeks, two kitchens, allergen marks */}
+      <section className="rv-section rv-menu-sec" id="yemek" aria-labelledby="rv-menu-title">
+        <div className="rv-wrap">
+          <div className="rv-menu-head">
+            <h2 className="rv-h2" id="rv-menu-title">
+              {menu.title}
+            </h2>
+            <p className="rv-kd-intro">{menu.intro}</p>
+            <Sample>{tr.sample.menu}</Sample>
+          </div>
+          <MenuBook />
+        </div>
+      </section>
+
+      <section className="rv-section rv-rule rv-transport" id="servis" aria-labelledby="rv-transport-title">
         <div className="rv-wrap rv-transport-grid">
           <div>
             <h2 className="rv-h2" id="rv-transport-title">
               {k.transport.title}
             </h2>
             <p className="rv-lede">{k.transport.intro}</p>
+            <RouteRules />
           </div>
           <RouteCheck />
         </div>
       </section>
 
-      <section className="rv-section rv-rule rv-care" id="guvenlik" aria-labelledby="rv-care-title">
-        <div className="rv-wrap">
-          <h2 className="rv-h2" id="rv-care-title">
+      {/* Safety now has its own page; the campus keeps a short pointer */}
+      <section className="rv-care-link" id="guvenlik" aria-labelledby="rv-care-title">
+        <div className="rv-wrap rv-care-link-in">
+          <h2 className="rv-h3" id="rv-care-title">
             {k.care.title}
           </h2>
-          <div className="rv-care-grid">
-            <div className="rv-care-qa">
-              {k.care.items.map((q) => (
-                <div key={q.q}>
-                  <h3>{q.q}</h3>
-                  <p>{q.a}</p>
-                </div>
-              ))}
-            </div>
-            <div className="rv-menu-card">
-              <h3>{k.care.menuTitle}</h3>
-              <p>{k.care.menuNote}</p>
-              <ul>
-                {k.care.menu.map((m) => (
-                  <li key={m.day}>
-                    <strong>{m.day}</strong>
-                    <span>{m.dish}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <p>{k.care.text}</p>
+          <Link href="/revak/guvende/" className="rv-btn rv-btn--line">
+            {k.care.link}
+          </Link>
         </div>
       </section>
 
-      <section className="rv-section rv-ink rv-on-ink" aria-labelledby="rv-kampus-cta">
-        <div className="rv-wrap rv-cta-band">
-          <div>
-            <h2 className="rv-h2" id="rv-kampus-cta">
-              {k.closing.title}
-            </h2>
-            <p>{k.closing.text}</p>
-          </div>
-          <div className="rv-actions">
-            <Link href="/revak/kabul/kampus-turu/" className="rv-btn rv-btn--seal">
-              {tr.hero.secondary}
-            </Link>
-            <Link href="/revak/kabul/on-kayit/" className="rv-btn rv-btn--line">
-              {tr.hero.primary}
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CtaBand
+        id="rv-kampus-cta"
+        title={k.closing.title}
+        text={k.closing.text}
+        primary={{ href: "/revak/kabul/kampus-turu/", label: tr.hero.secondary }}
+        secondary={{ href: "/revak/kabul/on-kayit/", label: tr.hero.primary }}
+      />
     </>
   );
 }

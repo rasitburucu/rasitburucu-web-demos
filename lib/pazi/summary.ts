@@ -33,12 +33,13 @@ export function summaryText(c: Config, f: Fit, link: string, contact?: Contact) 
   lines.push(`${fl.numbers.height}: ${fmt(f.stack.height)} mm`, `${fl.numbers.load}: ${fmt(f.stack.loadKg)} kg`);
   lines.push("", `— ${tr.sheet.result} (${fl.result.estimate}) —`);
   if (f.status === "ok" && f.model) {
-    lines.push(`${fl.result.model}: Pazı ${f.model.name}`, `${fl.result.gripper}: ${tr.grippers[f.gripper]}`);
+    lines.push(`${fl.result.model}: Pazı ${f.model.name}`, `${fl.result.gripper}: ${tr.grippers[f.gripper]} (${tr.gripSize(f.grip)})`);
     lines.push(`${fl.result.capacity}: ~${fmt1(f.capacity)} /dk`, `${fl.result.required}: ${f.required} /dk`);
     const opts = [f.lift ? fl.result.lift : "", f.double ? fl.result.double : "", c.sheet ? fl.result.sheet : ""].filter(Boolean);
     lines.push(`${fl.result.options}: ${opts.length ? opts.join(", ") : fl.result.none}`);
   } else {
     lines.push(fl.result.customTitle);
+    lines.push(`${fl.result.gripper}: ${f.grip.warning ? tr.gripCustom : tr.grippers[f.gripper]} (${tr.gripSize(f.grip)})`);
   }
   for (const w of f.warnings) if (w !== "bag-claw") lines.push(`! ${tr.warnings[w]}`);
   if (p.months || p.never || p.rentGap) {

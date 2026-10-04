@@ -19,13 +19,13 @@ const h = tr.house;
 const PHOTO: Record<Area, ImageKey> = { salon: "kiler", tezgah: "ocak", ozel: "kubbe", avlu: "ev" };
 const href = (a: Area) => `${tr.base}/rezervasyon/?deneyim=${a}`;
 
-// Small round tables in the salon: 11, in two staggered rows.
+// Small round tables in the salon: 11, in two staggered rows, kept clear of the room label.
 const TABLES = [
-  [110, 112], [210, 112], [310, 112], [410, 112], [510, 112], [596, 112],
-  [160, 180], [260, 180], [360, 180], [460, 180], [560, 180],
+  [110, 100], [210, 100], [310, 100], [410, 100], [510, 100], [596, 100],
+  [160, 158], [260, 158], [360, 158], [460, 158], [560, 158],
 ];
 const STOOLS = Array.from({ length: 8 }, (_, i) => 690 + i * 32);
-const ROOM_CHAIRS = Array.from({ length: 7 }, (_, i) => 300 + i * 38);
+const ROOM_CHAIRS = Array.from({ length: 7 }, (_, i) => 300 + i * 33);
 
 export function FloorPlan() {
   const [active, setActive] = useState<Area>("salon");
@@ -41,6 +41,8 @@ export function FloorPlan() {
     },
     onFocus: () => setActive(area),
     "data-active": active === area || undefined,
+    // First tap on touch selects the room: no page transition may pre-empt it.
+    "data-kk-novt": "",
   });
 
   const onAreaClick = (area: Area) => (e: React.MouseEvent) => {
@@ -103,7 +105,7 @@ export function FloorPlan() {
               <rect x="60" y="250" width="240" height="330" />
               <path d="M60 250 L300 580 M300 250 L60 580" className="kk-plan-vault" />
               <ellipse cx="180" cy="415" rx="96" ry="120" className="kk-plan-vault" />
-              <rect x="150" y="300" width="60" height="230" rx="6" className="kk-plan-furn" />
+              <rect x="150" y="296" width="60" height="226" rx="6" className="kk-plan-furn" />
               {ROOM_CHAIRS.map((y) => (
                 <g key={y} className="kk-plan-furn">
                   <circle cx="136" cy={y + 12} r="6" />
@@ -144,10 +146,10 @@ export function FloorPlan() {
               <path d="M60 240 H650 M650 40 V410 M310 240 V600 M650 295 H960 M650 410 H960" />
               <path d="M770 600 v-14 M840 600 v-14" />
             </g>
-            <text x="805" y="626" textAnchor="middle" className="kk-plan-small" aria-hidden="true">
+            <text x="805" y="626" textAnchor="middle" className="kk-plan-small kk-plan-entrance" aria-hidden="true">
               {h.entrance}
             </text>
-            <g className="kk-plan-north" aria-hidden="true" transform="translate(985 100)">
+            <g className="kk-plan-north" aria-hidden="true" transform="translate(912 92)">
               <path d="M0 -18 L6 4 L0 0 L-6 4Z" />
               <text y="20" textAnchor="middle">
                 {h.north}

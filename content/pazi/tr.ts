@@ -3,7 +3,7 @@
 // Status: draft copy from the plan (docs/plans/robotik.md, section 7), adapted
 // to the brand name Pazı. Awaiting Raşit's approval.
 
-import type { Config, ModelId, PatternId, ProductKind, Warning } from "@/lib/pazi/plan";
+import type { Config, GripperId, GripperSpec, ModelId, PatternId, ProductKind, Warning } from "@/lib/pazi/plan";
 
 export const tr = {
   meta: {
@@ -35,6 +35,7 @@ export const tr = {
       { label: "Nasıl kurulur", href: "/pazi/#kurulum" },
       { label: "Güvenlik", href: "/pazi/#guvenlik" },
       { label: "Deneme hücresi", href: "/pazi/#deneme" },
+      { label: "Biz kimiz", href: "/pazi/biz-kimiz/" },
     ],
     cta: "Ön fizibilite",
     menu: "Menü",
@@ -236,6 +237,7 @@ export const tr = {
       { title: "Yedek parça", text: "Tutucu, vakum pedi ve tarayıcı gibi aşınan parçalar Gebze'de stokta durur.", tag: "hedef: 48 saatte sahada" },
       { title: "Eğitim", text: "Kurulum haftasında operatör ve bakım eğitimi; yeni vardiya ya da yeni ürün geldiğinde tekrar.", tag: "kurulumla birlikte" },
     ],
+    teardown: "Kolu söküp gösterelim",
   },
 
   story: {
@@ -253,6 +255,7 @@ export const tr = {
     pages: "Sayfalar",
     links: [
       { label: "Ön fizibilite", href: "/pazi/fizibilite/" },
+      { label: "Biz kimiz", href: "/pazi/biz-kimiz/" },
       { label: "P12 föyü", href: "/pazi/modeller/p12/" },
       { label: "P20 föyü", href: "/pazi/modeller/p20/" },
       { label: "P30 föyü", href: "/pazi/modeller/p30/" },
@@ -273,6 +276,9 @@ export const tr = {
     "no-reach": "Paletin uzak köşesi bu modelin erişimi dışında kalıyor.",
     "bag-claw": "Torba için tutucu pençedir; vakum dokuma torbada güvenli tutmaz.",
     "column-unstable": "Sütun dizilimde katlar birbirine bağlanmaz; streç sarma ya da ara karton önerilir.",
+    "grip-small": "Ürün standart tutucu için küçük: vantuzlar ya da pençe parmakları ürünü güvenle kavrayamıyor. Ürüne özel tutucu gerekir.",
+    "grip-large": "Ürün standart tutucu sınıfından büyük: vakum plakası ya da pençe açıklığı yetmiyor. Özel tutucu gerekir.",
+    "grip-heavy": "Bu ağırlık, standart tutucunun güvenle taşıyabileceğinin üstünde: ürünün üstüne sığan vantuz ya da parmak sayısı yetmiyor. Mekanik destekli özel tutucu gerekir.",
   } satisfies Record<Warning, string>,
   overhangMm: (mm: number) => `Taşma ${mm} mm.`,
 
@@ -283,7 +289,22 @@ export const tr = {
     taller: "Ürün, en yüksek yükten uzun olamaz.",
   },
 
-  grippers: { vakum: "Vakum tutucu", "cift-vakum": "Çift vakum tutucu (iki ürün)", pence: "Torba pençesi" },
+  grippers: {
+    vakum: "Vakum tutucu",
+    "vakum-iki": "İki bölgeli vakum tutucu",
+    "vakum-uzun": "Uzun plakalı vakum tutucu",
+    "cift-vakum": "Çift vakum tutucu (iki ürün)",
+    pence: "Torba pençesi",
+  } satisfies Record<GripperId, string>,
+  /** One line under the tool name: size, pads or fingers, mass. Concept values. */
+  gripSize: (g: GripperSpec) => {
+    const n = (v: number) => new Intl.NumberFormat("tr-TR").format(v);
+    const kg = new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 1 }).format(g.mass);
+    if (g.claw) return `Çatal ${n(g.plate.l)} mm boyunda, açılınca ${n(g.claw.open)} mm; her yanda ${g.claw.fingers} parmak · ~${kg} kg`;
+    const pads = `${g.pads.nx}×${g.pads.nz} vantuz Ø${g.pads.d}`;
+    return `Plaka ${n(g.plate.l)} × ${n(g.plate.w)} mm, ${pads}${g.zones === 2 ? ", iki bölge" : ""} · ~${kg} kg`;
+  },
+  gripCustom: "Özel tutucu gerekir",
 
   flow: {
     title: "Hat sonu ön fizibilite",
@@ -306,6 +327,8 @@ export const tr = {
       lead: "Her rakam tahminidir; varsayımlar aşağıda.",
       model: "Model",
       gripper: "Tutucu",
+      sample: "örnek ölçü",
+      gripNearest: "Standart sınıfta en yakın",
       capacity: "Kapasite",
       required: "Gerekli",
       cycle: "Çevrim süresi",
@@ -402,6 +425,95 @@ export const tr = {
     safetyText: "İki bölgeli alan tarayıcı (uyarı bölgesinde yavaşlar, koruma bölgesinde durur), hız ve kuvvet sınırlama, kurulum öncesi risk değerlendirmesi ve CE teknik dosyası.",
     cellTitle: "Örnek hücre, izometrik",
     cellNote: "Kendi sınıfına uygun örnek ürünle; iki palet istasyonu, konveyör ucu ve tarayıcı bölgeleri.",
+  },
+
+  // "Biz kimiz": the teardown page. Draft copy, awaiting Raşit's approval.
+  about: {
+    meta: {
+      title: "Biz kimiz",
+      description:
+        "Pazı Robotik'i bir bakım mühendisi ile bir endüstriyel yazılımcı kurdu. Kurduğumuz kolu vidasına kadar biliriz: kaydırın, P30'u sahada söküldüğü sırayla açalım. Konsept çalışma.",
+      ogAlt: "Pazı P30 robot kolun patlatılmış görünüşü: on beş parça, eklem eksenleri boyunca ayrılmış.",
+    },
+    intro: {
+      title: "Kurduğumuz kolu vidasına kadar biliriz.",
+      story: [
+        "Pazı'yı, Dilovası'nda bir boya fabrikasının hat sonunda bakım mühendisliği yapmış biriyle bir endüstriyel yazılımcı kurdu.",
+        "Biri duran bir robotun başında yedek parça beklemenin ne demek olduğunu bilir; öteki o robotun yazılımını yazar.",
+        "Bu yüzden sattığımız kolu parça parça tanırız. Sahada bir eklem arıza verirse hangi parçanın değişeceğini de biliriz.",
+      ],
+      hint: "Kaydırın: kolu sahada söküldüğü sırayla açalım.",
+    },
+    teardown: {
+      id: "pazinin-ici",
+      title: "Pazının içi",
+      lead: "P30, sahada söküldüğü sırayla: önce kablo ve tutucu, en son taban.",
+      hold: "Her eklem ayrı bir modül. Arıza veren modül değişir, kolun geri kalanı yerinde kalır.",
+      done: "Yerine oturdu. Kol hücrede, torbayı palete koyuyor.",
+      listTitle: "Parça listesi, söküm sırasıyla",
+      part: "Parça",
+      module: "Modül",
+      status: "Durum",
+      none: "Kol monte",
+      phases: { ready: "Hazır", apart: "Sökülüyor", open: "Açık", together: "Montaj", work: "Çalışıyor" },
+      drawing:
+        "Pazı P30 robot kolun yan görünüşü, patlatılmış: kablo hattı, torba pençesi, alet flanşı, bilek modülleri, ön kol, dirsek, üst kol, omuz kapağı, fren, servo motor, redüktör, taban eklemi ve taban flanşı eklem eksenleri boyunca ayrılmış; yanda kontrol kutusu ve alan tarayıcı.",
+      scene: "Üç boyutlu söküm sahnesi. Aynı bilgi aşağıdaki parça listesinde sıralı olarak var.",
+    },
+    // order = the order a technician takes the arm apart (see components/pazi/about/model.ts)
+    parts: {
+      hose: { name: "Kablo hattı", code: "", text: "Güç, sinyal ve hava tek kılıfta. Klipslerden çıkar, tek parça değişir." },
+      gripper: { name: "Torba pençesi", code: "", text: "25 kg dokuma torbayı iki yandan kavrar. Hızlı değiştiriciden tek kilitle ayrılır." },
+      toolFlange: { name: "Alet flanşı", code: "ISO 9409", text: "Standart bağlantı: tutucu değişse de vida düzeni aynı kalır." },
+      wrist: { name: "Bilek modülleri", code: "J4–J6", text: "Üç eksen, aynı yapıda üç modül. Biri arızalanırsa yalnız o değişir." },
+      forearm: { name: "Ön kol", code: "", text: "Dirsek ile bilek arasındaki taşıyıcı tüp." },
+      elbow: { name: "Dirsek", code: "J3", text: "Ön kolu kaldıran eklem; içinde omuzdakinin küçüğü bir motor ve redüktör var." },
+      upperArm: { name: "Üst kol", code: "", text: "Omuz ile dirsek arasındaki ana tüp. Model etiketi bunun üstünde." },
+      shoulderCover: { name: "Omuz kapağı", code: "J2", text: "Kapak açılınca eklemin iç parçalarına önden ulaşılır." },
+      brake: { name: "Fren", code: "", text: "Elektrik kesilince kolu olduğu yerde tutar." },
+      motor: { name: "Servo motor", code: "", text: "Eklemi döndürür; arkasındaki enkoder konumu her an okur." },
+      gearbox: { name: "Redüktör", code: "", text: "Dalga dişli: motorun hızını düşürür, torku artırır, boşluksuz çalışır." },
+      base: { name: "Taban eklemi", code: "J1", text: "Kolu dikey eksen etrafında çevirir." },
+      mount: { name: "Taban flanşı", code: "", text: "Sekiz cıvatayla zemine ya da asansör kolonuna bağlanır." },
+      controller: { name: "Kontrol kutusu", code: "", text: "Eksen sürücüleri, güvenlik rölesi ve hat bağlantısı. Kapağı önden açılır." },
+      scanner: { name: "Alan tarayıcı", code: "", text: "İnsanı görür: uyarı bölgesinde yavaşlatır, koruma bölgesinde durdurur." },
+    },
+    principles: {
+      id: "nasil-calisiyoruz",
+      title: "Nasıl çalışıyoruz",
+      lead: "Kolu tanımak işin yarısı. Öteki yarısı, kol sizin hattınızdayken ne yaptığımız.",
+      head: { what: "İlke", how: "Ne demek", when: "Ne zaman" },
+      items: [
+        {
+          title: "Kendi atölyemizde deneriz",
+          text: "Robotu sahaya getirmeden önce sizin ürününüzle Gebze'deki deneme hücresinde çalıştırırız. Tutucu ve desen orada kesinleşir.",
+          when: "her projede",
+        },
+        {
+          title: "Operatöre öğretiriz",
+          text: "Yeni ürün geldiğinde deseni operatörünüz tabletten seçer. Kurulum haftasında öğretir, yeni vardiyada tekrarlarız.",
+          when: "kurulum haftası",
+        },
+        {
+          title: "Yedek parçayı stokta tutarız",
+          text: "Yukarıda söktüğümüz modüllerin aşınanları Gebze'deki rafta durur: tutucu, bilek modülü, kablo hattı, tarayıcı.",
+          when: "hedef: 48 saatte sahada",
+        },
+        {
+          title: "Uzaktan bağlanırız",
+          text: "İzin verdiğiniz anda hücrenin hata kaydını görürüz; çoğu arızayı kimse yola çıkmadan çözeriz.",
+          when: "hedef: aynı iş günü",
+        },
+      ],
+    },
+    workshop: {
+      id: "atolye",
+      title: "Atölye Gebze'de.",
+      text: "Deneme hücresi, yedek parça rafı ve eğitim masası aynı çatı altında. Bir palet ürününüzü getirin; kolu çalışırken de, sökülürken de görün.",
+      cta: "Ürününüzü getirin",
+      flow: "Ön fizibilite",
+      flowLead: "Ölçünüz hazırsa önce beş dakikalık ön fizibiliteyle başlayın.",
+    },
   },
 
   notFound: {

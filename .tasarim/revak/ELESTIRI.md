@@ -68,3 +68,25 @@ Karar **DÜZELT**, ağırlıklı **6,9** (Tasarım 6,9 · Kullanılabilirlik 6,8
 | 2. düzeltme turu | 7,2 | 7,2 / 7,0 / 7,6 / 6,8 | DÜZELT (başvuru eşiği 7,5'in altında) |
 
 Kalan bulgular (2. tur): yürüyüşte stok fotoğrafın render kemere düz oturması; servi ve ağaçların kil gibi durması; zemindeki vektör ışık lekeleri; üstte üç katman şerit (mobilde cümle formu ilk ekranın altında); akışta birincil düğmenin lacivert olması; 404'teki örgünün kepenk gibi okunması.
+
+## 8. v4 cila turu (2026-10-04, commit 8a08ddb üstüne, commit edilmedi)
+
+Yapılanlar: yürüyüşte fotoğraf kemerin arkasındaki düzleme alındı (kaçış noktasından paralaks, tonoz ve söve gölgesi, kemer ışığına renk eşleme, soffit taş bandı); bir sonraki kademenin fotoğrafı yalnız kemeri yaklaşınca gelir, yürürken revak ve yaş sayacı görünür. Blender sahnesinde yordamsal bitki örtüsü (servi, fıstık çamı, meşe/gürgen, çalı, ormanlık sırt; geometri düğümleriyle yaprak kümeleri), kalker taşta blok başına pürüz ve yağmur izi; dört render yenilendi, kampüs sayfasına ikinci açı (bahçe yolu), 404'e örülmüş kemer render'ı. Üst bant: masaüstünde konsept şeridi + bursluluk tek 32 px bant (157 → 104 px); telefonda duyuru tek satır, form ilk ekranda, render başlığın yanında küçük kemer. Akışta birincil düğme mühür kırmızısı; aralıklı büyük harf etiketler kaldırıldı; tarih/yıl rakamları sans; yürüyüş metni logo hizasına alındı; kampüs bandı paneli taştı.
+
+| Tur | Taze göz ağırlıklı | T / K / Y / İ | Karar |
+|---|---|---|---|
+| v4-a (ilk cila) | 7,0 | 6,9 / 7,3 / 6,6 / 7,0 | DÜZELT |
+| v4-b (hizalama, üst bant) | 7,1 | 6,9 / 7,2 / 7,3 / 6,8 | DÜZELT |
+| v4-c (mobil küçük kemer, kampüs açısı) | 7,2 | 7,0 / 7,3 / 7,2 / 7,4 | DÜZELT |
+
+Sonrasında (puanlanmadı): yürüyüş arasında çift pozlama giderildi, yaş sayacı ızgaraya hizalandı, 404 render'ı kemer kesimli.
+
+Eşiği tutan üç konu (üç inceleyicide ortak):
+1. Mobil ilk ekran: yön sözleşmesi "başlık, alt başlık, 45vh kemer, form" diyor; ana sohbet isteği "form ilk ekranda". Şu an form öncelikli. Karar Raşit'te.
+2. Duraklarda stok fotoğraf hâlâ "kemer içinde çerçeveli fotoğraf" gibi okunuyor; kökten çözüm fotoğrafı Blender'da kemerin arkasındaki düzlemde aynı güneşle render etmek ya da kademe görsellerini render'a çevirmek.
+3. Yakın ağaçlar yer yer "brokoli"; gerçek tarama modeller (Poly Haven CC0) lisans/ağırlık kararı ister.
+
+## 9. v5 derinlik turu (2026-10-04, commit edilmedi)
+Taze göz (bağlamsız inceleyici, v5 ekranları): **8,1** (Tasarım 8,3 · Kullanılabilirlik 7,9 · Yaratıcılık 7,8 · İçerik 8,6), karar DÜZELT. Güçlü yanlar: "örnek" mühürleri ve kapalı veli portalıyla dürüstlüğün tasarım diline girmesi; araçların gerçekten çalışması (yaş hesaplayıcı, belge listesi, senaryolar, servis hattı); kemer motifinin bilgi tasarımına taşınması.
+İkinci turda düzeltilenler: kademe saati büyük yazıldı ve zemin tonu güçlendi; menüde hafta sonu notu ve sakin kenar çizgisi; raporda bağlantı mavisi yerine mürekkep, kapat düğmesi rapor başına; kampüs planı etiketleri büyüdü, "turda görmek istiyorum" ikincil düğme; telefonda veli formu ve mühür ilk ekrana yakın; almanak süzgeci telefonda tek satır; Güvende başlık tekrarı ve yaş notu cümlesi düzeldi. Puanlanmadı.
+Açık kalanlar: iç sayfa girişleri (büyük başlık + sağda paragraf) hâlâ aynı kalıp; telefonda üstteki iki şerit ve alt çubuk ekranın üçte birini alıyor (genel karar, bu turda değişmedi); kampüs planı çizim, render değil.

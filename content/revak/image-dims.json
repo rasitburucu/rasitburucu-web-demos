@@ -290,5 +290,16 @@
       900
     ],
     "source": "blender"
+  },
+  "bahceYolu": {
+    "file": "bahceYolu",
+    "w": 1600,
+    "h": 900,
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "source": "blender"
   }
 }

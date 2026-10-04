@@ -79,11 +79,14 @@ export function TurFlow() {
         saat = qs;
       }
     }
+    // places picked on the campus plan (?gor=Kütüphane|Revir), only known options
+    const gor = (readParam("gor") ?? "").split("|").filter((x) => t.s2.seeOptions.includes(x));
     f.patch({
       tur,
       kademeler: k ? [k] : [],
       tarih,
       saat,
+      ...(gor.length ? { gor } : {}),
       ...(shared.veliAd ? { veliAd: shared.veliAd } : {}),
       ...(shared.telefon ? { telefon: shared.telefon } : {}),
       ...(shared.eposta ? { eposta: shared.eposta } : {}),
@@ -154,7 +157,6 @@ export function TurFlow() {
       onBack={step > 0 ? () => go(step - 1) : undefined}
       onNext={next}
       nextLabel={step === 2 ? t.s3.submit : undefined}
-      nextTone={step === 2 ? "seal" : "ink"}
       aside={summary}
     >
       {step === 0 && (

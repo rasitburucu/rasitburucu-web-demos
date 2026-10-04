@@ -1527,3 +1527,8 @@
     display: none;
   }
 }
+
+/* link from "Robot durursa ne olur?" to the teardown page */
+.pz-service-more {
+  margin-top: 16px;
+}

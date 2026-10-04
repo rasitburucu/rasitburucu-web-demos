@@ -5,6 +5,7 @@ import { tr } from "@/content/kalemkar/tr";
 import { BookingProvider } from "@/lib/kalemkar/store";
 import { Header, MobileBar } from "@/components/kalemkar/shell/Header";
 import { Footer, Strip } from "@/components/kalemkar/shell/Footer";
+import { PageTransitions } from "@/components/kalemkar/shell/PageTransitions";
 
 // Young Serif: a sturdy, warm serif with the weight of hand-cut lettering; it
 // carries headlines, plate names and the words engraved round the sini.
@@ -59,6 +60,7 @@ export default function KalemkarLayout({ children }: { children: React.ReactNode
         </main>
         <Footer />
         <MobileBar />
+        <PageTransitions />
       </BookingProvider>
     </div>
   );

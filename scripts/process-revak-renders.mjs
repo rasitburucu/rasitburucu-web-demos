@@ -6,6 +6,10 @@
 //   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- wide  scripts/.raw/revak/render-wide.png 160
 //   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- face-am scripts/.raw/revak/render-face-am.png 160
 //   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- face-pm scripts/.raw/revak/render-face-pm.png 160
+//   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- court-am scripts/.raw/revak/render-court-am.png 160
+//   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- court-pm scripts/.raw/revak/render-court-pm.png 160
+//   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- court-wide scripts/.raw/revak/render-court-wide.png 160
+//   blender -b --factory-startup --python scripts/revak-blender/revak_scene.py -- face-walled scripts/.raw/revak/render-face-walled.png 160
 //
 //   node scripts/process-revak-renders.mjs
 import sharp from "sharp";
@@ -25,6 +29,7 @@ const photos = [
   { key: "revakWide", src: "render-wide.png", widths: [640, 1024, 1600] },
   { key: "avlu", src: "render-court-am.png", widths: [640, 1024, 1600] },
   { key: "aksamBahce", src: "render-court-pm.png", widths: [480, 900] },
+  { key: "bahceYolu", src: "render-court-wide.png", widths: [640, 1024, 1600] },
 ];
 for (const p of photos) {
   const src = sharp(`${RAW}/${p.src}`);
@@ -52,6 +57,14 @@ for (const [name, src] of [
     bytes += (await r.clone().webp({ quality: 74, alphaQuality: 90 }).toFile(`${WALK}/${name}-${w}.webp`)).size;
   }
   console.log(name.padEnd(10), `${Math.round(bytes / 1024)} KB`);
+}
+
+// The walled-up arch of the 404 page (opaque infill, transparent around the face)
+if (existsSync(`${RAW}/render-face-walled.png`)) {
+  const r = sharp(`${RAW}/render-face-walled.png`).resize({ width: 720 });
+  const a = await r.clone().avif({ quality: 50, effort: 6 }).toFile(`${WALK}/kemer-orulu-720.avif`);
+  const w = await r.clone().webp({ quality: 76, alphaQuality: 90 }).toFile(`${WALK}/kemer-orulu-720.webp`);
+  console.log("kemer-orulu", `${Math.round((a.size + w.size) / 1024)} KB`);
 }
 
 // Open Graph card, 1200 x 630, from the wide render

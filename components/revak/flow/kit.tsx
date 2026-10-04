@@ -287,7 +287,7 @@ export function Choices({
             <span className="rv-choice-face">
               {o.render ?? (
                 <>
-                  <strong>{o.label}</strong>
+                  <strong className={/\d/.test(o.label) ? "rv-choice-num" : undefined}>{o.label}</strong>
                   {o.hint && <span>{o.hint}</span>}
                 </>
               )}
@@ -407,7 +407,7 @@ export function FlowShell({
   onBack,
   onNext,
   nextLabel,
-  nextTone = "ink",
+  nextTone = "seal",
   aside,
   plate,
 }: {

@@ -39,7 +39,7 @@ export const tr = {
     menu: "Menü",
     close: "Kapat",
   },
-  mobileBar: { label: "Hızlı rezervasyon", cta: "Masa ayır", call: "Ara" },
+  mobileBar: { label: "Hızlı rezervasyon", cta: "Masanızı ayırın", call: "Ara" },
   sample: "örnek",
   sampleLong: "Örnek fiyat (konsept)",
 
@@ -81,7 +81,7 @@ export const tr = {
     ],
     quote: "Dedem bakıra ne kazıyacağını önceden çizmezdi, kalemle ne kadar gidebileceğini bilirdi. Menüyü ben de öyle yazıyorum: bahçede ne varsa, o kadar.",
     quoteBy: "Leman Darcan",
-    capHands: "Servisten önce son dokunuş",
+    capHands: "Sinide firik ve fıstık sarması",
     capCopper: "Bakırcılar Çarşısı’nda kalem kazıma",
   },
 

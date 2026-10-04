@@ -43,6 +43,8 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 | Fizibilite | `components/pazi/flow/Flow.tsx` | 6 adım, canlı önizleme, mailto, kopyala, yazdır |
 | Föyler | `app/pazi/modeller/[model]/foy`, `components/pazi/print/FlowSheet.tsx` | A4 yazdırma |
 | Çizimler | `ui/Elevation.tsx`, `ui/LayerPlan.tsx`, `home/Workshop.tsx`, `ui/Mark.tsx` | yan görünüş, kat planı, atölye, logo |
+| Biz kimiz | `app/pazi/biz-kimiz/`, `components/pazi/about/*` | söküm sahnesi (`scene.ts`, three.js), zaman çizelgesi (`model.ts`), yedek çizim (`Drawing.tsx`), pin + etiketler (`Teardown.tsx`), ilkeler föyü ve atölye notu (`Sections.tsx`) |
+| Robot parça listesi | `cell/robot.ts` → `Robot.parts`, `shoulder`, `elbow`, `dims`, `Gripper.adapter` | her mesh bir servis modülüne etiketli; hücre kullanmaz, söküm sahnesi kullanır |
 
 ## Hareket envanteri
 
@@ -56,6 +58,7 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 | Kat kat | adım ortadan geçince | kol 720 ms `--pz-move`, kat 520 ms hafif yaylanma, 260 ms gecikme | bütün katlar görünür, kol üstte |
 | Güvenlik mini kolu | görünürken | 1,6 sn/bacak, bölgeye göre hız | durağan |
 | Tuval belirme | ilk kare | 700 ms opaklık | geçişsiz |
+| Pazının içi (Biz kimiz) | kaydırma, pin + scrub 0,6 | masaüstü 7 ekran boyu, telefon 4,6; parça başı minimum sarsıntı; söküm %7,5–52, duraklama %52–62, montaj %62–83, hücre %84–100 | pin yok; patlatılmış hâl durağan, bütün etiketler |
 
 ## Ölçümler (2026-10-04, `npm run build` çıktısı, yerel statik sunucu, Chromium)
 
@@ -64,6 +67,8 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 - 3B model / doku indirmesi: 0 KB (hepsi prosedürel). OG görseli 72 KB JPEG.
 - LCP (yerel, ağ gecikmesiz): masaüstü ~0,5 sn, mobil ~0,2 sn; LCP öğesi başlık metni.
 - Yatay taşma: 1440 ve 390'da yok.
+- Biz kimiz (`/pazi/biz-kimiz`, 2026-10-04): Next ilk yükleme 174 kB (GSAP + ScrollTrigger dahil). Sayfanın indirdiği bütün JS, three.js dahil: gzip -9 ile 378 KB, brotli 11 ile 321 KB (Cloudflare brotli sunar; kalite tabanı ≤ 350 KB brotli: tuttu, gzip ölçüsünde ~28 KB aşıyor). 3B model/doku indirmesi 0 KB. OG görseli `og-biz-kimiz.jpg` 68 KB. Tuval yalnız kaydırma değişince çizer, ekran dışında uyur; DPR üst sınırı 1,75 (dokunmatikte 1,5). Yatay taşma 1440 ve 390'da yok.
+- Ekran görüntüleri: `.tasarim/pazi/ekran/20-…27-` (monte, yarı açık, tam açık, yeniden monte/çalışıyor, mobil iki kare, azaltılmış hareket, çizim yedeği). Kareler `?kare=0.57` gibi sabit ilerlemeyle alındı (bkz. `components/pazi/about/Teardown.tsx`).
 
 ## Taze göz (bağlamsız inceleme, 2026-10-04)
 

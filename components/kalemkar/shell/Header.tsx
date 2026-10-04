@@ -44,9 +44,15 @@ export function Header() {
     };
     document.addEventListener("keydown", onKey);
     document.documentElement.dataset.kkMenu = "open";
+    // The concept strip sits above the sticky header at the top of the page:
+    // open the panel under the header's real bottom edge, not a fixed 58 px.
+    const head = document.querySelector<HTMLElement>("[data-demo='kalemkar'] .kk-header");
+    const bottom = head ? Math.max(0, Math.round(head.getBoundingClientRect().bottom)) : 0;
+    document.documentElement.style.setProperty("--kk-menu-top", `${bottom}px`);
     return () => {
       document.removeEventListener("keydown", onKey);
       delete document.documentElement.dataset.kkMenu;
+      document.documentElement.style.removeProperty("--kk-menu-top");
     };
   }, [open]);
 
@@ -132,10 +138,26 @@ export function Header() {
 
 export function MobileBar() {
   const flow = useFlowMode();
+  const pathname = usePathname() ?? "";
+  const [away, setAway] = useState(() => !/\/kalemkar\/?$/.test(pathname));
+
+  // On the home page the first screen already has the booking sentence and its
+  // button: the bar waits until that has scrolled away (no second green button).
+  useEffect(() => {
+    const hero = document.querySelector<HTMLElement>("[data-demo='kalemkar'] .kk-sentence");
+    if (!hero || !("IntersectionObserver" in window)) {
+      setAway(true);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => setAway(!e.isIntersecting && e.boundingClientRect.top < 0));
+    io.observe(hero);
+    return () => io.disconnect();
+  }, [pathname]);
+
   if (flow) return null;
   const m = tr.mobileBar;
   return (
-    <nav className="kk-mbar" aria-label={m.label}>
+    <nav className="kk-mbar" aria-label={m.label} data-away={away || undefined}>
       <a href={tr.contact.phoneHref} className="kk-mbar-call">
         {m.call}
       </a>

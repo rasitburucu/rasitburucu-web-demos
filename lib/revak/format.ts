@@ -1,3 +1,5 @@
+import { createElement, Fragment, type ReactNode } from "react";
+
 // Turkish date and phone formatting without Intl, so server and browser always
 // print the same string.
 import { parseIso } from "./schedule";
@@ -46,4 +48,16 @@ export function ageOn(birthIso: string, onIso: string) {
   let a = o.getFullYear() - b.getFullYear();
   if (o.getMonth() < b.getMonth() || (o.getMonth() === b.getMonth() && o.getDate() < b.getDate())) a--;
   return a;
+}
+
+/**
+ * Marcellus draws its zero like a capital O ("O8.4O"). Runs of digits are set in
+ * the sans (lining, tabular) wherever a figure sits inside serif text.
+ */
+export function numerals(text: string): ReactNode {
+  const parts = text.split(/(\d(?:[\d.,:'’\-–]*\d)?)/);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) =>
+    i % 2 ? createElement("span", { key: i, className: "rv-digits" }, part) : createElement(Fragment, { key: i }, part),
+  );
 }

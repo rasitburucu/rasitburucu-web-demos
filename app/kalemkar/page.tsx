@@ -8,12 +8,13 @@ import { Chef, Know, OpeningSection } from "@/components/kalemkar/home/Sections"
 export default function KalemkarHome() {
   const h = tr.hero;
   return (
-    <>
+    <div className="kk-home" data-kk-home>
       <section className="kk-hero" aria-labelledby="kk-hero-title">
         <div className="kk-wrap kk-hero-grid">
           <div className="kk-hero-text">
             <h1 id="kk-hero-title" className="kk-h1">
-              {h.title}
+              {/* "Antep’in sofrası," / "dokuz tabakta." on wide screens. */}
+              <span className="kk-h1-line">{h.title.split(", ")[0]},</span> {h.title.split(", ").slice(1).join(", ")}
             </h1>
             <p className="kk-hero-sub">{h.sub}</p>
             <SentenceForm />
@@ -28,6 +29,6 @@ export default function KalemkarHome() {
       <FloorPlan />
       <Know />
       <OpeningSection />
-    </>
+    </div>
   );
 }

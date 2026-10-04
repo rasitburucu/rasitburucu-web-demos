@@ -4,16 +4,15 @@ import { asset } from "@/lib/asset";
 
 const t = tr.notFound;
 
-/** 404: the arch is walled up. Same rendered face as the walk, the opening filled with coursed stone. */
+/** 404: the arch is walled up. The walk's evening face, rendered again with its opening bricked up in rubble ashlar. */
 export function NotFound() {
   return (
     <section className="rv-404" aria-labelledby="rv-404-title">
       <div className="rv-wrap rv-404-grid">
         <div className="rv-404-arch" aria-hidden="true">
-          <span className="rv-404-fill" />
           <picture>
-            <source type="image/avif" srcSet={`${asset("/revak/walk/kemer-aksam-720.avif")} 720w`} />
-            <img src={asset("/revak/walk/kemer-aksam-720.webp")} width={720} height={771} alt="" />
+            <source type="image/avif" srcSet={`${asset("/revak/walk/kemer-orulu-720.avif")} 720w`} />
+            <img src={asset("/revak/walk/kemer-orulu-720.webp")} width={720} height={771} alt="" />
           </picture>
         </div>
         <div className="rv-404-text">

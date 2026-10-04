@@ -4,7 +4,8 @@
 
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { fit, palletSize, PALLET_DECK, STATION_GAP_M, type Config, type Fit, type ModelId, type ModelSpec, MODELS } from "@/lib/pazi/plan";
+import { fit, palletSize, PALLET_DECK, STATION_GAP_M, type Config, type Fit, type GripperSpec, type ModelId, type ModelSpec, MODELS } from "@/lib/pazi/plan";
+import { sameGripper } from "@/lib/pazi/gripper";
 import type { CellStore, View, Zone } from "@/lib/pazi/store";
 import { mesh, pillowGeometry, rbox, roundRectStrip, stripGeometry } from "./geo";
 import { bagMaterial, cardboardMaterials, floorTextures, makeMaterials, screenCanvas, shrinkMaterials, woodMaterial, type Mats } from "./materials";
@@ -82,6 +83,10 @@ export class CellEngine {
   private robot!: Robot;
   private riser!: Riser;
   private gripper!: Gripper;
+  /** Tool of the previous build, and the outgoing tool while the families swap. */
+  private lastGrip: GripperSpec | null = null;
+  private oldGripper: Gripper | null = null;
+  private morphT = 1;
   private hose!: Hose;
   private hoseRoot = new THREE.Vector3();
   private stations: Station[] = [];
@@ -444,8 +449,9 @@ export class CellEngine {
 
     // ---- robot on its riser
     const lift = f.lift;
-    const gripKind = f.gripper;
-    this.gripper = new Gripper(gripKind, this.pg, f.double ? this.pu * 2 : this.pu, m);
+    // the tool, sized for this product (lib/pazi/gripper.ts)
+    const prevGrip = this.lastGrip;
+    this.gripper = new Gripper(f.grip, m);
     const gH = this.gripper.height;
     const hang = this.model.link.wrist;
     const d1 = this.model.link.d1;
@@ -460,6 +466,21 @@ export class CellEngine {
     this.lift = this.liftTo = this.liftFrom = lift ? this.riser.setHeight((wPick + wLow) / 2 - d1) : riserH;
     this.robot.root.position.set(0, this.lift, 0);
     this.robot.flange.add(this.gripper.group);
+    // a new size grows out of the old one; a new tool family swaps in after the old one retracts
+    this.lastGrip = f.grip;
+    this.oldGripper = null;
+    this.morphT = 1;
+    if (prevGrip && !this.opts.reduced && !sameGripper(prevGrip, f.grip)) {
+      if (prevGrip.family === f.grip.family) this.gripper.morphFrom(prevGrip);
+      else {
+        const old = new Gripper(prevGrip, m);
+        old.adapter.visible = false;
+        this.robot.flange.add(old.group);
+        this.oldGripper = old;
+        this.gripper.setPresence(0);
+      }
+      this.morphT = 0;
+    }
 
     // carried products
     for (let i = 0; i < 2; i++) {
@@ -992,6 +1013,21 @@ export class CellEngine {
       this.camPos.lerpVectors(this.camFromPos, this.camGoalPos, e);
       this.camTarget.lerpVectors(this.camFromTarget, this.camGoalTarget, e);
       this.applyCamera();
+      animating = true;
+    }
+
+    // tool resize or swap after a configuration change (never under reduced motion)
+    if (this.morphT < 1) {
+      this.morphT = Math.min(1, this.morphT + dt / 0.75);
+      const old = this.oldGripper;
+      if (old) {
+        old.setPresence(1 - minJerk(clamp01(this.morphT / 0.45)));
+        this.gripper.setPresence(minJerk(clamp01((this.morphT - 0.4) / 0.6)));
+        if (this.morphT >= 1) {
+          old.group.visible = false;
+          this.oldGripper = null;
+        }
+      } else this.gripper.setMorph(minJerk(this.morphT));
       animating = true;
     }
 

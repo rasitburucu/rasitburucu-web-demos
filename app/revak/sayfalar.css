@@ -1,0 +1,3524 @@
+/* Revak Okulları v5, "Sayfalar": the inner pages added in the depth round
+   (kademeler, eğitim, almanak, güvende, okulumuz, iletişim, veli) and the
+   deepened kampüs and kabul blocks. Same stone, ink and seal as revak.css and
+   almanak.css; each page keeps its own layout family (see TASARIM.md).
+   Motion: transform and opacity only, none under prefers-reduced-motion. */
+
+.rv-root {
+  /* the light of the walk, for pages that stand in one hour (kademe pages) */
+  --kd-sky-am: #e1e5e3;
+  --kd-sky-pm: #ecd5b3;
+  --kd-sky: color-mix(in srgb, var(--kd-sky-am), var(--kd-sky-pm) calc(var(--sun, 0) * 100%));
+  --rv-seal-ink: #8e2a20; /* seal red for small text on stone: 6.3:1 */
+}
+
+/* ---------- the "örnek" seal ---------- */
+
+.rv-root .rv-seal-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.28em 0.6em 0.24em;
+  border: 3px double var(--rv-seal-ink);
+  border-radius: var(--rv-radius);
+  color: var(--rv-seal-ink);
+  font: 600 0.75rem/1.1 var(--rv-f-sans);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  transform: rotate(-1.6deg);
+  vertical-align: middle;
+}
+.rv-root .rv-seal-tag svg {
+  flex: none;
+}
+.rv-root .rv-ink .rv-seal-tag,
+.rv-root .rv-on-ink .rv-seal-tag {
+  color: #f0b3a9;
+  border-color: #f0b3a9;
+}
+
+/* ---------- crumb current ---------- */
+
+.rv-root .rv-crumb [aria-current="page"] {
+  color: var(--rv-ink);
+}
+
+/* ---------- printed ledger table (phones: stacked rows) ---------- */
+
+.rv-root .rv-ledger table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.rv-root .rv-ledger thead th {
+  padding: 0 1rem 0.7rem 0;
+  border-bottom: 1px solid var(--rv-ink);
+  font: 600 0.875rem/1.3 var(--rv-f-sans);
+  color: var(--rv-ash);
+  text-align: left;
+  vertical-align: bottom;
+}
+.rv-root .rv-ledger tbody th,
+.rv-root .rv-ledger tbody td {
+  padding: 0.9rem 1rem 0.9rem 0;
+  border-bottom: 1px solid var(--rv-line);
+  text-align: left;
+  vertical-align: top;
+}
+.rv-root .rv-ledger tbody th {
+  font: 400 1.2rem/1.25 var(--rv-f-serif);
+  white-space: nowrap;
+}
+.rv-root .rv-ledger tbody td {
+  color: #2c3544;
+}
+.rv-root .rv-ledger a {
+  font-weight: 600;
+}
+@media (max-width: 640px) {
+  .rv-root .rv-ledger thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .rv-root .rv-ledger table,
+  .rv-root .rv-ledger tbody,
+  .rv-root .rv-ledger tr,
+  .rv-root .rv-ledger th,
+  .rv-root .rv-ledger td {
+    display: block;
+  }
+  .rv-root .rv-ledger tr {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid var(--rv-line);
+  }
+  .rv-root .rv-ledger tr:first-child {
+    border-top: 1px solid var(--rv-ink);
+  }
+  .rv-root .rv-ledger tbody th,
+  .rv-root .rv-ledger tbody td {
+    padding: 0.15rem 0;
+    border: 0;
+    white-space: normal;
+  }
+  .rv-root .rv-ledger tbody th {
+    margin-bottom: 0.35rem;
+  }
+  .rv-root .rv-ledger tbody td {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 0.75rem;
+  }
+  .rv-root .rv-ledger tbody td::before {
+    content: attr(data-label);
+    font-size: 0.875rem;
+    color: var(--rv-ash);
+  }
+}
+
+/* ======================================================================
+   KADEME PAGES: one template, four hours of light
+   ====================================================================== */
+
+.rv-root .rv-kh {
+  padding: clamp(1.75rem, 1rem + 3vw, 4rem) 0 clamp(2.5rem, 4vw, 4.5rem);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--rv-stone), var(--kd-sky) 70%) 0%, var(--rv-stone) 78%);
+}
+.rv-root .rv-kh-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: center;
+}
+.rv-root .rv-kh-folio {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rv-ink);
+  max-width: 34rem;
+  font-size: 0.95rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-kh-folio .rv-num {
+  color: var(--rv-seal-ink);
+  font-weight: 600;
+}
+.rv-root .rv-kh .rv-display {
+  margin-bottom: clamp(1rem, 2vw, 1.75rem);
+}
+.rv-root .rv-kh-lede {
+  max-width: 40ch;
+  color: #2c3544;
+}
+.rv-root .rv-kh-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.75rem;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+.rv-root .rv-kh-arch {
+  margin: 0;
+  justify-self: end;
+  width: min(100%, 30rem);
+}
+.rv-root .rv-kh-hour {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--rv-line);
+  font-size: 0.9rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-kh-hour strong {
+  font: 600 1.15rem/1 var(--rv-f-sans);
+  color: var(--rv-ink);
+}
+@media (max-width: 860px) {
+  .rv-root .rv-kh-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+    align-items: start;
+    gap: 1.25rem;
+  }
+  .rv-root .rv-kh-text {
+    display: contents;
+  }
+  .rv-root .rv-kh .rv-crumb,
+  .rv-root .rv-kh-folio,
+  .rv-root .rv-kh .rv-display {
+    grid-column: 1;
+  }
+  .rv-root .rv-kh .rv-crumb {
+    grid-row: 1;
+  }
+  .rv-root .rv-kh-folio {
+    grid-row: 2;
+    align-self: end;
+  }
+  .rv-root .rv-kh .rv-display {
+    grid-row: 3;
+    align-self: start;
+    font-size: clamp(2.3rem, 10vw, 3.4rem);
+  }
+  .rv-root .rv-kh-arch {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    align-self: end;
+    width: 100%;
+  }
+  .rv-root .rv-kh-lede,
+  .rv-root .rv-kh-actions {
+    grid-column: 1 / -1;
+  }
+  .rv-root .rv-kh-hour {
+    font-size: 0.78rem;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+  .rv-root .rv-kh-hour strong {
+    font-size: 0.95rem;
+  }
+}
+
+/* the held arch: rendered faces over the level photo (geometry from the walk's portal) */
+.rv-root .rv-kw {
+  position: relative;
+  aspect-ratio: 180 / 192.7;
+  container-type: inline-size;
+  isolation: isolate;
+}
+/* the wall around the arch is cut to a shallow arch too, like every render on the site */
+.rv-root .rv-kw-face {
+  border-radius: 50% 50% var(--rv-radius) var(--rv-radius) / 22% 22% var(--rv-radius) var(--rv-radius);
+  overflow: hidden;
+}
+.rv-root .rv-kw-face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 2;
+}
+.rv-root .rv-kw-face img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.rv-root .rv-kw-face--pm {
+  opacity: var(--sun, 0);
+}
+.rv-root .rv-kw-photo {
+  position: absolute;
+  left: 21.8%;
+  top: 13.1%;
+  width: 56.4%;
+  height: 86.9%;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 100vmax 100vmax 0 0;
+  background: var(--w-vault);
+  view-transition-name: rv-arch;
+}
+.rv-root .rv-kw-photo picture,
+.rv-root .rv-kw-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rv-root .rv-kw-photo img {
+  transform: scale(1.06);
+  transform-origin: 50% 66%;
+  filter: saturate(0.78) contrast(0.92) brightness(0.98) sepia(0.1);
+}
+.rv-root .rv-kw-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  background:
+    linear-gradient(to bottom, #4a3a2a80 0%, #4a3a2a2b 18%, #4a3a2a00 38%),
+    linear-gradient(to top, #4a3a2a40 0%, #4a3a2a00 12%),
+    color-mix(in srgb, #ece2d2, #f2c896 calc(var(--sun, 0) * 100%));
+  box-shadow:
+    inset calc((1 - 2 * var(--sun, 0)) * 2cqw) 1.5cqw 2.85cqw #3a2a1a8c,
+    inset 0 0 1cqw #3a2a1a59;
+}
+.rv-root .rv-kw-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 0.95cqw solid #9d8f78;
+  border-bottom: 0;
+  border-top-color: #7d705d;
+  border-left-color: color-mix(in srgb, #857864, #b3a58c calc(var(--sun, 0) * 100%));
+  border-right-color: color-mix(in srgb, #b3a58c, #857864 calc(var(--sun, 0) * 100%));
+  box-shadow: inset 0 0.25cqw 0.9cqw #2a1d1066;
+}
+/* sunlight through the side opening, lying on the floor in front of the arch */
+.rv-root .rv-kw-sun {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 99%;
+  height: 9%;
+  z-index: 0;
+  background: color-mix(in srgb, #e9dcc0, #f0c98e calc(var(--sun, 0) * 100%));
+  opacity: 0.55;
+  transform-origin: 50% 0;
+  transform: skewX(calc(-40deg + var(--sun, 0) * 80deg));
+  -webkit-mask-image: radial-gradient(ellipse 58% 90% at 50% 0%, #000 0%, #0008 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 58% 90% at 50% 0%, #000 0%, #0008 45%, transparent 100%);
+}
+
+/* class setup: four facts on one ruled line */
+.rv-root .rv-kd-setup {
+  padding: 0 0 clamp(3.5rem, 6vw, 6rem);
+}
+.rv-root .rv-setup {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-setup > div {
+  padding: 1.1rem 1.5rem 0 0;
+}
+.rv-root .rv-setup > div + div {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--rv-line);
+}
+.rv-root .rv-setup dt {
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+  margin-bottom: 0.35rem;
+}
+.rv-root .rv-setup dd {
+  margin: 0;
+  font: 400 1.3rem/1.3 var(--rv-f-serif);
+  text-wrap: balance;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-setup {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rv-root .rv-setup > div:nth-child(3) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .rv-root .rv-setup > div:nth-child(n + 3) {
+    margin-top: 1.25rem;
+    border-top: 1px solid var(--rv-line);
+  }
+}
+@media (max-width: 520px) {
+  .rv-root .rv-setup {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-setup > div,
+  .rv-root .rv-setup > div + div {
+    padding: 0.85rem 0;
+    border-left: 0;
+    margin: 0;
+  }
+  .rv-root .rv-setup > div + div {
+    border-top: 1px solid var(--rv-line);
+  }
+  .rv-root .rv-setup dd {
+    font-size: 1.2rem;
+  }
+}
+
+.rv-root .rv-kd-intro {
+  margin-top: 1.4rem;
+  max-width: 46ch;
+  color: #3a4250;
+}
+.rv-root .rv-kd-note {
+  margin-top: 1.1rem;
+  max-width: 62ch;
+  font-size: 0.9375rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-kd-split {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-kd-tablehead {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.9rem;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-kd-split {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-kd-tablehead {
+    justify-content: flex-start;
+  }
+}
+
+/* the timetable: a ledger page with a seal-red margin rule */
+.rv-root .rv-kd-lessons-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 1rem clamp(2rem, 5vw, 5rem);
+  align-items: end;
+  margin-bottom: clamp(1.75rem, 3vw, 2.75rem);
+}
+.rv-root .rv-kd-lessons-head .rv-kd-intro {
+  margin: 0;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-kd-lessons-head {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}
+.rv-root .rv-lessons {
+  position: relative;
+}
+.rv-root .rv-lessons-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.rv-root .rv-lessons-table th,
+.rv-root .rv-lessons-table td {
+  padding: 0.62rem 1rem;
+  border-bottom: 1px solid #d9d5cc;
+  text-align: center;
+}
+.rv-root .rv-lessons-table thead th {
+  padding-top: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--rv-ink);
+  font: 600 0.875rem/1.2 var(--rv-f-sans);
+  color: var(--rv-ash);
+}
+.rv-root .rv-lessons-colname {
+  display: inline-block;
+  min-width: 2.2rem;
+  font-size: 1.05rem;
+  color: var(--rv-ink);
+}
+.rv-root .rv-lessons-table tbody th,
+.rv-root .rv-lessons-table tfoot th {
+  width: 42%;
+  text-align: left;
+  font: 400 1.12rem/1.25 var(--rv-f-serif);
+  /* the margin rule of a ledger page */
+  border-right: 3px double color-mix(in srgb, var(--rv-seal) 70%, transparent);
+}
+.rv-root .rv-lessons-table td {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.rv-root .rv-lessons-table td span {
+  color: #a9a395;
+}
+.rv-root .rv-lessons-table tr.is-ek td {
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-lessons-table tbody tr:hover {
+  background: #e9e7e1;
+}
+.rv-root .rv-lessons-table tfoot th,
+.rv-root .rv-lessons-table tfoot td {
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+  border-top: 3px double var(--rv-ink);
+  border-bottom: 0;
+  font-weight: 600;
+}
+.rv-root .rv-lessons-table tfoot th {
+  font: 600 0.95rem/1.2 var(--rv-f-sans);
+}
+.rv-root .rv-ek-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 0 0.12em 0.5em;
+  border-radius: 50%;
+  background: var(--rv-seal);
+  vertical-align: middle;
+}
+.rv-root .rv-lessons-key {
+  margin-top: 0.8rem;
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-lessons-key .rv-ek-dot {
+  margin: 0 0.3em 0.12em 0;
+}
+.rv-root .rv-lessons-m {
+  display: none;
+}
+@media (max-width: 700px) {
+  .rv-root .rv-lessons-table {
+    display: none;
+  }
+  .rv-root .rv-lessons-m {
+    display: block;
+    background: var(--rv-stone-hi);
+    border: 1px solid var(--rv-line);
+  }
+  .rv-root .rv-lessons-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rv-ink);
+  }
+  .rv-root .rv-lessons-tabs button {
+    flex: 1 1 0;
+    min-height: 48px;
+    padding: 0 0.4rem;
+    border: 0;
+    border-right: 1px solid var(--rv-line);
+    background: transparent;
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.15;
+    cursor: pointer;
+  }
+  .rv-root .rv-lessons-tabs button:last-child {
+    border-right: 0;
+  }
+  .rv-root .rv-lessons-tabs button[aria-selected="true"] {
+    background: var(--rv-ink);
+    color: var(--rv-stone);
+  }
+  .rv-root .rv-lessons-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.7rem 1rem 0.7rem 1rem;
+    border-bottom: 1px solid #d9d5cc;
+    font-size: 1rem;
+  }
+  .rv-root .rv-lessons-list li strong {
+    font-size: 1.15rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .rv-root .rv-lessons-list li.is-ek strong {
+    color: var(--rv-seal-ink);
+  }
+  .rv-root .rv-lessons-list .rv-lessons-total {
+    border-top: 3px double var(--rv-ink);
+    border-bottom: 0;
+    font-weight: 600;
+  }
+}
+
+/* a day along the sun's path; the section takes the colour of the level's hour */
+.rv-root .rv-kd-day {
+  background: color-mix(in srgb, var(--rv-stone), var(--kd-sky) 62%);
+}
+.rv-root .rv-kd-day-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-daysun {
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+.rv-root .rv-daysun-arc {
+  display: block;
+  width: 100%;
+  max-width: 620px;
+  height: auto;
+  overflow: visible;
+}
+.rv-root .rv-daysun-path {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 1;
+  stroke-dasharray: 2 5;
+  opacity: 0.55;
+}
+.rv-root .rv-daysun-ground {
+  stroke: var(--rv-ink);
+  stroke-width: 1;
+}
+.rv-root .rv-daysun-dot {
+  fill: var(--rv-ink);
+  transition: r 0.25s var(--rv-ease-out);
+}
+.rv-root .rv-daysun-sun {
+  transition: transform 0.6s var(--rv-ease-out);
+}
+.rv-root .rv-daysun-halo {
+  fill: color-mix(in srgb, #f3e7c4, #f0b46a calc(var(--sun, 0) * 100%));
+  opacity: 0.45;
+}
+.rv-root .rv-daysun-disc {
+  fill: color-mix(in srgb, #d9b45f, #c8642f calc(var(--sun, 0) * 100%));
+}
+.rv-root .rv-daysun-tick {
+  font: 600 13px var(--rv-f-sans);
+  fill: var(--rv-ash);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rv-root .rv-daysun-sun,
+  .rv-root .rv-daysun-dot {
+    transition: none;
+  }
+}
+.rv-root .rv-daysun-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(1.5rem, 4vw, 3rem);
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-daysun-list li {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  gap: 0.75rem;
+  padding: 1rem 0 1rem 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--rv-line), var(--rv-ink) 12%);
+  border-left: 2px solid transparent;
+  transition: border-color 0.25s var(--rv-ease);
+}
+.rv-root .rv-daysun-list li.is-active {
+  border-left-color: var(--rv-seal);
+}
+.rv-root .rv-daysun-time {
+  font: 600 1.05rem/1.4 var(--rv-f-sans);
+  font-variant-numeric: tabular-nums;
+}
+.rv-root .rv-daysun-list li.is-active .rv-daysun-time {
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-daysun-list h3 {
+  font-size: 1.3rem;
+  line-height: 1.2;
+  margin-bottom: 0.3rem;
+}
+.rv-root .rv-daysun-list p {
+  font-size: 0.97rem;
+  color: #3a4250;
+}
+@media (max-width: 1080px) {
+  .rv-root .rv-daysun-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rv-root .rv-hourcard {
+  position: sticky;
+  top: calc(var(--rv-header-h) + 2rem);
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-hourcard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+.rv-root .rv-hourcard h3 {
+  font-size: 1.5rem;
+}
+.rv-root .rv-hourcard dl {
+  margin: 0;
+}
+.rv-root .rv-hourcard dl > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--rv-line);
+}
+.rv-root .rv-hourcard dt {
+  font-size: 0.95rem;
+  color: #3a4250;
+}
+.rv-root .rv-hourcard dd {
+  margin: 0;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-kd-day-grid {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-hourcard {
+    position: static;
+  }
+}
+
+/* level guidance: steps along one ruled line, each with its season */
+.rv-root .rv-kd-guide-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem clamp(2rem, 5vw, 5rem);
+  align-items: end;
+  margin-bottom: clamp(2rem, 4vw, 3.5rem);
+}
+.rv-root .rv-kd-guide-head .rv-kd-intro {
+  margin: 0;
+}
+.rv-root .rv-kd-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 clamp(1.25rem, 3vw, 2.5rem);
+  counter-reset: step;
+}
+.rv-root .rv-kd-steps li {
+  position: relative;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-kd-steps li::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 0;
+  width: 9px;
+  height: 11px;
+  border-radius: 9px 9px 1px 1px;
+  background: var(--rv-seal);
+}
+.rv-root .rv-kd-step-when {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--rv-seal-ink);
+  margin-bottom: 0.4rem;
+}
+.rv-root .rv-kd-steps h3 {
+  font-size: 1.45rem;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+.rv-root .rv-kd-steps p:last-child {
+  font-size: 0.97rem;
+  color: #3a4250;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-kd-guide-head {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-kd-steps {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 2.25rem;
+  }
+}
+@media (max-width: 560px) {
+  .rv-root .rv-kd-steps {
+    grid-template-columns: 1fr;
+    row-gap: 1.75rem;
+  }
+}
+
+/* down the arcade: previous / next level */
+.rv-root .rv-kd-walk {
+  border-top: 1px solid var(--rv-line);
+}
+.rv-root .rv-kd-walk-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+.rv-root .rv-kd-walk-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 48px;
+  text-decoration: none;
+  font: 400 1.6rem/1.1 var(--rv-f-serif);
+}
+.rv-root .rv-kd-walk-link small {
+  display: block;
+  margin-bottom: 0.25rem;
+  font: 500 0.85rem/1.2 var(--rv-f-sans);
+  color: var(--rv-ash);
+}
+.rv-root .rv-kd-walk-link--next {
+  text-align: right;
+}
+.rv-root .rv-kd-walk-link:hover span {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.rv-root .rv-kd-walk-dots {
+  display: flex;
+  gap: 0.6rem;
+}
+.rv-root .rv-kd-walk-dots li {
+  width: 12px;
+  height: 16px;
+  border: 1px solid var(--rv-ink);
+  border-radius: 12px 12px 1px 1px;
+}
+.rv-root .rv-kd-walk-dots li.is-here {
+  background: var(--rv-seal);
+  border-color: var(--rv-seal);
+}
+@media (max-width: 560px) {
+  .rv-root .rv-kd-walk-dots {
+    display: none;
+  }
+  .rv-root .rv-kd-walk-link {
+    font-size: 1.25rem;
+  }
+}
+
+/* ======================================================================
+   HEADER: six headings, four small panels
+   ====================================================================== */
+
+.rv-root .rv-nav-group {
+  position: relative;
+}
+.rv-root .rv-nav-group > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-height: 44px;
+  padding: 0 0.55rem 0 0.7rem;
+  border: 0;
+  background: none;
+  font-size: 0.97rem;
+  font-weight: 500;
+  color: var(--rv-ink);
+  cursor: pointer;
+  position: relative;
+}
+.rv-root .rv-nav-group > button svg {
+  transition: transform 0.25s var(--rv-ease);
+  color: var(--rv-ash);
+}
+.rv-root .rv-nav-group > button[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+.rv-root .rv-nav-group > button::after {
+  content: "";
+  position: absolute;
+  left: 0.7rem;
+  right: 1.6rem;
+  bottom: 9px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--rv-ease);
+}
+.rv-root .rv-nav-group > button:hover::after,
+.rv-root .rv-nav-group > button[data-here]::after,
+.rv-root .rv-nav-group > button[aria-expanded="true"]::after {
+  transform: scaleX(1);
+}
+.rv-root .rv-nav-panel {
+  position: absolute;
+  top: calc(100% + 13px);
+  left: -0.4rem;
+  z-index: var(--rv-z-menu);
+  width: 19.5rem;
+  padding: 0.5rem;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-top: 2px solid var(--rv-ink);
+  border-radius: var(--rv-radius);
+  box-shadow: 0 18px 40px #16202e1f;
+}
+/* a bridge so the pointer can travel from heading to panel */
+.rv-root .rv-nav-panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -16px;
+  height: 16px;
+}
+.rv-root .rv-nav-panel[hidden] {
+  display: none;
+}
+.rv-root .rv-nav-panel ul {
+  display: grid;
+  gap: 0;
+}
+.rv-root .rv-nav .rv-nav-panel a {
+  display: grid;
+  gap: 0.1rem;
+  min-height: 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--rv-radius);
+  text-decoration: none;
+}
+.rv-root .rv-nav .rv-nav-panel a::after {
+  display: none;
+}
+.rv-root .rv-nav-panel a span {
+  font-weight: 600;
+  font-size: 0.97rem;
+}
+.rv-root .rv-nav-panel a small {
+  font-size: 0.84rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-nav-panel a:hover,
+.rv-root .rv-nav-panel a:focus-visible {
+  background: var(--rv-stone);
+}
+.rv-root .rv-nav-panel a[aria-current="page"] span {
+  color: var(--rv-seal-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rv-root .rv-nav-panel:not([hidden]) {
+    animation: rv-panel-in 0.22s var(--rv-ease-out);
+  }
+}
+@keyframes rv-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.rv-root .rv-parents[aria-current="page"] {
+  color: var(--rv-ink) !important;
+  text-decoration: underline;
+}
+@media (max-width: 1240px) {
+  .rv-root .rv-nav a,
+  .rv-root .rv-nav-group > button {
+    padding-left: 0.5rem;
+    padding-right: 0.45rem;
+    font-size: 0.94rem;
+  }
+}
+
+/* phones and tablets: groups as headings with their links beneath */
+@media (max-width: 1060px) {
+  .rv-root .rv-menu-groups > li {
+    padding: 0.85rem 0 1rem;
+    border-bottom: 1px solid var(--rv-line);
+  }
+  .rv-root .rv-menu nav .rv-menu-group {
+    display: block;
+    padding: 0.1rem 0 0.35rem;
+    font-size: 1.8rem;
+  }
+  .rv-root .rv-menu-sub {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 1rem;
+  }
+  .rv-root .rv-menu nav .rv-menu-sub a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0;
+    font-family: var(--rv-f-sans);
+    font-size: 0.98rem;
+    line-height: 1.25;
+    color: #2c3544;
+  }
+}
+
+/* footer: the contact column's two links side by side */
+.rv-root .rv-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+}
+
+/* ---------- segmented control (week, kitchen, level filters) ---------- */
+
+.rv-root .rv-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--rv-ink);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-seg button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.35rem 1rem;
+  border: 0;
+  border-right: 1px solid var(--rv-line);
+  background: transparent;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  cursor: pointer;
+  text-align: left;
+}
+.rv-root .rv-seg button:last-child {
+  border-right: 0;
+}
+.rv-root .rv-seg button small {
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-seg button[aria-pressed="true"] {
+  background: var(--rv-ink);
+  color: var(--rv-stone);
+}
+.rv-root .rv-seg button[aria-pressed="true"] small {
+  color: var(--rv-ink-soft);
+}
+.rv-root .rv-seg button:not([aria-pressed="true"]):hover {
+  background: var(--rv-stone-lo);
+}
+.rv-root .rv-seg--small button {
+  min-height: 42px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+}
+.rv-root .rv-seg--stack {
+  display: grid;
+  border: 0;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-seg--stack button {
+  min-height: 52px;
+  padding: 0 0.25rem;
+  border: 0;
+  border-bottom: 1px solid var(--rv-line);
+  font: 400 1.35rem/1.2 var(--rv-f-serif);
+}
+.rv-root .rv-seg--stack button:last-child {
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-seg--stack button[aria-pressed="true"] {
+  background: transparent;
+  color: var(--rv-seal-ink);
+  box-shadow: inset 3px 0 0 var(--rv-seal);
+  padding-left: 0.9rem;
+}
+
+/* ======================================================================
+   KAMPÜS: plan, menu book, route diagram
+   ====================================================================== */
+
+.rv-root .rv-plan-head,
+.rv-root .rv-menu-head,
+.rv-root .rv-yas-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 1rem clamp(2rem, 5vw, 5rem);
+  align-items: end;
+  margin-bottom: clamp(1.75rem, 3vw, 3rem);
+}
+.rv-root .rv-plan-head .rv-kd-intro,
+.rv-root .rv-menu-head .rv-kd-intro,
+.rv-root .rv-yas-head .rv-kd-intro {
+  margin: 0;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-plan-head,
+  .rv-root .rv-menu-head,
+  .rv-root .rv-yas-head {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}
+
+.rv-root .rv-plan {
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+}
+.rv-root .rv-plan-map {
+  position: relative;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-plan-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.rv-root .rv-plan-trees circle {
+  fill: #d6d3c9;
+  stroke: #8f8a7d;
+  stroke-width: 0.8;
+}
+.rv-root .rv-plan-site {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 1.6;
+}
+.rv-root .rv-plan-road {
+  stroke: var(--rv-ink);
+  stroke-width: 1.2;
+}
+.rv-root .rv-plan-path {
+  fill: none;
+  stroke: #8f8a7d;
+  stroke-width: 1.2;
+  stroke-dasharray: 4 5;
+}
+.rv-root .rv-plan-court {
+  fill: #e9e6df;
+  stroke: none;
+}
+.rv-root .rv-plan-arcade {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 1.1;
+}
+.rv-root .rv-plan-bld rect {
+  fill: var(--rv-stone-lo);
+  stroke: var(--rv-ink);
+  stroke-width: 1.2;
+}
+.rv-root .rv-plan-pool {
+  fill: #c9d3d4;
+  stroke: var(--rv-ink);
+  stroke-width: 0.8;
+}
+.rv-root .rv-plan-lanes {
+  stroke: #f1f0ec;
+  stroke-width: 1;
+}
+.rv-root .rv-plan-fence {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 1;
+  stroke-dasharray: 1.5 3;
+}
+.rv-root .rv-plan-beds rect,
+.rv-root .rv-plan-beds circle {
+  fill: #d6d3c9;
+  stroke: #8f8a7d;
+  stroke-width: 0.8;
+}
+.rv-root .rv-plan-label text {
+  font: 500 13px var(--rv-f-sans);
+  fill: var(--rv-ash);
+}
+.rv-root .rv-plan-label .rv-plan-label--court {
+  font: 400 22px var(--rv-f-serif);
+  fill: #8f8a7d;
+}
+.rv-root .rv-plan-label .rv-plan-label--soft {
+  fill: #7a7568;
+}
+.rv-root .rv-plan-north path {
+  fill: var(--rv-ink);
+}
+.rv-root .rv-plan-north text {
+  font: 600 12px var(--rv-f-sans);
+  fill: var(--rv-ink);
+}
+.rv-root .rv-plan-marks li {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+.rv-root .rv-plan-mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.rv-root .rv-plan-mark svg {
+  width: 24px;
+  height: 24px;
+  fill: var(--rv-stone-hi);
+  stroke: var(--rv-ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  transition: transform 0.2s var(--rv-ease);
+  filter: drop-shadow(0 2px 2px #16202e33);
+}
+.rv-root .rv-plan-mark:hover svg {
+  transform: translateY(-2px);
+}
+.rv-root .rv-plan-mark[data-picked] svg {
+  fill: var(--rv-ink);
+}
+.rv-root .rv-plan-mark[aria-pressed="true"] svg {
+  fill: var(--rv-seal);
+  stroke: var(--rv-seal-deep);
+  transform: scale(1.18);
+}
+.rv-root .rv-plan-hint {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-plan-panel {
+  position: sticky;
+  top: calc(var(--rv-header-h) + 2rem);
+}
+.rv-root .rv-plan-card {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 1.25rem;
+  align-items: end;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rv-line);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rv-root .rv-plan-card {
+    animation: rv-panel-in 0.35s var(--rv-ease-out);
+  }
+}
+.rv-root .rv-plan-photo {
+  aspect-ratio: 3 / 4;
+}
+.rv-root .rv-plan-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--rv-seal-ink);
+  margin-bottom: 0.3rem;
+}
+.rv-root .rv-plan-card h3 {
+  font-size: 1.7rem;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+.rv-root .rv-plan-card p:last-child {
+  font-size: 0.97rem;
+  color: #3a4250;
+}
+.rv-root .rv-plan-act {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1rem;
+}
+.rv-root .rv-plan-always {
+  font-size: 0.95rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-plan-step {
+  display: flex;
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-plan-step .rv-icon-btn + .rv-icon-btn {
+  border-left: 1px solid var(--rv-line);
+}
+.rv-root .rv-plan-picked {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem 1.1rem;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-left: 3px solid var(--rv-seal);
+}
+.rv-root .rv-plan-picked p {
+  font-size: 0.95rem;
+}
+.rv-root .rv-plan-picked span {
+  color: var(--rv-ash);
+}
+@media (max-width: 960px) {
+  .rv-root .rv-plan {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-plan-panel {
+    position: static;
+  }
+}
+@media (max-width: 560px) {
+  .rv-root .rv-plan-map {
+    margin-inline: calc(var(--rv-gutter) * -1);
+    border-inline: 0;
+    border-radius: 0;
+  }
+  .rv-root .rv-plan-mark {
+    width: 30px;
+    height: 30px;
+  }
+  .rv-root .rv-plan-mark svg {
+    width: 20px;
+    height: 20px;
+  }
+  .rv-root .rv-plan-label text {
+    font-size: 17px;
+  }
+  .rv-root .rv-plan-hint {
+    position: static;
+    padding: 0 var(--rv-gutter) 0.5rem;
+  }
+  .rv-root .rv-plan-card {
+    grid-template-columns: 5.5rem 1fr;
+  }
+  .rv-root .rv-plan-act {
+    flex-wrap: wrap;
+  }
+}
+
+/* the lunch menu: an ink-ruled exercise-book page with a double seal margin */
+.rv-root .rv-menubook-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.rv-root .rv-menubook-page {
+  position: relative;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-menubook-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(9.5rem - 4px);
+  width: 4px;
+  border-left: 1px solid color-mix(in srgb, var(--rv-seal) 55%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--rv-seal) 55%, transparent);
+  pointer-events: none;
+}
+.rv-root .rv-menubook-days > li {
+  display: grid;
+  grid-template-columns: 9.5rem 1fr minmax(0, 15rem);
+  gap: 0 1.5rem;
+  padding: 1rem 1.5rem 1rem 0;
+  border-bottom: 1px solid #d9d5cc;
+  position: relative;
+}
+.rv-root .rv-menubook-days > li:last-child {
+  border-bottom: 0;
+}
+.rv-root .rv-menubook-days > li.is-today::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--rv-seal);
+}
+.rv-root .rv-menubook-day {
+  padding-left: 1.4rem;
+  font: 400 1.25rem/1.3 var(--rv-f-serif);
+}
+.rv-root .rv-menubook-today {
+  display: block;
+  margin-top: 0.2rem;
+  font: 600 0.78rem/1 var(--rv-f-sans);
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-menubook-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.4rem;
+  padding-top: 0.2rem;
+}
+.rv-root .rv-dish {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+}
+.rv-root .rv-alg {
+  display: inline-flex;
+  gap: 2px;
+}
+.rv-root .rv-alg-mark {
+  display: inline-grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 3px;
+  border: 1px solid #8f8a7d;
+  border-radius: 10px;
+  font: 600 0.66rem/1 var(--rv-f-sans);
+  color: #4a505b;
+  text-decoration: none;
+}
+.rv-root .rv-menubook-veg {
+  padding-top: 0.2rem;
+  font-size: 0.93rem;
+  color: #3a4250;
+}
+.rv-root .rv-menubook-veg > span:first-child {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rv-ok);
+}
+.rv-root .rv-menubook-days--ana > li {
+  grid-template-columns: 9.5rem 1fr;
+}
+.rv-root .rv-menubook-meals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem 1.5rem;
+  margin: 0;
+  padding-top: 0.2rem;
+}
+.rv-root .rv-menubook-meals dt {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--rv-ash);
+}
+.rv-root .rv-menubook-meals dd {
+  margin: 0;
+}
+.rv-root .rv-menubook-foot {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem clamp(2rem, 5vw, 4rem);
+  margin-top: 1.75rem;
+}
+.rv-root .rv-menubook-foot h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.7rem;
+}
+.rv-root .rv-alg-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem 1.25rem;
+  font-size: 0.93rem;
+}
+.rv-root .rv-alg-legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.rv-root .rv-menubook-rules li {
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 2px solid var(--rv-line);
+  font-size: 0.97rem;
+}
+.rv-root .rv-menubook-rules li + li {
+  margin-top: 0.4rem;
+}
+.rv-root .rv-menubook-app {
+  margin-top: 0.9rem;
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+@media (max-width: 960px) {
+  .rv-root .rv-menubook-days > li {
+    grid-template-columns: 7.5rem 1fr;
+  }
+  .rv-root .rv-menubook-page::before {
+    left: calc(7.5rem - 4px);
+  }
+  .rv-root .rv-menubook-veg {
+    grid-column: 2;
+    padding-top: 0.5rem;
+  }
+  .rv-root .rv-menubook-meals {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .rv-root .rv-menubook-days--ana > li {
+    grid-template-columns: 7.5rem 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .rv-root .rv-menubook-page::before {
+    display: none;
+  }
+  .rv-root .rv-menubook-days > li,
+  .rv-root .rv-menubook-days--ana > li {
+    grid-template-columns: 1fr;
+    padding: 0.9rem 1rem 0.9rem 1.1rem;
+  }
+  .rv-root .rv-menubook-day {
+    padding-left: 0;
+    margin-bottom: 0.3rem;
+  }
+  .rv-root .rv-menubook-today {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+  .rv-root .rv-menubook-veg {
+    grid-column: 1;
+  }
+  .rv-root .rv-menubook-foot,
+  .rv-root .rv-alg-legend {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-menubook-bar .rv-seg {
+    display: flex;
+    width: 100%;
+  }
+  .rv-root .rv-menubook-bar .rv-seg button {
+    flex: 1 1 0;
+  }
+}
+
+/* route diagram: half-arch roads from the district to the arch */
+.rv-root .rv-routemap {
+  margin: 0 0 1.5rem;
+}
+.rv-root .rv-routemap-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.rv-root .rv-routemap figcaption {
+  font: 400 1.25rem/1.2 var(--rv-f-serif);
+}
+.rv-root .rv-routemap > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.rv-root .rv-routemap-line {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 1.6;
+}
+.rv-root .rv-routemap-ground {
+  stroke: var(--rv-line);
+  stroke-width: 1;
+}
+.rv-root .rv-routemap-stop {
+  fill: var(--rv-stone-hi);
+  stroke: var(--rv-ink);
+  stroke-width: 1.6;
+}
+.rv-root .rv-routemap-arch {
+  fill: var(--rv-ink);
+}
+.rv-root .rv-routemap-name {
+  font: 500 13px var(--rv-f-sans);
+  fill: var(--rv-ink);
+}
+.rv-root .rv-routemap-time {
+  font: 600 14px var(--rv-f-sans);
+  fill: var(--rv-ash);
+  font-variant-numeric: tabular-nums;
+}
+.rv-root .rv-routemap-time--arrive {
+  fill: var(--rv-seal-ink);
+}
+.rv-root .rv-routemap-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.5rem;
+  margin: 0.25rem 0 0;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rv-line);
+}
+.rv-root .rv-routemap-facts dt {
+  font-size: 0.85rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-routemap-facts dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.95rem;
+}
+.rv-root .rv-routemap-facts div:first-child dd {
+  font: 600 1.25rem/1.2 var(--rv-f-sans);
+}
+.rv-root .rv-route-rules {
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.rv-root .rv-route-rules h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+}
+.rv-root .rv-route-rules ol {
+  counter-reset: rule;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-route-rules li {
+  counter-increment: rule;
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rv-line);
+  font-size: 0.97rem;
+  color: #2c3544;
+}
+.rv-root .rv-route-rules li::before {
+  content: counter(rule);
+  font-weight: 600;
+  color: var(--rv-seal-ink);
+}
+
+/* safety pointer on the campus page */
+.rv-root .rv-care-link {
+  padding: clamp(2.5rem, 5vw, 4rem) 0;
+  border-top: 1px solid var(--rv-line);
+}
+.rv-root .rv-care-link-in {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 5fr) auto;
+  gap: 1rem clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+.rv-root .rv-care-link p {
+  color: #3a4250;
+  max-width: 56ch;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-care-link-in {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+}
+
+/* ======================================================================
+   KABUL: age calculator, observation day, documents, fees
+   ====================================================================== */
+
+.rv-root .rv-agecalc {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  gap: clamp(1.75rem, 5vw, 5rem);
+  align-items: start;
+}
+.rv-root .rv-agecalc-form {
+  display: grid;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-agecalc-tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-agecalc-out {
+  min-height: 16rem;
+  padding-top: 0.25rem;
+}
+.rv-root .rv-agecalc-empty {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--rv-ink);
+  color: var(--rv-ash);
+  font: 400 1.35rem/1.35 var(--rv-f-serif);
+  max-width: 28ch;
+}
+/* the result, cut into the lintel */
+.rv-root .rv-agecalc-line {
+  padding: 0.9rem 0 0.6rem;
+  border-top: 1px solid var(--rv-ink);
+  border-bottom: 1px solid var(--rv-ink);
+  font: 400 clamp(2rem, 1.2rem + 2.6vw, 3.4rem)/1.08 var(--rv-f-serif);
+  letter-spacing: -0.015em;
+}
+.rv-root .rv-agecalc-months {
+  margin-top: 0.7rem;
+  font-size: 0.95rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-agecalc-note {
+  margin-top: 0.8rem;
+  max-width: 58ch;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--rv-seal);
+}
+.rv-root .rv-agecalc-path {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}
+.rv-root .rv-agecalc-path li {
+  display: grid;
+  gap: 0.15rem;
+  justify-items: start;
+  align-content: start;
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-agecalc-arch {
+  width: 100%;
+  max-width: 64px;
+  aspect-ratio: 2 / 3;
+  margin-bottom: 0.5rem;
+  border: 1.5px solid var(--rv-ink);
+  border-bottom: 0;
+  border-radius: 100vmax 100vmax 0 0;
+  background: linear-gradient(to bottom, transparent 55%, #16202e0f);
+}
+.rv-root .rv-agecalc-path strong {
+  font: 400 1.15rem/1.15 var(--rv-f-serif);
+  color: var(--rv-ink);
+}
+.rv-root .rv-agecalc-path li.is-here .rv-agecalc-arch {
+  border-color: var(--rv-seal);
+  background: color-mix(in srgb, var(--rv-seal) 14%, transparent);
+  box-shadow: inset 0 -3px 0 var(--rv-seal);
+}
+.rv-root .rv-agecalc-path li.is-here strong {
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-agecalc-path li.is-past {
+  opacity: 0.5;
+}
+.rv-root .rv-agecalc-act {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1.75rem;
+}
+.rv-root .rv-agecalc-src {
+  margin-top: 1.75rem;
+  border-top: 1px solid var(--rv-line);
+  font-size: 0.9rem;
+  color: #3a4250;
+}
+.rv-root .rv-agecalc-src summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rv-root .rv-agecalc-src p {
+  max-width: 70ch;
+  padding-bottom: 0.5rem;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-agecalc {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-agecalc-out {
+    min-height: 0;
+  }
+}
+@media (max-width: 520px) {
+  .rv-root .rv-agecalc-path {
+    gap: 0.3rem;
+  }
+  .rv-root .rv-agecalc-path strong {
+    font-size: 0.9rem;
+  }
+  .rv-root .rv-agecalc-path li {
+    font-size: 0.75rem;
+  }
+}
+
+.rv-root .rv-gozlem {
+  margin-top: 1.75rem;
+  padding: 1.25rem 1.25rem 1.4rem;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-gozlem-title {
+  font: 400 1.25rem/1.25 var(--rv-f-serif);
+  margin-bottom: 0.8rem;
+}
+.rv-root .rv-gozlem-text {
+  margin-top: 0.9rem;
+  max-width: 60ch;
+  color: #2c3544;
+}
+
+.rv-root .rv-docs-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-docs {
+  margin-top: 1.75rem;
+}
+.rv-root .rv-docs-printtitle {
+  display: none;
+}
+.rv-root .rv-docs-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.rv-root .rv-docs-bar .rv-field {
+  width: min(100%, 15rem);
+}
+.rv-root .rv-docs-progress {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--rv-ash);
+}
+.rv-root .rv-docs-list {
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-docs-list label {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--rv-line);
+  cursor: pointer;
+}
+.rv-root .rv-docs-list input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+.rv-root .rv-docs-box {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--rv-ink);
+  border-radius: var(--rv-radius);
+  color: transparent;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    transform 0.25s var(--rv-ease-out);
+}
+.rv-root .rv-docs-list input:focus-visible + .rv-docs-box {
+  outline: 2px solid var(--rv-seal-deep);
+  outline-offset: 3px;
+}
+.rv-root .rv-docs-list label.is-done .rv-docs-box {
+  background: var(--rv-seal);
+  border-color: var(--rv-seal);
+  color: #fbf9f6;
+  transform: rotate(-6deg);
+}
+.rv-root .rv-docs-text {
+  display: grid;
+  gap: 0.15rem;
+}
+.rv-root .rv-docs-text small {
+  font-size: 0.875rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-docs-list label.is-done .rv-docs-text {
+  color: var(--rv-ash);
+}
+.rv-root .rv-docs-act {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1.1rem;
+}
+.rv-root .rv-firstday {
+  padding-top: 0.4rem;
+}
+.rv-root .rv-firstday ol {
+  margin-top: 1.25rem;
+  border-left: 1px solid var(--rv-ink);
+}
+.rv-root .rv-firstday li {
+  position: relative;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0 0 1.4rem 1.4rem;
+}
+.rv-root .rv-firstday li::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: 0.35rem;
+  width: 9px;
+  height: 11px;
+  border-radius: 9px 9px 1px 1px;
+  background: var(--rv-seal);
+}
+.rv-root .rv-firstday strong {
+  font-size: 0.875rem;
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-firstday span {
+  color: #2c3544;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-docs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  .rv-root .rv-docs-printtitle {
+    display: block;
+    margin-bottom: 1rem;
+    font: 400 18pt var(--rv-f-serif);
+  }
+  .rv-root .rv-docs-act,
+  .rv-root .rv-docs-bar .rv-field {
+    display: none;
+  }
+}
+
+/* fees: what the price covers */
+.rv-root .rv-incl {
+  margin-top: clamp(3rem, 6vw, 5.5rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-incl-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 1rem clamp(2rem, 5vw, 4rem);
+  align-items: end;
+  margin-bottom: 2rem;
+}
+.rv-root .rv-incl-head p {
+  color: #3a4250;
+  max-width: 48ch;
+}
+.rv-root .rv-incl-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem clamp(2rem, 5vw, 4rem);
+}
+.rv-root .rv-incl h4 {
+  font: 600 0.95rem/1.2 var(--rv-f-sans);
+  letter-spacing: 0;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--rv-ink);
+}
+.rv-root .rv-incl-in li,
+.rv-root .rv-incl-out li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-incl-in svg {
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--rv-ok);
+}
+.rv-root .rv-incl-out svg {
+  flex: none;
+  margin-top: 0.2em;
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-incl-policy {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem clamp(1.5rem, 3vw, 2.5rem);
+  margin: 2.25rem 0 0;
+}
+.rv-root .rv-incl-policy dt {
+  font: 400 1.35rem/1.2 var(--rv-f-serif);
+  margin-bottom: 0.4rem;
+}
+.rv-root .rv-incl-policy dd {
+  margin: 0;
+  font-size: 0.97rem;
+  color: #3a4250;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-incl-head {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+  .rv-root .rv-incl-cols,
+  .rv-root .rv-incl-policy {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======================================================================
+   EĞİTİM: four arches, inscriptions, the year chart, a folded report
+   ====================================================================== */
+
+.rv-root .rv-eg-levels {
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+.rv-root .rv-eg-levels ol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+}
+.rv-root .rv-eg-levels a {
+  display: grid;
+  gap: 0.2rem;
+  text-decoration: none;
+}
+.rv-root .rv-eg-arch {
+  position: relative;
+  display: block;
+  margin-bottom: 0.7rem;
+}
+.rv-root .rv-eg-arch .rv-photo {
+  aspect-ratio: 3 / 3.4;
+}
+/* the hour of each level, laid over its photograph like the walk's light */
+.rv-root .rv-eg-arch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 100vmax 100vmax var(--rv-radius) var(--rv-radius);
+  mix-blend-mode: multiply;
+  background:
+    linear-gradient(to bottom, #4a3a2a55, #4a3a2a00 40%),
+    color-mix(in srgb, #e4e6e3, #f0c48c calc(var(--sun, 0) * 100%));
+  pointer-events: none;
+}
+.rv-root .rv-eg-arch img {
+  filter: saturate(0.8) contrast(0.94);
+  transition: transform 0.6s var(--rv-ease-out);
+}
+.rv-root .rv-eg-levels a:hover .rv-eg-arch img {
+  transform: scale(1.04);
+}
+.rv-root .rv-eg-level-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--rv-ink);
+  font-size: 0.85rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-eg-level-meta .rv-num {
+  font-weight: 600;
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-eg-levels strong {
+  font: 400 1.7rem/1.1 var(--rv-f-serif);
+}
+.rv-root .rv-eg-levels a:hover strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+.rv-root .rv-eg-range {
+  font-size: 0.9rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-eg-levels-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--rv-ash);
+}
+@media (max-width: 760px) {
+  .rv-root .rv-eg-levels ol {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 1.5rem;
+  }
+  .rv-root .rv-eg-levels strong {
+    font-size: 1.4rem;
+  }
+}
+
+/* principles: the line cut in stone, the practice in ink below */
+.rv-root .rv-kitabe {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 clamp(2rem, 6vw, 6rem);
+  margin-top: clamp(2rem, 4vw, 3.5rem);
+}
+.rv-root .rv-kitabe li {
+  padding: 1.5rem 0 1.75rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-kitabe-line {
+  font: 400 clamp(1.7rem, 1.2rem + 1.4vw, 2.5rem)/1.08 var(--rv-f-serif);
+  letter-spacing: -0.012em;
+  margin-bottom: 0.75rem;
+}
+.rv-root .rv-kitabe-practice {
+  max-width: 46ch;
+  color: #3a4250;
+}
+@media (max-width: 760px) {
+  .rv-root .rv-kitabe {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* the year chart on ink: months across, small arches where a measure falls */
+.rv-root .rv-eg-measure-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem clamp(2rem, 5vw, 5rem);
+  align-items: end;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+.rv-root .rv-eg-measure-head p {
+  color: var(--rv-ink-soft);
+  max-width: 46ch;
+}
+.rv-root .rv-yearchart-row {
+  display: grid;
+  grid-template-columns: minmax(16rem, 2.6fr) repeat(10, minmax(0, 1fr));
+  align-items: stretch;
+  border-bottom: 1px solid #e7e5e026;
+}
+.rv-root .rv-yearchart-months {
+  border-bottom: 1px solid var(--rv-stone);
+}
+.rv-root .rv-yearchart-months span {
+  padding: 0 0 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--rv-ink-soft);
+  text-align: center;
+}
+.rv-root .rv-yearchart-name {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem 1.5rem 1rem 0;
+}
+.rv-root .rv-yearchart-name strong {
+  font: 400 1.3rem/1.2 var(--rv-f-serif);
+}
+.rv-root .rv-yearchart-name > span {
+  font-size: 0.9rem;
+  color: var(--rv-ink-soft);
+  max-width: 44ch;
+}
+.rv-root .rv-yearchart-name > .rv-yearchart-levels {
+  font-size: 0.8rem;
+  color: #97a0ad;
+}
+.rv-root .rv-yearchart-row > span[role="cell"] {
+  position: relative;
+  border-left: 1px solid #e7e5e014;
+}
+.rv-root .rv-yearchart-row > span.is-on::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: 1.2rem;
+  height: 26px;
+  border-radius: 26px 26px 1px 1px;
+  background: #f0b3a9;
+}
+.rv-root .rv-yearchart-m {
+  display: none;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-eg-measure-head {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-yearchart-months {
+    display: none;
+  }
+  .rv-root .rv-yearchart-row {
+    display: block;
+    padding: 0.9rem 0;
+  }
+  .rv-root .rv-yearchart-row > span[role="cell"] {
+    display: none;
+  }
+  .rv-root .rv-yearchart-name {
+    padding: 0;
+  }
+  .rv-root .rv-yearchart-m {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #f0b3a9;
+  }
+}
+
+/* the report: a folded letter on card */
+.rv-root .rv-eg-report-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-eg-inform-title {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.75rem;
+}
+.rv-root .rv-eg-inform {
+  margin: 0;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-eg-inform > div {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-eg-inform dt {
+  font-weight: 600;
+  color: var(--rv-seal-ink);
+  font-size: 0.95rem;
+}
+.rv-root .rv-eg-inform dd {
+  margin: 0;
+  font-size: 0.97rem;
+  color: #2c3544;
+}
+.rv-root .rv-report {
+  background: #f6f5f1;
+  border: 1px solid var(--rv-line);
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 22px 40px -24px #16202e40;
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-report summary {
+  display: block;
+  list-style: none;
+  padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 2.5vw, 2rem) 1rem;
+  cursor: pointer;
+}
+.rv-root .rv-report summary::-webkit-details-marker {
+  display: none;
+}
+.rv-root .rv-report-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.9rem;
+  border-bottom: 3px double var(--rv-ink);
+}
+.rv-root .rv-report-school {
+  font: 400 1.35rem/1.2 var(--rv-f-serif);
+}
+.rv-root .rv-report-who {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  padding: 0.7rem 0;
+  font-size: 0.9rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-report-row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr 1fr;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--rv-line);
+  font-size: 0.95rem;
+}
+.rv-root .rv-report-row strong {
+  font: 400 1.1rem/1.25 var(--rv-f-serif);
+}
+.rv-root .rv-report-row em {
+  font-style: normal;
+  color: #2a4a8a;
+  padding-left: 0.75rem;
+  border-left: 1px solid #2a4a8a55;
+}
+.rv-root .rv-report-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rv-shade);
+  text-underline-offset: 0.35em;
+}
+.rv-root .rv-report-toggle svg {
+  transition: transform 0.25s var(--rv-ease);
+}
+.rv-root .rv-report-close,
+.rv-root .rv-report[open] .rv-report-open {
+  display: none;
+}
+.rv-root .rv-report[open] .rv-report-close {
+  display: inline;
+}
+.rv-root .rv-report[open] .rv-report-toggle svg {
+  transform: rotate(180deg);
+}
+.rv-root .rv-report-body {
+  padding: 0 clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 2.5vw, 2rem);
+}
+.rv-root .rv-report-self {
+  margin-top: 1rem;
+  padding: 1rem 1.1rem;
+  background: var(--rv-stone);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-report-self p {
+  font-size: 0.85rem;
+  color: var(--rv-ash);
+  margin-bottom: 0.3rem;
+}
+.rv-root .rv-report-self blockquote {
+  margin: 0;
+  font: 400 1.2rem/1.4 var(--rv-f-serif);
+  color: #2a4a8a;
+}
+.rv-root .rv-report-sign {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-report-sign svg {
+  fill: none;
+  stroke: var(--rv-seal);
+  stroke-width: 2.2;
+  transform: rotate(-9deg);
+  opacity: 0.85;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-eg-report-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .rv-root .rv-report-row {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  .rv-root .rv-report-row em {
+    padding-left: 0.6rem;
+  }
+}
+
+/* ======================================================================
+   ALMANAK: the year, month by month
+   ====================================================================== */
+
+.rv-root .rv-alm-titlegrid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(1.5rem, 5vw, 5rem);
+  align-items: end;
+}
+.rv-root .rv-alm-head h1 {
+  max-width: none;
+}
+.rv-root .rv-alm-year {
+  display: block;
+  font-family: var(--rv-f-sans);
+  font-weight: 300;
+  font-size: 0.82em;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--rv-ink);
+}
+.rv-root .rv-alm-year span {
+  color: var(--rv-seal);
+  margin: 0 0.05em;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-alm-titlegrid {
+    grid-template-columns: 1fr;
+  }
+}
+.rv-root .rv-alm-bar {
+  position: sticky;
+  top: var(--rv-header-h);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem 1.5rem;
+  padding: 1rem 0;
+  background: color-mix(in srgb, var(--rv-stone) 96%, transparent);
+  border-bottom: 1px solid var(--rv-ink);
+}
+.rv-root .rv-alm-filter {
+  display: grid;
+  gap: 0.45rem;
+}
+.rv-root .rv-alm-kindsel {
+  width: 14rem;
+}
+.rv-root .rv-alm-kindsel .rv-input {
+  min-height: 44px;
+  padding-top: 0.45rem;
+  padding-bottom: 0.45rem;
+}
+.rv-root .rv-alm-all {
+  margin-left: auto;
+}
+.rv-root .rv-alm-empty {
+  padding: 2rem 0;
+  color: var(--rv-ash);
+}
+.rv-root .rv-alm-month {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+  gap: 0 clamp(1.5rem, 4vw, 4rem);
+  padding-top: clamp(2rem, 4vw, 3rem);
+}
+.rv-root .rv-alm-mname {
+  position: sticky;
+  top: calc(var(--rv-header-h) + 6.5rem);
+  align-self: start;
+  font-size: clamp(2.2rem, 1.4rem + 2.2vw, 3.6rem);
+  line-height: 1;
+}
+.rv-root .rv-alm-mname .rv-num {
+  display: block;
+  margin-top: 0.4rem;
+  font: 600 1rem/1 var(--rv-f-sans);
+  color: var(--rv-ash);
+}
+.rv-root .rv-alm-days {
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-alm-line {
+  position: relative;
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+  gap: 1rem 1.5rem;
+  align-items: start;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-alm-line.is-past > :not(.rv-alm-today) {
+  opacity: 0.5;
+}
+.rv-root .rv-alm-today {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 0;
+  border-top: 2px solid var(--rv-seal);
+  font: 600 0.75rem/1 var(--rv-f-sans);
+  color: var(--rv-seal-ink);
+  text-align: right;
+  padding-top: 0.3rem;
+}
+.rv-root .rv-alm-date {
+  display: grid;
+  gap: 0.1rem;
+}
+.rv-root .rv-alm-date strong {
+  font: 500 1.6rem/1 var(--rv-f-sans);
+  letter-spacing: -0.02em;
+}
+.rv-root .rv-alm-date span {
+  font-size: 0.82rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-alm-what h3 {
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+.rv-root .rv-alm-half {
+  font: 500 0.9rem var(--rv-f-sans);
+  color: var(--rv-ash);
+}
+.rv-root .rv-alm-what > p:not(.rv-alm-tags) {
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  color: #3a4250;
+}
+.rv-root .rv-alm-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.9rem;
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-alm-kind {
+  font-weight: 600;
+}
+.rv-root .rv-alm-tags .rv-alm-kind::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 10px;
+  margin-right: 0.4rem;
+  border-radius: 8px 8px 1px 1px;
+  background: var(--rv-ash);
+  vertical-align: -1px;
+}
+.rv-root .rv-alm-tags .rv-alm-kind.is-resmi::before {
+  background: var(--rv-ink);
+}
+.rv-root .rv-alm-tags .rv-alm-kind.is-donem::before {
+  background: #6f8094;
+}
+.rv-root .rv-alm-tags .rv-alm-kind.is-kabul::before,
+.rv-root .rv-alm-tags .rv-alm-kind.is-sinav::before {
+  background: var(--rv-seal);
+}
+.rv-root .rv-alm-tags .rv-alm-kind.is-veli::before {
+  background: var(--rv-ok);
+}
+.rv-root .rv-alm-tags .rv-alm-kind.is-okul::before {
+  background: #b8862b;
+}
+.rv-root .rv-alm-line.is-resmi .rv-alm-date strong {
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-alm-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rv-root .rv-alm-add:hover {
+  border-color: var(--rv-ink);
+}
+.rv-root .rv-alm-foot {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rv-line);
+  font-size: 0.9rem;
+  color: var(--rv-ash);
+  max-width: 70ch;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-alm-month {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-alm-mname {
+    position: static;
+    margin-bottom: 0.9rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+  .rv-root .rv-alm-mname .rv-num {
+    display: inline;
+  }
+  .rv-root .rv-alm-bar {
+    position: static;
+  }
+  .rv-root .rv-alm-all {
+    margin-left: 0;
+  }
+}
+@media (max-width: 600px) {
+  .rv-root .rv-alm-line {
+    grid-template-columns: 4.6rem minmax(0, 1fr);
+  }
+  .rv-root .rv-alm-add {
+    grid-column: 2;
+    justify-self: start;
+    min-height: 40px;
+  }
+  .rv-root .rv-alm-date strong {
+    font-size: 1.3rem;
+  }
+  .rv-root .rv-alm-kindsel {
+    width: 100%;
+  }
+  .rv-root .rv-alm-bar .rv-seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .rv-root .rv-alm-bar .rv-seg button {
+    border-bottom: 1px solid var(--rv-line);
+  }
+}
+
+/* ======================================================================
+   GÜVENDE: a sticky index, airy sections, scenario chains
+   ====================================================================== */
+
+.rv-root .rv-gv-title {
+  max-width: 16ch;
+}
+.rv-root .rv-gv-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  padding-top: clamp(1rem, 2vw, 2rem);
+  padding-bottom: clamp(4rem, 8vw, 8rem);
+}
+.rv-root .rv-gv-index {
+  position: sticky;
+  top: calc(var(--rv-header-h) + 2rem);
+  align-self: start;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-gv-index p {
+  font-size: 0.85rem;
+  color: var(--rv-ash);
+  margin-bottom: 0.5rem;
+}
+.rv-root .rv-gv-index a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  font: 400 1.2rem/1.2 var(--rv-f-serif);
+  text-decoration: none;
+}
+.rv-root .rv-gv-index a:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+.rv-root .rv-gv-sec {
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0;
+  border-top: 1px solid var(--rv-line);
+  scroll-margin-top: calc(var(--rv-header-h) + 1rem);
+}
+.rv-root .rv-gv-sec:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.rv-root .rv-gv-sechead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+}
+.rv-root .rv-gv-sub {
+  margin: clamp(1.75rem, 3vw, 2.5rem) 0 0.75rem;
+  font-size: 1.45rem;
+}
+.rv-root .rv-gv-levels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 clamp(1.5rem, 4vw, 3rem);
+  margin: 1.75rem 0 0;
+}
+.rv-root .rv-gv-levels > div {
+  padding: 1rem 0;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-gv-levels dt {
+  font: 400 1.35rem/1.2 var(--rv-f-serif);
+  margin-bottom: 0.35rem;
+}
+.rv-root .rv-gv-levels dd {
+  margin: 0;
+  color: #3a4250;
+}
+.rv-root .rv-gv-list li {
+  position: relative;
+  padding: 0.55rem 0 0.55rem 1.4rem;
+  color: #2c3544;
+}
+.rv-root .rv-gv-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.05rem;
+  width: 8px;
+  height: 1px;
+  background: var(--rv-ink);
+}
+.rv-root .rv-gv-list + .rv-textlink {
+  margin-top: 0.75rem;
+}
+.rv-root .rv-gv-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 clamp(1.5rem, 4vw, 3rem);
+}
+.rv-root .rv-gv-steps {
+  counter-reset: gv;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-gv-steps li {
+  counter-increment: gv;
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rv-line);
+  color: #2c3544;
+}
+.rv-root .rv-gv-steps li::before {
+  content: counter(gv);
+  font: 600 1rem var(--rv-f-sans);
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-ledger--two {
+  margin-top: 1.5rem;
+}
+.rv-root .rv-ledger--two tbody th {
+  width: 14rem;
+  white-space: normal;
+}
+.rv-root .rv-gv-safety {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 clamp(1.5rem, 4vw, 3rem);
+  margin: 1.5rem 0 0;
+}
+.rv-root .rv-gv-safety > div {
+  padding: 1rem 0;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-gv-safety > div:last-child {
+  grid-column: 1 / -1;
+}
+.rv-root .rv-gv-safety dt {
+  font: 400 1.3rem/1.2 var(--rv-f-serif);
+  margin-bottom: 0.3rem;
+}
+.rv-root .rv-gv-safety dd {
+  margin: 0;
+  color: #3a4250;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-gv-grid {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-gv-index {
+    position: static;
+  }
+  .rv-root .rv-gv-index ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+  }
+  .rv-root .rv-gv-index a {
+    font-size: 1.05rem;
+  }
+}
+@media (max-width: 640px) {
+  .rv-root .rv-gv-levels,
+  .rv-root .rv-gv-two,
+  .rv-root .rv-gv-safety {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* scenarios: choose a situation, read the chain */
+.rv-root .rv-scen {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  margin-top: 1.75rem;
+  align-items: start;
+}
+.rv-root .rv-scen-pick {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--rv-ink);
+  min-width: 0;
+}
+.rv-root .rv-scen-pick label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding: 0.6rem 0.25rem;
+  border-bottom: 1px solid var(--rv-line);
+  font: 400 1.2rem/1.25 var(--rv-f-serif);
+  cursor: pointer;
+  transition: padding 0.25s var(--rv-ease);
+}
+.rv-root .rv-scen-pick input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--rv-seal);
+}
+.rv-root .rv-scen-pick label.is-on {
+  color: var(--rv-seal-ink);
+  padding-left: 0.6rem;
+  box-shadow: inset 3px 0 0 var(--rv-seal);
+}
+.rv-root .rv-scen-steps {
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-scen-steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 0.75rem;
+  padding-bottom: 1.25rem;
+}
+.rv-root .rv-scen-steps li:last-child {
+  padding-bottom: 0;
+}
+.rv-root .rv-scen-steps li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(1.2rem - 0.5px);
+  top: 2.4rem;
+  bottom: 0.2rem;
+  width: 1px;
+  background: var(--rv-line);
+}
+.rv-root .rv-scen-n {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid var(--rv-ink);
+  border-radius: 100vmax 100vmax var(--rv-radius) var(--rv-radius);
+  font-weight: 600;
+}
+.rv-root .rv-scen-steps strong {
+  display: block;
+  margin: 0.45rem 0 0.15rem;
+  font-size: 0.9rem;
+  color: var(--rv-seal-ink);
+}
+.rv-root .rv-scen-steps p {
+  color: #2c3544;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rv-root .rv-scen-steps li {
+    animation: rv-panel-in 0.35s var(--rv-ease-out) both;
+  }
+  .rv-root .rv-scen-steps li:nth-child(2) {
+    animation-delay: 0.06s;
+  }
+  .rv-root .rv-scen-steps li:nth-child(3) {
+    animation-delay: 0.12s;
+  }
+  .rv-root .rv-scen-steps li:nth-child(4) {
+    animation-delay: 0.18s;
+  }
+}
+@media (max-width: 860px) {
+  .rv-root .rv-scen {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======================================================================
+   OKULUMUZ: a wide render, the arch diagram, the lintel, roles
+   ====================================================================== */
+
+.rv-root .rv-ok-head {
+  padding-top: clamp(2.5rem, 2rem + 3vw, 5rem);
+}
+.rv-root .rv-ok-title {
+  max-width: 13ch;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+.rv-root .rv-ok-band {
+  position: relative;
+}
+.rv-root .rv-ok-band .rv-photo {
+  height: clamp(18rem, 52vh, 34rem);
+  border-radius: 50% 50% 0 0 / 14% 14% 0 0;
+}
+.rv-root .rv-ok-band .rv-wrap {
+  position: relative;
+  margin-top: clamp(-7rem, -9vw, -3rem);
+}
+.rv-root .rv-ok-intro {
+  max-width: 40rem;
+  padding: clamp(1.25rem, 3vw, 2.25rem) clamp(1.25rem, 3vw, 2.5rem);
+  background: var(--rv-stone);
+  font: 400 clamp(1.25rem, 1.05rem + 0.6vw, 1.6rem)/1.45 var(--rv-f-serif);
+}
+@media (max-width: 600px) {
+  .rv-root .rv-ok-band .rv-wrap {
+    margin-top: -2.5rem;
+  }
+  .rv-root .rv-ok-intro {
+    padding: 1.25rem 1rem;
+  }
+}
+.rv-root .rv-ok-arch-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-archparts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+}
+.rv-root .rv-archparts-svg {
+  width: 100%;
+  height: auto;
+}
+.rv-root .rv-archparts-svg rect,
+.rv-root .rv-archparts-svg path {
+  fill: #dcd8cf;
+  stroke: var(--rv-ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  transition: fill 0.3s var(--rv-ease);
+}
+.rv-root .rv-archparts-svg .rv-archparts-joint {
+  fill: none;
+  stroke-width: 0.8;
+  opacity: 0.5;
+}
+.rv-root .rv-archparts-svg g.is-on rect,
+.rv-root .rv-archparts-svg g.is-on path:not(.rv-archparts-joint) {
+  fill: color-mix(in srgb, var(--rv-seal) 72%, #dcd8cf);
+}
+.rv-root .rv-archparts-ground {
+  stroke: var(--rv-ink);
+  stroke-width: 1.4;
+}
+.rv-root .rv-archparts-text {
+  margin-top: 1.25rem;
+  max-width: 44ch;
+  color: #2c3544;
+}
+.rv-root .rv-archparts-text strong {
+  font-weight: 600;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-ok-arch-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .rv-root .rv-archparts {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-archparts-svg {
+    max-width: 18rem;
+    justify-self: center;
+  }
+}
+
+/* the values as a lintel inscription on stone */
+.rv-root .rv-ok-lintel {
+  padding: clamp(3rem, 6vw, 5.5rem) 0;
+  background: var(--rv-stone-lo);
+  border-top: 1px solid var(--rv-line);
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-ok-lintel-title {
+  font: 600 0.9rem/1.2 var(--rv-f-sans);
+  letter-spacing: 0;
+  color: var(--rv-ash);
+  margin-bottom: 1.25rem;
+}
+.rv-root .rv-ok-lintel li {
+  padding: 0.4rem 0;
+  font: 400 clamp(1.6rem, 0.9rem + 2.5vw, 3.2rem)/1.12 var(--rv-f-serif);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #c9c4ba;
+}
+.rv-root .rv-ok-lintel li:last-child {
+  border-bottom: 0;
+}
+
+/* roles: a spine (board, head, parents) and a row of units */
+.rv-root .rv-org {
+  display: grid;
+  gap: 1.5rem;
+}
+.rv-root .rv-org-spine {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+.rv-root .rv-org-box {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+  padding: 1.1rem 1.2rem 1.25rem;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-top: 2px solid var(--rv-ink);
+  border-radius: var(--rv-radius);
+}
+.rv-root .rv-org-box strong {
+  font: 400 1.3rem/1.2 var(--rv-f-serif);
+}
+.rv-root .rv-org-box span {
+  font-size: 0.93rem;
+  color: #3a4250;
+}
+.rv-root .rv-org-box--head {
+  border-top-color: var(--rv-seal);
+}
+.rv-root .rv-org-box--side {
+  border-top-style: dashed;
+}
+.rv-root .rv-org-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  position: relative;
+  padding-top: 1.5rem;
+}
+.rv-root .rv-org-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12.5%;
+  right: 12.5%;
+  height: 1.5rem;
+  border: 1px solid var(--rv-ink);
+  border-bottom: 0;
+}
+.rv-root .rv-ok-account-title {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  margin-bottom: 1rem;
+}
+.rv-root .rv-ok-account {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0 clamp(1.25rem, 3vw, 2.5rem);
+  margin: 0;
+}
+.rv-root .rv-ok-account > div {
+  padding-top: 1rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-ok-account dt {
+  font: 400 1.25rem/1.2 var(--rv-f-serif);
+  margin-bottom: 0.4rem;
+}
+.rv-root .rv-ok-account dd {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #3a4250;
+}
+@media (max-width: 960px) {
+  .rv-root .rv-org-spine,
+  .rv-root .rv-org-row,
+  .rv-root .rv-ok-account {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rv-root .rv-org-row::before {
+    display: none;
+  }
+  .rv-root .rv-org-row {
+    padding-top: 0;
+  }
+  .rv-root .rv-ok-account {
+    row-gap: 1.5rem;
+  }
+}
+@media (max-width: 560px) {
+  .rv-root .rv-org-spine,
+  .rv-root .rv-org-row,
+  .rv-root .rv-ok-account {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ======================================================================
+   İLETİŞİM: the register of units, the drawn location
+   ====================================================================== */
+
+.rv-root .rv-il-unitshead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.rv-root .rv-units {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-units li {
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+  padding: 1.25rem 1.5rem 1.5rem 0;
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-units li:not(:nth-child(3n + 1)) {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--rv-line);
+}
+.rv-root .rv-units h3 {
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+.rv-root .rv-units-for {
+  font-size: 0.95rem;
+  color: #3a4250;
+}
+.rv-root .rv-units-reach {
+  display: grid;
+  gap: 0.1rem;
+  margin-top: 0.35rem;
+}
+.rv-root .rv-units-reach a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 34px;
+  font-weight: 600;
+  text-decoration-color: var(--rv-shade);
+  overflow-wrap: anywhere;
+}
+.rv-root .rv-units-hours {
+  font-size: 0.85rem;
+  color: var(--rv-ash);
+}
+@media (max-width: 960px) {
+  .rv-root .rv-units {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rv-root .rv-units li:not(:nth-child(3n + 1)) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .rv-root .rv-units li:nth-child(even) {
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--rv-line);
+  }
+}
+@media (max-width: 560px) {
+  .rv-root .rv-units {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-units li:nth-child(even) {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+.rv-root .rv-il-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-il-map {
+  margin: 0;
+}
+.rv-root .rv-sketch {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: 50% 50% var(--rv-radius) var(--rv-radius) / 12% 12% var(--rv-radius) var(--rv-radius);
+}
+.rv-root .rv-sketch-forest circle {
+  fill: #d6d3c9;
+  stroke: #8f8a7d;
+  stroke-width: 0.8;
+}
+.rv-root .rv-sketch-sea {
+  fill: none;
+  stroke: #6f8094;
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+}
+.rv-root .rv-sketch-road {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 3;
+}
+.rv-root .rv-sketch-lane {
+  fill: none;
+  stroke: var(--rv-ink);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 4;
+}
+.rv-root .rv-sketch-village {
+  fill: #e0ddd5;
+  stroke: #8f8a7d;
+  stroke-width: 1;
+}
+.rv-root .rv-sketch-school path {
+  fill: var(--rv-seal);
+}
+.rv-root .rv-sketch-metro rect {
+  fill: var(--rv-ink);
+}
+.rv-root .rv-sketch-metro text {
+  font: 700 13px var(--rv-f-sans);
+  fill: var(--rv-stone);
+}
+.rv-root .rv-sketch-label text {
+  font: 500 13px var(--rv-f-sans);
+  fill: var(--rv-ash);
+}
+.rv-root .rv-sketch-label .rv-sketch-label--school {
+  font: 400 18px var(--rv-f-serif);
+  fill: var(--rv-ink);
+}
+.rv-root .rv-il-map figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1rem;
+}
+.rv-root .rv-il-map address {
+  display: grid;
+  font-style: normal;
+}
+.rv-root .rv-il-ways {
+  margin: 1.5rem 0 1rem;
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-il-ways > div {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-il-ways dt {
+  font: 400 1.35rem/1.2 var(--rv-f-serif);
+  margin-bottom: 0.3rem;
+}
+.rv-root .rv-il-ways dd {
+  margin: 0;
+  color: #3a4250;
+}
+.rv-root .rv-il-hours-title {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.6rem;
+}
+.rv-root .rv-il-hours {
+  margin: 0;
+}
+.rv-root .rv-il-hours > div {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid var(--rv-line);
+  font-size: 0.97rem;
+}
+.rv-root .rv-il-hours dt {
+  font-weight: 600;
+}
+.rv-root .rv-il-hours dd {
+  margin: 0;
+  color: #3a4250;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-il-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .rv-root .rv-il-hours > div {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
+
+/* ======================================================================
+   VELİ: an honest, sealed door
+   ====================================================================== */
+
+.rv-root .rv-veli {
+  padding: clamp(2.5rem, 2rem + 3vw, 5rem) 0 clamp(4rem, 8vw, 8rem);
+}
+.rv-root .rv-veli-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+.rv-root .rv-veli-title {
+  max-width: 16ch;
+  font-size: clamp(2.4rem, 1.2rem + 3.4vw, 4.4rem);
+  margin-bottom: 1.25rem;
+}
+.rv-root .rv-veli-listtitle {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+.rv-root .rv-veli-listintro {
+  margin: 0.4rem 0 1rem;
+  color: var(--rv-ash);
+}
+.rv-root .rv-veli-list {
+  border-top: 1px solid var(--rv-ink);
+}
+.rv-root .rv-veli-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem 2rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--rv-line);
+}
+.rv-root .rv-veli-list h3 {
+  font-size: 1.3rem;
+}
+.rv-root .rv-veli-list p {
+  font-size: 0.95rem;
+  color: #3a4250;
+}
+.rv-root .rv-veli-list .rv-textlink {
+  flex: none;
+}
+.rv-root .rv-veli-back {
+  margin-top: 2rem;
+}
+.rv-root .rv-veli-form {
+  position: sticky;
+  top: calc(var(--rv-header-h) + 2rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--rv-stone-hi);
+  border: 1px solid var(--rv-line);
+  border-radius: var(--rv-radius);
+  overflow: hidden;
+}
+.rv-root .rv-veli-form fieldset {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  opacity: 0.5;
+}
+.rv-root .rv-veli-form legend {
+  margin-bottom: 1.25rem;
+  font: 400 1.8rem/1.1 var(--rv-f-serif);
+}
+.rv-root .rv-veli-form .rv-input:disabled {
+  cursor: not-allowed;
+  background: #ebe9e4;
+}
+.rv-root .rv-veli-form .rv-btn {
+  justify-self: start;
+  pointer-events: none;
+}
+.rv-root .rv-veli-seal {
+  position: absolute;
+  right: clamp(0.75rem, 2vw, 1.5rem);
+  top: 50%;
+  width: clamp(8.5rem, 14vw, 10.5rem);
+  color: var(--rv-seal);
+  transform: translateY(-38%) rotate(-11deg);
+  pointer-events: none;
+}
+.rv-root .rv-veli-seal svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@media (max-width: 860px) {
+  .rv-root .rv-veli-grid {
+    grid-template-columns: 1fr;
+  }
+  .rv-root .rv-veli-form {
+    position: relative;
+    top: auto;
+  }
+}
+@media (max-width: 560px) {
+  .rv-root .rv-veli-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}
+
+/* walk: a second, quieter link under the level's application */
+.rv-root .rv-chapter-more {
+  margin-top: 0.1rem;
+}
+
+/* figures in the route facts: Marcellus draws zero as a capital O */
+.rv-root .rv-route-facts dd {
+  font-family: var(--rv-f-sans);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- v5 second pass (fresh-eye findings) ---------- */
+
+/* the hour of a level, set large under its arch */
+.rv-root .rv-kh-hour strong {
+  font: 400 clamp(1.6rem, 1.2rem + 1.2vw, 2.3rem)/1 var(--rv-f-sans);
+  letter-spacing: -0.03em;
+}
+.rv-root .rv-kh-hour {
+  align-items: baseline;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+.rv-root .rv-kh {
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--rv-stone), var(--kd-sky) 92%) 0%, var(--rv-stone) 85%);
+}
+@media (max-width: 860px) {
+  .rv-root .rv-kh-hour {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+  .rv-root .rv-kh-hour > span:first-child {
+    width: 100%;
+  }
+  .rv-root .rv-kh-hour strong {
+    font-size: 1.35rem;
+  }
+}
+
+/* menu: the margin rule in quiet ink, so only today's edge reads as a mark */
+.rv-root .rv-menubook-page::before {
+  border-color: #cfc9be;
+}
+.rv-root .rv-menubook-weekend {
+  margin: -0.4rem 0 0.9rem;
+  font-size: 0.95rem;
+  color: var(--rv-ash);
+}
+
+/* report: teacher's next steps in ink with a seal margin, not link blue */
+.rv-root .rv-report-row em {
+  color: var(--rv-ink-2);
+  border-left: 2px solid color-mix(in srgb, var(--rv-seal) 60%, transparent);
+}
+.rv-root .rv-report-self blockquote {
+  color: var(--rv-ink-2);
+}
+.rv-root .rv-report-top .rv-report-toggle {
+  margin-top: 0;
+  min-height: 36px;
+}
+.rv-root .rv-report-who {
+  align-items: center;
+}
+
+/* plan: readable building names; the pick button stays secondary */
+.rv-root .rv-plan-label text {
+  font-size: 17px;
+}
+.rv-root .rv-plan-label .rv-plan-label--court {
+  font-size: 26px;
+}
+.rv-root .rv-plan-pick[aria-pressed="true"] {
+  --b-bd: var(--rv-seal);
+  --b-fg: var(--rv-seal-ink);
+}
+.rv-root .rv-plan-pick[aria-pressed="true"]:hover {
+  --b-bg: transparent;
+}
+@media (max-width: 560px) {
+  .rv-root .rv-plan-label text {
+    font-size: 24px;
+  }
+}
+
+/* veli: on phones the sealed form comes right after the message */
+@media (max-width: 860px) {
+  .rv-root .rv-veli-grid > div {
+    display: contents;
+  }
+  .rv-root .rv-veli-title,
+  .rv-root .rv-veli-grid > div > .rv-lede {
+    order: 0;
+  }
+  .rv-root .rv-veli-form {
+    order: 1;
+    margin-top: 0.5rem;
+  }
+  .rv-root .rv-veli-listtitle,
+  .rv-root .rv-veli-listintro,
+  .rv-root .rv-veli-list,
+  .rv-root .rv-veli-back {
+    order: 2;
+  }
+  .rv-root .rv-veli-grid {
+    gap: 0;
+  }
+  .rv-root .rv-veli-back {
+    justify-self: start;
+  }
+}
+
+/* almanak on phones: level filter as one scrollable row */
+@media (max-width: 600px) {
+  .rv-root .rv-alm-bar .rv-seg {
+    display: flex;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .rv-root .rv-alm-bar .rv-seg button {
+    flex: none;
+    border-bottom: 0;
+  }
+  .rv-root .rv-alm-filter {
+    min-width: 0;
+    max-width: 100%;
+  }
+}

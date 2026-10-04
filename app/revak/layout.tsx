@@ -2,10 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, Marcellus } from "next/font/google";
 import "./revak.css";
 import "./almanak.css";
+import "./sayfalar.css";
 import { tr } from "@/content/revak/tr";
 import { RevakProvider } from "@/lib/revak/store";
 import { FlowGate, Header, MobileBar } from "@/components/revak/shell/Header";
-import { Footer, Strip } from "@/components/revak/shell/Footer";
+import { Footer } from "@/components/revak/shell/Footer";
 import { Reveal } from "@/components/revak/shell/Reveal";
 import { RouteSignal, SmoothScroll } from "@/components/revak/shell/Motion";
 
@@ -48,7 +49,6 @@ export default function RevakLayout({ children }: { children: React.ReactNode })
         <a className="rv-skip" href="#icerik">
           {tr.skip}
         </a>
-        <Strip />
         <Header />
         <main id="icerik" tabIndex={-1}>
           {children}

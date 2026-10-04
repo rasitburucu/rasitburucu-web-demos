@@ -94,3 +94,16 @@ Boşluk ölçeği: 4 tabanlı (4, 8, 12, 16, 24, 32, 48, 64, 96, 128) · Radius:
 - Numaralı adımlar: yalnız gerçek sıralı süreçte (kurulum adımları, fizibilite adımları).
 - Sarının dördüncü yeri, logo ve alt bilgi bandı: logodaki sarı şerit ve alt bilginin üst kenarındaki bant "zemin bandı"nın kendisi; markanın imzası olarak kalır. HMI şeridinin üst kenarı ise sarıdan grafite çekildi (taze göz bulgusu, 2026-10-04).
 - Ana sayfa varsayılanı: başlık "25 kilo" dediği için canlı hücre 25 kg torba ile açılır (P30, torba pençesi); plakada ürün tipi seçilebilir.
+
+## Ek imza an: "Pazının içi" (Biz kimiz sayfası, 2026-10-04)
+
+Karar: Raşit'in briefi (yeni sayfa `/web/pazi/biz-kimiz/`). Sözleşmede olmayan efekt olduğu için buraya önce yazıldı.
+
+- **Ne:** Sabitlenmiş (pin) bölüm. Kaydırdıkça P30 kolu, sahada söküldüğü sırayla 15 parçaya ayrılır (kablo hattı ve tutucudan başlar, taban flanşında biter; kontrol kutusu ve alan tarayıcı en sonda), her parça kendi eklem ekseni boyunca kayar. Tam açıkken kısa duraklama, sonra ters sırayla montaj; kol hücreye döner, konveyörden torbayı alıp palete koyar. Ters kaydırınca geri sarar.
+- **Neden bu bir istisna, kural ihlali değil:** Yasaklanan şey "Apple ürün sayfası" kalıbıydı: beyaz boşlukta süs olarak dönen ve patlayan ürün, kahramanda. Burada (1) an kahramanda değil, ikincil bir sayfada; ana sayfanın tezi (çalışan araç) değişmedi. (2) Söküm bir iddiayı kanıtlıyor: "Kurduğumuz kolu vidasına kadar biliriz; arıza veren modül değişir." Parça sırası sahadaki söküm sırasıdır, etiketler parçanın işini söyler. (3) Dünya aynı: epoksi beton, sarı zemin bandı (yalnız kol hücreye dönünce, bölge çizgisi olarak), ana sayfadaki aynı prosedürel robot ve malzemeler, HMI durum şeridi (parça sayısı, modül, durum lambası: serviste sarı, çalışırken yeşil).
+- **Etiketler:** Teknik resim çıkma çizgisi (ince çizgi + nokta). Mono yalnız veri için: parça numarası ve eksen kodu (J1–J6, ISO 9409). Parça adı ve işlev Archivo; tek satır işlev okunurluk için mono değil (YZ izi: "mono kostüm").
+- **Sarı:** aktif parça numarası ve noktası (aktif durum), hücre dönünce zemin bandı (bölge). Başka yerde yok.
+- **Hareket bütçesi:** Bu sayfanın tek imza anı bu. Diğer bölümler (ilkeler föyü, atölye notu) hareketsiz. Her hareketin gerekçesi açıklama: parçanın nereden çıktığını göstermek. Parçalar yolda hafif eğilir, tam açıkken düz durur (çizim gibi okunsun).
+- **Azaltılmış hareket:** pin yok, kaydırma yok; patlatılmış hâl durağan, bütün etiketler görünür, sıralı liste DOM'da. Telefonda liste etiket yerine alt şeritte tek satır; sabitlenmiş bölümden sonra tam liste.
+- **WebGL yok/zayıf:** aynı söküm, `ui/Elevation.tsx` diliyle çizilmiş yan görünüş (aynı renk, çizgi kalınlığı, kapak/göbek dili); aynı zaman çizelgesi grupları kaydırır. Omuz iç parçaları (J2 ekseni kâğıda dik) eğik izdüşümle sola-yukarı açılır.
+- **Ekran okuyucu:** tuval ve çizim `aria-hidden` (çizimde `role="img"` + tam açıklama, WebGL yokken), parça listesi sıralı `<ol>`; durum şeridi `aria-hidden` (değişen değerler okunmaz, liste yeterli).

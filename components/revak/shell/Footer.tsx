@@ -31,9 +31,14 @@ export function Footer() {
               <a href={`mailto:${c.email}`}>{c.email}</a>
             </p>
             <p className="rv-footer-muted">{c.hours}</p>
-            <a href={c.mapsHref} target="_blank" rel="noopener noreferrer" className="rv-footer-link">
-              {f.directions}
-            </a>
+            <p className="rv-footer-links">
+              <Link href="/revak/iletisim/" className="rv-footer-link">
+                {f.contactPage}
+              </Link>
+              <a href={c.mapsHref} target="_blank" rel="noopener noreferrer" className="rv-footer-link">
+                {f.directions}
+              </a>
+            </p>
           </div>
 
           <div className="rv-footer-col">
@@ -51,8 +56,14 @@ export function Footer() {
           </div>
 
           <div className="rv-footer-col">
-            <h2>{f.routesTitle}</h2>
-            <p>{f.routes}</p>
+            <h2>{f.parentsTitle}</h2>
+            <ul>
+              {f.parentLinks.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href}>{l.label}</Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

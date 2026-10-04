@@ -159,7 +159,6 @@ export function OnKayitFlow() {
       nextLabel={step === 3 ? t.s4.submit : review ? c.toSummary : undefined}
       aside={<HelpCard note={t.helpNote} />}
       plate={step < 3 && !review ? <KademePlate kademe={v.kademe || shared.kademe || ""} /> : undefined}
-      nextTone={step === 3 ? "seal" : "ink"}
     >
       {step === 0 && (
         <>

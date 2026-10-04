@@ -9,6 +9,7 @@ import { KADEMELER, useShared } from "@/lib/revak/store";
 import { gsap, ScrollTrigger, SplitText, useGSAP } from "@/lib/revak/motion";
 import { getLenis, scrollToY, setExternalRaf } from "@/lib/revak/lenis";
 import { asset } from "@/lib/asset";
+import { numerals } from "@/lib/revak/format";
 import { archNavigate } from "../shell/Motion";
 import { Photo, srcSet } from "../ui/Photo";
 
@@ -44,6 +45,10 @@ const JOINTS = 14; // floor joints (one every 0.75 unit)
 const HOLD = 1.1; // timeline length of a stop at a level
 const MOVE = 1.25; // timeline length of the walk between two levels
 const OFF = 0.55; // the camera stops this far before a level arch, so the arch frames its photograph
+// The photographs stand behind the arch, not in its plane: this far back for a level
+// (the room beyond the opening), much further for the garden at the open arch.
+const PHOTO_DEPTH = 0.45;
+const GARDEN_DEPTH = 1.5;
 
 // Arch geometry in "u" (u = 0.88% of the window width): hole 100 × 166.7,
 // piers 40, lintel 26. Portal box 180 × 192.7; eye height 0.34 of the hole.
@@ -203,7 +208,7 @@ export function Walk() {
                         <dd>{l.lang}</dd>
                       </div>
                     </dl>
-                    <p className="rv-chapter-moment">{l.moment}</p>
+                    <p className="rv-chapter-moment">{numerals(l.moment)}</p>
                     <Link
                       href={href}
                       className="rv-btn rv-btn--seal rv-chapter-cta"
@@ -219,6 +224,21 @@ export function Walk() {
                       }}
                     >
                       {t.cta}
+                    </Link>
+                    <Link
+                      href={`/revak/egitim/${k}/`}
+                      className="rv-textlink rv-chapter-more"
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                        e.preventDefault();
+                        const live = root.current?.classList.contains("is-live");
+                        const photo = live
+                          ? root.current?.querySelector<HTMLElement>(`.rv-portal-photo[data-k="${k}"]`)
+                          : e.currentTarget.closest(".rv-chapter")?.querySelector<HTMLElement>(".rv-chapter-plate .rv-photo");
+                        archNavigate((h) => router.push(h), `/revak/egitim/${k}/`, photo ?? null);
+                      }}
+                    >
+                      {t.more}
                     </Link>
                   </div>
                 </li>
@@ -262,6 +282,8 @@ function build(section: HTMLElement, mobile: boolean) {
   const portals = Array.from(section.querySelectorAll<HTMLElement>(".rv-portal"));
   const haze = portals.map((p) => p.querySelector<SVGPathElement>(".rv-portal-haze"));
   const photos = portals.map((p) => p.querySelector<HTMLElement>(".rv-portal-photo"));
+  const photoImgs = photos.map((p) => p?.querySelector<HTMLElement>("img") ?? null);
+  const exitIndex = portals.length - 1;
   const joints = Array.from(section.querySelectorAll<HTMLElement>(".rv-joint"));
   const head = section.querySelector<HTMLElement>(".rv-walk-head")!;
   const chapters = Array.from(section.querySelectorAll<HTMLElement>(".rv-chapter"));
@@ -324,9 +346,18 @@ function build(section: HTMLElement, mobile: boolean) {
         let po = 1;
         if (levelOf[i] >= 0) {
           if (z < 0.3) po = gsap.utils.clamp(0, 1, (z + 0.1) / 0.4);
-          else if (z > 1.75 && levelOf[i] > 0) po = gsap.utils.clamp(0, 1, (2.35 - z) / 0.6);
+          // the next level's photograph arrives only once its arch is close: mid-walk shows the arcade itself, no double exposure
+          else if (z > 1.0 && levelOf[i] > 0) po = gsap.utils.clamp(0, 1, (1.45 - z) / 0.45);
         }
         ph.style.opacity = po.toFixed(3);
+        // parallax: a plane further back grows more slowly than the arch around it
+        const img = photoImgs[i];
+        if (img && po > 0) {
+          const garden = i === exitIndex;
+          const d = garden ? GARDEN_DEPTH : PHOTO_DEPTH;
+          const k = ((1 + Math.max(z, -0.5) * K) / (1 + (Math.max(z, -0.5) + d) * K)) * (garden ? 1.5 : 1.14);
+          img.style.transform = `scale(${Math.max(1, k).toFixed(4)})`;
+        }
       }
     }
     under.style.opacity = (shade * 0.32).toFixed(3);
@@ -389,20 +420,22 @@ function build(section: HTMLElement, mobile: boolean) {
     const at = FIRST + i * SPACING;
     const ch = chapters[i];
     const rest = ch.querySelectorAll(".rv-chapter-text > :not(h3)");
-    const moveStart = tl.duration();
+    // the walk on starts while the previous level's text is leaving: no dead frame with a still camera and an empty column
+    const moveStart = i === 0 ? tl.duration() : tl.duration() - 0.4;
     tl.to(cam, { c: at - OFF, duration: MOVE, ease: "sine.inOut" }, moveStart);
     tl.to(sun, { v: (i + 0.5) / 4.4, duration: MOVE, ease: "none" }, moveStart);
     // arrive: letters rise, then the rest settles
     tl.to(splits[i].chars, { yPercent: 0, autoAlpha: 1, duration: 0.45, ease: "power3.out", stagger: { amount: 0.2 } }, moveStart + MOVE * 0.85 - 0.1);
     tl.to(rest, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.05 }, moveStart + MOVE * 0.85 + 0.1);
-    tl.addLabel(`k${i}`, moveStart + MOVE + 0.1);
+    // the stop's label sits after the name and the facts have settled (TOC jumps land on a finished page)
+    tl.addLabel(`k${i}`, moveStart + MOVE * 0.85 + 0.75);
     tl.to({}, { duration: HOLD });
     // leave
     const leave = tl.duration();
     tl.to(splits[i].chars, { yPercent: -220, autoAlpha: 0, duration: 0.4, ease: "power2.in", stagger: { amount: 0.12 } }, leave);
     tl.to(rest, { opacity: 0, y: -10, duration: 0.3, ease: "power1.in" }, leave);
   }
-  const outStart = tl.duration();
+  const outStart = tl.duration() - 0.4;
   tl.to(cam, { c: EXIT - 0.25, duration: MOVE }, outStart);
   tl.to(sun, { v: 1, duration: MOVE, ease: "none" }, outStart);
   tl.to(exit, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, outStart + MOVE - 0.35);
@@ -473,6 +506,7 @@ function build(section: HTMLElement, mobile: boolean) {
       p.style.cssText = `z-index:${p.style.zIndex}`;
     });
     photos.forEach((p) => p && (p.style.opacity = ""));
+    photoImgs.forEach((im) => im && (im.style.transform = ""));
     joints.forEach((j) => (j.style.transform = ""));
     chapters.forEach((c) => c.removeAttribute("data-on"));
     age.style.opacity = "";

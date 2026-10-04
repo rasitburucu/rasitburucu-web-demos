@@ -8,6 +8,9 @@
 // origin at the pallet centre. Product: u = length, g = width, y = height.
 // Orientation "a" puts u along Z; "b" turns the product 90° (u along X).
 
+import { sizeGripper, type GripperId, type GripperSpec, type GripWarning } from "./gripper";
+
+export type { GripperId, GripperSpec } from "./gripper";
 export type ProductKind = "koli" | "torba" | "shrink";
 export type PalletKind = "eur" | "end" | "ozel";
 export type PatternId = "sutun" | "orgu" | "firildak";
@@ -433,9 +436,6 @@ export function stackOf(c: Config, plan: LayerPlan): Stack {
 
 /* ---------------------------------------------------------------- model fit */
 
-export type GripperId = "vakum" | "cift-vakum" | "pence";
-export const GRIPPER_KG: Record<GripperId, number> = { vakum: 2.5, "cift-vakum": 3.8, pence: 4.5 };
-
 export type Warning =
   | "over-cobot"
   | "overhang"
@@ -446,12 +446,15 @@ export type Warning =
   | "two-cells"
   | "no-reach"
   | "bag-claw"
-  | "column-unstable";
+  | "column-unstable"
+  | GripWarning;
 
 export type Fit = {
   status: "ok" | "custom";
   model: ModelSpec | null;
   gripper: GripperId;
+  /** The sized tool (lib/pazi/gripper.ts): plate or claw, pads or fingers, mass, class warning. */
+  grip: GripperSpec;
   double: boolean;
   lift: boolean;
   /** Products per minute the cell can do with this setup. */
@@ -505,37 +508,52 @@ export function fit(c: Config, lock?: ModelId | null): Fit {
   const cellD = L / 1000 + 1.0;
   const cell = { w: round1(cellW), d: round1(cellD), area: round1(cellW * cellD) };
 
+  // the tool, sized for one product and (vacuum only) for two side by side
+  const one = sizeGripper(c);
+  const two = bag ? null : sizeGripper({ ...c, double: true });
   const base = { plan, stack, required, reachNeeded: reach, cell };
+  const tool = (double: boolean) => {
+    const g = double && two ? two : one;
+    return { gripper: g.id, grip: g, double };
+  };
+  // a product outside the standard tool class is a special project, whatever the arm can do
+  const finish = (r: Fit): Fit => {
+    const gw = r.grip.warning;
+    if (!gw) return r;
+    const rest = r.warnings.filter((w) => w !== gw);
+    // the cobot limit stays the headline when it applies; the tool comes next
+    const at = rest[0] === "over-cobot" ? 1 : 0;
+    return { ...r, status: "custom", warnings: [...rest.slice(0, at), gw, ...rest.slice(at)] };
+  };
 
   if (c.kg > COBOT_LIMIT_KG) {
-    return { ...base, status: "custom", model: null, gripper: bag ? "pence" : "vakum", double: false, lift: false, capacity: 0, cycleSec: 0, warnings: ["over-cobot", ...warnings] };
+    return finish({ ...base, ...tool(false), status: "custom", model: null, lift: false, capacity: 0, cycleSec: 0, warnings: ["over-cobot", ...warnings] });
   }
 
-  const singleGrip: GripperId = bag ? "pence" : "vakum";
   const candidates = lock ? MODELS.filter((m) => m.id === lock) : MODELS;
   let fallback: Fit | null = null;
+  const single = c.kg + one.mass;
+  const pair = two ? 2 * c.kg + two.mass : Infinity;
 
   for (const m of candidates) {
     const w: Warning[] = [...warnings];
-    const single = c.kg + GRIPPER_KG[singleGrip];
     if (single > m.payload) continue;
     if (stack.height > m.stackLift) continue;
     if (reach > m.reach - 40) {
-      if (!fallback) fallback = { ...base, status: "custom", model: m, gripper: singleGrip, double: false, lift: false, capacity: 0, cycleSec: 0, warnings: ["no-reach", ...w] };
+      if (!fallback) fallback = { ...base, ...tool(false), status: "custom", model: m, lift: false, capacity: 0, cycleSec: 0, warnings: ["no-reach", ...w] };
       continue;
     }
     const lift = stack.height > m.stackFixed;
     if (lift) w.push("needs-lift");
     const cs = cyclesFor(m, single, lift, c.kind);
     if (cs >= required) {
-      return { ...base, status: "ok", model: m, gripper: singleGrip, double: false, lift, capacity: round1(cs), cycleSec: round1(60 / cs), warnings: w };
+      return finish({ ...base, ...tool(false), status: "ok", model: m, lift, capacity: round1(cs), cycleSec: round1(60 / cs), warnings: w });
     }
-    const pair = 2 * c.kg + GRIPPER_KG["cift-vakum"];
-    const canDouble = !bag && pair <= m.payload && 2 * Math.max(c.u, c.g) <= 820;
+    const canDouble = !!two && !two.warning && !one.warning && pair <= m.payload && 2 * Math.max(c.u, c.g) <= 820;
     if (canDouble) {
       const cd = cyclesFor(m, pair, lift, c.kind);
       if (cd * 2 * 0.95 >= required) {
-        return { ...base, status: "ok", model: m, gripper: "cift-vakum", double: true, lift, capacity: round1(cd * 2 * 0.95), cycleSec: round1(60 / cd), warnings: [...w, "needs-double"] };
+        return finish({ ...base, ...tool(true), status: "ok", model: m, lift, capacity: round1(cd * 2 * 0.95), cycleSec: round1(60 / cd), warnings: [...w, "needs-double"] });
       }
     }
     // remember the fastest setup of this model for the "too slow" answer
@@ -543,10 +561,9 @@ export function fit(c: Config, lock?: ModelId | null): Fit {
     const usesDouble = canDouble && best !== cs;
     const cand: Fit = {
       ...base,
+      ...tool(usesDouble),
       status: "custom",
       model: m,
-      gripper: usesDouble ? "cift-vakum" : singleGrip,
-      double: usesDouble,
       lift,
       capacity: round1(best),
       cycleSec: round1(60 / (usesDouble ? cyclesFor(m, pair, lift, c.kind) : cs)),
@@ -554,8 +571,8 @@ export function fit(c: Config, lock?: ModelId | null): Fit {
     };
     if (!fallback || fallback.capacity < cand.capacity) fallback = cand;
   }
-  if (fallback) return fallback;
-  return { ...base, status: "custom", model: null, gripper: singleGrip, double: false, lift: false, capacity: 0, cycleSec: 0, warnings: [...warnings, stack.height > 2200 ? "needs-lift" : "over-cobot"] };
+  if (fallback) return finish(fallback);
+  return finish({ ...base, ...tool(false), status: "custom", model: null, lift: false, capacity: 0, cycleSec: 0, warnings: [...warnings, stack.height > 2200 ? "needs-lift" : "over-cobot"] });
 }
 
 /* ------------------------------------------------------------------ payback */

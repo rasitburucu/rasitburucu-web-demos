@@ -13,9 +13,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-export type Kademe = "anaokulu" | "ilkokul" | "ortaokul" | "lise";
-export const KADEMELER: Kademe[] = ["anaokulu", "ilkokul", "ortaokul", "lise"];
-export const isKademe = (v: unknown): v is Kademe => typeof v === "string" && (KADEMELER as string[]).includes(v);
+import { KADEMELER, isKademe, type Kademe } from "./levels";
+export { KADEMELER, isKademe, type Kademe };
 
 export type Shared = {
   kademe?: Kademe;

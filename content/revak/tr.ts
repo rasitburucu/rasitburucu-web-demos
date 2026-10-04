@@ -14,12 +14,22 @@ export const tr = {
   meta: {
     title: "Revak Okulları | Anaokulundan liseye, Sarıyer",
     description:
-      "Sarıyer Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar en fazla 18 öğrenci, IB Diploma Programı, üç dil. Kampüs turu planlayın, ön kayıt yaptırın.",
+      "Sarıyer Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar en fazla 18 öğrenci, üç dil, lisede uluslararası diploma programı. Kampüs turu planlayın, ön kayıt yaptırın.",
   },
 
   strip: { text: "Konsept çalışma: Revak Okulları hayali bir okuldur. Rakamlar örnektir, formlar hiçbir yere gönderilmez.", link: "rasitburucu.com", href: "/tr" },
   skip: "İçeriğe geç",
   crumb: "Bulunduğunuz sayfa",
+  // The "örnek" seal: every block that reads like real data (menu, calendar, hours, timetable) carries one.
+  sample: {
+    content: "Örnek içerik",
+    menu: "Örnek menü",
+    policy: "Örnek politika",
+    schedule: "Örnek çizelge",
+    calendar: "Okula ait tarihler örnek",
+    report: "Örnek rapor · kurgusal öğrenci",
+    contact: "Kurgusal numaralar",
+  },
 
   announce: {
     lead: "Bursluluk sınavı",
@@ -28,7 +38,10 @@ export const tr = {
       days > 0
         ? `${date} ${weekday}. Son başvuru ${deadline}; ${days} gün kaldı.`
         : `${date} ${weekday}. Başvurular bugün kapanıyor.`,
+    // phones: one line, the date only ({date})
+    short: (date: string) => date,
     cta: "Sınava başvurun",
+    ctaShort: "Başvurun",
     close: "Duyuruyu kapat",
   },
 
@@ -36,14 +49,58 @@ export const tr = {
 
   nav: {
     label: "Ana menü",
-    items: [
-      { label: "Okulumuz", href: "/revak/#yaklasim" },
-      { label: "Eğitim", href: "/revak/#kademeler" },
-      { label: "Kampüs", href: "/revak/kampus/" },
-      { label: "Yaşam", href: "/revak/kampus/#bir-gun" },
-      { label: "Kabul", href: "/revak/kabul/" },
-      { label: "İletişim", href: "#iletisim" },
+    // Six headings; a group opens a small panel of at most five links (menu yapısı, 2026-10-04).
+    groups: [
+      {
+        id: "okul",
+        label: "Okulumuz",
+        href: "/revak/okulumuz/",
+        items: [
+          { label: "Revak'ı tanıyın", text: "Adın kökeni ve ilkeler", href: "/revak/okulumuz/" },
+          { label: "Yönetim ve denetim", text: "Roller, kime hesap veririz", href: "/revak/okulumuz/#yonetim" },
+          { label: "Güvende", text: "Rehberlik, çocuk koruma, sağlık", href: "/revak/guvende/" },
+        ],
+      },
+      {
+        id: "egitim",
+        label: "Eğitim",
+        href: "/revak/egitim/",
+        items: [
+          { label: "Nasıl öğretir, nasıl ölçeriz", text: "İlkeler, ölçme takvimi, rapor", href: "/revak/egitim/" },
+          { label: "Anaokulu", text: "3-5 yaş", href: "/revak/egitim/anaokulu/" },
+          { label: "İlkokul", text: "1-4. sınıf", href: "/revak/egitim/ilkokul/" },
+          { label: "Ortaokul", text: "5-8. sınıf", href: "/revak/egitim/ortaokul/" },
+          { label: "Lise", text: "Hazırlık-12. sınıf", href: "/revak/egitim/lise/" },
+        ],
+      },
+      {
+        id: "yasam",
+        label: "Kampüs ve yaşam",
+        href: "/revak/kampus/",
+        items: [
+          { label: "Kampüs planı", text: "Tesisler ve tur noktaları", href: "/revak/kampus/#plan" },
+          { label: "Bir gün burada", text: "İlkokul ve lise, saat saat", href: "/revak/kampus/#bir-gun" },
+          { label: "Yemek menüsü", text: "İki hafta, alerjen işaretli", href: "/revak/kampus/#yemek" },
+          { label: "Servis güzergâhları", text: "Duraklar ve saatler", href: "/revak/kampus/#servis" },
+          { label: "Sağlık ve güvenlik", text: "Revir, tatbikat, teslim", href: "/revak/guvende/#saglik" },
+        ],
+      },
+      {
+        id: "kabul",
+        label: "Kabul",
+        href: "/revak/kabul/",
+        items: [
+          { label: "Kabul süreci", text: "Dört adım, önemli tarihler", href: "/revak/kabul/" },
+          { label: "Hangi sınıfa başlar?", text: "Yaş hesaplayıcı", href: "/revak/kabul/#yas" },
+          { label: "Gerekli belgeler", text: "İşaretlenebilir liste", href: "/revak/kabul/#belgeler" },
+          { label: "Ücrete neler dahil", text: "Kalemler, taksit, iade", href: "/revak/kabul/#ucret" },
+          { label: "Bursluluk sınavı", text: "Oturumlar ve oranlar", href: "/revak/kabul/#bursluluk" },
+        ],
+      },
+      { id: "almanak", label: "Almanak", href: "/revak/almanak/", items: [] },
+      { id: "iletisim", label: "İletişim", href: "/revak/iletisim/", items: [] },
     ],
+    open: (label: string) => `${label} alt menüsü`,
     tour: "Kampüs turu",
     apply: "Ön kayıt",
     parents: "Veli girişi",
@@ -95,19 +152,19 @@ export const tr = {
     lines: [
       { pre: "Her sınıfta en fazla ", big: "18", post: " öğrenci." },
       { pre: "Anaokulunda ", big: "2", post: " dil, 5. sınıfta üçüncüsü." },
-      { pre: "", big: "2014", post: "'ten beri IB Diploma Programı." },
+      { pre: "Lisenin son ", big: "2", post: " yılında uluslararası diploma programı." },
       { pre: "Anaokulundan liseye ", big: "1", post: " kampüs." },
     ],
     notes: [
       "Anaokulunda 14 çocuk ve iki öğretmen.",
       "Türkçe ve İngilizce anaokulunda başlar; 5. sınıfta Almanca ya da İspanyolca eklenir.",
-      "Lisenin son iki yılında, isteyen her öğrenciye açık.",
+      "Ulusal programla birlikte, isteyen her öğrenciye açık.",
       "Aynı bahçe, aynı kapı. Kardeşler aynı servise biner.",
     ],
     items: [
       { big: "En fazla 18 öğrenci", text: "Her sınıfta. Anaokulunda 14 çocuk ve iki öğretmen." },
       { big: "Üç dil", text: "Türkçe ve İngilizce anaokulunda başlar; 5. sınıfta Almanca ya da İspanyolca eklenir." },
-      { big: "IB Diploma Programı", text: "2014'ten beri, lisenin son iki yılında isteyen her öğrenciye açık." },
+      { big: "Uluslararası diploma programı", text: "Lisenin son iki yılında, ulusal programla birlikte isteyen her öğrenciye açık." },
       { big: "Tek kampüs", text: "Anaokulundan liseye aynı bahçe. Kardeşler aynı servise biner, aynı kapıdan girer." },
     ],
   },
@@ -125,6 +182,7 @@ export const tr = {
     intro:
       "Anaokulundan liseye dört kademe, tek bir çatı altında. Çocuğunuz büyüdükçe okul da onunla birlikte değişir; onu tanıyan yüzler değişmez.",
     cta: "Bu kademe için ön kayıt",
+    more: "Bu kademeyi tanıyın",
     classSize: "Sınıf mevcudu",
     languages: "Diller",
     items: {
@@ -158,9 +216,9 @@ export const tr = {
       lise: {
         name: "Lise",
         range: "Hazırlık-12. sınıf",
-        size: "En fazla 18, IB sınıflarında 16",
+        size: "En fazla 18, diploma programı sınıflarında 16",
         lang: "İngilizce, ikinci dil, isteğe bağlı üçüncü",
-        line: "Ulusal program ve IB Diploma Programı. Üniversite danışmanlığı 9. sınıfta başlar.",
+        line: "Ulusal program ve uluslararası diploma programı. Üniversite danışmanlığı 9. sınıfta başlar.",
         moment: "Üniversite planı son sınıfta değil, 9. sınıfta danışmanla ilk görüşmede başlar.",
         image: img("classroom"),
       },
@@ -190,7 +248,7 @@ export const tr = {
     title: "Üniversite tercihi dört yılda yazılır.",
     intro: "Her öğrenci 9. sınıfta bir üniversite danışmanıyla eşleşir. Yurt içi ve yurt dışı başvurular için ayrı ekipler çalışır; veli her adımda masadadır.",
     steps: [
-      { grade: "9. sınıf", title: "Tanışma", text: "Danışmanla ilk görüşme: ilgi alanları, ders seçimi ve ulusal program ya da IB kararı için ön hazırlık." },
+      { grade: "9. sınıf", title: "Tanışma", text: "Danışmanla ilk görüşme: ilgi alanları, ders seçimi ve ulusal program ya da diploma programı kararı için ön hazırlık." },
       { grade: "10. sınıf", title: "Keşif", text: "Üniversite tanıtım günleri, yaz okulları ve bir haftalık meslek gözlemi. Yurt dışını düşünenler için dil sınavı takvimi." },
       { grade: "11. sınıf", title: "Kısa liste", text: "Liste veliyle birlikte konuşulur. Deneme sınavları, portfolyo ve başvuru yazıları başlar." },
       { grade: "12. sınıf", title: "Başvuru", text: "Başvuru ve tercih dönemi. Danışman, veliyle birlikte en az üç kez oturup listeyi yeniden düşünür." },
@@ -270,8 +328,8 @@ export const tr = {
         day: "4",
         month: "Kasım",
         weekday: "Çarşamba",
-        title: "Lise ve IB tanıtım toplantısı",
-        text: "Ulusal program ile IB Diploma Programı arasındaki farklar, üniversite rehberliği ve ders seçimi.",
+        title: "Lise ve diploma programı tanıtım toplantısı",
+        text: "Ulusal program ile uluslararası diploma programı arasındaki farklar, üniversite rehberliği ve ders seçimi.",
         where: "Çevrim içi",
         time: "18.30-19.30",
         start: "18.30",
@@ -391,9 +449,19 @@ export const tr = {
     links: [
       { label: "Ön kayıt", href: "/revak/kabul/on-kayit/" },
       { label: "Kampüs turu", href: "/revak/kabul/kampus-turu/" },
+      { label: "Hangi sınıfa başlar?", href: "/revak/kabul/#yas" },
       { label: "Bursluluk sınavı", href: "/revak/kabul/bursluluk/" },
       { label: "Ücret bilgisi", href: "/revak/kabul/ucret-bilgisi/" },
     ],
+    parentsTitle: "Veliler için",
+    parentLinks: [
+      { label: "Almanak", href: "/revak/almanak/" },
+      { label: "Yemek menüsü", href: "/revak/kampus/#yemek" },
+      { label: "Servis güzergâhları", href: "/revak/kampus/#servis" },
+      { label: "Güvende: sağlık ve acil durum", href: "/revak/guvende/" },
+      { label: "Veli girişi", href: "/revak/veli/" },
+    ],
+    contactPage: "Bütün birimler",
     kvkk: "KVKK aydınlatma metni",
     directions: "Yol tarifi",
     creditsTitle: "Görseller ve yazı karakterleri",
@@ -431,7 +499,7 @@ export const tr = {
     title: "Bir günün tamamı, tek bir bahçede.",
     intro:
       "Zekeriyaköy'deki kampüsümüz 48 dönüm. Anaokulunun kendi bahçesi, lisenin kendi binası var; kütüphane, sahne, havuz ve yemekhane herkesin.",
-    heroAlt: "Bahçeden bakınca taş revak ve arkada orman, sabah güneşinde",
+    heroAlt: "Servi sırası ile taş revak arasındaki bahçe yolu; yolun sonunda orman, sabah güneşinde",
     facilitiesTitle: "Her tesisin bir dersi var.",
     facilities: [
       { name: "Fen laboratuvarları", text: "Altı laboratuvar, iki öğrenciye bir mikroskop. Ortaokulda haftada en az bir ders laboratuvarda geçer.", image: img("lab") },
@@ -461,7 +529,7 @@ export const tr = {
       ],
       lise: [
         { time: "07.45", title: "Kütüphane açılır", text: "Erken gelen öğrenciler için lise kütüphanesi ilk dersten önce açık.", image: img("library") },
-        { time: "08.40", title: "İlk ders", text: "Ulusal program ve IB dersleri 40 dakikalık bloklar halinde.", image: img("classroom") },
+        { time: "08.40", title: "İlk ders", text: "Ulusal program ve diploma programı dersleri 40 dakikalık bloklar hâlinde.", image: img("classroom") },
         { time: "10.20", title: "Laboratuvar", text: "Kimya ve biyoloji derslerinin üçte biri laboratuvarda geçer.", image: img("lab") },
         { time: "12.30", title: "Öğle ve kulüp toplantıları", text: "Yemekten sonra münazara ve Model BM kulüpleri kısa toplantılarını yapar.", image: img("debate") },
         { time: "14.00", title: "Danışman saati", text: "Haftada bir, danışman öğretmenle birebir görüşme. Üniversite planı bu saatlerde şekillenir.", image: img("lise") },
@@ -503,22 +571,9 @@ export const tr = {
       ] as { id: string; name: string; pickup: string | null; minutes: number | null }[],
     },
     care: {
-      title: "Güvenlik, sağlık ve yemek",
-      items: [
-        { q: "Kampüse kim girebilir?", a: "Kampüsün tek girişi var ve 24 saat görevli bulunur. Ziyaretçiler kimlikle kaydolur, kampüste refakatle dolaşır." },
-        { q: "Çocuğum hastalanırsa?", a: "Revirde iki hemşire tam gün görevde, okul doktoru haftada üç gün kampüste. İlaçlar yalnızca veli onayıyla ve kayıt altında verilir." },
-        { q: "Alerjisi var, ne yemek yiyecek?", a: "Menüyü beslenme uzmanımız hazırlar. Alerjisi olan her öğrencinin listesi mutfakta ve sınıf öğretmeninde bulunur; tabağı ayrı hazırlanır." },
-        { q: "Bir kaygımı kime söyleyeceğim?", a: "Tüm çalışanlarımız çocuk koruma eğitimi alır. Kaygınızı doğrudan paylaşabileceğiniz, bu konudan sorumlu bir öğretmenimiz var." },
-      ],
-      menuTitle: "Bu haftanın öğle menüsü",
-      menuNote: "İlkokul ve üstü. Anaokulu menüsü ayrı hazırlanır.",
-      menu: [
-        { day: "Pazartesi", dish: "Mercimek çorbası, fırında tavuk, bulgur pilavı, mevsim salatası" },
-        { day: "Salı", dish: "Ezogelin çorbası, zeytinyağlı taze fasulye, yoğurt, tam buğday ekmeği" },
-        { day: "Çarşamba", dish: "Sebze çorbası, izmir köfte, pirinç pilavı, ayran" },
-        { day: "Perşembe", dish: "Tarhana çorbası, fırında levrek, patates püresi, roka salatası" },
-        { day: "Cuma", dish: "Yayla çorbası, nohutlu ıspanak, erişte, mevsim meyvesi" },
-      ],
+      title: "Güvenlik ve sağlık",
+      text: "Tek giriş, kartla teslim, revirde iki hemşire, yılda üç tatbikat. Ayrıntılar ve \"bir şey olursa ne olur\" senaryoları Güvende sayfasında.",
+      link: "Güvende sayfasına geçin",
     },
     closing: {
       title: "Kampüsü bir saatte görün.",
@@ -782,7 +837,7 @@ export const tr = {
         holiday: "Tatil",
         pickDay: "Önce bir gün seçin.",
         see: "Özellikle görmek istedikleriniz",
-        seeOptions: ["Fen laboratuvarları", "Kütüphane", "Spor salonu ve havuz", "Sahne ve müzik odaları", "Yemekhane", "Servis ve güvenlik"],
+        seeOptions: ["Fen laboratuvarları", "Kütüphane", "Spor salonu ve havuz", "Sahne ve müzik odaları", "Yemekhane", "Servis ve güvenlik", "Anaokulu binası ve bahçesi", "Revir", "Orman yolu ve bahçeler"],
         errors: { day: "Bir gün seçin.", time: "Bir saat seçin." },
       },
       s3: {

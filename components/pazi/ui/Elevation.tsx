@@ -135,9 +135,12 @@ export function Elevation({
   // demo product and gripper, as on the model page
   const demo = { ...DEFAULT_CONFIG, ...MODEL_DEMO[model.id] };
   const f = fit(demo, model.id);
-  const claw = f.gripper === "pence";
+  // the tool is the one the fit sized for this product (lib/pazi/gripper.ts)
+  const grip = f.grip;
+  const claw = grip.family === "pence";
   const bag = demo.kind === "torba";
-  const gH = claw ? 120 : 112;
+  const gH = 120;
+  const tineD = grip.claw?.depth ?? 186;
   const hold = yF - gH;
   const items: [number, number][] = f.double
     ? [
@@ -145,8 +148,11 @@ export function Elevation({
         [a3, a3 + demo.u],
       ]
     : [[a3 - demo.g / 2, a3 + demo.g / 2]];
-  const clawW = Math.max(360, demo.g + 60);
-  const lowest = Math.min(hold - demo.y, claw ? yF - 70 - 192 : Infinity);
+  const clawW = grip.plate.w;
+  // seen from the side: the plate length when two products hang side by side, its width otherwise
+  const plateSeen = f.double ? grip.plate.l : grip.plate.w;
+  const padsSeen = f.double ? grip.pads.nz : grip.pads.nx;
+  const lowest = Math.min(hold - demo.y, claw ? yF - 70 - tineD - 6 : Infinity);
 
   // pallet station and the layers already on it
   const px0 = STATION_GAP_M * 1000;
@@ -434,14 +440,26 @@ export function Elevation({
             <path d={rbox(a3 - 145, yF - 37, a3 - 100, yF - 13, 4)} fill={C.metal} {...detail} />
             <path d={rbox(a3 - 105, yF - 47.5, a3 - 35, yF - 2.5, 6)} fill={C.rubber} {...detail} />
             {(() => {
-              const pw = f.double ? Math.max(240, 2 * demo.u * 0.86) : Math.max(200, demo.g * 0.82);
+              const pw = plateSeen;
+              const d = grip.pads.d;
+              const n = Math.max(1, padsSeen);
               return (
                 <>
                   <path d={box(a3 - pw * 0.45, yF - 72, a3 + pw * 0.45, yF - 32)} fill={C.alu} {...ln} />
                   <path d={rbox(a3 - 22.5, yF - 77.5, a3 + 22.5, yF - 32.5, 4)} fill={C.alu} {...detail} />
                   <path d={`${line(a3 - 12, yF - 32.5, a3 - 12, yF - 40)} ${line(a3 + 12, yF - 32.5, a3 + 12, yF - 40)}`} stroke={C.ink} strokeWidth={fine} />
                   <path d={box(a3 - pw / 2, yF - 90, a3 + pw / 2, yF - 78)} fill={C.hub} {...detail} />
-                  <path d={rbox(a3 - pw * 0.49, yF - 112, a3 + pw * 0.49, yF - 90, 6)} fill={C.rubber} {...detail} />
+                  {Array.from({ length: n }, (_, i) => {
+                    // one suction pad per grid column: stem, bellows, lip on the product
+                    const cx = a3 - pw / 2 + ((i + 0.5) * pw) / n;
+                    return (
+                      <g key={i}>
+                        <path d={box(cx - d * 0.18, yF - 98, cx + d * 0.18, yF - 90)} fill={C.rubber} {...detail} />
+                        <path d={rbox(cx - d * 0.34, yF - 110, cx + d * 0.34, yF - 98, 3)} fill={C.rubber} {...detail} />
+                        <path d={poly([[cx - d * 0.32, yF - 110], [cx + d * 0.32, yF - 110], [cx + d * 0.5, yF - 120], [cx - d * 0.5, yF - 120]])} fill={C.rubber} {...detail} />
+                      </g>
+                    );
+                  })}
                 </>
               );
             })()}
@@ -456,9 +474,9 @@ export function Elevation({
           ? [-1, 1].map((side) => {
               const pv: Pt = [a3 + (side * clawW) / 2, yF - 70];
               const a = side * 0.05;
-              const tine = poly(([[-6, 10], [6, 10], [6, -190], [-6, -190]] as Pt[]).map((p) => rot(p, pv, a)));
+              const tine = poly(([[-6, 10], [6, 10], [6, -tineD - 4], [-6, -tineD - 4]] as Pt[]).map((p) => rot(p, pv, a)));
               const fx = -side * 50;
-              const foot = poly(([[fx - 50, -182], [fx + 50, -182], [fx + 50, -190], [fx - 50, -190]] as Pt[]).map((p) => rot(p, pv, a)));
+              const foot = poly(([[fx - 50, -tineD + 4], [fx + 50, -tineD + 4], [fx + 50, -tineD - 4], [fx - 50, -tineD - 4]] as Pt[]).map((p) => rot(p, pv, a)));
               return (
                 <g key={side}>
                   <path d={tine} fill={C.metal} {...ln} />

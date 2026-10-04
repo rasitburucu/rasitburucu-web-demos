@@ -104,7 +104,13 @@ export default function Sofra() {
                 <p className="kk-muted">{d.source}</p>
                 <p className="kk-dish-allergens">
                   {d.allergens.length
-                    ? d.allergens.map((a) => ALLERGENS.find((x) => x.key === a)!.label).join(", ") + ` ${m.contains}.`
+                    ? d.allergens
+                        .map((a, i) => {
+                          const l = ALLERGENS.find((x) => x.key === a)!.label;
+                          // Sentence case after the first item; "Antep" stays a name.
+                          return i === 0 || l.startsWith("Antep") ? l : l.charAt(0).toLocaleLowerCase("tr") + l.slice(1);
+                        })
+                        .join(", ") + ` ${m.contains}.`
                     : m.allergenNone + "."}
                 </p>
               </div>

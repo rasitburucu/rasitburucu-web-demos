@@ -204,21 +204,24 @@ html.lenis.lenis-stopped {
   .rv-cover-lede {
     order: 2;
   }
-  .rv-cover-arch {
+  /* phones: the form comes before the render, so the site's one job starts in the
+     first screen; the arch rises into view right under it */
+  .rv-cover .rv-sentence {
     order: 3;
     margin-top: 1.5rem;
   }
-  .rv-cover-arch .rv-photo {
-    height: 50svh;
-    min-height: 300px;
-  }
-  .rv-cover .rv-sentence {
-    order: 4;
-  }
   .rv-root .rv-cover-tour {
-    order: 5;
+    order: 4;
     grid-column: 1 / -1;
     justify-self: start;
+  }
+  .rv-cover-arch {
+    order: 5;
+    margin-top: 1.75rem;
+  }
+  .rv-cover-arch .rv-photo {
+    height: 56svh;
+    min-height: 320px;
   }
 }
 
@@ -517,8 +520,9 @@ html.lenis.lenis-stopped {
   text-wrap: nowrap;
 }
 .rv-ch-mask {
-  padding: 0.16em 0.02em 0.14em;
-  margin: -0.16em -0.02em -0.14em;
+  /* room above the cap height for the dot of İ and the breve of Ğ */
+  padding: 0.3em 0.02em 0.16em;
+  margin: -0.3em -0.02em -0.16em;
 }
 .rv-root .rv-chapter-name {
   margin-bottom: 0.1em;
@@ -694,6 +698,53 @@ html.lenis.lenis-stopped {
   height: 100%;
   object-fit: cover;
 }
+/* The photograph stands in the room behind the opening, not on the stone:
+   graded toward the limestone's light (less saturated, softer blacks), scaled
+   from the vanishing point (Walk.tsx writes the parallax), and shaded by the
+   arch it sits behind. */
+.rv-portal-photo img {
+  transform-origin: 50% 66%;
+  filter: saturate(0.74) contrast(0.9) brightness(0.97) sepia(0.12);
+}
+.rv-walk.is-active .rv-portal-photo img {
+  will-change: transform;
+}
+.rv-portal-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  /* the vault overhead, the floor contact, and the light of the hour */
+  background:
+    linear-gradient(to bottom, #4a3a2a80 0%, #4a3a2a2b 18%, #4a3a2a00 38%),
+    linear-gradient(to top, #4a3a2a40 0%, #4a3a2a00 12%),
+    color-mix(in srgb, #ece2d2, #f2c896 calc(var(--sun, 0) * 100%));
+  /* the jamb on the sun's side throws its shadow into the opening: left in the morning, right in the evening */
+  box-shadow:
+    inset calc((1 - 2 * var(--sun, 0)) * 3.2cqw) 2.4cqw 4.5cqw #3a2a1a8c,
+    inset 0 0 1.6cqw #3a2a1a59;
+}
+/* the soffit: the inner face of the arch's depth, seen in perspective as a stone band
+   around the opening. The side away from the sun is in shade; the crown always darkest. */
+.rv-portal-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1.5cqw solid #9d8f78;
+  border-bottom: 0;
+  border-top-color: #7d705d;
+  border-left-color: color-mix(in srgb, #857864, #b3a58c calc(var(--sun, 0) * 100%));
+  border-right-color: color-mix(in srgb, #b3a58c, #857864 calc(var(--sun, 0) * 100%));
+  box-shadow: inset 0 0.4cqw 1.4cqw #2a1d1066;
+}
+.rv-portal-photo--exit::after {
+  background: linear-gradient(to bottom, #4a3a2a80 0%, #4a3a2a00 26%);
+}
 /* sunlight through the side openings, lying on the floor in front of the arch */
 .rv-portal-sun {
   position: absolute;
@@ -702,11 +753,12 @@ html.lenis.lenis-stopped {
   top: 100%;
   height: 22%;
   background: color-mix(in srgb, var(--w-sun-am), var(--w-sun-pm) calc(var(--sun, 0) * 100%));
-  opacity: 0.7;
+  opacity: 0.42;
   transform-origin: 50% 0;
   transform: skewX(calc(-40deg + var(--sun, 0) * 80deg));
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 100%);
+  /* a soft pool of light, no hard vector edges */
+  -webkit-mask-image: radial-gradient(ellipse 58% 90% at 50% 0%, #000 0%, #0008 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 58% 90% at 50% 0%, #000 0%, #0008 45%, transparent 100%);
 }
 .rv-portal.is-exit .rv-portal-sun {
   display: none;
@@ -1499,18 +1551,6 @@ select.rv-input {
   width: 100%;
   height: auto;
 }
-/* coursed infill behind the face's opening */
-.rv-404-fill {
-  position: absolute;
-  left: 22.3%;
-  right: 22.3%;
-  top: 13.4%;
-  bottom: 0;
-  border-radius: 100vmax 100vmax 0 0;
-  background:
-    repeating-linear-gradient(to bottom, transparent 0 calc(7.6% - 2px), #6f6455 calc(7.6% - 2px) 7.6%),
-    linear-gradient(#b9ad99, #a89b86);
-}
 .rv-404-code {
   font-family: var(--rv-f-serif);
   font-size: 1.1rem;
@@ -1550,4 +1590,133 @@ select.rv-input {
 /* chips: no colour fade between hover and checked, so the label never vanishes mid-transition */
 .rv-root .rv-choices--chips .rv-choice-face {
   transition: border-color 0.15s;
+}
+
+/* ---------- v4 polish ---------- */
+
+/* Labels in sentence case: no letterspaced capitals (YON rejects the "premium
+   editorial" trace of caps everywhere). The text in tr.ts is already sentence case. */
+.rv-root .rv-chapter-folio,
+.rv-root .rv-label,
+.rv-root .rv-fieldset legend,
+.rv-root .rv-plate-label,
+.rv-root .rv-chapter-plate figcaption {
+  font: 600 0.875rem/1.35 var(--rv-f-sans);
+  letter-spacing: 0.005em;
+  text-transform: none;
+}
+.rv-root .rv-chapter-folio .rv-num {
+  font-weight: 400;
+}
+
+/* figures inside serif text: Marcellus' zero reads as a capital O */
+.rv-digits {
+  font-family: var(--rv-f-sans);
+  font-size: 0.92em;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0;
+}
+
+/* The exit block sits in the optical middle of the column. GSAP owns transform
+   and clears `translate`, so the offset is a plain top value. */
+@media (min-width: 861px) {
+  .rv-walk.is-live .rv-walk-exit {
+    top: 30%;
+    translate: none;
+  }
+}
+
+/* phones: the bottom bar already carries "Tur"; dropping the duplicate link lets
+   the arch render rise into the first screen under the form */
+@media (max-width: 560px) {
+  .rv-root .rv-cover-tour {
+    display: none;
+  }
+  .rv-cover-arch {
+    margin-top: 1.25rem;
+  }
+}
+
+/* a choice whose label is a date or a year: the whole label in the sans, one size */
+.rv-root .rv-choice-face strong.rv-choice-num {
+  font-family: var(--rv-f-sans);
+  font-weight: 500;
+  font-size: 1.125rem;
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: 0;
+}
+/* step numerals legible at a glance */
+.rv-step-dot::before {
+  font-size: 0.8rem;
+}
+
+/* the walk's text column on the same left edge as the logo and every section */
+@media (min-width: 861px) {
+  .rv-walk.is-live .rv-walk-head,
+  .rv-walk.is-live .rv-chapter,
+  .rv-walk.is-live .rv-walk-exit,
+  .rv-walk.is-live .rv-walk-toc {
+    left: calc(max(0px, (100% - var(--rv-max)) / 2) + var(--rv-gutter));
+    width: min(38vw, 36rem);
+  }
+}
+/* phones: the ruler already says where we are; the "I / IV" folio repeats it */
+@media (max-width: 860px) {
+  .rv-walk.is-live .rv-chapter-folio .rv-num {
+    display: none;
+  }
+}
+
+/* the sun on the wall: a soft, wide fall of light, no hard vector edges */
+.rv-walk.is-live .rv-walk-stage::before {
+  background: linear-gradient(104deg, transparent 34%, rgba(22, 32, 46, 0.04) 50%, rgba(22, 32, 46, 0.04) 58%, transparent 76%);
+}
+
+/* campus band: the stone panel steps out past the grid so the heading never touches its edge */
+.rv-campus2-head,
+.rv-campus2-body .rv-folio {
+  --rv-step-out: clamp(1.25rem, 3vw, 3rem);
+  width: min(calc(100% + var(--rv-step-out)), calc(50rem + var(--rv-step-out)));
+  margin-left: calc(-1 * var(--rv-step-out));
+  padding-left: var(--rv-step-out);
+}
+/* the campus page's render under a shallow stone arch, like every render on the site */
+.rv-root .rv-kampus-hero .rv-photo {
+  border-radius: 50% 50% var(--rv-radius) var(--rv-radius) / 18% 18% var(--rv-radius) var(--rv-radius);
+}
+
+/* phones: the render sits beside the headline as a small arch, so the world is in the
+   first screen and the form still starts above the fold */
+@media (max-width: 560px) {
+  .rv-root .rv-cover-title {
+    grid-column: 1 / span 8;
+    grid-row: 1;
+    font-size: clamp(2.1rem, 9.6vw, 2.6rem);
+  }
+  .rv-cover-arch {
+    order: 1;
+    grid-column: 9 / -1;
+    grid-row: 1;
+    align-self: start;
+    margin-top: 0.35rem;
+  }
+  .rv-cover-arch .rv-photo {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 0.66;
+  }
+  .rv-cover-lede {
+    grid-row: 2;
+  }
+}
+
+/* the age counter on the same grid line as the walk's text */
+@media (min-width: 861px) {
+  .rv-walk.is-live .rv-walk-age {
+    left: calc(max(0px, (100% - var(--rv-max)) / 2) + var(--rv-gutter));
+  }
+}
+/* the 404 render cut to the arch, like every render on the site */
+.rv-404-arch img {
+  border-radius: 100vmax 100vmax var(--rv-radius) var(--rv-radius);
 }

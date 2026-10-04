@@ -104,7 +104,6 @@ export function BurslulukFlow() {
       onNext={next}
       nextLabel={step === 2 ? t.s3.submit : undefined}
       aside={<HelpCard note={t.helpNote} />}
-      nextTone={step === 2 ? "seal" : "ink"}
     >
       {step === 0 && (
         <>

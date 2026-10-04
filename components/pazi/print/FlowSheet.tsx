@@ -90,6 +90,12 @@ export function FlowSheet() {
               <dd>{f.cycleSec ? `${fmt1(f.cycleSec)} sn` : "—"}</dd>
               <dt>{fl.result.area}</dt>
               <dd>{`${fmt1(f.cell.w)} × ${fmt1(f.cell.d)} m`}</dd>
+              <dt>{fl.result.gripper}</dt>
+              <dd>
+                {f.grip.warning ? tr.gripCustom : tr.grippers[f.gripper]}
+                <br />
+                <span className="pz-paper-small">{tr.gripSize(f.grip)}</span>
+              </dd>
             </dl>
           </section>
           <section>

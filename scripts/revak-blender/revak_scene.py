@@ -7,11 +7,18 @@ Run with a fresh factory scene so nothing in an open Blender session is touched:
 Modes
   face-am / face-pm  one arch face, orthographic, transparent background and hole.
                      Same module as the walk's SVG portal (180 x 192.7 u, 1 u = 2 cm).
+  face-walled        the evening face with its opening bricked up (404 page).
   hero               the gallery seen from inside, morning sun through the arches (portrait).
   wide               the same gallery, landscape (campus band + Open Graph crop).
+  court-am           from the garden back to the arcade, morning (campus band, campus page).
+  court-pm           the garden at the end of the arcade, evening (the walk's open arch).
+  court-wide         down the garden walk between cypresses and arcade (campus page).
   wall               a flat ashlar wall swatch, front lit, for the walk's stage.
 
-Everything is modelled here: no downloaded textures, models or HDRIs.
+Everything is modelled here: no downloaded textures, models or HDRIs. Trees are
+procedural too: leaf sprays scattered by geometry nodes over lumpy clumps
+(cypress, stone pine, oak/hornbeam crowns, shrubs, a wooded ridge).
+Optional 4th argument: resolution percentage for quick test renders.
 """
 
 import math
@@ -26,6 +33,7 @@ argv = sys.argv[sys.argv.index("--") + 1 :] if "--" in sys.argv else []
 MODE = argv[0] if argv else "face-am"
 OUT = argv[1] if len(argv) > 1 else "//revak.png"
 SAMPLES = int(argv[2]) if len(argv) > 2 else 128
+PCT = int(argv[3]) if len(argv) > 3 else 100  # resolution percentage (quick test renders)
 
 U = 0.02  # metres per walk unit
 W, H = 180 * U, 192.7 * U  # module box 3.6 x 3.854 m
@@ -158,13 +166,51 @@ def stone_material(name, base_a, base_b, rough=0.86, bump=0.4, scale=1.0):
     l.new(st_r.outputs["Result"], stained.inputs["B"])
     l.new(stained.outputs["Result"], grime.inputs["A"])
     l.new(gr.outputs["Result"], grime.inputs["B"])
-    l.new(grime.outputs["Result"], bsdf.inputs["Base Color"])
-    bsdf.inputs["Roughness"].default_value = rough
+    # rain streaks: long vertical noise, a little darker where water runs down the face
+    stretch = n.new("ShaderNodeMapping")
+    stretch.inputs["Scale"].default_value = (1.0, 1.0, 0.12)
+    l.new(tc.outputs["Object"], stretch.inputs["Vector"])
+    streak = n.new("ShaderNodeTexNoise")
+    streak.inputs["Scale"].default_value = 3.0 / scale
+    streak.inputs["Detail"].default_value = 3.0
+    l.new(stretch.outputs["Vector"], streak.inputs["Vector"])
+    st_k = n.new("ShaderNodeMapRange")
+    st_k.inputs["From Min"].default_value = 0.5
+    st_k.inputs["From Max"].default_value = 0.72
+    st_k.inputs["To Min"].default_value = 1.0
+    st_k.inputs["To Max"].default_value = 0.88
+    l.new(streak.outputs["Fac"], st_k.inputs["Value"])
+    streaked = n.new("ShaderNodeMix")
+    streaked.data_type = "RGBA"
+    streaked.blend_type = "MULTIPLY"
+    streaked.inputs["Factor"].default_value = 1.0
+    l.new(grime.outputs["Result"], streaked.inputs["A"])
+    l.new(st_k.outputs["Result"], streaked.inputs["B"])
+    l.new(streaked.outputs["Result"], bsdf.inputs["Base Color"])
+    # every block dressed a little differently: some honed, some rough-tooled
+    rr = n.new("ShaderNodeMapRange")
+    rr.inputs["To Min"].default_value = rough - 0.12
+    rr.inputs["To Max"].default_value = min(1.0, rough + 0.08)
+    l.new(info.outputs["Random"], rr.inputs["Value"])
+    l.new(rr.outputs["Result"], bsdf.inputs["Roughness"])
 
     fine = n.new("ShaderNodeTexNoise")
     fine.inputs["Scale"].default_value = 26 / scale
     fine.inputs["Detail"].default_value = 12.0
     l.new(tc.outputs["Object"], fine.inputs["Vector"])
+    # medium undulation of a hand-dressed face, stronger on the rougher blocks
+    mid = n.new("ShaderNodeTexNoise")
+    mid.inputs["Scale"].default_value = 5.0 / scale
+    mid.inputs["Detail"].default_value = 4.0
+    l.new(tc.outputs["Object"], mid.inputs["Vector"])
+    mid_k = n.new("ShaderNodeMath")
+    mid_k.operation = "MULTIPLY"
+    l.new(mid.outputs["Fac"], mid_k.inputs[0])
+    l.new(rr.outputs["Result"], mid_k.inputs[1])
+    mid_w = n.new("ShaderNodeMath")
+    mid_w.operation = "MULTIPLY"
+    mid_w.inputs[1].default_value = 2.2
+    l.new(mid_k.outputs[0], mid_w.inputs[0])
     bmp = n.new("ShaderNodeBump")
     bmp.inputs["Strength"].default_value = bump
     bmp.inputs["Distance"].default_value = 0.01
@@ -172,7 +218,11 @@ def stone_material(name, base_a, base_b, rough=0.86, bump=0.4, scale=1.0):
     hmix.operation = "ADD"
     l.new(fine.outputs["Fac"], hmix.inputs[0])
     l.new(pit.outputs["Result"], hmix.inputs[1])
-    l.new(hmix.outputs[0], bmp.inputs["Height"])
+    hmix2 = n.new("ShaderNodeMath")
+    hmix2.operation = "ADD"
+    l.new(hmix.outputs[0], hmix2.inputs[0])
+    l.new(mid_w.outputs[0], hmix2.inputs[1])
+    l.new(hmix2.outputs[0], bmp.inputs["Height"])
     l.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
     return m
 
@@ -227,6 +277,44 @@ def floor_material():
     bmp.inputs["Strength"].default_value = 0.35
     bmp.inputs["Distance"].default_value = 0.004
     l.new(brick.outputs["Fac"], bmp.inputs["Height"])
+    l.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
+    return m
+
+
+def gravel_material():
+    """Courtyard gravel: pea stones (voronoi cells) with patches worn to packed earth."""
+    m = bpy.data.materials.new("Avlu")
+    m.use_nodes = True
+    nt = m.node_tree
+    n, l = nt.nodes, nt.links
+    bsdf = next(x for x in n if x.type == "BSDF_PRINCIPLED")
+    tc = n.new("ShaderNodeTexCoord")
+    vor = n.new("ShaderNodeTexVoronoi")
+    vor.inputs["Scale"].default_value = 55.0
+    l.new(tc.outputs["Object"], vor.inputs["Vector"])
+    patch = n.new("ShaderNodeTexNoise")
+    patch.inputs["Scale"].default_value = 0.35
+    patch.inputs["Detail"].default_value = 6.0
+    l.new(tc.outputs["Object"], patch.inputs["Vector"])
+    ramp = n.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.40, 0.36, 0.30, 1)
+    ramp.color_ramp.elements[1].color = (0.70, 0.66, 0.58, 1)
+    mixf = n.new("ShaderNodeMath")
+    mixf.operation = "MULTIPLY_ADD"
+    mixf.inputs[1].default_value = 0.5
+    l.new(vor.outputs["Color"], mixf.inputs[0])
+    l.new(patch.outputs["Fac"], mixf.inputs[2])
+    l.new(mixf.outputs[0], ramp.inputs["Fac"])
+    l.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.93
+    bmp = n.new("ShaderNodeBump")
+    bmp.inputs["Strength"].default_value = 0.7
+    bmp.inputs["Distance"].default_value = 0.01
+    inv = n.new("ShaderNodeMath")
+    inv.operation = "SUBTRACT"
+    inv.inputs[0].default_value = 1.0
+    l.new(vor.outputs["Distance"], inv.inputs[1])
+    l.new(inv.outputs[0], bmp.inputs["Height"])
     l.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
     return m
 
@@ -446,6 +534,7 @@ def sky_world(sun_elev, sun_rot, strength=0.9):
 
 def camera(loc, rot_deg, lens=24, ortho=None):
     cd = bpy.data.cameras.new("Cam")
+    cd.clip_end = 600.0  # the forest ridge stands ~90 m away
     if ortho:
         cd.type = "ORTHO"
         cd.ortho_scale = ortho
@@ -463,7 +552,7 @@ def out(res_x, res_y, transparent=False):
     scn = bpy.context.scene
     scn.render.resolution_x = res_x
     scn.render.resolution_y = res_y
-    scn.render.resolution_percentage = 100
+    scn.render.resolution_percentage = PCT
     scn.render.film_transparent = transparent
     scn.render.image_settings.file_format = "PNG"
     scn.render.image_settings.color_mode = "RGBA" if transparent else "RGB"
@@ -478,12 +567,39 @@ LIME_D = (0.80, 0.72, 0.58)
 LIME_D_LO = (0.58, 0.50, 0.39)
 
 
-def build_face(evening):
+def wall_up(stone, mortar):
+    """Brick the opening up with rougher, recessed rubble ashlar (the 404 page): irregular
+    block lengths in staggered courses, clipped to the arch, set 9 cm back from the face."""
+    rnd = random.Random(404)
+    y0, y1 = 0.09, 0.4
+    box("infill_back", -R_IN, R_IN, y0 + 0.03, y1, 0, SPRING + R_IN, mortar, 0)
+    z = PLINTH * 0.5
+    row = 0
+    while z < SPRING + R_IN:
+        ch = rnd.uniform(0.19, 0.27)
+        zc = z + ch / 2
+        dz = zc - SPRING
+        half = R_IN if dz <= 0 else math.sqrt(max(0.0, R_IN**2 - min(dz + ch / 2, R_IN) ** 2))
+        x = -R_IN - (rnd.uniform(0.1, 0.3) if row % 2 else 0)
+        while x < R_IN:
+            wdt = rnd.uniform(0.28, 0.52)
+            x0, x1 = max(x, -half), min(x + wdt, half)
+            if x1 - x0 > 0.06:
+                ob = box(f"inf{row}_{x:.2f}", x0 + 0.008, x1 - 0.008, y0 + rnd.uniform(-0.01, 0.015), y1 - 0.05, z + 0.008, z + ch - 0.008, stone, 0.02)
+                ob.rotation_euler[1] = rnd.uniform(-0.01, 0.01)
+            x += wdt
+        z += ch
+        row += 1
+
+
+def build_face(evening, walled=False):
     stone = stone_material("Tas", LIME, LIME_LO)
     stone_d = stone_material("TasKoyu", LIME_D, LIME_D_LO, bump=0.48)
     joint = flat_material("Derz", (0.36, 0.33, 0.29), 0.95)
     arch_module("m_", stone, stone_d, 0.0)
     course_lines("m_", 0.0, joint)
+    if walled:
+        wall_up(stone_material("TasKaba", LIME_D_LO, (0.45, 0.39, 0.31), rough=0.95, bump=0.9), flat_material("HarcIc", (0.28, 0.25, 0.21), 0.95))
     if evening:
         sun("Gunes", (74, 0, 70), 4.4, (1.0, 0.68, 0.42), 1.0)  # low, from the right
         world((0.42, 0.32, 0.26), 0.55)
@@ -518,34 +634,266 @@ def build_wall():
 CYPRESSES = ((-11.0, 11.0), (-10.2, 18.5), (-11.0, 26.0), (-11.4, 3.8), (-10.6, -3.0))
 
 
-def cypress(name, x, y, h):
-    """Italian cypress: a lumpy spindle, not a cone (subdivided, cloud-displaced, darker inside)."""
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=16, radius=1.0, location=(x, y, h * 0.5))
-    ob = bpy.context.active_object
-    ob.name = name
-    ob.scale = (0.62, 0.62, h * 0.5)
-    for v in ob.data.vertices:  # widest a fifth of the way up, pointed at the top
-        t = (v.co.z + 1) / 2
-        rad = math.hypot(v.co.x, v.co.y)
-        if rad < 1e-6:
-            continue
-        r = max(0.03, min(1.0, t / 0.2) ** 0.5 * (1.0 - t) ** 0.8 * 1.2)
-        v.co.x *= r / rad
-        v.co.y *= r / rad
-    tex = bpy.data.textures.new(name + "t", "CLOUDS")
-    tex.noise_scale = 0.18
-    mod = ob.modifiers.new("d", "DISPLACE")
-    mod.texture = tex
-    mod.strength = 0.22
-    mod.texture_coords = "GLOBAL"
-    sub = ob.modifiers.new("s", "SUBSURF")
-    sub.levels = 1
-    sub.render_levels = 2
-    ob.modifiers.move(1, 0)
-    for poly in ob.data.polygons:
-        poly.use_smooth = True
-    m = bpy.data.materials.get("Selvi") or stone_material("Selvi", (0.07, 0.13, 0.06), (0.025, 0.05, 0.025), rough=0.95, bump=1.0, scale=0.08)
-    ob.data.materials.append(m)
+# ------------------------------------------------------------------ vegetation
+# Real foliage reads through its silhouette: thousands of small leaf sprays
+# instanced over lumpy clumps (geometry nodes), each spray a slightly different
+# green, light passing through the thin ones. No cones, no single blobs.
+
+
+def _sock(sockets, name, kind):
+    return next(s for s in sockets if s.name == name and s.type == kind)
+
+
+def leaf_nodes(name, density, size, stretch, tilt, flat, mat, seed):
+    """Geometry nodes: keep the clump mesh, scatter leaf sprays over it."""
+    ng = bpy.data.node_groups.new(name, "GeometryNodeTree")
+    ng.interface.new_socket("Geometry", in_out="INPUT", socket_type="NodeSocketGeometry")
+    ng.interface.new_socket("Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry")
+    n, l = ng.nodes, ng.links
+    gi = n.new("NodeGroupInput")
+    go = n.new("NodeGroupOutput")
+    dist = n.new("GeometryNodeDistributePointsOnFaces")
+    dist.inputs["Density"].default_value = density
+    dist.inputs["Seed"].default_value = seed
+    l.new(gi.outputs[0], dist.inputs["Mesh"])
+    leaf = n.new("GeometryNodeMeshIcoSphere")
+    leaf.inputs["Radius"].default_value = size
+    leaf.inputs["Subdivisions"].default_value = 1
+    inst = n.new("GeometryNodeInstanceOnPoints")
+    l.new(dist.outputs["Points"], inst.inputs["Points"])
+    l.new(leaf.outputs["Mesh"], inst.inputs["Instance"])
+    rot = n.new("FunctionNodeRandomValue")
+    rot.data_type = "FLOAT_VECTOR"
+    _sock(rot.inputs, "Min", "VECTOR").default_value = (-tilt, -tilt, 0.0)
+    _sock(rot.inputs, "Max", "VECTOR").default_value = (tilt, tilt, 6.283)
+    _sock(rot.inputs, "Seed", "INT").default_value = seed + 1
+    l.new(_sock(rot.outputs, "Value", "VECTOR"), inst.inputs["Rotation"])
+    scl = n.new("FunctionNodeRandomValue")
+    scl.data_type = "FLOAT_VECTOR"
+    _sock(scl.inputs, "Min", "VECTOR").default_value = (0.55, 0.55 * flat, 0.55 * stretch)
+    _sock(scl.inputs, "Max", "VECTOR").default_value = (1.25, 1.25 * flat, 1.3 * stretch)
+    _sock(scl.inputs, "Seed", "INT").default_value = seed + 2
+    l.new(_sock(scl.outputs, "Value", "VECTOR"), inst.inputs["Scale"])
+    setm = n.new("GeometryNodeSetMaterial")
+    setm.inputs["Material"].default_value = mat
+    l.new(inst.outputs["Instances"], setm.inputs["Geometry"])
+    join = n.new("GeometryNodeJoinGeometry")
+    l.new(setm.outputs[0], join.inputs[0])
+    l.new(gi.outputs[0], join.inputs[0])
+    l.new(join.outputs[0], go.inputs[0])
+    return ng
+
+
+def leaf_material(name, greens, translucent=0.22):
+    """Per-spray colour from Object Info > Random (each instance differs), sun through thin leaves."""
+    m = bpy.data.materials.get(name)
+    if m:
+        return m
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    n, l = nt.nodes, nt.links
+    out = next(x for x in n if x.type == "OUTPUT_MATERIAL")
+    bsdf = next(x for x in n if x.type == "BSDF_PRINCIPLED")
+    info = n.new("ShaderNodeObjectInfo")
+    tc = n.new("ShaderNodeTexCoord")
+    noise = n.new("ShaderNodeTexNoise")
+    noise.inputs["Scale"].default_value = 0.6
+    l.new(tc.outputs["Object"], noise.inputs["Vector"])
+    mixv = n.new("ShaderNodeMath")
+    mixv.operation = "MULTIPLY_ADD"
+    mixv.inputs[1].default_value = 0.7
+    l.new(info.outputs["Random"], mixv.inputs[0])
+    nscl = n.new("ShaderNodeMath")
+    nscl.operation = "MULTIPLY"
+    nscl.inputs[1].default_value = 0.45
+    l.new(noise.outputs["Fac"], nscl.inputs[0])
+    l.new(nscl.outputs[0], mixv.inputs[2])
+    ramp = n.new("ShaderNodeValToRGB")
+    els = ramp.color_ramp.elements
+    els[0].position, els[0].color = 0.0, (*greens[0], 1)
+    els[1].position, els[1].color = 1.0, (*greens[-1], 1)
+    for i, g in enumerate(greens[1:-1], 1):
+        e = els.new(i / (len(greens) - 1))
+        e.color = (*g, 1)
+    l.new(mixv.outputs[0], ramp.inputs["Fac"])
+    l.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    bsdf.inputs["Roughness"].default_value = 0.62
+    try:
+        bsdf.inputs["Specular IOR Level"].default_value = 0.35
+    except KeyError:
+        pass
+    bmp = n.new("ShaderNodeBump")
+    vor = n.new("ShaderNodeTexVoronoi")
+    vor.inputs["Scale"].default_value = 60.0
+    l.new(tc.outputs["Object"], vor.inputs["Vector"])
+    l.new(vor.outputs["Distance"], bmp.inputs["Height"])
+    bmp.inputs["Strength"].default_value = 0.5
+    l.new(bmp.outputs["Normal"], bsdf.inputs["Normal"])
+    trn = n.new("ShaderNodeBsdfTranslucent")
+    l.new(ramp.outputs["Color"], trn.inputs["Color"])
+    mix = n.new("ShaderNodeMixShader")
+    mix.inputs["Fac"].default_value = translucent
+    l.new(bsdf.outputs[0], mix.inputs[1])
+    l.new(trn.outputs[0], mix.inputs[2])
+    l.new(mix.outputs[0], out.inputs["Surface"])
+    return m
+
+
+CYPRESS_GREENS = [(0.020, 0.040, 0.018), (0.035, 0.065, 0.026), (0.055, 0.085, 0.032), (0.080, 0.105, 0.040), (0.105, 0.118, 0.050)]
+BROAD_GREENS = [(0.035, 0.060, 0.020), (0.060, 0.100, 0.030), (0.095, 0.135, 0.040), (0.140, 0.165, 0.055), (0.120, 0.120, 0.045)]
+FAR_GREENS = [(0.045, 0.075, 0.050), (0.070, 0.100, 0.065), (0.095, 0.125, 0.080), (0.120, 0.145, 0.095)]
+PINE_GREENS = [(0.030, 0.050, 0.025), (0.050, 0.075, 0.035), (0.075, 0.095, 0.045), (0.095, 0.105, 0.055)]
+
+
+def _mesh_object(name, bm, mats):
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    for p in me.polygons:
+        p.use_smooth = True
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    for m in mats:
+        ob.data.materials.append(m)
+    return ob
+
+
+def _blob(bm, center, radius, scale, seg=2, rnd=None):
+    """One lumpy ellipsoid clump added to bm."""
+    res = bmesh.ops.create_icosphere(bm, subdivisions=seg, radius=1.0)
+    for v in res["verts"]:
+        j = 1.0 + (rnd.uniform(-0.18, 0.18) if rnd else 0.0)
+        v.co.x = center[0] + v.co.x * radius * scale[0] * j
+        v.co.y = center[1] + v.co.y * radius * scale[1] * j
+        v.co.z = center[2] + v.co.z * radius * scale[2] * j
+
+
+def _branch(bm, p0, p1, r0, r1, seg=7):
+    """Tapered limb from p0 to p1."""
+    d = Vector(p1) - Vector(p0)
+    length = d.length
+    res = bmesh.ops.create_cone(bm, cap_ends=False, segments=seg, radius1=r0, radius2=r1, depth=length)
+    rot = d.to_track_quat("Z", "Y").to_matrix().to_4x4()
+    mid = (Vector(p0) + Vector(p1)) / 2
+    for v in res["verts"]:
+        v.co = rot @ v.co + mid
+
+
+def bark_material():
+    m = bpy.data.materials.get("Kabuk")
+    if m:
+        return m
+    return stone_material("Kabuk", (0.20, 0.15, 0.11), (0.09, 0.07, 0.05), rough=0.95, bump=1.2, scale=0.12)
+
+
+def inner_material():
+    """The dark heart of a crown: what you see through the gaps between sprays."""
+    return bpy.data.materials.get("YaprakIc") or flat_material("YaprakIc", (0.012, 0.022, 0.010), 0.9)
+
+
+def add_leaves(ob, kind, density, size, seed):
+    if kind == "cypress":
+        mat, stretch, tilt, flat = leaf_material("SelviYaprak", CYPRESS_GREENS, 0.18), 2.6, 0.35, 0.55
+    elif kind == "far":  # aerial perspective: the distant ridge is bluer and paler
+        mat, stretch, tilt, flat = leaf_material("UzakYaprak", FAR_GREENS, 0.2), 0.4, 3.14, 1.0
+    elif kind == "pine":
+        mat, stretch, tilt, flat = leaf_material("CamYaprak", PINE_GREENS, 0.14), 0.45, 0.5, 1.0
+    else:
+        mat, stretch, tilt, flat = leaf_material("Yaprak", BROAD_GREENS, 0.28), 0.32, 3.14, 1.0
+    ng = leaf_nodes(f"{ob.name}_gn", density, size, stretch, tilt, flat, mat, seed)
+    mod = ob.modifiers.new("yaprak", "NODES")
+    mod.node_group = ng
+    return ob
+
+
+def cypress(name, x, y, h, seed=0, density=420):
+    """Italian cypress: a column of vertical spray clumps on a short trunk; wavy edge, pointed, uneven tip."""
+    rnd = random.Random(seed)
+    bm = bmesh.new()
+    rmax = 0.62 + rnd.uniform(-0.08, 0.1)
+    n = int(h * 26)
+    for _ in range(n):
+        t = rnd.random() ** 0.92
+        z = 0.45 + t * (h - 0.45)
+        env = min(1.0, t / 0.16) ** 0.45 * (1.0 - t) ** 0.72 * 1.12
+        env *= 1.0 + 0.12 * math.sin(t * 23 + seed)  # the slight waist and bulges of a real one
+        r = rmax * env
+        a = rnd.uniform(0, math.tau)
+        d = r * rnd.uniform(0.25, 0.85)
+        rc = max(0.08, r * rnd.uniform(0.32, 0.55))
+        _blob(bm, (x + d * math.cos(a), y + d * math.sin(a), z), rc, (1.0, 1.0, rnd.uniform(1.6, 2.6)), 2, rnd)
+    # a few sprays sticking out: the silhouette never closes into a smooth spindle
+    for _ in range(int(h * 3)):
+        t = rnd.uniform(0.12, 0.85)
+        r = rmax * min(1.0, t / 0.16) ** 0.45 * (1.0 - t) ** 0.72 * 1.12
+        a = rnd.uniform(0, math.tau)
+        _blob(bm, (x + r * 1.05 * math.cos(a), y + r * 1.05 * math.sin(a), 0.45 + t * h), 0.12, (1, 1, 2.4), 1, rnd)
+    crown = _mesh_object(name, bm, [inner_material()])
+    add_leaves(crown, "cypress", density, 0.055, seed)
+    wood = bmesh.new()
+    _branch(wood, (x, y, -0.05), (x + rnd.uniform(-0.03, 0.03), y, h * 0.55), 0.13, 0.05)
+    _mesh_object(name + "_govde", wood, [bark_material()])
+    return crown
+
+
+def broadleaf(name, x, y, h, seed=0, density=60, size=0.12):
+    """Round deciduous crown (oak, hornbeam of the forest edge): trunk, limbs, clumps with gaps."""
+    rnd = random.Random(seed)
+    wood = bmesh.new()
+    base = Vector((x, y, -0.1))
+    top = Vector((x + rnd.uniform(-0.4, 0.4), y + rnd.uniform(-0.4, 0.4), h * 0.45))
+    _branch(wood, base, top, 0.28 * h / 10, 0.16 * h / 10)
+    crown_c = Vector((top.x, top.y, h * 0.66))
+    cr = h * rnd.uniform(0.3, 0.38)
+    bm = bmesh.new()
+    limbs = rnd.randint(5, 8)
+    for i in range(limbs):
+        a = i / limbs * math.tau + rnd.uniform(-0.3, 0.3)
+        el = rnd.uniform(0.2, 0.9)
+        tip = crown_c + Vector((math.cos(a) * cr * 0.8, math.sin(a) * cr * 0.8, el * cr * 0.6))
+        _branch(wood, top, tip, 0.1 * h / 10, 0.03 * h / 10, 5)
+        for _k in range(rnd.randint(2, 4)):
+            c = tip + Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), rnd.uniform(-0.4, 0.6))) * cr * 0.35
+            _blob(bm, c, cr * rnd.uniform(0.28, 0.42), (1, 1, rnd.uniform(0.75, 1.0)), 2, rnd)
+    _blob(bm, crown_c + Vector((0, 0, cr * 0.3)), cr * 0.45, (1, 1, 0.9), 2, rnd)
+    crown = _mesh_object(name, bm, [inner_material()])
+    add_leaves(crown, "broad", density, size, seed)
+    _mesh_object(name + "_govde", wood, [bark_material()])
+    return crown
+
+
+def stone_pine(name, x, y, h, seed=0, density=50, size=0.14):
+    """Fistik cami (stone pine): bare leaning trunk, flat umbrella crown made of tufts."""
+    rnd = random.Random(seed)
+    wood = bmesh.new()
+    lean = Vector((rnd.uniform(-1, 1), rnd.uniform(-1, 1), 0)).normalized() * h * 0.08
+    top = Vector((x, y, h * 0.72)) + lean
+    _branch(wood, (x, y, -0.1), top, 0.3 * h / 12, 0.17 * h / 12)
+    bm = bmesh.new()
+    cr = h * rnd.uniform(0.34, 0.42)
+    for _ in range(int(16 + h)):
+        a = rnd.uniform(0, math.tau)
+        d = cr * math.sqrt(rnd.random()) * 0.9
+        z = top.z + h * 0.08 + (1 - d / cr) * h * 0.08 + rnd.uniform(-0.3, 0.3)
+        c = Vector((top.x + d * math.cos(a), top.y + d * math.sin(a), z))
+        _branch(wood, top, c - Vector((0, 0, 0.4)), 0.06 * h / 12, 0.02 * h / 12, 5)
+        _blob(bm, c, cr * rnd.uniform(0.22, 0.34), (1, 1, 0.42), 2, rnd)
+    crown = _mesh_object(name, bm, [inner_material()])
+    add_leaves(crown, "pine", density, size, seed)
+    _mesh_object(name + "_govde", wood, [bark_material()])
+    return crown
+
+
+def shrub(name, x, y, r, seed=0, density=260, size=0.045):
+    """Low clipped shrub (box, rosemary) at a tree foot or along a path."""
+    rnd = random.Random(seed)
+    bm = bmesh.new()
+    for _ in range(rnd.randint(4, 7)):
+        c = (x + rnd.uniform(-r, r) * 0.6, y + rnd.uniform(-r, r) * 0.6, r * rnd.uniform(0.35, 0.6))
+        _blob(bm, c, r * rnd.uniform(0.45, 0.7), (1, 1, 0.75), 2, rnd)
+    ob = _mesh_object(name, bm, [inner_material()])
+    add_leaves(ob, "broad", density, size, seed)
     return ob
 
 
@@ -593,7 +941,7 @@ def build_gallery(view):
     # floor
     fl = box("floor", -corridor / 2 - DEPTH - 6, corridor / 2 + 0.5, -W * 1.5, bays * W + 8, -0.2, 0, floor_material(), 0)
     # courtyard: gravel and a low hedge line, then sky
-    gravel = flat_material("Avlu", (0.62, 0.58, 0.50), 0.95)
+    gravel = gravel_material()
     box("court", -40, -corridor / 2 - DEPTH - 0.4, -20, 60, -0.25, -0.03, gravel, 0)
     # the far side of the courtyard: the opposite wing of the same arcade
     far_x = -15.0
@@ -604,26 +952,48 @@ def build_gallery(view):
             p.location = Vector((far_x, b * W, 0))
     box("farBack", far_x - 3.0, far_x - 2.6, -12, 50, 0, H + 0.6, stone, 0)
     box("farTop", far_x - 3.0, far_x + DEPTH, -12, 50, H, H + 0.6, stone, 0)
-    # cypresses in the courtyard
+    # cypresses in the courtyard, a shrub at each foot
     for k, (cx, cy) in enumerate(CYPRESSES):
-        cypress(f"selvi{k}", cx, cy, 6.2 + (k % 3) * 0.7)
-    # the forest edge beyond the campus (Zekeriyaköy), so no view ends on an empty horizon
+        cypress(f"selvi{k}", cx, cy, 7.0 + (k % 3) * 0.9, seed=31 + k)
+        shrub(f"cali{k}", cx + 0.7, cy - 0.5, 0.55, seed=61 + k)
+    # the forest edge beyond the campus (Zekeriyakoy): oak/hornbeam crowns and stone pines
     rnd = random.Random(11)
-    leaf = bpy.data.materials.get("Selvi") or stone_material("Selvi", (0.07, 0.13, 0.06), (0.025, 0.05, 0.025), rough=0.95, bump=1.0, scale=0.08)
-    spots = [(rnd.uniform(-48, 22), rnd.uniform(46, 62)) for _ in range(34)] + [(rnd.uniform(-60, -32), rnd.uniform(-20, 46)) for _ in range(22)] + [(rnd.uniform(9, 24), rnd.uniform(-20, 46)) for _ in range(22)]
+    spots = [(rnd.uniform(-48, 22), rnd.uniform(46, 62)) for _ in range(30)] + [(rnd.uniform(-60, -32), rnd.uniform(-20, 46)) for _ in range(18)] + [(rnd.uniform(9, 24), rnd.uniform(-20, 46)) for _ in range(18)]
     for k, (tx, ty) in enumerate(spots):
-        r = rnd.uniform(2.6, 4.4)
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=r, location=(tx, ty, r * 0.9))
-        t = bpy.context.active_object
-        t.scale.z = rnd.uniform(1.1, 1.6)
-        tex = bpy.data.textures.new(f"tr{k}", "CLOUDS")
-        tex.noise_scale = 1.2
-        d = t.modifiers.new("d", "DISPLACE")
-        d.texture = tex
-        d.strength = 0.9
-        t.data.materials.append(leaf)
-        for poly in t.data.polygons:
-            poly.use_smooth = True
+        h = rnd.uniform(9.0, 14.0)
+        if k % 3 == 0:
+            stone_pine(f"cam{k}", tx, ty, h * 1.1, seed=100 + k, density=55, size=0.15)
+        else:
+            broadleaf(f"agac{k}", tx, ty, h, seed=200 + k, density=55, size=0.16)
+    # the forest beyond: a rolling canopy on the ridge behind the campus closes the horizon
+    ridge = bmesh.new()
+    bmesh.ops.create_grid(ridge, x_segments=90, y_segments=14, size=1.0)
+    for v in ridge.verts:
+        gx, gy = v.co.x, v.co.y  # -1..1
+        x = -40 + gx * 90
+        y = 84 + gy * 14
+        h = 7 + 2.5 * math.sin(x * 0.11) + 2 * math.sin(x * 0.37 + 1.3) + 1.5 * math.sin(y * 0.5 + x * 0.2) + (gy + 1) * 3
+        f = min(1.0, (gy + 1) / 0.3)  # the front rows come down to the ground: a wooded slope, not a floating ribbon
+        v.co.x, v.co.y, v.co.z = x, y, -0.5 + f * (max(2.0, h) + 0.5)
+    canopy = _mesh_object("sirt", ridge, [flat_material("SirtIc", (0.030, 0.048, 0.036), 0.9)])
+    disp = canopy.modifiers.new("d", "DISPLACE")
+    ctex = bpy.data.textures.new("sirt_t", "CLOUDS")
+    ctex.noise_scale = 2.2
+    disp.texture = ctex
+    disp.strength = 1.6
+    sub = canopy.modifiers.new("s", "SUBSURF")
+    sub.levels = sub.render_levels = 1
+    canopy.modifiers.move(1, 0)
+    add_leaves(canopy, "far", 22, 0.26, 9)
+    # understory along the forest edge, so no view ends on a bare horizon
+    for k in range(46):
+        if k < 26:
+            ux, uy = rnd.uniform(-50, 24), rnd.uniform(43, 60)
+        elif k < 36:
+            ux, uy = rnd.uniform(-58, -30), rnd.uniform(-18, 44)
+        else:
+            ux, uy = rnd.uniform(10, 24), rnd.uniform(-18, 44)
+        shrub(f"orman{k}", ux, uy, rnd.uniform(1.4, 2.4), seed=300 + k, density=70, size=0.12)
     # end of the gallery: open to the garden (the world beyond the arcade)
     if view == "court-pm":
         sun("Gunes", (69, 0, -96), 12.0, (1.0, 0.40, 0.14), 1.4)  # evening: low and orange, still from the courtyard
@@ -632,7 +1002,11 @@ def build_gallery(view):
     else:
         sun("Gunes", (50, 0, -118), 11.0, (1.0, 0.86, 0.66), 0.6)  # low morning sun from the courtyard side
         sky_world(40, 300, 0.2)
-    if view == "court-am":
+    if view == "court-wide":
+        # down the garden walk between the cypress row and the arcade, to the forest
+        camera((-6.6, -7.5, 1.55), (88.5, 0, -4), lens=20)
+        out(1600, 900)
+    elif view == "court-am":
         # from the garden, looking back at the arcade
         camera((-8.4, -4.0, 1.6), (88, 0, -32), lens=24)
         out(1600, 900)
@@ -652,9 +1026,11 @@ if MODE == "face-am":
     build_face(False)
 elif MODE == "face-pm":
     build_face(True)
+elif MODE == "face-walled":
+    build_face(True, walled=True)
 elif MODE == "wall":
     build_wall()
-elif MODE in ("hero", "wide", "court-am", "court-pm"):
+elif MODE in ("hero", "wide", "court-am", "court-pm", "court-wide"):
     build_gallery(MODE)
 bpy.ops.render.render(write_still=True)
 print("RENDERED", MODE, OUT)

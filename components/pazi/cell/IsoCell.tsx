@@ -149,7 +149,8 @@ export function IsoCell({ config: override }: { config?: Config }) {
       {[sh, elP, wrP].map((p, i) => (
         <circle key={i} cx={p[0]} cy={p[1]} r={i === 0 ? 12 : 10} fill="#2a2d2f" stroke="#9a9ea2" strokeWidth="1.5" />
       ))}
-      <rect x={toolP[0] - 18} y={toolP[1]} width="36" height="9" fill="#3d4145" stroke="#151615" />
+      {/* the tool, at the size the fit gave it (lib/pazi/gripper.ts) */}
+      <Box x={tx} y={ty - 0.235} z={tz} w={f.grip.plate.w / 1000} h={0.035} d={f.grip.plate.l / 1000} tone={f.grip.family === "pence" ? STEEL : GRAPHITE} />
     </svg>
   );
 }

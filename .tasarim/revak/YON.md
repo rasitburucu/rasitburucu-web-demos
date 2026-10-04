@@ -72,3 +72,13 @@ Başka bir özel okul brifiyle buraya varır mıydım? Kemer motifi bir okul iç
 - Roma rakamları (I–IV): gerçek sıra (kademeler).
 - Rakam paragrafındaki dipnot numaraları: gerçek dipnot.
 - Yapışkan başlıkta backdrop-blur: okunurluk için, dekor değil.
+
+## Karar: mobil ilk ekranda form önde (2026-10-04, Raşit)
+Yön sözleşmesindeki ilk mobil tarif "başlık, alt başlık, 45vh kemer render, cümle formu" idi. Uygulamada form, kemerin altında ilk ekranın dışına düşüyordu. Raşit'in kararı: **işlev merkezde**; telefonda cümle formu ilk ekranda kalır, render başlığın yanında küçük bir kemer olarak durur (dünya ilk ekranda görünür, iş de yapılır).
+Gerekçe: veliler siteyi çoğunlukla akşam telefondan açar ve sitenin işi başvuru hunisidir; ilk dokunuşun kaydırmadan yapılabilmesi, büyük render'ın verdiği ilk izlenimden değerlidir. Masaüstünde tarif değişmedi (sağda ekran yüksekliğinde kemer).
+
+## İç sayfalar için yön (v5, derinlik turu)
+- **Tek dünya, sayfa başına bir yerleşim ailesi.** Kademe sayfaları ortak şablonu paylaşır ama her biri revaktaki bir saatte durur (anaokulu 08.10 sabah, ilkokul 12.00 öğle, ortaokul 15.40 ikindi, lise 18.30 akşam): kemer render'ının sabah/akşam yüzleri `--sun` ile karışır, "Bir gün" bölümünün zemini o saatin rengini alır, bölüm sırası kademenin önceliğine göre değişir.
+- Eğitim: kitabe satırları (ilke) + mürekkep altyazı (uygulama), mürekkep zeminde yıl çizelgesi, katlanmış rapor kartı. Almanak: taş kitabe ay başlıkları, cetvelli satırlar, mühür kırmızısı "bugün" çizgisi. Güvende: yapışkan dizin + havadar bölümler + senaryo zinciri. Okulumuz: geniş render bandı, kemer parçaları diyagramı, lento yazıtı. İletişim: birim defteri + elle çizilmiş konum. Veli: mühürle kapatılmış form.
+- **"Örnek" mührü** (çift çizgili, mühür kırmızısı, kemer işaretli küçük damga) gerçek veri izlenimi veren her blokta aynı bileşenle durur; dürüstlük dekorun parçası.
+- Rakamlar serif içinde sans (`numerals()`): Marcellus sıfırı büyük O gibi çizer.

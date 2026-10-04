@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { tr } from "@/content/pazi/tr";
 import { Workshop } from "./Workshop";
 
@@ -54,6 +55,9 @@ export function Service() {
             {s.title}
           </h2>
           <p className="pz-lead">{s.lead}</p>
+          <Link href="/pazi/biz-kimiz/" className="pz-btn pz-btn-ghost pz-service-more">
+            {s.teardown}
+          </Link>
         </div>
         <ul className="pz-service-list">
           {s.items.map((i) => (

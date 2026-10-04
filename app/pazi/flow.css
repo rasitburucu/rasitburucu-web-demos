@@ -249,6 +249,26 @@
   margin: 4px 0 0;
   font-weight: 600;
 }
+.pz-result-list .pz-wide {
+  grid-column: 1 / -1;
+}
+.pz-result-list .pz-wide ~ div:nth-child(even) {
+  padding-right: 16px;
+}
+.pz-result-list .pz-wide ~ div:nth-child(odd),
+.pz-result-list div.pz-wide {
+  padding-right: 0;
+}
+.pz-result-sub {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--pz-f-mono);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-stretch: 87.5%;
+  color: var(--pz-ink-2);
+  font-variant-numeric: tabular-nums;
+}
 .pz-result-list dd.pz-mono {
   font-weight: 500;
   font-size: 1.125rem;
@@ -449,7 +469,8 @@
   .pz-result-list {
     grid-template-columns: 1fr;
   }
-  .pz-result-list div:nth-child(odd) {
+  .pz-result-list div:nth-child(odd),
+  .pz-result-list .pz-wide ~ div:nth-child(even) {
     padding-right: 0;
   }
   .pz-flow-figures,
@@ -654,6 +675,10 @@
   font-stretch: 87.5%;
   font-size: 9pt;
   text-align: right;
+}
+.pz-paper-small {
+  font-size: 7.5pt;
+  color: var(--pz-ink-2);
 }
 .pz-paper .pz-lplan,
 .pz-paper .pz-iso,

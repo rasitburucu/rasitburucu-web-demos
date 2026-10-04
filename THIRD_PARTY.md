@@ -17,7 +17,6 @@ Ayrıntılı kaynak listesi: `content/kalemkar/credits.ts`. Fotoğrafların lisa
 | Close-Up Shot of a Meal on a Plate (Pixie Pannier) | görsel | https://www.pexels.com/photo/close-up-shot-of-a-meal-on-a-plate-12312118/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Kuzu incik |
 | Delicious Baked Quince with Spices in Cast Iron Skillet (Carpe Jugulum) | görsel | https://www.pexels.com/photo/36865387/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Ayva |
 | Traditional Turkish Baklava (Oben Kural) | görsel | https://www.pexels.com/photo/traditional-turkish-baklava-18543482/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Fıstık sarması |
-| Chef Garnishing Gourmet Tomato Soup in Kitchen (Willians Huerta) | görsel | https://www.pexels.com/photo/chef-garnishing-gourmet-tomato-soup-in-kitchen-36430079/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Şef bölümü |
 | Traditional Coppersmith Craftsmanship in Gaziantep (İrfan Simsar) | görsel | https://www.pexels.com/photo/34480631/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Şef bölümü, kazıma |
 | Artisan Crafting Metal Plate with Hammer (Rüveyda Akkaya) | görsel | https://www.pexels.com/photo/artisan-crafting-metal-plate-with-hammer-39184450/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Menü sayfası |
 | Historic Ottoman Architecture in Gaziantep (İrfan Simsar) | görsel | https://www.pexels.com/photo/historic-ottoman-architecture-in-gaziantep-38698119/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Ev, avlu |
@@ -27,7 +26,7 @@ Ayrıntılı kaynak listesi: `content/kalemkar/credits.ts`. Fotoğrafların lisa
 | Pistachios are a good source of protein (Ebubekir) | görsel | https://www.pexels.com/photo/pistachios-are-a-good-source-of-protein-27532710/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Menü sayfası, kaynaklar |
 | Photograph of Lit Candles (Thirdman) | görsel | https://www.pexels.com/photo/photograph-of-lit-candles-7956569/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Rezervasyon onayı |
 | Man Hand Holding Meat on Plate (Arthur Swiffen) | görsel | https://www.pexels.com/photo/man-hand-holding-meat-on-plate-17346296/ | Pexels License | Hayır (yine de sitede anılıyor) | 2026-10-04 | Özel davet |
-| Kazımalı bakır sini ve tezgâh tepsisi (Kalemkâr konsepti (kendi üretimimiz)) | görsel (kendi üretim) | - | Kendi çalışmamız | Hayır | 2026-10-04 | Sini, tepsi, favicon |
+| Kazımalı bakır sini ve tezgâh tepsisi (Kalemkâr konsepti (kendi üretimimiz)) | görsel (kendi üretim) | - | Kendi çalışmamız | Hayır | 2026-10-04 | Sini, tepsi, favicon, şef bölümündeki sini kompozisyonu |
 | Studio Small 09 (Poly Haven) | HDRI | https://polyhaven.com/a/studio_small_09 | CC0 | Hayır | 2026-10-04 | Sini render ışığı (yalnız yapımda) |
 | Young Serif (Bastien Sozeau (Noir Blanc Rouge)) | font | https://fonts.google.com/specimen/Young+Serif | SIL Open Font License 1.1 | OFL metni korunur (app/kalemkar/fonts/) | 2026-10-04 | Başlıklar, kazıma yazı |
 | Geologica (Sindre Bremnes, Frode Helland (Monokrom)) | font | https://fonts.google.com/specimen/Geologica | SIL Open Font License 1.1 | OFL metni korunur (app/kalemkar/fonts/) | 2026-10-04 | Gövde ve arayüz |

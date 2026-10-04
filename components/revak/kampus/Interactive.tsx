@@ -7,6 +7,8 @@ import { nearestSlots } from "@/lib/revak/schedule";
 import { formatPhone, phoneOk } from "@/lib/revak/format";
 import { Icon } from "../ui/Icon";
 import { Photo } from "../ui/Photo";
+import { servis } from "@/content/revak/yasam";
+import { Sample } from "../ui/Bits";
 
 /* ---------- "Bir gün burada": a school day, stop by stop ---------- */
 
@@ -177,6 +179,7 @@ export function RouteCheck() {
                 </dd>
               </div>
             </dl>
+            <RouteMap id={d.id} name={d.name} pickup={d.pickup} minutes={d.minutes} />
             <ul className="rv-checks">
               {t.features.map((f) => (
                 <li key={f}>
@@ -244,6 +247,86 @@ export function RouteCheck() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/* ---------- route diagram: ink lines from the district to the arch ---------- */
+
+const addMin = (hhmm: string, m: number) => {
+  const [h, mm] = hhmm.split(".").map(Number);
+  const t = h * 60 + mm + m;
+  return `${String(Math.floor(t / 60)).padStart(2, "0")}.${String(t % 60).padStart(2, "0")}`;
+};
+
+function RouteMap({ id, name, pickup, minutes }: { id: string; name: string; pickup: string; minutes: number }) {
+  const stops = servis.stops[id] ?? [];
+  const arrive = addMin(pickup, minutes);
+  const W = 560;
+  const X0 = 24;
+  const X1 = W - 56;
+  const Y = 96;
+  const n = stops.length;
+  const xs = stops.map((_, i) => X0 + ((X1 - X0) * i) / n);
+  // half-arch spans between stops: the roads leave the arcade as arches
+  const d = [...xs, X1].reduce((acc, x, i, arr) => {
+    if (i === 0) return `M${x} ${Y}`;
+    const r = (x - arr[i - 1]) / 2;
+    return `${acc} A${r} ${r * 0.62} 0 0 1 ${x} ${Y}`;
+  }, "");
+  return (
+    <figure className="rv-routemap">
+      <div className="rv-routemap-head">
+        <figcaption>{servis.mapTitle(name)}</figcaption>
+        <Sample>{tr.sample.schedule}</Sample>
+      </div>
+      <svg viewBox={`0 0 ${W} 150`} role="img" aria-label={servis.mapLabel(name)}>
+        <path d={d} className="rv-routemap-line" />
+        <line x1={X0 - 12} x2={W - 8} y1={Y} y2={Y} className="rv-routemap-ground" />
+        {stops.map(([stop, time], i) => (
+          <g key={stop} transform={`translate(${xs[i]} ${Y})`}>
+            <circle r="6" className="rv-routemap-stop" />
+            <text y="30" textAnchor={i === 0 ? "start" : "middle"} className="rv-routemap-name">
+              {stop}
+            </text>
+            <text y="50" textAnchor={i === 0 ? "start" : "middle"} className="rv-routemap-time">
+              {time}
+            </text>
+          </g>
+        ))}
+        <g transform={`translate(${X1} ${Y})`}>
+          <path d="M-13 0 V-17 A13 13 0 0 1 13 -17 V0 H7.5 V-16 A7.5 7.5 0 0 0 -7.5 -16 V0 Z" className="rv-routemap-arch" />
+          <text y="30" textAnchor="middle" className="rv-routemap-name">
+            {servis.school}
+          </text>
+          <text y="50" textAnchor="middle" className="rv-routemap-time rv-routemap-time--arrive">
+            {arrive}
+          </text>
+        </g>
+      </svg>
+      <dl className="rv-routemap-facts">
+        <div>
+          <dt>{servis.arrive}</dt>
+          <dd>{arrive}</dd>
+        </div>
+        <div>
+          <dt>{servis.evening}</dt>
+          <dd>{servis.eveningText(minutes)}</dd>
+        </div>
+      </dl>
+    </figure>
+  );
+}
+
+export function RouteRules() {
+  return (
+    <div className="rv-route-rules">
+      <h3>{servis.rulesTitle}</h3>
+      <ol>
+        {servis.rules.map((r) => (
+          <li key={r}>{r}</li>
+        ))}
+      </ol>
     </div>
   );
 }

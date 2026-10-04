@@ -8,7 +8,7 @@ export function Chef() {
     <section className="kk-chef" id="sef" aria-labelledby="kk-chef-title">
       <div className="kk-wrap kk-chef-grid">
         <figure className="kk-chef-hands">
-          <Photo k="sef" sizes="(max-width: 767px) 92vw, 36vw" />
+          <Photo k="sinide" sizes="(max-width: 767px) 92vw, 36vw" />
           <figcaption>{c.capHands}</figcaption>
         </figure>
         <div className="kk-chef-text">

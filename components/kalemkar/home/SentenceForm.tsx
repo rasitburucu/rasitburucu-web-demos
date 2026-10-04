@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { tr } from "@/content/kalemkar/tr";
 import { calendar, nearestOpen, antep, iso as isoOf } from "@/lib/kalemkar/availability";
-import { dayLong, dayChip } from "@/lib/kalemkar/format";
+import { dayLong } from "@/lib/kalemkar/format";
 import { useBooking, useNow } from "@/lib/kalemkar/store";
 
 const h = tr.hero;
@@ -91,7 +91,9 @@ export function SentenceForm() {
             href={`${tr.base}/rezervasyon/`}
             onClick={() => update({ deneyim: "salon", kisi, tarih: f.iso, saat: f.time, menu: "sofra" })}
           >
-            {dayChip(f.iso)} {f.time}
+            {/* "Bu hafta boş:" already says which week: weekday and time read cleanly. */}
+            <span aria-hidden="true">{dayLong(f.iso).split(",")[0]}, {f.time}</span>
+            <span className="kk-sr">{dayLong(f.iso)}, {f.time}</span>
           </Link>
         ))}
       </p>

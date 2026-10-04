@@ -16,13 +16,18 @@
  * The copper itself is a Blender render (public/kalemkar/img/sini-*, tepsi-*):
  * the light is baked in, so the copper never rotates; only the words do.
  *
+ * The home page draws two of these (hero and service) but shows one: on wide
+ * screens with scroll-driven animation the service sini starts where the hero
+ * one sits and travels down into the service scene (see Servis.tsx), so both
+ * carry the same turning ring and stay in step until the swap.
+ *
  * Reduced motion: words do not turn and appear at once; the glint stays put;
  * covers change place with a 120 ms fade instead of gliding.
  * Accessibility: the whole object is aria-hidden. Every page that uses it
  * gives the same information as text (service list, booking summary).
  */
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useId, useLayoutEffect, useRef } from "react";
 import { asset } from "@/lib/asset";
 import { img } from "@/content/kalemkar/images";
 import { RIM_WORDS } from "@/content/kalemkar/menu";
@@ -38,6 +43,8 @@ type Props = {
   marks?: boolean[];
   courses?: number;
   kitchenLabel?: string;
+  /** Engraved words: "spin" turns them (and draws them in once); defaults to spin for the hero. */
+  ring?: "spin" | "still";
   className?: string;
   children?: React.ReactNode;
 };
@@ -70,21 +77,23 @@ function Copper({ k, sizes, priority, className }: { k: "sini" | "tepsi"; sizes:
 
 /** Words engraved in the plain band of the rim (r ≈ 0.634 of the half-width). */
 function Ring({ spin }: { spin: boolean }) {
+  // One id per ring: the home page draws two sinis.
+  const id = `kk-ring-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const text = RIM_WORDS.join("  ·  ") + "  ·  ";
   const d = "M 500 500 m -317 0 a 317 317 0 1 1 634 0 a 317 317 0 1 1 -634 0";
   return (
     <svg className="kk-ring" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">
       <defs>
-        <path id="kk-ring-path" d={d} />
+        <path id={id} d={d} />
       </defs>
       <g className="kk-ring-turn" data-spin={spin || undefined}>
         <text className="kk-ring-hi" dy="1.6">
-          <textPath href="#kk-ring-path" textLength="1985" lengthAdjust="spacing">
+          <textPath href={`#${id}`} textLength="1985" lengthAdjust="spacing">
             {text}
           </textPath>
         </text>
         <text className="kk-ring-cut">
-          <textPath href="#kk-ring-path" textLength="1985" lengthAdjust="spacing">
+          <textPath href={`#${id}`} textLength="1985" lengthAdjust="spacing">
             {text}
           </textPath>
         </text>
@@ -121,8 +130,11 @@ export function seatLayout(shape: Shape, n: number): Pos[] {
       s: 0.098,
     }));
   }
-  const size = n <= 6 ? 0.145 : n <= 10 ? 0.118 : 0.096;
-  const rad = 0.358;
+  // Inside the copper rim (rim at ~0.455 of the box): the whole cover, napkin
+  // and mark included, stays on the tray.
+  // Up to four guests a cover is about a fifth of the tray across.
+  const size = n <= 4 ? 0.2 : n <= 6 ? 0.172 : n <= 10 ? 0.13 : 0.104;
+  const rad = n <= 4 ? 0.318 : n <= 6 ? 0.338 : n <= 10 ? 0.364 : 0.376;
   return Array.from({ length: n }, (_, i) => {
     const a = Math.PI / 2 + (i * 2 * Math.PI) / n;
     return { x: 0.5 + rad * Math.cos(a), y: 0.5 + rad * Math.sin(a), r: (a * 180) / Math.PI - 90, s: size };
@@ -141,7 +153,8 @@ function courseLayout(shape: Shape, n: number) {
 
 const reduced = () => typeof window !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-export function Sini({ variant, sizes, priority, shape = "round", seats = 0, marks = [], courses = 0, kitchenLabel, className, children }: Props) {
+export function Sini({ variant, sizes, priority, shape = "round", seats = 0, marks = [], courses = 0, kitchenLabel, ring, className, children }: Props) {
+  const spin = variant !== "table" && (ring ? ring === "spin" : variant === "hero");
   const box = useRef<HTMLDivElement>(null);
   const sheen = useRef<HTMLDivElement>(null);
   const last = useRef(new Map<string, Pos>());
@@ -184,11 +197,11 @@ export function Sini({ variant, sizes, priority, shape = "round", seats = 0, mar
   // Words turn only while visible (CSS animation paused otherwise).
   useEffect(() => {
     const el = box.current;
-    if (!el || variant !== "hero") return;
+    if (!el || !spin) return;
     const io = new IntersectionObserver(([e]) => el.toggleAttribute("data-visible", e.isIntersecting));
     io.observe(el);
     return () => io.disconnect();
-  }, [variant]);
+  }, [spin]);
 
   // FLIP for covers: glide from the last position to the new one.
   const layout = variant === "table" ? seatLayout(shape, seats) : [];
@@ -244,11 +257,11 @@ export function Sini({ variant, sizes, priority, shape = "round", seats = 0, mar
 
   const cls = ["kk-sini", `kk-sini--${variant}`, className].filter(Boolean).join(" ");
   return (
-    <div ref={box} className={cls} data-shape={shape} aria-hidden="true">
+    <div ref={box} className={cls} data-shape={shape} data-ring={spin ? "spin" : undefined} aria-hidden="true">
       <div className="kk-sini-shadow" />
       <Copper k="sini" sizes={sizes} priority={priority} className="kk-sini-copper kk-sini-round" />
       {variant === "table" && <Copper k="tepsi" sizes={sizes} className="kk-sini-copper kk-sini-long" />}
-      {variant !== "table" ? <Ring spin={variant === "hero"} /> : <div className="kk-sini-ringwrap"><Ring spin={false} /></div>}
+      {variant !== "table" ? <Ring spin={spin} /> : <div className="kk-sini-ringwrap"><Ring spin={false} /></div>}
       <div ref={sheen} className="kk-sini-sheen" />
       {variant === "table" && (
         <>
