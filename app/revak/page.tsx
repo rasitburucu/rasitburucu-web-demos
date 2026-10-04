@@ -41,28 +41,21 @@ export default function RevakHome() {
         </div>
       </section>
 
-      {/* 2. Proof as one typographic paragraph, numerals in the running text */}
+      {/* 2. Proof as a poster: one large numeral, three smaller ones, each read as its sentence */}
       <section className="rv-facts" aria-labelledby="rv-proof-title">
         <div className="rv-wrap">
           <h2 className="rv-folio" id="rv-proof-title">
             {tr.proof.title}
           </h2>
-          <p className="rv-facts-text">
+          <ol className="rv-poster">
             {tr.proof.lines.map((l) => (
-              <span key={l.ref} className="rv-fact">
-                {l.pre}
-                <span className="rv-fact-big">{l.big}</span>
-                {l.post}
-                <sup className="rv-fact-ref">
-                  <span className="rv-sr">{tr.proof.refLabel} </span>
-                  {l.ref}
-                </sup>{" "}
-              </span>
-            ))}
-          </p>
-          <ol className="rv-facts-notes">
-            {tr.proof.notes.map((n) => (
-              <li key={n}>{n}</li>
+              <li key={l.pre} className="rv-poster-item">
+                <p className="rv-fact">
+                  <span className="rv-fact-pre">{l.pre}</span>{" "}
+                  <span className="rv-fact-big">{l.big}</span>{" "}
+                  <span className="rv-fact-post">{l.post}</span>
+                </p>
+              </li>
             ))}
           </ol>
         </div>

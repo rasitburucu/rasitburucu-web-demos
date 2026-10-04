@@ -17,12 +17,11 @@ export const tr = {
       "Sarıyer Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar en fazla 18 öğrenci, üç dil, lisede uluslararası diploma programı. Kampüs turu planlayın, ön kayıt yaptırın.",
   },
 
+  // One line on every screen size (ortak künye kuralı, 2026-10-05).
   strip: {
-    text: "Konsept çalışma: Revak Okulları hayali bir okuldur. Rakamlar örnektir, formlar hiçbir yere gönderilmez.",
-    // phones: one line beside the exam notice; the full sentence stays in the footer note
-    short: "Konsept: hayali okul.",
+    text: "Konsept çalışma —",
     link: "rasitburucu.com",
-    href: "/tr",
+    href: "https://rasitburucu.com",
   },
   skip: "İçeriğe geç",
   crumb: "Bulunduğunuz sayfa",
@@ -53,7 +52,7 @@ export const tr = {
     close: "Duyuruyu kapat",
   },
 
-  brand: { name: "Revak", full: "Revak Okulları", home: "Revak Okulları ana sayfa" },
+  brand: { name: "Revak", full: "Revak Okulları", home: "Revak Okulları ana sayfa", place: "Zekeriyaköy, Sarıyer · İstanbul" },
 
   nav: {
     label: "Ana menü",
@@ -103,6 +102,8 @@ export const tr = {
           { label: "Gerekli belgeler", text: "İşaretlenebilir liste", href: "/revak/kabul/#belgeler" },
           { label: "Ücrete neler dahil", text: "Kalemler, taksit, iade", href: "/revak/kabul/#ucret" },
           { label: "Bursluluk sınavı", text: "Oturumlar ve oranlar", href: "/revak/kabul/#bursluluk" },
+          { label: "Bursluluk başvurusu", text: "Sınava kayıt", href: "/revak/kabul/bursluluk/" },
+          { label: "Ücret bilgisi isteyin", text: "Size uyan ücret tablosu", href: "/revak/kabul/ucret-bilgisi/" },
         ],
       },
       { id: "almanak", label: "Almanak", href: "/revak/almanak/", items: [] },
@@ -130,7 +131,7 @@ export const tr = {
   /* ---------------- home ---------------- */
 
   hero: {
-    title: "Her çocuğun adıyla tanındığı okul.",
+    title: "Her çocuğu adıyla tanıyan okul.",
     sub: "Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar 18 öğrenciyi geçmez, her öğrencinin bir danışmanı var.",
     season: "2027-2028 kabul dönemi açık.",
     primary: "Ön kayıt yaptırın",
@@ -156,19 +157,12 @@ export const tr = {
 
   proof: {
     title: "Kısaca Revak.",
-    // One typographic paragraph: each numeral sits in the running text; the footnote letter closes the sentence.
-    refLabel: "dipnot",
+    // A poster: each sentence is split around its numeral (pre, big numeral, post); the spaces are the markup's.
     lines: [
-      { pre: "Her sınıfta en fazla ", big: "18", post: " öğrenci.", ref: "a" },
-      { pre: "Anaokulunda ", big: "2", post: " dil, 5. sınıfta üçüncüsü.", ref: "b" },
-      { pre: "Lisenin son ", big: "2", post: " yılında uluslararası diploma programı.", ref: "c" },
-      { pre: "Anaokulundan liseye ", big: "1", post: " kampüs.", ref: "d" },
-    ],
-    notes: [
-      "Anaokulunda 14 çocuk ve iki öğretmen.",
-      "Türkçe ve İngilizce anaokulunda başlar; 5. sınıfta Almanca ya da İspanyolca eklenir.",
-      "Ulusal programla birlikte, isteyen her öğrenciye açık.",
-      "Aynı bahçe, aynı kapı. Kardeşler aynı servise biner.",
+      { pre: "Her sınıfta en fazla", big: "18", post: "öğrenci." },
+      { pre: "Anaokulunda", big: "2", post: "dil, 5. sınıfta üçüncüsü." },
+      { pre: "Lisenin son", big: "2", post: "yılında uluslararası diploma programı." },
+      { pre: "Anaokulundan liseye", big: "1", post: "kampüs." },
     ],
     items: [
       { big: "En fazla 18 öğrenci", text: "Her sınıfta. Anaokulunda 14 çocuk ve iki öğretmen." },
@@ -180,6 +174,8 @@ export const tr = {
 
   levels: {
     title: "Revak boyunca",
+    // what the word means, set like a dictionary entry beside the title
+    term: { word: "revak", def: "sütunlara oturan kemerlerin taşıdığı, önü açık, üstü örtülü geçit." },
     plate: "Lev.",
     rulerLabel: "Kademeler",
     ageLabel: "yaş",
@@ -452,35 +448,27 @@ export const tr = {
     loading: "Boş saatler yükleniyor",
   },
 
+  // Künye: the same structure and labels on every concept site (ortak künye kuralı, 2026-10-05).
   footer: {
-    contactTitle: "Bize ulaşın",
-    routesTitle: "Servis bölgeleri",
-    routes: "Sarıyer, Beşiktaş, Şişli, Kağıthane, Eyüpsultan, Beykoz, Üsküdar",
-    linksTitle: "Kabul",
-    links: [
-      { label: "Ön kayıt", href: "/revak/kabul/on-kayit/" },
-      { label: "Kampüs turu", href: "/revak/kabul/kampus-turu/" },
-      { label: "Hangi sınıfa başlar?", href: "/revak/kabul/#yas" },
-      { label: "Bursluluk sınavı", href: "/revak/kabul/bursluluk/" },
-      { label: "Ücret bilgisi", href: "/revak/kabul/ucret-bilgisi/" },
-    ],
-    parentsTitle: "Veliler için",
-    parentLinks: [
-      { label: "Almanak", href: "/revak/almanak/" },
-      { label: "Yemek menüsü", href: "/revak/kampus/#yemek" },
-      { label: "Servis güzergâhları", href: "/revak/kampus/#servis" },
-      { label: "Güvende: sağlık ve acil durum", href: "/revak/guvende/" },
-      { label: "Veli girişi", href: "/revak/veli/" },
-    ],
-    contactPage: "Bütün birimler",
+    visitTitle: "Ziyaret",
+    reachTitle: "İletişim",
+    pagesTitle: "Sayfalar",
     kvkk: "KVKK aydınlatma metni",
     directions: "Yol tarifi",
-    creditsTitle: "Görseller ve yazı karakterleri",
-    renders: "Revak sahnesi ve kemer görselleri bu site için Blender'da modellenip işlendi; dış kaynak kullanılmadı.",
-    creditsLead: "Fotoğraflar Pexels lisansıyla kullanılmıştır:",
-    fonts: "Yazı karakterleri: Marcellus (Astigmatic) ve Hanken Grotesk (Alfredo Marco Pradil), SIL Open Font License.",
-    note: "Revak Okulları kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Rakamlar, tarihler ve programlar örnektir; formlar hiçbir yere gönderilmez.",
-    copyright: "© 2026 Revak Okulları",
+    note: "Revak Okulları kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Adres, telefon, rakamlar, tarihler ve programlar örnektir; formlar hiçbir yere gönderilmez.",
+    kunye: {
+      title: "Proje künyesi",
+      design: "Tasarım ve geliştirme:",
+      designBy: "Raşit Burucu",
+      designHref: "https://rasitburucu.com",
+      render: "3B ve render:",
+      renderText: "Revak sahnesi ve kemer görselleri bu site için Blender'da modellenip işlendi; dış kaynak kullanılmadı.",
+      photos: "Fotoğraflar:",
+      fonts: "Yazı karakterleri:",
+      year: "Yıl:",
+      yearValue: "2026",
+    },
+    copyright: "© 2026 Revak Okulları · Konsept çalışma —",
   },
 
   kvkk: {
@@ -994,3 +982,23 @@ export const tr = {
 };
 
 export type RevakCopy = typeof tr;
+
+/** Every page of the site, in menu order: the menu's headings and the pages among their links
+ *  (anchors stay in the menu only), then the header's actions. The footer's "Sayfalar" list. */
+export const PAGES: { label: string; href: string }[] = (() => {
+  const seen = new Set<string>();
+  const out: { label: string; href: string }[] = [];
+  const add = (label: string, href: string) => {
+    if (href.includes("#") || seen.has(href)) return;
+    seen.add(href);
+    out.push({ label, href });
+  };
+  for (const g of tr.nav.groups) {
+    add(g.label, g.href);
+    for (const i of g.items) add(i.label, i.href);
+  }
+  add(tr.nav.apply, "/revak/kabul/on-kayit/");
+  add(tr.nav.tour, "/revak/kabul/kampus-turu/");
+  add(tr.nav.parents, "/revak/veli/");
+  return out;
+})();

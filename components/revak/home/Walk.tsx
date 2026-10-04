@@ -86,6 +86,9 @@ const ageAt = (c: number) => {
   return Math.round(AGES[i] + (AGES[i + 1] - AGES[i]) * Math.min(1, x - i));
 };
 
+// a value in 1/steps increments, as the string written to the style
+const q = (v: number, steps: number) => String(Math.round(v * steps) / steps);
+
 const levelAt = (p: number) => ((p - FIRST) % SPACING === 0 && p < EXIT ? KADEMELER[(p - FIRST) / SPACING] : null);
 
 function Portal({ p }: { p: number }) {
@@ -193,6 +196,9 @@ export function Walk() {
             <h2 id="rv-walk-title" className="rv-walk-title">
               {t.title}
             </h2>
+            <p className="rv-walk-term">
+              <dfn>{t.term.word}</dfn>: {t.term.def}
+            </p>
             <p className="rv-walk-intro">{t.intro}</p>
             <a href="#rehberlik" className="rv-textlink rv-walk-skip">
               {t.skip}
@@ -340,6 +346,11 @@ function build(section: HTMLElement) {
   };
   measure();
 
+  // last values written per element: unchanged values are not written again
+  const hazeAt: string[] = [];
+  const photoAt: string[] = [];
+  let ageAt2 = "";
+
   const cam = { c: 0.6 };
   const sun = { v: 0 };
   let current = -2;
@@ -379,8 +390,13 @@ function build(section: HTMLElement) {
       // behind the camera: fade out; far away: fade in from the haze
       const o = z < -0.55 ? Math.max(0, 1 - (-0.55 - z) / 0.8) : z > Z_FAR - 1.5 ? Math.max(0, (Z_FAR - z) / 1.5) : 1;
       el.style.opacity = o.toFixed(3);
+      // the haze is painted into the arch's layer: write it in 0.02 steps and only when it
+      // changes, so a phone repaints a portal a few dozen times per walk, not every frame
       const hz = haze[i];
-      if (hz) hz.style.opacity = Math.min(0.78, Math.max(0, z) * 0.085).toFixed(3);
+      if (hz) {
+        const hv = q(Math.min(0.78, Math.max(0, z) * 0.085), 50);
+        if (hv !== hazeAt[i]) hz.style.opacity = hazeAt[i] = hv;
+      }
       const ph = photos[i];
       if (ph) {
         // one photograph at a time: the passed one leaves before the next one appears
@@ -390,7 +406,13 @@ function build(section: HTMLElement) {
           // the next level's photograph arrives only once its arch is close: mid-walk shows the arcade itself, no double exposure
           else if (z > 1.0 && levelOf[i] > 0) po = gsap.utils.clamp(0, 1, (1.45 - z) / 0.45);
         }
-        ph.style.opacity = po.toFixed(3);
+        const pv = q(po, 50);
+        if (pv !== photoAt[i]) {
+          // a photograph at zero opacity leaves the frame entirely: its blended shade layer
+          // is then not composited at all (Safari and older GPUs still paid for it)
+          if ((pv === "0") !== (photoAt[i] === "0")) ph.style.visibility = pv === "0" ? "hidden" : "";
+          ph.style.opacity = photoAt[i] = pv;
+        }
         // parallax: a plane further back grows more slowly than the arch around it
         const img = photoImgs[i];
         if (img && po > 0) {
@@ -412,9 +434,15 @@ function build(section: HTMLElement) {
       joints[j].style.transform = `translate3d(0, ${(-eye * (1 - s)).toFixed(2)}px, 0)`;
     }
     // CSS variables restyle the whole stage: write them only when they change
-    const sunV = sun.v.toFixed(3);
-    const endV = gsap.utils.clamp(0, 1, (c - (EXIT - 3)) / 2.75).toFixed(3);
-    if (sunV !== lastSun) stage.style.setProperty("--sun", (lastSun = sunV));
+    // (in 0.01 steps: each change restyles and repaints the light on every arch, the wall
+    // and the window; a hundred steps across the walk read as one continuous turn of the day)
+    const sunV = q(sun.v, 100);
+    const endV = q(gsap.utils.clamp(0, 1, (c - (EXIT - 3)) / 2.75), 100);
+    if (sunV !== lastSun) {
+      stage.style.setProperty("--sun", (lastSun = sunV));
+      // the courtyard glow is at zero opacity before the afternoon: off the stage until then
+      stage.toggleAttribute("data-pm", sun.v > 0.4);
+    }
     if (endV !== lastEnd) stage.style.setProperty("--end", (lastEnd = endV));
 
     // which level is in front of us (pointer events and focus)
@@ -440,9 +468,13 @@ function build(section: HTMLElement) {
     // (the first approach is short, 1.85 units: there the age stays until Anaokulu rises)
     const nearStop = leaving ? (stopDist - 0.04) / 0.2 : nearest === 0 ? (stopDist - 0.1) / 0.18 : (stopDist - 0.3) / 0.25;
     const ageO = walking ? Math.min(fromHead, gsap.utils.clamp(0, 1, nearStop)) : 0;
-    age.style.opacity = ageO.toFixed(3);
-    // phones: the level the counter belongs to is named under it, fading with it
-    cap.style.opacity = ageO.toFixed(3);
+    const ageV = q(ageO, 50);
+    if (ageV !== ageAt2) {
+      ageAt2 = ageV;
+      age.style.opacity = ageV;
+      // phones: the level the counter belongs to is named under it, fading with it
+      cap.style.opacity = ageV;
+    }
     cap.toggleAttribute("data-show", ageO > 0.55);
     const capLevel = Math.max(0, reached);
     if (capLevel !== capAt) {
@@ -567,7 +599,8 @@ function build(section: HTMLElement) {
     portals.forEach((p) => {
       p.style.cssText = `z-index:${p.style.zIndex}`;
     });
-    photos.forEach((p) => p && (p.style.opacity = ""));
+    photos.forEach((p) => p && (p.style.opacity = p.style.visibility = ""));
+    stage.removeAttribute("data-pm");
     photoImgs.forEach((im) => im && (im.style.transform = ""));
     joints.forEach((j) => (j.style.transform = ""));
     chapters.forEach((c) => c.removeAttribute("data-on"));

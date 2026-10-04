@@ -26,3 +26,20 @@ Not: sihirbazın pasif "Devam edin" düğmesi, tur sayfasındaki "Bu kademeyi ta
 
 
 **ONAYLANDI (ikinci tur):** Raşit, 2026-10-05, yukarıdaki yeni satırların hepsi.
+
+## 2026-10-05 üçüncü tur
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Ana başlık (`hero.title`) | Her çocuğun adıyla tanındığı okul. | Her çocuğu adıyla tanıyan okul. | Raşit: Türkçesi zayıftı. Sayfa başlığı, açıklama ve OG metninde bu cümle geçmiyor; OG görseli yazısız |
+| "Revak boyunca" başlığının altı (`levels.term`, yeni) | (yoktu) | revak: sütunlara oturan kemerlerin taşıdığı, önü açık, üstü örtülü geçit. | Raşit: kelimenin anlamı tek yerde, sözlük maddesi gibi |
+| "Kısaca Revak." (`proof.lines`, `proof.notes`, `proof.refLabel`) | Dört cümle a, b, c, d dipnot işaretli; altında dört dipnot ("Anaokulunda 14 çocuk ve iki öğretmen." vb.) ve ekran okuyucu için "dipnot" | Aynı dört cümle, dipnot işareti ve dipnot listesi yok | Raşit: dipnotlar kalksın, bölüm poster gibi olsun. Cümlelerin kelimeleri değişmedi |
+| Üst şerit, her ekran boyutu (`strip`) | Masaüstü: "Konsept çalışma: Revak Okulları hayali bir okuldur. Rakamlar örnektir, formlar hiçbir yere gönderilmez. rasitburucu.com"; telefon: "Konsept: hayali okul." | Konsept çalışma — rasitburucu.com (bağlantı https://rasitburucu.com) | Ortak künye kuralı: dört sitede tek ve aynı şerit |
+| Alt bilgi marka satırı (`brand.place`, yeni) | (yoktu) | Zekeriyaköy, Sarıyer · İstanbul | Künye şablonu: marka + tek satır yer adı |
+| Alt bilgi sütun başlıkları (`footer.visitTitle`, `reachTitle`, `pagesTitle`) | Bize ulaşın · Kabul · Veliler için | Ziyaret · İletişim · Sayfalar | Künye şablonu (adres/saat/yol tarifi Ziyaret'e, telefon/e-posta İletişim'e). "Bütün birimler" bağlantısı kalktı: İletişim sayfası Sayfalar listesinde |
+| Alt bilgi "Sayfalar" listesi | Kabul ve Veliler için sütunlarında 10 bağlantı | Menüyle aynı tam sayfa listesi (16 sayfa, menüden üretilir) | Künye şablonu: menüyle aynı liste, tek kaynak |
+| Kabul menüsü (`nav.groups.kabul`, iki yeni bağlantı) | (yoktu) | Bursluluk başvurusu / Sınava kayıt · Ücret bilgisi isteyin / Size uyan ücret tablosu | Kural: bütün sayfalar üst menüden erişilebilir; bu iki sayfa yalnız düğmelerden açılıyordu |
+| Konsept notu (`footer.note`) | … Rakamlar, tarihler ve programlar örnektir; … | … Adres, telefon, rakamlar, tarihler ve programlar örnektir; … | Künye şablonu: sitede örnek olanlar sayılır |
+| Künye başlığı (`footer.kunye.title`) | Görseller ve yazı karakterleri | Proje künyesi | Künye şablonu |
+| Künye satırları (`footer.kunye`) | Render notu, "Fotoğraflar Pexels lisansıyla kullanılmıştır:", tek cümlelik font notu | Tasarım ve geliştirme: Raşit Burucu · 3B ve render: (aynı render notu) · Fotoğraflar: yazar, lisans, kullanıldığı yer · Yazı karakterleri: ad, tasarımcı, lisans · Yıl: 2026 | Künye şablonu, sabit sıra ve etiketler; bilgi credits.ts'den |
+| Telif satırı (`footer.copyright`) | © 2026 Revak Okulları | © 2026 Revak Okulları · Konsept çalışma — rasitburucu.com | Künye şablonu |
