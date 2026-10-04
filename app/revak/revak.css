@@ -5,6 +5,20 @@
    red, only for the primary action and date emphasis. Light page by design:
    the brand is printed stone and ink; the ink band is its one colour block. */
 
+/* Figures in the display face. Marcellus draws "1" as a Roman I ("liseye I kampüs")
+   and "0" as a capital O, so every digit set in the serif comes from the body face:
+   Hanken Grotesk's lining, tabular figures (all ten 560 units wide), instanced at
+   weight 380 to sit with Marcellus' stroke, digits only (1.4 KB). Same cap height
+   (0.70 em), so no size adjustment. The display face itself does not change. */
+@font-face {
+  font-family: "Revak Rakam";
+  src: url("./fonts/revak-rakam.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0030-0039;
+}
+
 .rv-root {
   --rv-stone: #e7e5e0;
   --rv-stone-hi: #f1f0ec;
@@ -29,7 +43,7 @@
   --rv-z-menu: 31;
   --rv-z-skip: 40;
 
-  --rv-f-serif: var(--rv-serif), "Iowan Old Style", Georgia, serif;
+  --rv-f-serif: "Revak Rakam", var(--rv-serif), "Iowan Old Style", Georgia, serif;
   --rv-f-sans: var(--rv-sans), ui-sans-serif, system-ui, sans-serif;
 
   position: relative;
@@ -460,6 +474,77 @@ html[data-rv-menu="open"] {
   }
   .rv-topbar .rv-announce-x:hover {
     color: var(--rv-stone);
+  }
+}
+
+/* the short concept line exists only on phones */
+.rv-strip-short {
+  display: none;
+}
+/* phones: the concept strip and the exam notice share one ink line (two stacked bands
+   took 78 px of the first screen); the full concept sentence is the footer note */
+@media (max-width: 560px) {
+  .rv-topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 0.75rem;
+    min-height: 36px;
+    padding: 0 var(--rv-gutter);
+    background: var(--rv-ink);
+    color: var(--rv-stone);
+    font-size: 0.75rem;
+  }
+  .rv-topbar .rv-strip {
+    flex: 0 1 auto;
+    min-height: 36px;
+    padding: 0;
+    font-size: inherit;
+    text-align: left;
+  }
+  .rv-strip-full {
+    display: none;
+  }
+  .rv-strip-short {
+    display: block;
+    white-space: nowrap;
+  }
+  .rv-topbar .rv-announce {
+    flex: 0 0 auto;
+    background: none;
+    border: 0;
+    font-size: inherit;
+  }
+  .rv-topbar .rv-announce .rv-wrap {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rv-topbar .rv-announce-in {
+    gap: 0.6rem;
+    min-height: 36px;
+  }
+  .rv-topbar .rv-announce p {
+    overflow: visible;
+  }
+  .rv-topbar .rv-announce strong {
+    color: #f2aa9f;
+  }
+  .rv-topbar .rv-announce-cta {
+    min-height: 36px;
+    color: var(--rv-stone);
+    text-decoration-color: #e7e5e080;
+  }
+  .rv-topbar .rv-announce-cta:focus-visible,
+  .rv-topbar .rv-announce-x:focus-visible {
+    outline-color: var(--rv-stone);
+  }
+  .rv-topbar .rv-announce-x {
+    width: 32px;
+    height: 36px;
+    margin-right: -8px;
+    color: #e7e5e0b3;
   }
 }
 

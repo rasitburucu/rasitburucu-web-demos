@@ -53,6 +53,8 @@ Taş revak sahnesi (giriş görseli, kampüs bandı, kampüs sayfası girişi, O
 | Marcellus (Astigmatic, Brian J. Bonislawsky), latin ve latin-ext | font | https://fonts.google.com/specimen/Marcellus (next/font/google) | SIL OFL 1.1 | Hayır | 2026-10-04 | Başlıklar, mühür |
 | Hanken Grotesk (Alfredo Marco Pradil), latin ve latin-ext | font | https://fonts.google.com/specimen/Hanken+Grotesk (next/font/google) | SIL OFL 1.1 | Hayır | 2026-09-28 | Gövde ve arayüz |
 | Fotoğraflar (21 adet, kademe kemerleri, kulüpler, tesisler) | görsel | pexels.com (tek tek bağlantılar `content/revak/credits.ts`) | Pexels License | Hayır (yine de alt bilgide anılıyor) | 2026-09-28 | Kademe kemerleri, kulüp listesi, kampüs sayfası |
+| Hanken Grotesk rakam alt kümesi (`app/revak/fonts/revak-rakam.woff2`: yalnız 0-9, ağırlık 380'de sabitlenmiş, fontTools ile) | font (türev) | yukarıdaki Hanken Grotesk dosyasından | SIL OFL 1.1 (ayrılmış ad yok; alt küme ve örnekleme izinli) | Hayır | 2026-10-04 | Marcellus başlıklarındaki rakamlar ("1" Roma I'sı gibi okunmasın) |
+| Yürüyüşteki kademe fotoğraflarının saat tonlu kopyaları (`public/revak/walk/saat-*`) ve kemer yüzlerinin kalker tonlu kopyaları (`public/revak/walk/tas-*`) | görsel (türev) | yukarıdaki Pexels fotoğrafları ve kendi Blender render'larımız; `.tasarim/revak/araclar/walk-grade.mjs` (sharp) | Pexels License / kendi işimiz | Hayır | 2026-10-04 | Ana sayfa revak yürüyüşü, kademe sayfası kemeri; özgün dosyalar değişmedi |
 
 ## Onikitaş Villaları (`/web/onikitas/`)
 

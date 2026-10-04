@@ -11,7 +11,7 @@ import { getLenis, scrollToY, setExternalRaf } from "@/lib/revak/lenis";
 import { asset } from "@/lib/asset";
 import { numerals } from "@/lib/revak/format";
 import { archNavigate } from "../shell/Motion";
-import { Photo, srcSet } from "../ui/Photo";
+import { Photo } from "../ui/Photo";
 
 const t = tr.levels;
 const ROMAN = ["I", "II", "III", "IV"];
@@ -56,6 +56,7 @@ const HOLE = "M40 192.7 V76 A50 50 0 0 1 140 76 V192.7 Z";
 const BOX = "M0 0 H180 V192.7 H0 Z";
 
 // The rendered faces (scripts/revak-blender): transparent opening, 180 x 192.7 u.
+// "tas-*" are the limestone-toned copies of kemer-* (.tasarim/revak/araclar/walk-grade.mjs).
 const FACE_SIZES = "(max-width: 860px) 70vw, 60vw";
 const faceSet = (name: string, fmt: "avif" | "webp") =>
   [720, 1440].map((w) => `${asset(`/revak/walk/${name}-${w}.${fmt}`)} ${w}w`).join(", ");
@@ -68,6 +69,13 @@ function Face({ name, cls }: { name: string; cls: string }) {
     </picture>
   );
 }
+
+// The photographs inside the arches carry the hour of their level, baked in
+// (walk-grade.mjs): anaokulu cool morning → lise amber evening; the garden, late evening.
+const HOUR_WIDTHS: Record<string, number[]> = { aksamBahce: [480, 900] };
+const hourSet = (key: string, fmt: "avif" | "webp") =>
+  (HOUR_WIDTHS[key] ?? [480, 800, 1200]).map((w) => `${asset(`/revak/walk/saat-${key}-${w}.${fmt}`)} ${w}w`).join(", ");
+const hourSrc = (key: string) => asset(`/revak/walk/saat-${key}-480.webp`);
 
 // Age at each stop: the first day of each level, then graduation at the open arch.
 const AGES = [3, 6, 10, 14, 18];
@@ -90,18 +98,18 @@ function Portal({ p }: { p: number }) {
       {exit && (
         <div className="rv-portal-photo rv-portal-photo--exit">
           <picture>
-            <source type="image/avif" srcSet={srcSet("aksamBahce", "avif")} sizes="(max-width: 860px) 60vw, 30vw" />
-            <img src={srcSet("aksamBahce", "webp").split(" ")[0]} srcSet={srcSet("aksamBahce", "webp")} sizes="(max-width: 860px) 60vw, 30vw" width={IMAGES.aksamBahce.w} height={IMAGES.aksamBahce.h} alt="" loading="lazy" decoding="async" />
+            <source type="image/avif" srcSet={hourSet("aksamBahce", "avif")} sizes="(max-width: 860px) 60vw, 30vw" />
+            <img src={hourSrc("aksamBahce")} srcSet={hourSet("aksamBahce", "webp")} sizes="(max-width: 860px) 60vw, 30vw" width={IMAGES.aksamBahce.w} height={IMAGES.aksamBahce.h} alt="" loading="lazy" decoding="async" />
           </picture>
         </div>
       )}
       {img && k && (
         <div className="rv-portal-photo" data-k={k}>
           <picture>
-            <source type="image/avif" srcSet={srcSet(t.items[k].image, "avif")} sizes="(max-width: 860px) 70vw, 34vw" />
+            <source type="image/avif" srcSet={hourSet(t.items[k].image, "avif")} sizes="(max-width: 860px) 70vw, 34vw" />
             <img
-              src={srcSet(t.items[k].image, "webp").split(" ")[0]}
-              srcSet={srcSet(t.items[k].image, "webp")}
+              src={hourSrc(t.items[k].image)}
+              srcSet={hourSet(t.items[k].image, "webp")}
               sizes="(max-width: 860px) 70vw, 34vw"
               width={img.w}
               height={img.h}
@@ -113,8 +121,8 @@ function Portal({ p }: { p: number }) {
           </picture>
         </div>
       )}
-      <Face name="kemer-sabah" cls="rv-portal-face rv-portal-face--am" />
-      <Face name="kemer-aksam" cls="rv-portal-face rv-portal-face--pm" />
+      <Face name="tas-sabah" cls="rv-portal-face rv-portal-face--am" />
+      <Face name="tas-aksam" cls="rv-portal-face rv-portal-face--pm" />
       <svg viewBox="0 0 180 192.7" aria-hidden="true" focusable="false">
         <defs>
           <clipPath id={`rv-hole-${p}`}>
@@ -137,10 +145,13 @@ export function Walk() {
       const el = root.current;
       if (!el) return;
       const mm = gsap.matchMedia();
-      mm.add({ live: "(prefers-reduced-motion: no-preference)", mobile: "(max-width: 860px)" }, (ctx) => {
-        const { live, mobile } = ctx.conditions as { live: boolean; mobile: boolean };
+      mm.add({ live: "(prefers-reduced-motion: no-preference)" }, (ctx) => {
+        const { live } = ctx.conditions as { live: boolean };
+        // html.rv-live is set before first paint (app/revak/layout.tsx), so the walk's
+        // scroll length is laid out from the start; it follows the media query here.
+        document.documentElement.classList.toggle("rv-live", live);
         if (!live) return;
-        return build(el, mobile);
+        return build(el);
       });
       return () => mm.revert();
     },
@@ -172,6 +183,9 @@ export function Walk() {
               {t.title}
             </h2>
             <p className="rv-walk-intro">{t.intro}</p>
+            <a href="#rehberlik" className="rv-textlink rv-walk-skip">
+              {t.skip}
+            </a>
           </header>
 
           {/* The child's age, counting up while we walk between the levels. */}
@@ -276,7 +290,7 @@ export function Walk() {
 
 /* ------------------------------------------------------------------------ */
 
-function build(section: HTMLElement, mobile: boolean) {
+function build(section: HTMLElement) {
   const stage = section.querySelector<HTMLElement>(".rv-walk-stage")!;
   const win = section.querySelector<HTMLElement>(".rv-walk-window")!;
   const portals = Array.from(section.querySelectorAll<HTMLElement>(".rv-portal"));
@@ -297,6 +311,7 @@ function build(section: HTMLElement, mobile: boolean) {
     return (n - FIRST) % SPACING === 0 && n < EXIT ? (n - FIRST) / SPACING : -1;
   });
   const ageN = section.querySelector<HTMLElement>(".rv-walk-age-n")!;
+  const skip = section.querySelector<HTMLElement>(".rv-walk-skip");
   let shownAge = -1;
 
   section.classList.add("is-live");
@@ -319,7 +334,16 @@ function build(section: HTMLElement, mobile: boolean) {
     const c = cam.c;
     // walking: a step every 0.75 units, still at the stops
     let stopDist = Infinity;
-    for (let i = 0; i < 4; i++) stopDist = Math.min(stopDist, Math.abs(c + OFF - (FIRST + i * SPACING)));
+    let leaving = false; // past the nearest stop, walking on to the next one
+    let nearest = 0;
+    for (let i = 0; i < 4; i++) {
+      const d = c + OFF - (FIRST + i * SPACING);
+      if (Math.abs(d) < stopDist) {
+        stopDist = Math.abs(d);
+        leaving = d > 0;
+        nearest = i;
+      }
+    }
     const walk = gsap.utils.clamp(0, 1, (stopDist - 0.1) / 0.5);
     const bob = Math.sin((c / 0.75) * Math.PI * 2) * 2.2 * walk;
     let shade = 0;
@@ -389,10 +413,16 @@ function build(section: HTMLElement, mobile: boolean) {
       tocAt = reached;
       tocBtns.forEach((b, i) => (i === reached ? b.setAttribute("aria-current", "step") : b.removeAttribute("aria-current")));
     }
-    // the age shows only while walking: fades in away from a stop, out near one
-    // the age holds the left column for the whole walk between two levels
-    const walking = c + OFF > FIRST - 0.2 && c < EXIT - 0.6;
-    age.style.opacity = walking ? gsap.utils.clamp(0, 1, (stopDist - 0.3) / 0.25).toFixed(3) : "0";
+    // the age holds the left column for the whole walk between two levels: it fades in
+    // away from a stop and out near one. On the first approach it takes over from the
+    // heading as that leaves ("3 yaş" before Anaokulu), so the column is never empty.
+    const walking = c < EXIT - 0.6;
+    const fromHead = gsap.utils.clamp(0, 1, (c - 1.15) / 0.25);
+    // Leaving a stop it returns as soon as the camera moves (it crosses the level's
+    // name on its way out); arriving it gives way before the next name rises.
+    // (the first approach is short, 1.85 units: there the age stays until Anaokulu rises)
+    const nearStop = leaving ? (stopDist - 0.04) / 0.2 : nearest === 0 ? (stopDist - 0.1) / 0.18 : (stopDist - 0.3) / 0.25;
+    age.style.opacity = walking ? Math.min(fromHead, gsap.utils.clamp(0, 1, nearStop)).toFixed(3) : "0";
     const a = ageAt(c);
     if (a !== shownAge) {
       shownAge = a;
@@ -420,8 +450,9 @@ function build(section: HTMLElement, mobile: boolean) {
     const at = FIRST + i * SPACING;
     const ch = chapters[i];
     const rest = ch.querySelectorAll(".rv-chapter-text > :not(h3)");
-    // the walk on starts while the previous level's text is leaving: no dead frame with a still camera and an empty column
-    const moveStart = i === 0 ? tl.duration() : tl.duration() - 0.4;
+    // the walk on starts while the heading / the previous level's text is leaving:
+    // no dead frame with a still camera and an empty column
+    const moveStart = i === 0 ? 0.55 : tl.duration() - 0.4;
     tl.to(cam, { c: at - OFF, duration: MOVE, ease: "sine.inOut" }, moveStart);
     tl.to(sun, { v: (i + 0.5) / 4.4, duration: MOVE, ease: "none" }, moveStart);
     // arrive: letters rise, then the rest settles
@@ -442,15 +473,16 @@ function build(section: HTMLElement, mobile: boolean) {
   tl.addLabel("exit");
   tl.to({}, { duration: 0.5 });
 
-  const unit = mobile ? 0.36 : 0.42; // viewport heights of scroll per timeline second
+  // The stage is position: sticky inside a section whose height CSS sets from the first
+  // paint (almanak.css, "--rv-walk-len": 4.6 screens on desktop, 4 on phones for the
+  // 14.4 s timeline). No GSAP pin: a pin switches the stage to position: fixed mid-scroll,
+  // which Chrome counted as a full-viewport layout shift (CLS 1.0 on the live site).
   const st = ScrollTrigger.create({
     trigger: section,
     start: "top top",
-    end: () => `+=${Math.round(tl.duration() * unit * window.innerHeight)}`,
-    pin: stage,
+    end: "bottom bottom",
     scrub: 0.6,
     animation: tl,
-    anticipatePin: 1,
     invalidateOnRefresh: true,
     onRefresh: measure,
     onToggle: (self) => section.classList.toggle("is-active", self.isActive),
@@ -482,6 +514,10 @@ function build(section: HTMLElement, mobile: boolean) {
   tocBtns.forEach((b) => b.addEventListener("click", onToc));
   // Keyboard: focusing a level's link walks to that level.
   const onFocus = (e: FocusEvent) => {
+    if (skip && e.target === skip) {
+      if (window.scrollY > st.start + 2) scrollToY(st.start, true);
+      return;
+    }
     const i = chapters.findIndex((ch) => ch.contains(e.target as Node));
     if (i >= 0 && i !== current) scrollToY(yOf(`k${i}`), true);
   };

@@ -139,3 +139,38 @@ Ekran görüntüleri: `ekran/v5-d-*` (1440×900) ve `ekran/v5-m-*` (390×844).
 | Yaş kuralı "72 ay" düzenlemesi basında konuşuluyor, yürürlükte değil | Değişirse `lib/revak/age.ts` ve `kabul-ek.ts` kaynak metni | yönetmelik değişince |
 | Bütün yeni Türkçe metinler | Raşit onayı bekliyor | onaydan sonra |
 
+
+## Geliştirme turu (2026-10-04, jüri 7,2 → hedef 7,6; dal `gelistir/revak`)
+
+### Değişenler
+| Konu | Önce | Sonra |
+|---|---|---|
+| Yürüyüşün sabitlenmesi | GSAP `pin` (sahne kaydırma ortasında `position: fixed`'e geçiyordu) | CSS `position: sticky`; bölüm yüksekliği CSS'te (`--rv-walk-len`), `html.rv-live` sınıfı ilk boyamadan önce `layout.tsx`'teki satır içi betikle konur; ScrollTrigger yalnız `top top → bottom bottom` eşler |
+| Yürüyüş uzunluğu | masaüstü 6,2 ekran, telefon 5,4 ekran | masaüstü 4,6 ekran, telefon 4 ekran (zaman çizelgesi 14,9 → 14,4 sn; ilk yürüyüş başlık çıkarken başlar) |
+| Atlama | yok | Başlığın altında "Kademeleri geçin, rehberliğe inin" (`#rehberlik`); yürüyüşün ortasında klavyeyle odaklanınca sayfa yürüyüşün başına döner, bağlantı görünür |
+| Baştaki boş sütun | başlık çıkınca bir ekran boyu boş, yaş sayacı yalnız kademe aralarında | "3 yaş" başlık çıkarken girer, Anaokulu adı yükselirken çıkar; kademeden ayrılırken yaş hemen döner |
+| Saat ışığı | `--sun` ile %14/%22 çarpma tonu | `--rv-hour`: sabah serin mavi #B4C8DF → öğle #F0D3A0 → akşam kehribar #E2914C; pencere tonu 0,16–0,30, duvar %13 karışım, ikindiden sonra avlu tarafından sıcak ışık (soft-light) |
+| Kemer taşı | gri sıva gibi render | `tas-sabah/aksam`: CLAHE ile derz kontrastı, bal rengi kalker tonu (sharp; Blender yeniden render yok). Kademe sayfası kemeri de aynı dosyaları kullanır |
+| Kemer içindeki fotoğraflar | CSS `saturate(.74) contrast(.9) sepia(.12)` | Dosyada saat tonu: `saat-<anahtar>` (anaokulu serin sabah, ilkokul öğle, ortaokul ikindi, lise kehribar akşam); CSS süzgeci kalktı |
+| Telefon üst krom | konsept şeridi (2 satır) + bursluluk bandı ≈ 78 px | tek mürekkep satırı 36 px ("Konsept: hayali okul." + "Bursluluk 15 Kasım Başvurun ×"); kazanılan yer giriş kemerine: kemer başlık ve alt başlık boyunca uzanır (162 → 271 px yükseklik) |
+| Marcellus rakamları | "1" Roma I'sı, "0" O gibi | `Revak Rakam` yüzü: Hanken Grotesk'in tabular rakamları (yalnız 0-9, ağırlık 380, 1,4 KB), `--rv-f-serif` yığınının başında, `unicode-range` ile. Gerekçe: rakamı yazıyla yazmak "Kısaca Revak" paragrafının fikrini (rakamlar metnin içinde) bozar ve tarih/saat/fiyat gibi dinamik yerlerde mümkün değil; tek kural bütün sayfalardaki ~60 yeri birden düzeltir ve YON.md'deki "rakamlar serif içinde sans" kuralının genellemesidir. Başlık fontu değişmedi |
+
+### Ölçümler (yerel üretim derlemesi, `dogrula.py` + layout-shift kaynak ölçümü)
+| Ölçüt | Önce (canlı, jüri) | Sonra |
+|---|---|---|
+| CLS masaüstü | 1,0005 (kaynak: `div.rv-walk-stage`, pin başında 1,0 ve sonunda 0,94) | 0,0003 (yalnız açılışta duyuru metni) |
+| CLS mobil | 0,9992 | 0 |
+| LCP masaüstü / mobil | 732 / 1016 ms (canlı) | 284 / 164 ms (yerel) |
+| Konsol hatası | yok | yok |
+| `npm run lint` / `npm run build` | | temiz / yeşil |
+
+Ekranlar: `ekran/gelistir-2026-10-04/` (dogrula çıktısı; `sheet-walk-d.png`, `sheet-walk-m.png` yürüyüşün 8 noktası; `alt-*` alt sayfalar).
+
+### Bu turun borçları
+| Konu | Neden | Ne zaman |
+|---|---|---|
+| Blender render yenilenmedi | Blender MCP bağlantısı kurulamadı (addon el sıkışması başarısız); taş tonu sharp ile verildi, sert gün ışığı ve derz gölgesi gerçek render değil | Blender açık ve MCP eklentisi çalışırken: `face-am/pm` sert güneş (açı ~0,25), alçak yan ışık |
+| JS paketleri yüklenmezse yürüyüş | `html.rv-live` satır içi betikle konduğu için, paketler düşerse sahne başlıkla kalır, kademeler gizli | Yalnız inline betik çalışıp React paketi düşerse; gerçek riski düşük |
+| Telefonda Lise durağında "Bu kademeyi tanıyın" alt çubuğun altında kalıyor | Lise metni uzun (önceden de vardı) | sonraki tur |
+| `dogrula.py` "Türkçe glif" uyarısı | `Revak Rakam` yalnız rakam içerir, harfler Marcellus'tan gelir: yanlış alarm | — |
+| Rakam yüzünde orantılı rakam (`pnum`) yok | Google alt kümesinde OpenType özelliği yok; "1" geniş tabular. "Kısaca Revak" 4. satırı bu yüzden 4 sütun içeri alındı | gerekirse |

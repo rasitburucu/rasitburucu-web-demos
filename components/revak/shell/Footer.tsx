@@ -95,8 +95,12 @@ export function Footer() {
 export function Strip() {
   return (
     <div className="rv-strip">
-      <p>
+      <p className="rv-strip-full">
         {tr.strip.text} <a href={tr.strip.href}>{tr.strip.link}</a>
+      </p>
+      {/* phones: one short line; the full sentence is the footer note */}
+      <p className="rv-strip-short">
+        <a href={tr.strip.href}>{tr.strip.short}</a>
       </p>
     </div>
   );

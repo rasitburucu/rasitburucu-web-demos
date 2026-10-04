@@ -17,7 +17,13 @@ export const tr = {
       "Sarıyer Zekeriyaköy'de anaokulundan liseye tek kampüs. Sınıflar en fazla 18 öğrenci, üç dil, lisede uluslararası diploma programı. Kampüs turu planlayın, ön kayıt yaptırın.",
   },
 
-  strip: { text: "Konsept çalışma: Revak Okulları hayali bir okuldur. Rakamlar örnektir, formlar hiçbir yere gönderilmez.", link: "rasitburucu.com", href: "/tr" },
+  strip: {
+    text: "Konsept çalışma: Revak Okulları hayali bir okuldur. Rakamlar örnektir, formlar hiçbir yere gönderilmez.",
+    // phones: one line beside the exam notice; the full sentence stays in the footer note
+    short: "Konsept: hayali okul.",
+    link: "rasitburucu.com",
+    href: "/tr",
+  },
   skip: "İçeriğe geç",
   crumb: "Bulunduğunuz sayfa",
   // The "örnek" seal: every block that reads like real data (menu, calendar, hours, timetable) carries one.
@@ -33,6 +39,8 @@ export const tr = {
 
   announce: {
     lead: "Bursluluk sınavı",
+    // phones: the notice shares one line with the concept strip
+    leadShort: "Bursluluk",
     // {date} {weekday} {deadline} {days}
     text: (date: string, weekday: string, deadline: string, days: number) =>
       days > 0
@@ -174,6 +182,8 @@ export const tr = {
     plate: "Lev.",
     rulerLabel: "Kademeler",
     ageLabel: "yaş",
+    // the walk is long: a way past it, at its start, for keyboard and impatient readers
+    skip: "Kademeleri geçin, rehberliğe inin",
     exit: {
       title: "Revağın sonunda, dünya.",
       text: "On beş yıl aynı kapıdan girip çıkan çocuk, buradan kendi seçtiği bir üniversiteye yürür.",

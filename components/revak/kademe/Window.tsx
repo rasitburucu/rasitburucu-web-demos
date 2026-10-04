@@ -53,8 +53,8 @@ export function KademeWindow({ image, sun, alt }: { image: ImageKey; sun: number
         </picture>
       </div>
       {/* only the face that carries the light is fetched eagerly */}
-      {sun < 1 && <Face name="kemer-sabah" cls="rv-kw-face" priority={sun < 0.5} />}
-      {sun > 0 && <Face name="kemer-aksam" cls="rv-kw-face rv-kw-face--pm" priority={sun >= 0.5} />}
+      {sun < 1 && <Face name="tas-sabah" cls="rv-kw-face" priority={sun < 0.5} />}
+      {sun > 0 && <Face name="tas-aksam" cls="rv-kw-face rv-kw-face--pm" priority={sun >= 0.5} />}
     </div>
   );
 }
