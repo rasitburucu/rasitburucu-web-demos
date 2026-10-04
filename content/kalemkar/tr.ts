@@ -6,6 +6,16 @@
 
 const BASE = "/kalemkar";
 
+// One list for the header menu and the footer "Sayfalar". The booking page is the
+// header button, so it is listed after the menu items in the footer.
+const NAV_ITEMS = [
+  { label: "Sofra", href: `${BASE}/sofra/` },
+  { label: "Şef", href: `${BASE}/#sef` },
+  { label: "Ev", href: `${BASE}/#ev` },
+  { label: "Özel davet", href: `${BASE}/ozel-davet/` },
+];
+const BOOK = { label: "Rezervasyon", href: `${BASE}/rezervasyon/` };
+
 export const tr = {
   base: BASE,
   meta: {
@@ -22,19 +32,14 @@ export const tr = {
   },
   skip: "İçeriğe geç",
   strip: {
-    text: "Konsept çalışma. Kalemkâr hayali bir restorandır; fiyatlar ve doluluk örnektir, formlar hiçbir yere gönderilmez.",
+    text: "Konsept çalışma —",
     link: "rasitburucu.com",
-    href: "https://rasitburucu.com/tr",
+    href: "https://rasitburucu.com",
   },
   brand: { name: "Kalemkâr", word: "KALEMKÂR", home: "Kalemkâr ana sayfa", place: "Gaziantep, Bey Mahallesi" },
   nav: {
     label: "Ana menü",
-    items: [
-      { label: "Sofra", href: `${BASE}/sofra/` },
-      { label: "Şef", href: `${BASE}/#sef` },
-      { label: "Ev", href: `${BASE}/#ev` },
-      { label: "Özel davet", href: `${BASE}/ozel-davet/` },
-    ],
+    items: NAV_ITEMS,
     cta: "Masanızı ayırın",
     menu: "Menü",
     close: "Kapat",
@@ -156,16 +161,23 @@ export const tr = {
 
   footer: {
     visit: "Ziyaret",
-    reach: "Ulaşın",
+    reach: "İletişim",
     pages: "Sayfalar",
-    credits: "Görseller ve yazı tipleri",
-    creditsNote: "Yemek ve mekân fotoğrafları Pexels’ten, lisansı sayfalarından okundu. Bakır sini ve tepsi bu çalışma için Blender’da modellendi.",
-    note: "Kalemkâr, rasitburucu.com için hazırlanmış bir konsept çalışmadır. Restoran, şef, fiyatlar, doluluk ve alıntılar hayalidir.",
-    links: [
-      { label: "Güz sofrası", href: `${BASE}/sofra/` },
-      { label: "Rezervasyon", href: `${BASE}/rezervasyon/` },
-      { label: "Özel davet", href: `${BASE}/ozel-davet/` },
-    ],
+    note: "Kalemkâr kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Şef, alıntılar, adres, telefon, fiyatlar ve doluluk örnektir; formlar hiçbir yere gönderilmez.",
+    credits: "Proje künyesi",
+    kunye: {
+      design: "Tasarım ve geliştirme:",
+      designBy: "Raşit Burucu",
+      designHref: "https://rasitburucu.com",
+      render: "3B ve render:",
+      renderText: "Bakır sini ve tezgâh tepsisi bu çalışma için Blender’da modellendi ve render alındı; kazıma deseni Python ile çizildi. Işık HDRI’si:",
+      photos: "Fotoğraflar:",
+      fonts: "Yazı karakterleri:",
+      year: "Yıl:",
+      yearValue: "2026",
+    },
+    links: [...NAV_ITEMS, BOOK],
+    copyright: "© 2026 Kalemkâr · Konsept çalışma — rasitburucu.com",
   },
 
   menuPage: {

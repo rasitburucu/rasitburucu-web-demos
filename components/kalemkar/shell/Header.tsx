@@ -8,6 +8,8 @@ import { Rosette } from "../ui/Rosette";
 
 const t = tr.nav;
 const norm = (s: string) => s.split("#")[0].replace(/\/$/, "");
+const BOOK = `${tr.base}/rezervasyon/`;
+const current = (href: string, pathname: string) => (!href.includes("#") && norm(href) === norm(pathname) ? ("page" as const) : undefined);
 
 /** The booking pages get a quiet header: wordmark and a way out. */
 export function useFlowMode() {
@@ -66,72 +68,65 @@ export function Header() {
             <span className="kk-logo-word">{tr.brand.word}</span>
           </Link>
 
-          {!flow && (
-            <nav className="kk-nav" aria-label={t.label}>
-              <ul>
-                {t.items.map((i) => (
-                  <li key={i.href}>
-                    <Link href={i.href} aria-current={!i.href.includes("#") && norm(i.href) === norm(pathname) ? "page" : undefined}>
-                      {i.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          )}
-
-          <div className="kk-header-act">
-            {flow ? (
-              <Link href={`${tr.base}/`} className="kk-btn kk-btn--line kk-btn--sm">
-                {tr.flow.close}
-              </Link>
-            ) : (
-              <>
-                <Link href={`${tr.base}/rezervasyon/`} className="kk-btn kk-btn--accent kk-btn--sm kk-hide-sm">
-                  {t.cta}
-                </Link>
-                <button
-                  ref={btn}
-                  type="button"
-                  className="kk-menu-btn"
-                  aria-expanded={open}
-                  aria-controls="kk-menu"
-                  onClick={() => setOpen((o) => !o)}
-                >
-                  <span className="kk-menu-lines" aria-hidden="true" data-open={open || undefined}>
-                    <i />
-                    <i />
-                  </span>
-                  <span>{open ? t.close : t.menu}</span>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
-      {!flow && (
-        <div id="kk-menu" className="kk-menu" hidden={!open}>
-          <nav aria-label={t.label}>
+          <nav className="kk-nav" aria-label={t.label}>
             <ul>
               {t.items.map((i) => (
                 <li key={i.href}>
-                  <Link href={i.href} onClick={() => setOpen(false)}>
+                  <Link href={i.href} aria-current={current(i.href, pathname)}>
                     {i.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
-          <Link href={`${tr.base}/rezervasyon/`} className="kk-btn kk-btn--accent" onClick={() => setOpen(false)}>
-            {t.cta}
-          </Link>
-          <p className="kk-menu-foot">
-            {tr.contact.hours}
-            <br />
-            <a href={tr.contact.phoneHref}>{tr.contact.phone}</a>
-          </p>
+
+          <div className="kk-header-act">
+            {flow && (
+              <Link href={`${tr.base}/`} className="kk-btn kk-btn--line kk-btn--sm kk-flow-close">
+                {tr.flow.close}
+              </Link>
+            )}
+            <Link href={BOOK} className="kk-btn kk-btn--accent kk-btn--sm kk-hide-sm" aria-current={current(BOOK, pathname)}>
+              {t.cta}
+            </Link>
+            <button
+              ref={btn}
+              type="button"
+              className="kk-menu-btn"
+              aria-expanded={open}
+              aria-controls="kk-menu"
+              onClick={() => setOpen((o) => !o)}
+            >
+              <span className="kk-menu-lines" aria-hidden="true" data-open={open || undefined}>
+                <i />
+                <i />
+              </span>
+              <span>{open ? t.close : t.menu}</span>
+            </button>
+          </div>
         </div>
-      )}
+      </header>
+      <div id="kk-menu" className="kk-menu" hidden={!open}>
+        <nav aria-label={t.label}>
+          <ul>
+            {t.items.map((i) => (
+              <li key={i.href}>
+                <Link href={i.href} aria-current={current(i.href, pathname)} onClick={() => setOpen(false)}>
+                  {i.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <Link href={BOOK} className="kk-btn kk-btn--accent" aria-current={current(BOOK, pathname)} onClick={() => setOpen(false)}>
+          {t.cta}
+        </Link>
+        <p className="kk-menu-foot">
+          {tr.contact.hours}
+          <br />
+          <a href={tr.contact.phoneHref}>{tr.contact.phone}</a>
+        </p>
+      </div>
     </>
   );
 }
