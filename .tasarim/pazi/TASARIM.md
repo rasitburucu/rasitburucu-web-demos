@@ -84,6 +84,14 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 - "Kat kat kurulum": çizim kahramanda seçilen ürünü dizer (torba varsayılan; koli, shrink); bölüm yüksekliği 1440×900'de 1977 → 1137 px (−%42). Mobilde 1483 → 1369.
 - Ölçüm (yerel, `dogrula.py`): LCP masaüstü 340 ms / mobil 184 ms, CLS 0 / 0, konsol hatası 0, yatay taşma yok. GPU açık ekranlar: `ekran/gelistir-2026-10-04/gpu/`.
 
+## Üçüncü tur (3B, 2026-10-05)
+
+- Kol yeniden kuruldu (`cell/robot.ts`, ölçüler `cell/layout.ts`): her eklem iki silindir (modül + bağlantının döküm ucu), arada koyu ayrım çizgisi; döküm tüpler muylulu; eklem kapakları; vidalı taban flanşı, sabit taban kolonu, J1 rotoru; arkada konnektör ve kablo; ISO tipi takım flanşı (4 delik, merkez). Omuz modülü artık kolonun üstünde oturuyor (önce kapak kolonun içine gömülüydü). Söküm sahnesinde her modül kendi ayrım düzleminden çıkıyor; omuz modülünün önü kapak altında koyu açıklık.
+- Hareket (`cell/motion.ts`): dikey kalkış/yaklaşma, taban ekseni etrafında yay, hız profili (ivme sınırı, eğrilikte yavaşlama, köşeleri yumuşatılmış trapez); yüklü kol daha yavaş; kavrama/bırakma bekleme süresi; bilek dönüşü yay boyunca. Simüle döngü P30'da ~10,2 sn (fit ile aynı).
+- Performans (`cell/engine.ts`): primitifler modül/malzeme başına birleştirildi; vantuz ve parmaklar örneklendi; sabit parçalar (konveyör, tarayıcı, ayak, tablet) tek seferlik pişmiş zemin gölgesine taşındı, gerçek zamanlı gölge yalnız hareket edenleri çiziyor ve çalışma alanına sığdırıldı; durunca (koruma bölgesi / Durdur) çizim duruyor; kalite kademeleri yüksek/orta/düşük (DPR 1,5/1,25/1; gölge 2048/1024/512; düşükte 30 fps, ortam yansıması yalnız kolda ve metalde, zemin difüz) ve kare süresine göre kendiliğinden kademe düşürme. `?kalite=` zorlaması uyarlamayı kapatır; `?kalite=dusuk` artık düşük 3B kademeyi açar (algılanan düşük cihaz yine durağan çizime gider).
+- Güvenlik planı (`cell/PlanCell.tsx`): aynı P30 üstten, gerçek ters kinematikle; torbalar konveyörle gelir, kol alır, palete desene göre dizer, dolu palet çekilir, diğerine geçer. Uyarı bölgesinde yavaşlar, koruma bölgesinde frenleyerek durur. three.js yok; kod bölümle birlikte yüklenir.
+- Ölçüm (RTX 4070 SUPER, 1440×900, medyan kare): 1,6 → 1,1 ms; çizim çağrısı 329 → 127; üçgen 164 bin → 95 bin (düşük 84 bin); CPU 4× yavaş 5,9 → 3,9 ms; SwiftShader yazılım GPU 1024×640: orta 178 → 127 ms, düşük 88 ms; Durdur'da kare/sn 500+ → 0. İlk yük JS: /pazi 134 → 135 kB, /pazi/biz-kimiz 176 → 176 kB. Ekranlar: `ekran/gelistir3-3b/`.
+
 ## Bilinen borçlar ve kararlar
 
 | Konu | Neden ertelendi | Ne zaman |
@@ -102,3 +110,6 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 | ~~Atölye çiziminde robot tabanı ve cam odadaki masa yanlış sırada çiziliyordu~~ | Kapandı (gelistir3): `lib/pazi/iso-depth.ts` derinlik sıralaması Workshop ve IsoCell'de | Kapandı |
 | Konveyör, geniş torbada (G ≥ 600) palet köşesine geometrik olarak giriyor | Sıralama değil ölçü sorunu; istenmedi | Gerekirse |
 | `site_sokum.py --headed` bu makinede yine durağan çizime düşüyor | Betik GPU bayrağı açmıyor; 3B kanıtı ayrı Playwright çekimiyle (`--enable-gpu`) alındı | Eklenti tarafında |
+| Gerçek zayıf GPU'da ölçüm | Zayıf GPU yazılım çiziciyle (SwiftShader) ve CPU yavaşlatmayla benzetildi; Raşit'in dizüstünde denenmedi | Raşit bakınca |
+| Güvenlik planı sabit iş gösteriyor (25 kg torba, EUR palet) | Plan alanları sabit EUR palete göre çizili; ziyaretçinin ürününü izlemesi alanları da değiştirmeyi gerektirir | İstenirse |
+| Model sayfası (`/modeller/p12`) yerel statik sunucuda 3B hücre "pending" kalıyor | Tur öncesi derlemede de aynı; bu turun dosyalarıyla ilgisi doğrulanmadı | Ayrı inceleme |

@@ -7,15 +7,42 @@ import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment
 import { fit, palletSize, PALLET_DECK, STATION_GAP_M, type Config, type Fit, type GripperSpec, type ModelId, type ModelSpec, MODELS } from "@/lib/pazi/plan";
 import { sameGripper } from "@/lib/pazi/gripper";
 import type { CellStore, View, Zone } from "@/lib/pazi/store";
-import { mesh, pillowGeometry, rbox, roundRectStrip, stripGeometry } from "./geo";
+import { UyarlamaliKare, type Kademe } from "@/lib/pazi/tier";
+import { mergeStatic, mesh, pillowGeometry, rbox, roundRectStrip, stripGeometry } from "./geo";
 import { bagMaterial, cardboardMaterials, floorTextures, makeMaterials, screenCanvas, shrinkMaterials, woodMaterial, type Mats } from "./materials";
+import { arcEase, Move, type MoveLimits } from "./motion";
 import { Gripper, Hose, Riser, Robot, type Pose } from "./robot";
 
+export type Quality = "high" | "mid" | "low";
+
+/**
+ * Quality levels. Every level keeps the same geometry and materials; what
+ * changes is how many pixels are drawn, the size and softness of the one
+ * real-time shadow map, and (low) a 30 fps cap. The arm still reads as a
+ * real machine on low: env reflections, PBR materials and baked floor shadows stay.
+ */
+const LEVELS: Record<Quality, { dpr: number; shadow: number; radius: number; fps: number }> = {
+  high: { dpr: 1.5, shadow: 2048, radius: 4, fps: 0 },
+  mid: { dpr: 1.25, shadow: 1024, radius: 3, fps: 0 },
+  low: { dpr: 1, shadow: 512, radius: 2, fps: 30 },
+};
+/**
+ * On the low level the room reflections stay only on the arm and the metal parts
+ * (where they make the material); matte things (floor, bags, wood, paint of the
+ * stands) light from the sky light alone. On a weak GPU this is the largest
+ * single saving per pixel.
+ */
+const ENV_KEEP = ["paint", "capDark", "capRing", "metal", "screw", "anodized", "alu", "frame", "roller", "seam", "glassDark"] as const;
+const TO_KADEME: Record<Quality, Kademe> = { high: "yuksek", mid: "orta", low: "dusuk" };
+const FROM_KADEME: Partial<Record<Kademe, Quality>> = { yuksek: "high", orta: "mid", dusuk: "low" };
+
 export type EngineOptions = {
-  quality: "high" | "mid";
+  quality: Quality;
   reduced: boolean;
   /** Where the cell's centre should sit in the canvas (0..1). */
   frame?: { x: number; y: number };
+  /** Step the level down (and back) by frame time; off when a test forces the level. */
+  adaptive?: boolean;
   /** Let the visitor drag the operator marker on the floor. */
   operator?: boolean;
   /** Scale of the cell in frame (1 = default). */
@@ -27,7 +54,12 @@ const CONVEYOR_TOP = 0.74;
 const CONVEYOR_END = -0.42;
 const CONVEYOR_START = -3.7;
 const BELT_SPEED = 0.42;
+/** Height of the waiting pose over the product, and of the vertical approach onto it (m). */
+const HOVER = 0.12;
+/** Simulated cycle (s) at cycleK = 1 for a typical pick and place; scales the planner to the model. */
+const CYCLE_REF = 5.45;
 
+const AXIS_X = new THREE.Vector3(1, 0, 0);
 const minJerk = (t: number) => t * t * t * (10 + t * (-15 + 6 * t));
 const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -54,11 +86,25 @@ type Station = {
 
 type Item = { z: number; line: number };
 
-type Phase = "toPick" | "wait" | "down" | "grip" | "up" | "transfer" | "down2" | "release" | "up2" | "idle";
+type Phase = "move" | "wait" | "grip" | "release" | "idle";
+/** What follows a move. */
+type After = "grip" | "release" | "wait";
 
 export class CellEngine {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
+  private key: THREE.DirectionalLight;
+  private hemi: THREE.HemisphereLight;
+  private envTex: THREE.Texture;
+  private envLow = false;
+  private level: Quality;
+  private adapt: UyarlamaliKare | null = null;
+  /** When the first frame was drawn (the adaptive level ignores shader warm-up before it). */
+  private born = 0;
+  private lastDraw = 0;
+  /** Baked floor shadow of the parts that never move (conveyor, scanners, riser). */
+  private baked?: THREE.Mesh;
+  private bakeRT?: THREE.WebGLRenderTarget;
   private camera: THREE.PerspectiveCamera;
   private m: Mats;
   private cellGroup = new THREE.Group();
@@ -119,7 +165,8 @@ export class CellEngine {
   private station = 0;
   private task: Task | null = null;
   private pickLine = 0;
-  private from = new THREE.Vector3();
+  private move: Move | null = null;
+  private after: After = "wait";
   private to = new THREE.Vector3();
   private cur = new THREE.Vector3();
   private yawFrom = 0;
@@ -155,6 +202,7 @@ export class CellEngine {
     this.canvas = canvas;
     this.store = store;
     this.opts = opts;
+    this.level = opts.quality;
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -165,33 +213,34 @@ export class CellEngine {
     this.renderer = renderer;
 
     this.camera = new THREE.PerspectiveCamera(20, 1, 0.5, 60);
-    this.m = makeMaterials();
+    // the clear-coated paint only on the top level: one shader fewer and cheaper pixels below it
+    this.m = makeMaterials(opts.quality === "high");
 
     // light: soft room reflections + one key light with shadows + cool fill
     const pmrem = new THREE.PMREMGenerator(renderer);
-    const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    const room = new RoomEnvironment();
+    const env = pmrem.fromScene(room, 0.04, 0.1, 100, { size: opts.quality === "high" ? 256 : 128 }).texture;
+    room.dispose();
     this.scene.environment = env;
     this.scene.environmentIntensity = 0.5;
     pmrem.dispose();
     this.disposables.push(env);
+    this.envTex = env;
 
     const hemi = new THREE.HemisphereLight("#eef0ea", "#8f918a", 0.55);
     this.scene.add(hemi);
+    this.hemi = hemi;
+    // key light: its shadow map covers only the working area (fitted in build) and
+    // draws only what moves; the still parts are baked into the floor once
     const key = new THREE.DirectionalLight("#fff6e8", 3.0);
     key.position.set(-4.2, 7.2, 2.6);
     key.castShadow = true;
-    key.shadow.mapSize.set(opts.quality === "high" ? 2048 : 1024, opts.quality === "high" ? 2048 : 1024);
-    const sc = key.shadow.camera;
-    sc.left = -4;
-    sc.right = 4;
-    sc.top = 4.5;
-    sc.bottom = -4.5;
-    sc.near = 2;
-    sc.far = 16;
     key.shadow.bias = -0.0005;
-    key.shadow.normalBias = 0.04;
-    key.shadow.radius = 3;
-    this.scene.add(key);
+    key.shadow.normalBias = 0.03;
+    this.key = key;
+    this.applyShadowLevel();
+    this.scene.add(key, key.target);
+    this.applyEnvLevel();
     const fill = new THREE.DirectionalLight("#e6eef5", 0.55);
     fill.position.set(5, 3, -2);
     this.scene.add(fill);
@@ -201,10 +250,13 @@ export class CellEngine {
     ft.map.repeat.set(5, 5);
     ft.rough.repeat.set(4, 4);
     this.disposables.push(ft.map, ft.rough, ft.alpha);
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(24, 24),
-      new THREE.MeshStandardMaterial({ map: ft.map, roughnessMap: ft.rough, roughness: 0.62, metalness: 0, alphaMap: ft.alpha, transparent: true, depthWrite: false }),
-    );
+    // the floor covers most of the canvas: below the top level it uses the cheaper diffuse shader
+    // (matte concrete looks the same; it still takes the arm's shadow and the baked ones)
+    const floorMat =
+      opts.quality === "high"
+        ? new THREE.MeshStandardMaterial({ map: ft.map, roughnessMap: ft.rough, roughness: 0.62, metalness: 0, alphaMap: ft.alpha, transparent: true, depthWrite: false })
+        : new THREE.MeshLambertMaterial({ map: ft.map, alphaMap: ft.alpha, transparent: true, depthWrite: false });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, 0, -0.6);
     floor.receiveShadow = true;
@@ -261,8 +313,71 @@ export class CellEngine {
     };
     this.unsub = store.subscribe(sync);
     sync();
+    // adaptive level: if frames run long (weak GPU, big window) step down, never above the start level
+    if (!opts.reduced && opts.adaptive !== false)
+      this.adapt = new UyarlamaliKare({
+        baslangic: TO_KADEME[this.level],
+        // a short window: a slow device should not wait half a minute for the lighter level
+        pencere: 24,
+        bekleme: 2000,
+        enAz: "dusuk",
+        onDegisim: (k) => {
+          const q = FROM_KADEME[k];
+          if (q) this.setLevel(q);
+        },
+      });
     this.running = true;
     this.kick();
+  }
+
+  /** Current quality level (after any adaptive step). */
+  get quality() {
+    return this.level;
+  }
+
+  private applyShadowLevel() {
+    const L = LEVELS[this.level];
+    const sh = this.key.shadow;
+    if (sh.mapSize.x !== L.shadow) {
+      sh.mapSize.set(L.shadow, L.shadow);
+      sh.map?.dispose();
+      sh.map = null;
+    }
+    sh.radius = L.radius;
+  }
+
+  private setLevel(q: Quality) {
+    if (q === this.level) return;
+    this.level = q;
+    this.applyShadowLevel();
+    this.applyEnvLevel();
+    this.resize();
+  }
+
+  /** Room reflections on everything, or (low) on the arm and metal only. */
+  private applyEnvLevel() {
+    const low = this.level === "low";
+    if (low === this.envLow) return;
+    this.envLow = low;
+    this.scene.environment = low ? null : this.envTex;
+    for (const k of ENV_KEEP) {
+      const mat = this.m[k] as THREE.MeshStandardMaterial;
+      if (low) {
+        mat.userData.envI = mat.envMapIntensity;
+        mat.envMap = this.envTex;
+        mat.envMapIntensity = mat.envMapIntensity * this.scene.environmentIntensity;
+      } else {
+        mat.envMap = null;
+        mat.envMapIntensity = (mat.userData.envI as number) ?? mat.envMapIntensity;
+      }
+    }
+    // the matte rest makes up the lost ambient from the sky light
+    this.hemi.intensity = low ? 0.95 : 0.55;
+    this.scene.traverse((o) => {
+      const mat = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+      if (Array.isArray(mat)) mat.forEach((x) => (x.needsUpdate = true));
+      else if (mat) mat.needsUpdate = true;
+    });
   }
 
   /* ------------------------------------------------------------- lifecycle */
@@ -283,11 +398,22 @@ export class CellEngine {
     if (!this.running) return;
     const active = this.visible && document.visibilityState === "visible";
     if (!active) return;
+    // frame cap on the low level: skip vsync ticks until a frame is due
+    const fps = LEVELS[this.level].fps;
+    if (fps && now - this.lastDraw < 1000 / fps - 4) {
+      this.raf = requestAnimationFrame(this.loop);
+      return;
+    }
     const dt = Math.min(0.05, (now - this.last) / 1000);
+    const interval = now - this.lastDraw;
     this.last = now;
+    this.lastDraw = now;
     const animating = this.step(dt);
     this.renderer.render(this.scene, this.camera);
     this.opts.onFrame?.();
+    // feed the adaptive level with steady running frames only (skip shader warm-up)
+    if (!this.born) this.born = now;
+    if (animating && this.adapt && now - this.born > 1500) this.adapt.kare(interval);
     if (animating) this.raf = requestAnimationFrame(this.loop);
   };
 
@@ -322,6 +448,8 @@ export class CellEngine {
       (x as THREE.Material).dispose();
     });
     this.disposables.forEach((d) => d.dispose());
+    this.bakeRT?.dispose();
+    this.key.shadow.map?.dispose();
     this.screen.texture.dispose();
     this.renderer.dispose();
   }
@@ -332,8 +460,7 @@ export class CellEngine {
     const h = Math.max(1, el.clientHeight);
     this.width = w;
     this.height = h;
-    const cap = this.opts.quality === "high" ? 1.75 : 1.25;
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, LEVELS[this.level].dpr));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     const f = this.opts.frame ?? { x: 0.5, y: 0.5 };
@@ -440,7 +567,7 @@ export class CellEngine {
       this.productMat = bagMaterial();
     } else if (cfg.kind === "shrink") {
       this.productGeo = rbox(this.pg, this.py, this.pu, 0.012, 3);
-      this.productMat = shrinkMaterials();
+      this.productMat = shrinkMaterials(this.opts.quality === "high");
     } else {
       this.productGeo = rbox(this.pg, this.py, this.pu, 0.006, 2);
       this.productMat = cardboardMaterials();
@@ -449,6 +576,8 @@ export class CellEngine {
     const holder = new THREE.Mesh(this.productGeo, this.productMat);
     holder.visible = false;
     g.add(holder);
+    // parts that never move: merged into a few draws, their shadow baked into the floor
+    const still = new THREE.Group();
 
     // ---- robot on its riser
     const lift = f.lift;
@@ -463,8 +592,8 @@ export class CellEngine {
     const wHigh = f.stack.height / 1000 + gH + hang;
     const riserH = THREE.MathUtils.clamp((Math.max(wPick, wHigh) + Math.min(wLow, wPick)) / 2 - d1 - 0.12, 0.34, 1.05);
     this.riser = new Riser(lift, riserH, m);
-    g.add(this.riser.group);
-    this.robot = new Robot(this.model, m);
+    (lift ? g : still).add(this.riser.group);
+    this.robot = new Robot(this.model, m, this.opts.quality === "low" ? "low" : "high");
     g.add(this.robot.root);
     this.lift = this.liftTo = this.liftFrom = lift ? this.riser.setHeight((wPick + wLow) / 2 - d1) : riserH;
     this.robot.root.position.set(0, this.lift, 0);
@@ -496,7 +625,7 @@ export class CellEngine {
     }
 
     // hose from the riser to the gripper along the clips
-    this.hose = new Hose(this.robot.clips.length + 3, 0.011, m.hose);
+    this.hose = new Hose(this.robot.clips.length + 3, 0.011, m.hose, this.opts.quality === "low" ? 44 : 64, this.opts.quality === "low" ? 6 : 8);
     this.hoseRoot.set(-0.17, 0.32, -0.12);
     g.add(this.hose.mesh);
 
@@ -520,18 +649,21 @@ export class CellEngine {
         sheets.receiveShadow = true;
         sg.add(sheets);
       }
-      // floor tape around the station
+      // floor tape around the station (one draw)
       const tw = W + 0.16;
       const tl = L + 0.16;
+      const tapes = new THREE.Group();
       const tape = (ax: number, az: number, bx: number, bz: number) => {
         const t = new THREE.Mesh(stripGeometry(ax, az, bx, bz, 0.05, 0.6), m.tape);
         t.position.y = 0.0015;
-        t.receiveShadow = true;
-        sg.add(t);
+        t.castShadow = false;
+        tapes.add(t);
       };
       tape(-tw / 2, -tl / 2, tw / 2, -tl / 2);
       tape(tw / 2, -tl / 2 - 0.025, tw / 2, tl / 2 + 0.025);
       tape(-tw / 2, -tl / 2 - 0.025, -tw / 2, tl / 2 + 0.025);
+      sg.add(tapes);
+      mergeStatic(tapes);
       // contact shadow under the pallet
       sg.add(this.aoDecal(W + 0.12, L + 0.12, 0.42));
 
@@ -565,7 +697,7 @@ export class CellEngine {
     this.rollers.receiveShadow = true;
     this.rollerMats = [];
     for (const lx of this.lines) {
-      g.add(this.conveyor(lx, cw));
+      still.add(this.conveyor(lx, cw));
       for (let i = 0; i < nRollers; i++) {
         const mm = new THREE.Matrix4().makeTranslation(lx, CONVEYOR_TOP - 0.024, CONVEYOR_START + pitch / 2 + i * pitch);
         this.rollerMats.push(mm);
@@ -600,7 +732,7 @@ export class CellEngine {
     const sl = new THREE.Mesh(slowG, m.tape);
     sl.position.y = 0.002;
     sl.receiveShadow = true;
-    g.add(sl);
+    still.add(sl);
 
     // scanners at two corners
     for (const [sx, sz, rot] of [
@@ -617,7 +749,7 @@ export class CellEngine {
       const stand = mesh(rbox(0.14, 0.03, 0.14, 0.004), m.graphitePaint);
       stand.position.y = 0.015;
       s.add(body, win, stand);
-      g.add(s);
+      still.add(s);
     }
 
     // operator tablet on a pole by the conveyor
@@ -635,11 +767,15 @@ export class CellEngine {
     scr.position.set(0, 1.264, 0.031);
     scr.rotation.x = -0.45;
     hmi.add(pole, foot, tab, scr);
-    g.add(hmi);
+    still.add(hmi);
     this.drawScreen();
 
     // riser contact shadow
-    g.add(this.aoDecal(0.75, 0.75, 0.45));
+    still.add(this.aoDecal(0.75, 0.75, 0.45));
+    g.add(still);
+    mergeStatic(still);
+    this.fitShadow(ex, ez);
+    this.bakeStill(still, ex, ez);
 
     // operator marker
     if (this.opts.operator) {
@@ -677,7 +813,7 @@ export class CellEngine {
       for (let k = 0; k < 3; k++) this.items.push({ line: li, z: CONVEYOR_END - this.pu / 2 - k * (this.pu + 0.004) - k * 0.35 });
     }
     const cyc = f.cycleSec > 0 ? f.cycleSec : 60 / (this.model.cycles * 0.8);
-    this.cycleK = THREE.MathUtils.clamp(cyc / 5.1, 0.55, 2.2);
+    this.cycleK = THREE.MathUtils.clamp(cyc / CYCLE_REF, 0.55, 2.2);
     this.station = 0;
     this.task = null;
 
@@ -701,19 +837,120 @@ export class CellEngine {
 
     // robot ready pose above the pick
     this.yaw = 0;
-    const pick = this.pickPoint(0, 1, this.cur);
-    pick.y += 0.12;
+    this.pickPoint(0, 1, this.cur);
+    this.cur.y += HOVER;
     this.solveAt(this.cur);
-    this.phase = f.status === "custom" && !f.model ? "idle" : "toPick";
+    this.move = null;
+    this.phase = f.status === "custom" && !f.model ? "idle" : "wait";
     this.phaseT = 0;
-    this.phaseDur = 0.01;
-    this.from.copy(this.cur);
     this.to.copy(this.cur);
     this.robot.setLed(this.phase === "idle" ? "#d9442b" : "#5fd38a");
     this.publish(true);
     this.updateHose();
     this.updateConveyor(0);
     this.kick();
+  }
+
+  /** Fit the key light's shadow camera to the working area (robot, stations, conveyor end). */
+  private fitShadow(ex: number, ez: number) {
+    const key = this.key;
+    const target = new THREE.Vector3(0, 0, -0.3);
+    key.target.position.copy(target);
+    key.position.copy(target).addScaledVector(new THREE.Vector3(-4.2, 7.2, 2.6).normalize(), 10);
+    key.updateMatrixWorld();
+    key.target.updateMatrixWorld();
+    const view = new THREE.Matrix4().lookAt(key.position, target, new THREE.Vector3(0, 1, 0));
+    view.setPosition(key.position);
+    view.invert();
+    const top = Math.max(this.fitR.stack.height / 1000 + 0.2, this.lift + this.model.link.d1 + this.model.link.a2 + 0.35);
+    const lo = new THREE.Vector3(Infinity, Infinity, Infinity);
+    const hi = new THREE.Vector3(-Infinity, -Infinity, -Infinity);
+    const v = new THREE.Vector3();
+    for (const x of [-ex - 0.1, ex + 0.1])
+      for (const y of [0, top])
+        for (const z of [CONVEYOR_END - 0.9, ez + 0.1]) {
+          v.set(x, y, z).applyMatrix4(view);
+          lo.min(v);
+          hi.max(v);
+        }
+    const cam = key.shadow.camera;
+    cam.left = lo.x - 0.05;
+    cam.right = hi.x + 0.05;
+    cam.bottom = lo.y - 0.05;
+    cam.top = hi.y + 0.05;
+    cam.near = Math.max(0.1, -hi.z - 0.5);
+    cam.far = -lo.z + 0.5;
+    cam.updateProjectionMatrix();
+    this.key.shadow.needsUpdate = true;
+  }
+
+  /**
+   * Bake the shadow of the still parts into one floor texture: the parts are
+   * flattened onto the floor along the light direction and drawn once, white on
+   * black, from above; a dark decal uses that as its alpha. They no longer cast
+   * into the real-time shadow map, which then holds only what moves.
+   */
+  private bakeStill(still: THREE.Group, ex: number, ez: number) {
+    this.bakeRT?.dispose();
+    const x0 = -ex - 1.1;
+    const x1 = ex + 1.6;
+    const z0 = CONVEYOR_START - 0.9;
+    const z1 = ez + 1.3;
+    const w = x1 - x0;
+    const d = z1 - z0;
+    const res = this.opts.quality === "high" ? 512 : 256;
+    const rw = res;
+    const rh = Math.max(16, Math.round((res * d) / w));
+    const rt = new THREE.WebGLRenderTarget(rw, rh, { depthBuffer: false });
+    this.bakeRT = rt;
+    // light travel direction; project P onto y = 0 along it
+    const t = new THREE.Vector3(4.2, -7.2, -2.6).normalize();
+    const shear = new THREE.Matrix4().set(1, -t.x / t.y, 0, 0, 0, 0, 0, 0, 0, -t.z / t.y, 1, 0, 0, 0, 0, 1);
+    const scene = new THREE.Scene();
+    const holder = new THREE.Group();
+    holder.matrixAutoUpdate = false;
+    holder.matrix.copy(shear);
+    scene.add(holder);
+    const casters = [still.clone(), this.rollers.clone()];
+    for (const c of casters) {
+      c.traverse((o) => {
+        const me = o as THREE.Mesh;
+        if (!me.isMesh) return;
+        const mat = me.material as THREE.Material;
+        if (!me.geometry.boundingBox) me.geometry.computeBoundingBox();
+        const bb = me.geometry.boundingBox!;
+        // flat decals and floor tape cast nothing
+        if (mat.transparent || bb.max.y - bb.min.y < 0.012) me.visible = false;
+      });
+      holder.add(c);
+    }
+    const white = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+    scene.overrideMaterial = white;
+    const cam = new THREE.OrthographicCamera(x0 - (x0 + x1) / 2, x1 - (x0 + x1) / 2, (z0 + z1) / 2 - z0, (z0 + z1) / 2 - z1, 0.1, 20);
+    cam.position.set((x0 + x1) / 2, 10, (z0 + z1) / 2);
+    cam.up.set(0, 0, -1);
+    cam.lookAt((x0 + x1) / 2, 0, (z0 + z1) / 2);
+    const r = this.renderer;
+    const prevTarget = r.getRenderTarget();
+    r.setRenderTarget(rt);
+    r.setClearColor(0x000000, 1);
+    r.clear(true, false, false);
+    r.render(scene, cam);
+    r.setRenderTarget(prevTarget);
+    r.setClearColor(0x000000, 0);
+    white.dispose();
+    // the still parts now cast only through the baked texture
+    still.traverse((o) => (o.castShadow = false));
+    this.rollers.castShadow = false;
+    const decal = new THREE.Mesh(
+      new THREE.PlaneGeometry(w, d).rotateX(-Math.PI / 2),
+      new THREE.MeshBasicMaterial({ color: "#20221f", alphaMap: rt.texture, transparent: true, opacity: 0.4, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1 }),
+    );
+    decal.position.set((x0 + x1) / 2, 0.0012, (z0 + z1) / 2);
+    decal.renderOrder = -1;
+    this.baked = decal;
+    this.cellGroup.add(decal);
+    this.key.shadow.needsUpdate = true;
   }
 
   private planarHazard() {
@@ -770,28 +1007,30 @@ export class CellEngine {
     for (let i = 0; i < n; i++) {
       const bw = i === 0 || i === n - 1 ? 0.145 : n === 5 && (i === 1 || i === 3) ? 0.1 : 0.12;
       const x = -W / 2 + bw / 2 + (i * (W - bw)) / (n - 1);
-      const b = mesh(rbox(bw, 0.022, L, 0.003), wood);
+      const b = mesh(rbox(bw, 0.022, L, 0.003, 1), wood);
       b.position.set(x, deckY - 0.011, 0);
       g.add(b);
     }
     // stringer boards across
     for (const z of [-L / 2 + 0.0725, 0, L / 2 - 0.0725]) {
-      const s = mesh(rbox(W, 0.022, 0.145, 0.003), wood);
+      const s = mesh(rbox(W, 0.022, 0.145, 0.003, 1), wood);
       s.position.set(0, deckY - 0.033, z);
       g.add(s);
       // blocks
       for (const x of [-W / 2 + 0.0725, 0, W / 2 - 0.0725]) {
-        const bl = mesh(rbox(0.145, 0.078, z === 0 ? 0.145 : 0.1, 0.004), wood);
+        const bl = mesh(rbox(0.145, 0.078, z === 0 ? 0.145 : 0.1, 0.004, 1), wood);
         bl.position.set(x, 0.022 + 0.039, z === 0 ? 0 : z + (z < 0 ? -0.0225 : 0.0225));
         g.add(bl);
       }
     }
     // bottom boards
     for (const x of [-W / 2 + 0.0725, 0, W / 2 - 0.0725]) {
-      const bb = mesh(rbox(x === 0 ? 0.145 : 0.1, 0.022, L, 0.003), wood);
+      const bb = mesh(rbox(x === 0 ? 0.145 : 0.1, 0.022, L, 0.003, 1), wood);
       bb.position.set(x, 0.011, 0);
       g.add(bb);
     }
+    // 23 boards and blocks, one draw
+    mergeStatic(g);
     return g;
   }
 
@@ -899,6 +1138,8 @@ export class CellEngine {
   }
 
   private tmpM = new THREE.Matrix4();
+  private tmpV = new THREE.Vector3();
+  private tmpQ2 = new THREE.Quaternion();
   private tmpQ = new THREE.Quaternion();
   private tmpS = new THREE.Vector3(1, 1, 1);
   private up = new THREE.Vector3(0, 1, 0);
@@ -970,12 +1211,6 @@ export class CellEngine {
     return Math.abs(a - c) <= Math.abs(b - c) ? a : b;
   }
 
-  private begin(phase: Phase, dur: number) {
-    this.phase = phase;
-    this.phaseT = 0;
-    this.phaseDur = Math.max(0.01, dur);
-  }
-
   private nextTask(): Task | null {
     const order = [this.station, 1 - this.station];
     for (const s of order) {
@@ -988,28 +1223,69 @@ export class CellEngine {
     return null;
   }
 
-  private moveDur(a: THREE.Vector3, b: THREE.Vector3, base: number) {
-    const d = Math.hypot(a.x - b.x, a.z - b.z) + Math.abs(a.y - b.y) * 0.6;
-    return (base + d * 0.42) * this.cycleK;
+  /** Speed and acceleration limits for the next move, scaled to the model's cycle time. */
+  private limits(loaded: boolean): MoveLimits {
+    const k = this.cycleK;
+    // a loaded arm moves a little slower and brakes earlier (heavier payload, swinging bag)
+    const f = loaded ? 0.82 : 1;
+    return { v: (1.7 * f) / k, vApproach: (0.3 * (loaded ? 0.85 : 1)) / k, a: (4.2 * f * f) / (k * k), aLat: (5.5 * f) / (k * k) };
   }
 
-  /** Cubic Bézier in cylindrical coordinates around the robot axis: up, over, down. */
-  private transferPoint(a: THREE.Vector3, b: THREE.Vector3, s: number, out: THREE.Vector3) {
-    const pa = Math.atan2(a.z, a.x);
-    let pb = Math.atan2(b.z, b.x);
-    pb = pa + wrapAngle(pb - pa);
-    const ra = Math.hypot(a.x, a.z);
-    const rb = Math.hypot(b.x, b.z);
-    const safe = Math.max(a.y, b.y) + 0.14;
-    const u = 1 - s;
-    const w0 = u * u * u;
-    const w1 = 3 * u * u * s;
-    const w2 = 3 * u * s * s;
-    const w3 = s * s * s;
-    const ang = pa * (w0 + w1) + pb * (w2 + w3);
-    const rad = ra * (w0 + w1) + rb * (w2 + w3);
-    const y = a.y * w0 + safe * (w1 + w2) + b.y * w3;
-    return out.set(Math.cos(ang) * rad, y, Math.sin(ang) * rad);
+  /** Lift column height that keeps both ends of a move comfortable (lift models only). */
+  private liftFor(placeY: number, pickY: number) {
+    if (!this.riser.lift) return this.lift;
+    return this.riser.clampHeight((placeY + this.robot.hang + pickY + this.robot.hang) / 2 - this.robot.d1);
+  }
+
+  /** Start a move from where the tool is now. */
+  private go(to: THREE.Vector3, up: number, down: number, loaded: boolean, yaw: number, lift: number, after: After) {
+    this.to.copy(to);
+    this.move = new Move({ from: this.cur.clone(), to: to.clone(), up, down, clear: 0.1 }, this.limits(loaded));
+    this.yawFrom = this.yaw;
+    this.yawTo = yaw;
+    this.liftFrom = this.lift;
+    this.liftTo = lift;
+    this.after = after;
+    this.phase = "move";
+    this.phaseT = 0;
+  }
+
+  private begin(phase: Phase, dur: number) {
+    this.phase = phase;
+    this.phaseT = 0;
+    this.phaseDur = Math.max(0.01, dur);
+  }
+
+  /** A line with enough product waiting at the stop for this task, or -1. */
+  private readyLine(need: number) {
+    for (let i = 0; i < this.lines.length; i++) {
+      const l = (this.pickLine + i) % this.lines.length;
+      if (this.readyCount(l) >= need) return l;
+    }
+    return -1;
+  }
+
+  /** After a release (or at start): next pick if product waits, otherwise hover over the line. */
+  private planNext(up: number) {
+    const t = this.nextTask();
+    this.task = t;
+    const need = t ? t.slots.length : 1;
+    const line = t ? this.readyLine(need) : -1;
+    const placeY = t ? t.top + this.gripper.height + 0.1 : this.cur.y;
+    const yaw = this.chooseYaw(0);
+    if (line >= 0) {
+      this.pickLine = line;
+      const p = this.pickPoint(line, need, new THREE.Vector3());
+      this.go(p, up, HOVER, false, yaw, this.liftFor(placeY, p.y), "grip");
+    } else {
+      const p = this.pickPoint(this.pickLine, need, new THREE.Vector3());
+      p.y += HOVER;
+      if (p.distanceTo(this.cur) < 0.005) {
+        this.phase = "wait";
+        return;
+      }
+      this.go(p, up, 0, false, yaw, this.liftFor(placeY, p.y), "wait");
+    }
   }
 
   private step(dt: number): boolean {
@@ -1068,7 +1344,10 @@ export class CellEngine {
       animating = true;
     }
 
-    if (this.phase !== "idle") {
+    // fully stopped (protective field, or paused): nothing moves, so stop drawing until the store changes
+    const halted = this.scaleTarget === 0 && this.timeScale === 0;
+    this.key.shadow.autoUpdate = !halted;
+    if (this.phase !== "idle" && !halted) {
       this.updateConveyor(sdt);
       this.updateStations(sdt);
       this.updateRobot(sdt);
@@ -1102,8 +1381,8 @@ export class CellEngine {
     }
     this.rollerAngle -= (BELT_SPEED * dt) / 0.024;
     let i = 0;
-    const rq = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), this.rollerAngle);
-    const pos = new THREE.Vector3();
+    const rq = this.tmpQ2.setFromAxisAngle(AXIS_X, this.rollerAngle);
+    const pos = this.tmpV;
     for (const mm of this.rollerMats) {
       pos.setFromMatrixPosition(mm);
       this.rollers.setMatrixAt(i++, this.tmpM.compose(pos, rq, this.tmpS));
@@ -1114,7 +1393,7 @@ export class CellEngine {
     for (const it of this.items) {
       if (n >= 40) break;
       this.tmpQ.identity();
-      this.convBoxes.setMatrixAt(n++, this.tmpM.compose(new THREE.Vector3(this.lines[it.line], CONVEYOR_TOP + this.py / 2, it.z), this.tmpQ, this.tmpS));
+      this.convBoxes.setMatrixAt(n++, this.tmpM.compose(this.tmpV.set(this.lines[it.line], CONVEYOR_TOP + this.py / 2, it.z), this.tmpQ, this.tmpS));
     }
     this.convBoxes.count = n;
     this.convBoxes.instanceMatrix.needsUpdate = true;
@@ -1154,7 +1433,7 @@ export class CellEngine {
     }
   }
 
-  private carry(n: number, task: Task | null) {
+  private carry(n: number) {
     for (let i = 0; i < 2; i++) {
       const c = this.carried[i];
       c.visible = i < n;
@@ -1163,135 +1442,75 @@ export class CellEngine {
       c.position.set(0, -this.py / 2, off);
       c.rotation.set(0, 0, 0);
     }
-    void task;
   }
 
+  /**
+   * One palletizing cycle: (hover) → descend onto the product → grip dwell →
+   * vertical lift, arc, vertical set-down on the layer → release dwell → lift
+   * off and back over the line. Moves are timed by the planner (motion.ts).
+   */
   private updateRobot(dt: number) {
     this.phaseT += dt;
-    const k = clamp01(this.phaseT / this.phaseDur);
-    const e = minJerk(k);
     const f = this.fitR;
-    const pairs = f.double ? 2 : 1;
+    const claw = f.gripper === "pence";
 
     switch (this.phase) {
-      case "toPick": {
-        this.transferPoint(this.from, this.to, e, this.cur);
+      case "move": {
+        const mv = this.move!;
+        const u = mv.at(this.phaseT, this.cur);
+        const e = arcEase(u);
         this.yaw = lerp(this.yawFrom, this.yawTo, e);
         this.lift = lerp(this.liftFrom, this.liftTo, e);
-        if (k >= 1) this.begin("wait", 0.05);
+        if (this.phaseT >= mv.duration) {
+          this.move = null;
+          // grip: vacuum builds or the fingers close; release: vacuum blows off or the fingers open
+          if (this.after === "grip") this.begin("grip", (claw ? 0.42 : 0.26) * this.cycleK);
+          else if (this.after === "release") this.begin("release", (claw ? 0.38 : 0.2) * this.cycleK);
+          else this.phase = "wait";
+        }
         break;
       }
       case "wait": {
-        // choose a line with product(s) at the stop
+        // hovering over the line: go down as soon as the product reaches the stop
         const task = this.task ?? this.nextTask();
         if (!task) break;
         this.task = task;
-        const need = task.slots.length;
-        let line = -1;
-        for (let i = 0; i < this.lines.length; i++) {
-          const l = (this.pickLine + i) % this.lines.length;
-          if (this.readyCount(l) >= need) {
-            line = l;
-            break;
-          }
-        }
+        const line = this.readyLine(task.slots.length);
         if (line < 0) break;
         this.pickLine = line;
-        // shift over the chosen line if needed
-        this.from.copy(this.cur);
-        this.pickPoint(line, need, this.to);
-        if (this.from.distanceTo(new THREE.Vector3(this.to.x, this.to.y + 0.12, this.to.z)) > 0.02) {
-          this.to.y += 0.12;
-          this.yawFrom = this.yaw;
-          this.yawTo = this.chooseYaw(0);
-          this.liftFrom = this.lift;
-          this.begin("toPick", this.moveDur(this.from, this.to, 0.4));
-          break;
-        }
-        this.from.copy(this.cur);
-        this.pickPoint(line, need, this.to);
-        this.begin("down", 0.42 * this.cycleK);
-        break;
-      }
-      case "down":
-      case "up":
-      case "down2":
-      case "up2": {
-        this.cur.lerpVectors(this.from, this.to, e);
-        if (k >= 1) {
-          if (this.phase === "down") this.begin("grip", f.gripper === "pence" ? 0.4 : 0.22);
-          else if (this.phase === "up") {
-            const t = this.task!;
-            this.from.copy(this.cur);
-            this.placePoint(t, this.to);
-            this.to.y += 0.1;
-            this.yawFrom = this.yaw;
-            this.yawTo = this.chooseYaw(t.yaw);
-            this.liftFrom = this.lift;
-            this.liftTo = this.riser.lift ? this.riser.clampHeight((this.to.y + this.robot.hang + CONVEYOR_TOP + this.py + this.gripper.height + this.robot.hang) / 2 - this.robot.d1) : this.lift;
-            this.begin("transfer", this.moveDur(this.from, this.to, 0.75));
-          } else if (this.phase === "down2") this.begin("release", f.gripper === "pence" ? 0.36 : 0.18);
-          else {
-            // up2 done → next task
-            this.task = null;
-            const t = this.nextTask();
-            this.from.copy(this.cur);
-            this.pickPoint(this.pickLine, t ? t.slots.length : pairs, this.to);
-            this.to.y += 0.12;
-            this.yawFrom = this.yaw;
-            this.yawTo = this.chooseYaw(0);
-            this.liftFrom = this.lift;
-            const placeY = t ? t.top + this.gripper.height + 0.1 : this.to.y;
-            this.liftTo = this.riser.lift ? this.riser.clampHeight((placeY + this.robot.hang + this.to.y + this.robot.hang) / 2 - this.robot.d1) : this.lift;
-            this.task = t;
-            this.begin("toPick", this.moveDur(this.from, this.to, 0.55));
-          }
-        }
+        const p = this.pickPoint(line, task.slots.length, new THREE.Vector3());
+        this.go(p, 0, HOVER, false, this.chooseYaw(0), this.lift, "grip");
         break;
       }
       case "grip": {
-        if (f.gripper === "pence") this.gripper.setOpen(1 - e);
+        const k = clamp01(this.phaseT / this.phaseDur);
+        if (claw) this.gripper.setOpen(1 - minJerk(clamp01(k / 0.8)));
         if (k >= 1) {
           const t = this.task!;
           const need = t.slots.length;
           // take the front product(s) off the belt
           const row = this.items.filter((it) => it.line === this.pickLine).sort((a, b) => b.z - a.z);
           for (let i = 0; i < need && i < row.length; i++) this.items.splice(this.items.indexOf(row[i]), 1);
-          this.carry(need, t);
-          this.from.copy(this.cur);
-          this.to.copy(this.cur);
-          this.to.y += 0.16;
-          this.begin("up", 0.36 * this.cycleK);
-        }
-        break;
-      }
-      case "transfer": {
-        this.transferPoint(this.from, this.to, e, this.cur);
-        this.yaw = lerp(this.yawFrom, this.yawTo, e);
-        this.lift = lerp(this.liftFrom, this.liftTo, e);
-        if (k >= 1) {
-          this.from.copy(this.cur);
-          this.placePoint(this.task!, this.to);
-          this.begin("down2", 0.5 * this.cycleK);
+          this.carry(need);
+          const place = this.placePoint(t, new THREE.Vector3());
+          this.go(place, 0.16, 0.1, true, this.chooseYaw(t.yaw), this.liftFor(place.y, this.cur.y), "release");
         }
         break;
       }
       case "release": {
-        if (f.gripper === "pence") this.gripper.setOpen(e);
+        const k = clamp01(this.phaseT / this.phaseDur);
+        if (claw) this.gripper.setOpen(minJerk(clamp01((k - 0.15) / 0.85)));
         if (k >= 1) {
           const st = this.stations[this.station];
           const t = this.task!;
-          this.carry(0, null);
+          this.carry(0);
           this.placeTask(st, t, 0);
           st.next++;
           if (st.next >= st.tasks.length) {
             st.state = "full";
             st.timer = 0;
           }
-          this.from.copy(this.cur);
-          this.to.copy(this.cur);
-          this.to.y += 0.1;
-          this.begin("up2", 0.3 * this.cycleK);
+          this.planNext(0.1);
         }
         break;
       }

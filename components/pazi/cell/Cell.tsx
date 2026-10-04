@@ -50,7 +50,11 @@ export function Cell({ className, frame, frameNarrow, operator, zoom, zoomNarrow
     }
     const q = kaliteKademesi();
     const params = new URLSearchParams(location.search);
-    if (q.kademe === "yok" || q.kademe === "dusuk" || params.get("cizim") === "1") {
+    // a weak device found by detection gets the drawing (no three.js download at all);
+    // ?kalite=dusuk forces the lowest 3D level instead (tests). A device that starts
+    // higher still steps down to it on its own when frames run long (engine.ts).
+    const forcedLow = params.get("kalite") === "dusuk";
+    if (q.kademe === "yok" || (q.kademe === "dusuk" && !forcedLow) || params.get("cizim") === "1") {
       setMode("vector");
       return;
     }
@@ -67,7 +71,8 @@ export function Cell({ className, frame, frameNarrow, operator, zoom, zoomNarrow
           if (!alive || !canvasRef.current) return;
           let first = true;
           engine = new CellEngine(canvasRef.current, cell, {
-            quality: q.kademe === "yuksek" ? "high" : "mid",
+            quality: q.kademe === "yuksek" ? "high" : q.kademe === "orta" ? "mid" : "low",
+            adaptive: !params.has("kalite"),
             reduced,
             frame: frameX !== undefined && frameY !== undefined ? { x: frameX, y: frameY } : undefined,
             operator,

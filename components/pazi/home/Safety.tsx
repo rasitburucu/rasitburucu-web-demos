@@ -9,6 +9,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { tr } from "@/content/pazi/tr";
 import { STATION_GAP_M } from "@/lib/pazi/plan";
 import type { Zone } from "@/lib/pazi/store";
+import dynamic from "next/dynamic";
+
+// the working cell drawn in the plan: its markup is in the page, its animation code loads with the section
+const PlanCell = dynamic(() => import("../cell/PlanCell").then((m) => m.PlanCell));
 
 const S = 100; // px per metre
 const TAG_W = 118; // "Sürükleyin" pill, in plan units
@@ -34,25 +38,12 @@ const SPOTS: Record<Zone, { x: number; z: number }> = {
   stop: { x: 1.3, z: 0.75 },
 };
 
-// pick point and a few pallet targets for the drawn arm (metres)
-const PICK = { x: 0, z: -0.62 };
-const TARGETS = [
-  { x: STATION_GAP_M + 0.2, z: -0.4 },
-  { x: STATION_GAP_M + 0.6, z: 0.4 },
-  { x: -STATION_GAP_M - 0.3, z: 0.2 },
-  { x: STATION_GAP_M + 0.45, z: -0.05 },
-  { x: -STATION_GAP_M - 0.6, z: -0.35 },
-];
-
 export function Safety() {
   const t = tr.safety;
   const [op, setOp] = useState(SPOTS.out);
   const zone = zoneAt(op.x, op.z);
   const svg = useRef<SVGSVGElement>(null);
-  const arm = useRef<SVGGElement>(null);
   const drag = useRef(false);
-  const zoneRef = useRef<Zone>(zone);
-  zoneRef.current = zone;
   // the "Sürükleyin" label shows until the visitor moves the marker by any means;
   // the first time the plan is on screen the marker slides a little and comes back
   const [touched, setTouched] = useState(false);
@@ -77,71 +68,6 @@ export function Safety() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
-
-  // drawn arm: moves between pick and pallet, speed by zone, braking smoothly
-  useEffect(() => {
-    const el = arm.current;
-    if (!el) return;
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let raf = 0;
-    let visible = false;
-    let last = performance.now();
-    let t = 0;
-    let speed = 1;
-    let leg = 0;
-    const draw = (p: { x: number; z: number }) => {
-      const ang = (Math.atan2(p.z, p.x) * 180) / Math.PI;
-      const len = Math.hypot(p.x, p.z) * S;
-      el.setAttribute("transform", `rotate(${ang.toFixed(2)})`);
-      const bar = el.querySelector<SVGRectElement>("[data-bar]");
-      const tool = el.querySelector<SVGRectElement>("[data-tool]");
-      bar?.setAttribute("width", String(Math.max(20, len)));
-      tool?.setAttribute("x", String(len - 14));
-    };
-    const pos = () => {
-      const a = leg % 2 === 0 ? PICK : TARGETS[Math.floor(leg / 2) % TARGETS.length];
-      const b = leg % 2 === 0 ? TARGETS[Math.floor(leg / 2) % TARGETS.length] : PICK;
-      const e = t * t * t * (10 + t * (-15 + 6 * t));
-      // interpolate in polar coordinates so the drawn arm sweeps like the real one
-      const aa = Math.atan2(a.z, a.x);
-      let bb = Math.atan2(b.z, b.x);
-      bb = aa + Math.atan2(Math.sin(bb - aa), Math.cos(bb - aa));
-      const ra = Math.hypot(a.x, a.z);
-      const rb = Math.hypot(b.x, b.z);
-      const ang = aa + (bb - aa) * e;
-      const r = ra + (rb - ra) * e;
-      return { x: Math.cos(ang) * r, z: Math.sin(ang) * r };
-    };
-    draw(TARGETS[0]);
-    if (reduced) return;
-    const frame = (now: number) => {
-      raf = 0;
-      if (!visible) return;
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      const goal = zoneRef.current === "stop" ? 0 : zoneRef.current === "slow" ? 0.3 : 1;
-      speed += (goal - speed) * (1 - Math.exp(-(goal === 0 ? 9 : 4) * dt));
-      t += (dt * speed) / 1.6;
-      if (t >= 1) {
-        t = 0;
-        leg++;
-      }
-      draw(pos());
-      raf = requestAnimationFrame(frame);
-    };
-    const io = new IntersectionObserver((e) => {
-      visible = e[0]?.isIntersecting ?? false;
-      if (visible && !raf) {
-        last = performance.now();
-        raf = requestAnimationFrame(frame);
-      }
-    });
-    io.observe(el.ownerSVGElement ?? el);
-    return () => {
-      io.disconnect();
-      cancelAnimationFrame(raf);
-    };
   }, []);
 
   const toWorld = useCallback((clientX: number, clientY: number) => {
@@ -205,37 +131,8 @@ export function Safety() {
             <rect {...rr(EX, EZ, 0.3)} fill={zone === "stop" ? "rgba(245,168,0,0.16)" : "none"} stroke="url(#pz-hz)" strokeWidth="9" />
             {/* reach */}
             <circle r={1.75 * S} fill="none" stroke="#6a6d67" strokeDasharray="3 6" />
-            {/* conveyor */}
-            <rect x={-25} y={-300} width="50" height={300 - 42} fill="#3a3e3c" stroke="#8c9093" />
-            {Array.from({ length: 14 }, (_, i) => (
-              <line key={i} x1={-23} x2={23} y1={-292 + i * 18} y2={-292 + i * 18} stroke="#8c9093" strokeWidth="2" />
-            ))}
-            <rect x={-20} y={-82} width="40" height="40" fill="#c19a6b" />
-            {/* pallets */}
-            {[1, -1].map((side) => (
-              <g key={side}>
-                <rect x={side > 0 ? STATION_GAP_M * S : -(STATION_GAP_M + W) * S} y={(-L / 2) * S} width={W * S} height={L * S} fill="#4b4335" stroke="#cdb18a" strokeWidth="2" />
-                {Array.from({ length: 6 }, (_, i) => (
-                  <rect
-                    key={i}
-                    x={(side > 0 ? STATION_GAP_M * S : -(STATION_GAP_M + W) * S) + 4 + (i % 2) * 38}
-                    y={(-L / 2) * S + 4 + Math.floor(i / 2) * 39}
-                    width="34"
-                    height="35"
-                    fill="#c19a6b"
-                    opacity={side > 0 ? 1 : 0.35}
-                  />
-                ))}
-              </g>
-            ))}
-            {/* robot */}
-            <rect x="-15" y="-15" width="30" height="30" fill="#2a2d2f" />
-            <g ref={arm}>
-              <rect data-bar x="0" y="-9" width="120" height="18" rx="9" fill="#e3e4df" />
-              <rect data-tool x="106" y="-16" width="28" height="32" fill="#3d4145" />
-            </g>
-            <circle r="16" fill="#e3e4df" stroke="#151615" strokeWidth="2" />
-            <circle r="6" fill="#2a2d2f" />
+            {/* the cell at work, from above: conveyor, pallets, the arm (cell/PlanCell.tsx) */}
+            <PlanCell zone={zone} />
             {/* scale bar */}
             <g transform={`translate(${VB.x + 24} ${VB.y + VB.h - 26})`} className="pz-plan-scale">
               <rect width="100" height="6" fill="#ecece6" />

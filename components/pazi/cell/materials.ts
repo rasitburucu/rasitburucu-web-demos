@@ -236,7 +236,7 @@ export function bagMaterial() {
 }
 
 /** Shrink-wrapped bottle pack: caps on top, bottle bands on the sides, glossy film. */
-export function shrinkMaterials() {
+export function shrinkMaterials(fine = true) {
   const [ct, xt] = canvas(256, 256);
   xt.fillStyle = "#9fb7c2";
   xt.fillRect(0, 0, 256, 256);
@@ -265,7 +265,8 @@ export function shrinkMaterials() {
   xs.fillRect(0, 120, 256, 46);
   xs.fillStyle = "rgba(47,111,143,0.9)";
   xs.fillRect(0, 132, 256, 10);
-  const mk = (c: HTMLCanvasElement) => new THREE.MeshPhysicalMaterial({ map: tex(c), roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25 });
+  const mk = (c: HTMLCanvasElement) =>
+    fine ? new THREE.MeshPhysicalMaterial({ map: tex(c), roughness: 0.32, clearcoat: 0.6, clearcoatRoughness: 0.25 }) : new THREE.MeshStandardMaterial({ map: tex(c), roughness: 0.28 });
   const top = mk(ct);
   const side = mk(cs);
   return [side, side, top, side, side, side];
@@ -322,12 +323,28 @@ export function screenCanvas() {
   return { canvas: c, ctx: x, texture: tex(c) };
 }
 
-export function makeMaterials() {
+/**
+ * The shared material set. `fine` (top quality tier) gives the arm's powder coat
+ * a thin clear coat; lower tiers use the plain standard shader everywhere, so the
+ * whole cell compiles fewer programs and each pixel costs less.
+ */
+export function makeMaterials(fine = true) {
   return {
-    paint: new THREE.MeshPhysicalMaterial({ color: COLORS.paint, roughness: 0.46, metalness: 0, clearcoat: 0.18, clearcoatRoughness: 0.5 }),
-    capDark: new THREE.MeshStandardMaterial({ color: COLORS.capDark, roughness: 0.62, metalness: 0.05 }),
+    /** Matte white powder coat on cast aluminium (arm links and housings). */
+    // slightly off-white and a touch glossy, so the cylinders keep their form under the key light
+    paint: fine
+      ? new THREE.MeshPhysicalMaterial({ color: "#e3e4df", roughness: 0.42, metalness: 0, clearcoat: 0.3, clearcoatRoughness: 0.32, envMapIntensity: 1.35 })
+      : new THREE.MeshStandardMaterial({ color: "#e3e4df", roughness: 0.4, metalness: 0, envMapIntensity: 1.35 }),
+    capDark: new THREE.MeshStandardMaterial({ color: COLORS.capDark, roughness: 0.55, metalness: 0.08 }),
+    /** Parting lines between joint modules: a dark recess, almost black. */
+    seam: new THREE.MeshStandardMaterial({ color: "#101112", roughness: 0.8, metalness: 0 }),
     capRing: new THREE.MeshStandardMaterial({ color: "#9a9ea2", roughness: 0.28, metalness: 1 }),
+    /** Machined steel: tool flange face, bolt heads. */
     metal: new THREE.MeshStandardMaterial({ color: "#b9bcbf", roughness: 0.3, metalness: 1 }),
+    /** Black-oxide socket screws. */
+    screw: new THREE.MeshStandardMaterial({ color: "#3a3c3e", roughness: 0.38, metalness: 0.9 }),
+    /** Robot power/signal cable jacket. */
+    cable: new THREE.MeshStandardMaterial({ color: "#232526", roughness: 0.62 }),
     alu: new THREE.MeshStandardMaterial({ color: "#c7cacc", roughness: 0.42, metalness: 0.85 }),
     anodized: new THREE.MeshStandardMaterial({ color: "#3d4145", roughness: 0.42, metalness: 0.7 }),
     graphitePaint: new THREE.MeshStandardMaterial({ color: "#34383a", roughness: 0.55, metalness: 0.2 }),

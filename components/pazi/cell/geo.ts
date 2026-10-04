@@ -3,6 +3,115 @@
 
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+
+/**
+ * Cast link along +X as a lathe: `prof` is [x, radius] from the root to the tip.
+ * The ends close to the axis, so a link pulled out of its socket shows a solid end.
+ */
+export function linkX(prof: [number, number][], seg = 36) {
+  const pts: THREE.Vector2[] = [new THREE.Vector2(0.0005, prof[0][0])];
+  for (const [x, r] of prof) pts.push(new THREE.Vector2(r, x));
+  pts.push(new THREE.Vector2(0.0005, prof[prof.length - 1][0]));
+  const g = new THREE.LatheGeometry(pts, seg);
+  g.rotateZ(-Math.PI / 2);
+  g.computeVertexNormals();
+  return g;
+}
+
+/** Keep only position / normal / uv so unlike primitives can be merged into one draw. */
+function normalise(g: THREE.BufferGeometry) {
+  for (const k of Object.keys(g.attributes)) if (k !== "position" && k !== "normal" && k !== "uv") g.deleteAttribute(k);
+  if (!g.attributes.normal) g.computeVertexNormals();
+  if (!g.attributes.uv) g.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(g.attributes.position.count * 2), 2));
+  g.clearGroups();
+  return g;
+}
+
+/** Merge geometries (already in a shared frame); mixes indexed and non-indexed input. */
+export function mergeAll(list: THREE.BufferGeometry[]) {
+  const geos = list.map(normalise);
+  const mixed = geos.some((g) => g.index) && geos.some((g) => !g.index);
+  const ready = mixed ? geos.map((g) => (g.index ? g.toNonIndexed() : g)) : geos;
+  const out = mergeGeometries(ready, false);
+  if (!out) throw new Error("merge failed");
+  out.computeBoundingSphere();
+  return out;
+}
+
+/**
+ * Collects primitives per (parent, key, material) and merges each bucket into one
+ * mesh when `flush` runs: a joint housing made of a dozen primitives becomes one
+ * draw call per material. Geometry is transformed in place, so pass fresh geometry.
+ */
+export class Batch {
+  private buckets = new Map<string, { parent: THREE.Object3D; key: string; mat: THREE.Material; cast: boolean; geos: THREE.BufferGeometry[] }>();
+  private m = new THREE.Matrix4();
+  private q = new THREE.Quaternion();
+  private e = new THREE.Euler();
+  private s = new THREE.Vector3(1, 1, 1);
+
+  add(parent: THREE.Object3D, key: string, g: THREE.BufferGeometry, mat: THREE.Material, x = 0, y = 0, z = 0, cast = true, rx = 0, ry = 0, rz = 0) {
+    this.q.setFromEuler(this.e.set(rx, ry, rz));
+    g.applyMatrix4(this.m.compose(new THREE.Vector3(x, y, z), this.q, this.s));
+    const id = `${parent.uuid}|${key}|${mat.uuid}|${cast ? 1 : 0}`;
+    const b = this.buckets.get(id);
+    if (b) b.geos.push(g);
+    else this.buckets.set(id, { parent, key, mat, cast, geos: [g] });
+  }
+
+  /** Merge every bucket; `onMesh(key, mesh)` lets the caller file the result. */
+  flush(onMesh?: (key: string, mesh: THREE.Mesh) => void) {
+    for (const b of this.buckets.values()) {
+      const g = b.geos.length === 1 ? b.geos[0] : mergeAll(b.geos);
+      if (b.geos.length > 1) b.geos.forEach((x) => x.dispose());
+      const me = new THREE.Mesh(g, b.mat);
+      me.castShadow = b.cast;
+      me.receiveShadow = true;
+      b.parent.add(me);
+      onMesh?.(b.key, me);
+    }
+    this.buckets.clear();
+  }
+}
+
+/**
+ * Bake every plain mesh under `root` into one mesh per material (the parts never
+ * move relative to each other: conveyor frames, scanners, the tablet pole).
+ * Instanced meshes and multi-material meshes stay as they are.
+ */
+export function mergeStatic(root: THREE.Object3D) {
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const groups = new Map<string, { mat: THREE.Material; cast: boolean; order: number; geos: THREE.BufferGeometry[] }>();
+  const drop: THREE.Mesh[] = [];
+  const used = new Set<THREE.BufferGeometry>();
+  root.traverse((o) => {
+    const me = o as THREE.Mesh;
+    if (!me.isMesh || (me as THREE.InstancedMesh).isInstancedMesh || Array.isArray(me.material) || !me.visible) return;
+    const g = me.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, me.matrixWorld));
+    const key = `${me.material.uuid}|${me.castShadow ? 1 : 0}|${me.renderOrder}`;
+    const e = groups.get(key);
+    if (e) e.geos.push(g);
+    else groups.set(key, { mat: me.material, cast: me.castShadow, order: me.renderOrder, geos: [g] });
+    drop.push(me);
+    used.add(me.geometry);
+  });
+  for (const me of drop) me.parent?.remove(me);
+  root.traverse((o) => used.delete((o as THREE.Mesh).geometry));
+  used.forEach((g) => g.dispose());
+  const out: THREE.Mesh[] = [];
+  for (const e of groups.values()) {
+    const me = new THREE.Mesh(mergeAll(e.geos), e.mat);
+    e.geos.forEach((x) => x.dispose());
+    me.castShadow = e.cast;
+    me.receiveShadow = true;
+    me.renderOrder = e.order;
+    root.add(me);
+    out.push(me);
+  }
+  return out;
+}
 
 /** Cylinder along Y with rounded rims (radius c), as a lathe. */
 export function roundCyl(R: number, h: number, c = Math.min(R, h) * 0.18, seg = 40) {
@@ -47,7 +156,7 @@ export function mesh(g: THREE.BufferGeometry, m: THREE.Material | THREE.Material
 
 /** Pillow shape for a filled bag: full height in the middle, pinched seams at the ends. */
 export function pillowGeometry(w: number, h: number, d: number) {
-  const g = new THREE.BoxGeometry(w, h, d, 14, 4, 18);
+  const g = new THREE.BoxGeometry(w, h, d, 8, 2, 10);
   const p = g.attributes.position as THREE.BufferAttribute;
   const v = new THREE.Vector3();
   for (let i = 0; i < p.count; i++) {
