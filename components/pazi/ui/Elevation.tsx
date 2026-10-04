@@ -103,6 +103,7 @@ export function Elevation({
   labels = true,
   top: forcedTop,
   renderWidth = 340,
+  idSuffix = "",
 }: {
   model: ModelSpec;
   className?: string;
@@ -110,6 +111,8 @@ export function Elevation({
   top?: number;
   /** Expected rendered width in CSS px; sizes line weights and type. */
   renderWidth?: number;
+  /** Keeps pattern ids unique when the same model is drawn twice on a page. */
+  idSuffix?: string;
 }) {
   const k = VIEW_W / renderWidth; // mm per screen pixel
   const sw = 1.1 * k;
@@ -165,7 +168,7 @@ export function Elevation({
   const top = forcedTop ?? elevationTop(model, renderWidth);
   const below = 36 * k;
   const vb = `${-LEFT} ${r1(top)} ${VIEW_W} ${r1(below - top)}`;
-  const id = `pz-el-${model.id}`;
+  const id = `pz-el-${model.id}${idSuffix}`;
 
   const ln = { pathLength: 1, className: "pz-el-ln", stroke: C.ink, strokeWidth: sw, strokeLinejoin: "round" as const };
   const detail = { pathLength: 1, className: "pz-el-ln", stroke: C.ink, strokeWidth: fine, strokeLinejoin: "round" as const };

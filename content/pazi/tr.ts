@@ -188,7 +188,6 @@ export const tr = {
     id: "senaryolar",
     title: "Üç örnek iş",
     lead: "Hat sonunda en sık gördüğümüz üç ürün. Değerler örnektir; açtığınızda hepsini değiştirebilirsiniz.",
-    tag: "Örnek senaryo",
     open: "Bu senaryoyu aç",
     items: [
       { key: "torba", name: "25 kg yapı kimyasalı torbası", where: "Dilovası, yapı kimyasalı", text: "Toz harç ve yapıştırıcı torbaları. Vakum dokuma torbada tutmaz; tutucu pençe olur." },

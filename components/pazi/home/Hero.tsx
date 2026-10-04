@@ -30,7 +30,7 @@ export function Hero() {
   return (
     <section className="pz-hero" aria-labelledby="pz-hero-title">
       <div className="pz-hero-stage">
-        <Cell frame={{ x: 0.71, y: 0.5 }} frameNarrow={{ x: 0.5, y: 0.4 }} operator zoom={1.38} zoomNarrow={2.1} className="pz-hero-cell" />
+        <Cell frame={{ x: 0.71, y: 0.5 }} frameNarrow={{ x: 0.5, y: 0.4 }} operator zoom={1.38} zoomNarrow={1.55} className="pz-hero-cell" />
       </div>
       <div className="pz-wrap pz-hero-grid">
         <div className="pz-hero-copy">

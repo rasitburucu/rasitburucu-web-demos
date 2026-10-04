@@ -32,7 +32,10 @@ export function Hmi({ controls = true }: { controls?: boolean }) {
   const per = Math.max(1, f.plan.perLayer);
   const layer = Math.min(f.stack.layers, Math.max(1, Math.ceil(placed / per)));
   const st = statusOf(f);
+  const zone = useCell((s) => s.zone);
   const label = st === "ok" ? h.ok : st === "slow" ? h.slow : h.custom;
+  // an operator inside a scanner field outranks the configuration verdict: the arm is slowed or stopped right now
+  const shown = zone === "out" ? label : tr.safety.status[zone];
 
   // screen-reader summary: only when the configuration changes, not every box
   const [summary, setSummary] = useState("");
@@ -56,7 +59,7 @@ export function Hmi({ controls = true }: { controls?: boolean }) {
   }, [f, h, label]);
 
   return (
-    <div className="pz-hmi" data-status={st} data-render={render}>
+    <div className="pz-hmi" data-status={st} data-zone={zone} data-render={render}>
       <dl className="pz-hmi-cells" aria-label={h.label}>
         <div>
           <dt>{h.model}</dt>
@@ -89,9 +92,9 @@ export function Hmi({ controls = true }: { controls?: boolean }) {
         </div>
         <div className="pz-hmi-status">
           <dt>{h.status}</dt>
-          <dd>
+          <dd aria-live="polite" aria-atomic="true">
             <span className="pz-lamp" aria-hidden="true" />
-            {label}
+            {shown}
           </dd>
         </div>
       </dl>

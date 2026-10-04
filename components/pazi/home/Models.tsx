@@ -101,6 +101,33 @@ export function Models() {
               </tr>
             </tfoot>
           </table>
+          {/* phones: one datasheet per model instead of three squeezed columns (same data as the table) */}
+          <div className="pz-foy">
+            <div className="pz-spec-corner">
+              <p className="pz-spec-key-title">{t.elevation}</p>
+              <p className="pz-spec-key-note">{t.sameScale}</p>
+            </div>
+            {MODELS.map((m) => (
+              <article key={m.id} className="pz-foy-card" aria-labelledby={`pz-foy-${m.id}`}>
+                <Elevation model={m} idSuffix="-foy" className="pz-spec-elev" />
+                <h3 id={`pz-foy-${m.id}`} className="pz-spec-name">
+                  {m.name}
+                </h3>
+                <p className="pz-spec-fit">{t.fit[m.id]}</p>
+                <dl className="pz-foy-rows">
+                  {modelRows.map((r) => (
+                    <div key={r.key}>
+                      <dt>{t.rows[r.key]}</dt>
+                      <dd className="pz-mono">{r.value(m)}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <Link href={`/pazi/modeller/${m.id}/`} className="pz-btn pz-spec-open">
+                  {`${m.name}: ${t.open}`}
+                </Link>
+              </article>
+            ))}
+          </div>
           <p className="pz-sheet-note">{t.note}</p>
         </DrawIn>
       </div>
