@@ -1,12 +1,20 @@
 // Terrain of the fictional Onikitaş hillside: shoreline and height field.
 // Pure functions, deterministic, no three.js.
-// World axes: +x east, -z north (uphill), +z south (the sea), +y up. 1 unit ~ 2 m.
+// World axes: the slope faces west over Yalıkavak bay. +z west (the sea),
+// -z east (uphill), +x south, -x north, +y up. 1 unit ~ 2 m.
 
 import { makeNoise2D } from "./noise";
 
 export const WORLD = 210; // terrain square side
 export const HALF = WORLD / 2;
 export const STEP = 1.25; // contour step of the maquette (clay state)
+/**
+ * Contour layers sit at STEP_OFF + k * STEP, so the lowest land layer stands a
+ * little above the sea plane (y = 0) instead of lying in it.
+ */
+export const STEP_OFF = 0.3;
+/** Height of the maquette's contour layer under a point of height h. */
+export const quant = (h: number) => Math.floor((h - STEP_OFF) / STEP) * STEP + STEP_OFF;
 /** Terrace slab thickness; the top of the slab is the ground-floor level. */
 export const SLAB = 0.3;
 /** Sea floor right at the shore: deep enough to never fight the sea plane. */

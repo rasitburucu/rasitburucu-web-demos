@@ -128,7 +128,7 @@ export type VillaSite = {
   /** 0..1 seeded variant used to vary the massing. */
   seed: number;
   plan: VillaPlan;
-  /** Compass bearing the house faces, degrees (90 = east, 180 = south). */
+  /** Compass bearing the house faces, degrees (180 = south, 270 = west). */
   bearing: number;
 };
 
@@ -142,7 +142,8 @@ export type Placed = {
   hamlet?: number; x: number; z: number; y: number; rot: number; seed: number; plan: VillaPlan; /** distance to the water along the facing axis (cached) */ L?: number };
 
 const facingOf = (rot: number): [number, number] => [Math.sin(rot), Math.cos(rot)];
-export const bearingOf = (rot: number) => (((Math.atan2(Math.sin(rot), -Math.cos(rot)) / DEG) % 360) + 360) % 360;
+/** Compass bearing of a facing: the sea (+z) lies west, so rot = 0 is 270. */
+export const bearingOf = (rot: number) => (((Math.atan2(Math.sin(rot), -Math.cos(rot)) / DEG + 90) % 360) + 360) % 360;
 
 /** Downhill direction of the broad slope, as a rotation about +y. */
 function contourRot(x: number, z: number) {
@@ -326,14 +327,15 @@ const HAMLETS = 5;
 // Numbering. The copy promises things about particular houses, so the
 // numbers are dealt out to make each promise true:
 //   IX   stands highest on the slope
-//   VII  faces furthest west of the rest (sunset from the living room)
+//   VII  faces the summer sunset most squarely (bearing nearest 300)
 //   X    has nothing but olives between it and the sea
 //   V    sits at the edge of the olive grove
-//   I    faces furthest east of the rest, high up (first sun)
-// The rest follow the hour each house is known for (east-facing houses get
-// the morning hours, west-facing ones the evening). The `facing` labels in
-// content/onikitas/tr.ts are the compass names of these bearings.
-const TARGET: Record<number, number> = { 1: 135, 2: 170, 3: 185, 5: 190, 7: 225, 10: 230, 11: 250 };
+//   I    faces furthest south of the rest, high up (the longest afternoon sun)
+// The rest follow the hour each house is known for (south-west facing houses
+// get the afternoon, north-west facing ones the last light). The `facing`
+// labels and hours in content/onikitas/tr.ts follow these bearings and the sun
+// path in components/onikitas/scene/palette.ts.
+const TARGET: Record<number, number> = { 1: 225, 2: 260, 3: 275, 5: 280, 7: 315, 10: 320, 11: 340 };
 
 function treeCandidates(sites: Placed[]) {
   const rand = mulberry32(9);
@@ -376,7 +378,7 @@ export function number(sites: Placed[]): Placed[] {
   };
   const bearing = (p: Placed) => bearingOf(p.rot);
   take(8, (p) => p.y);
-  take(6, (p) => bearing(p));
+  take(6, (p) => -Math.abs(bearing(p) - 300));
   // X: no house anywhere in its wedge down to the sea, the most olives in it
   take(9, (p) => {
     const [fx, fz] = facingOf(p.rot);

@@ -29,8 +29,9 @@ export type Copy = {
   skip: string;
   brand: string;
   nav: { visit: string; sound: string; dayNav: string };
-  loader: { time: string; label: string };
-  chapters: Record<ChapterId, { name: string; time: string; title: string; body: string }>;
+  loader: { label: string };
+  /** Chapter names and copy. Their hours come from lib/onikitas/chapters.ts. */
+  chapters: Record<ChapterId, { name: string; title: string; body: string }>;
   /** Closing links under the night chapter. */
   close: { visit: string; homes: string };
   dial: {
@@ -97,72 +98,68 @@ export type Copy = {
   fallback: { stills: string };
 };
 
+// Facing and hour follow each house's real bearing on the west-facing slope
+// (lib/onikitas/layout.ts) and the summer sun path of the scene: the hour is
+// when the sun stands squarest to the house's front, or its last light.
 export const villas: VillaCopy[] = [
-  { no: "I", facing: "Güneydoğuya bakar", dir: "Güneydoğu", hour: "06:10", line: "Yamaçta güne ilk uyanan ev.", area: 210, beds: 3, plot: 640, pool: "Özel", status: "satista" },
-  { no: "II", facing: "Güneydoğuya bakar", dir: "Güneydoğu", hour: "08:30", line: "Kahvaltı terasına sabah güneşi tam oturur.", area: 245, beds: 4, plot: 720, pool: "Özel, ısıtmalı", status: "satildi" },
-  { no: "III", facing: "Güneye bakar", dir: "Güney", hour: "11:00", line: "Havuzu gün içinde en erken ısınan ev.", area: 185, beds: 3, plot: 590, pool: "Özel", status: "satista" },
-  { no: "IV", facing: "Güneye bakar", dir: "Güney", hour: "13:20", line: "Kuzeydeki avlusu öğle sıcağında bile serin.", area: 260, beds: 4, plot: 780, pool: "Özel", status: "opsiyonlu" },
-  { no: "V", facing: "Güneye bakar", dir: "Güney", hour: "09:40", line: "Zeytinliğin hemen kıyısında.", area: 230, beds: 4, plot: 700, pool: "Özel", status: "satista" },
-  { no: "VI", facing: "Güneye bakar", dir: "Güney", hour: "15:00", line: "Çardağı ikindi güneşini süzer.", area: 275, beds: 4, plot: 820, pool: "Özel, ısıtmalı", status: "satista" },
-  { no: "VII", facing: "Batıya bakar", dir: "Batı", hour: "18:40", line: "Gün batımını salondan izlersiniz.", area: 320, beds: 5, plot: 960, pool: "Özel, ısıtmalı", status: "satista" },
-  { no: "VIII", facing: "Güneye bakar", dir: "Güney", hour: "17:30", line: "Akşam meltemini ilk o alır.", area: 240, beds: 4, plot: 730, pool: "Özel", status: "satildi" },
-  { no: "IX", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "07:20", line: "Yamacın en üstünde, en geniş manzarayla.", area: 300, beds: 5, plot: 910, pool: "Özel, ısıtmalı", status: "opsiyonlu" },
-  { no: "X", facing: "Güneydoğuya bakar", dir: "Güneydoğu", hour: "12:10", line: "Denizle arasında yalnızca zeytin ağaçları var.", area: 195, beds: 3, plot: 610, pool: "Özel", status: "satista" },
-  { no: "XI", facing: "Güneye bakar", dir: "Güney", hour: "19:10", line: "Çatı terası gün batımı için tasarlandı.", area: 285, beds: 4, plot: 870, pool: "Özel, ısıtmalı", status: "satista" },
-  { no: "XII", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "20:05", line: "Günün son ışığı onun duvarına düşer.", area: 310, beds: 5, plot: 940, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "I", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "16:25", line: "İkindi güneşini terasında en uzun tutan ev.", area: 210, beds: 3, plot: 640, pool: "Özel", status: "satista" },
+  { no: "II", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "17:10", line: "Kahvaltı gölgede, akşam yemeği güneşte.", area: 245, beds: 4, plot: 720, pool: "Özel, ısıtmalı", status: "satildi" },
+  { no: "III", facing: "Batıya bakar", dir: "Batı", hour: "17:25", line: "Havuzu akşamüstü güneşini sonuna kadar alır.", area: 185, beds: 3, plot: 590, pool: "Özel", status: "satista" },
+  { no: "IV", facing: "Batıya bakar", dir: "Batı", hour: "18:20", line: "Kuzeydeki avlusu öğle sıcağında bile serin.", area: 260, beds: 4, plot: 780, pool: "Özel", status: "opsiyonlu" },
+  { no: "V", facing: "Batıya bakar", dir: "Batı", hour: "18:15", line: "Zeytinliğin hemen kıyısında.", area: 230, beds: 4, plot: 700, pool: "Özel", status: "satista" },
+  { no: "VI", facing: "Batıya bakar", dir: "Batı", hour: "18:25", line: "Çardağı ikindi güneşini süzer.", area: 275, beds: 4, plot: 820, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "VII", facing: "Kuzeybatıya bakar", dir: "Kuzeybatı", hour: "20:00", line: "Gün batımını salondan izlersiniz.", area: 320, beds: 5, plot: 960, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "VIII", facing: "Batıya bakar", dir: "Batı", hour: "18:30", line: "Akşam meltemini ilk o alır.", area: 240, beds: 4, plot: 730, pool: "Özel", status: "satildi" },
+  { no: "IX", facing: "Kuzeybatıya bakar", dir: "Kuzeybatı", hour: "20:10", line: "Yamacın en üstünde, en geniş manzarayla.", area: 300, beds: 5, plot: 910, pool: "Özel, ısıtmalı", status: "opsiyonlu" },
+  { no: "X", facing: "Güneybatıya bakar", dir: "Güneybatı", hour: "16:10", line: "Denizle arasında yalnızca zeytin ağaçları var.", area: 195, beds: 3, plot: 610, pool: "Özel", status: "satista" },
+  { no: "XI", facing: "Batıya bakar", dir: "Batı", hour: "19:40", line: "Çatı terası gün batımı için tasarlandı.", area: 285, beds: 4, plot: 870, pool: "Özel, ısıtmalı", status: "satista" },
+  { no: "XII", facing: "Kuzeybatıya bakar", dir: "Kuzeybatı", hour: "20:15", line: "Günün son ışığı onun duvarına düşer.", area: 310, beds: 5, plot: 940, pool: "Özel, ısıtmalı", status: "satista" },
 ];
 
 export const tr: Copy = {
   meta: {
     title: "Onikitaş Villaları · Yalıkavak, Bodrum",
     description:
-      "Yalıkavak'ın güney sırtlarında, her birinin önü deniz olan on iki taş villa. Kurgusal bir marka için hazırlanmış rasitburucu.com konsept çalışması.",
+      "Yalıkavak'ta koya ve gün batımına bakan yamaçta, her birinin önü deniz olan on iki taş villa. Kurgusal bir marka için hazırlanmış rasitburucu.com konsept çalışması.",
   },
   strip: { text: "Konsept çalışma — rasitburucu.com", href: "/tr" },
   skip: "İçeriğe geç",
   brand: "Onikitaş",
   nav: { visit: "Ziyaret", sound: "Ses", dayNav: "Günün saatleri" },
-  loader: { time: "05:41", label: "Sahne hazırlanıyor" },
+  loader: { label: "Sahne hazırlanıyor" },
   chapters: {
     safak: {
       name: "Şafak",
-      time: "05:41",
       title: "Yamaçta on iki ev. Hepsinin önü deniz.",
-      body: "Onikitaş Villaları, Yalıkavak'ın güney sırtlarında taş, kireç ve zeytin arasında yükseliyor. Her ev, günün en güzel ışığını alacak açıyla yerleştirildi.",
+      body: "Onikitaş Villaları, Yalıkavak koyuna bakan yamaçta taş, kireç ve zeytin arasında yükseliyor. Her ev batıya, denize ve gün batımına dönük yerleştirildi.",
     },
     sabah: {
       name: "Sabah",
-      time: "07:00",
       title: "Hiçbir ev, komşusunun denizini kesmiyor.",
       body: "Evleri yamacın eğimine göre kademe kademe yerleştirdik. Hangi terasa çıkarsanız çıkın, önünüzde yalnızca deniz ve zeytin var.",
     },
     kusluk: {
       name: "Kuşluk",
-      time: "10:00",
       title: "Bodrum taşı, kireç sıva, meşe ve traverten.",
       body: "Yarımadanın yüzyıllardır kullandığı malzemeleri seçtik. Kalın taş duvarlar sabahın serinliğini öğleden sonraya kadar içeride tutar.",
     },
     ogle: {
       name: "Öğle",
-      time: "13:00",
       title: "En sıcak saatte bile avlunuz gölgede.",
       body: "Her avluyu evin kuzeyine aldık. Öğle güneşinde bile avlunun yarısı gölgede kalır.",
     },
     ikindi: {
       name: "İkindi",
-      time: "16:30",
       title: "İkindi meltemi, klimadan iyidir.",
       body: "Evler, yarımadanın kuzeybatı rüzgârına açık konumlandı. Akşamüstü pencereleri açmanız, evi serinletmeye yeter.",
     },
     aksam: {
       name: "Akşam",
-      time: "19:40",
       title: "Evinizi hangi ışıkta görmek istersiniz?",
       body: "Bir saat ve bir ev seçin; ziyaretinizi o ışığa göre planlayalım.",
     },
     yatsi: {
       name: "Yatsı",
-      time: "21:30",
       title: "Gece, on iki pencere yanar.",
       body: "Yamaç sessizleşir, geriye denizin sesi kalır. Onikitaş, 2027 yazında ilk sahiplerini ağırlıyor.",
     },

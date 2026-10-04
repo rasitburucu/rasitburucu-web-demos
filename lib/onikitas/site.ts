@@ -1,9 +1,10 @@
-// The fictional Onikitaş site: a south-facing hillside above a cove, twelve
-// terraced houses and an olive grove. Pure functions, deterministic, no three.js.
-// World axes: +x east, -z north (uphill), +z south (the sea), +y up. 1 unit ~ 2 m.
+// The fictional Onikitaş site: a west-facing hillside above a cove of Yalıkavak
+// bay, twelve terraced houses and an olive grove. Pure functions, deterministic,
+// no three.js. World axes (see terrain.ts): +z west (the sea), -z east
+// (uphill), +x south, +y up. 1 unit ~ 2 m.
 
 import { mulberry32 } from "./noise";
-import { baseHeight, coastZ, HALF, n, SHORE_DEPTH, smooth, STEP, sat, WORLD } from "./terrain";
+import { baseHeight, coastZ, HALF, n, SHORE_DEPTH, smooth, sat, WORLD } from "./terrain";
 import { bearingOf, cutsView, number, place, type Placed, type VillaSite } from "./layout";
 
 export * from "./terrain";
@@ -93,8 +94,10 @@ const cellOf = (x: number, z: number) => {
 
 /**
  * Pad influence (0..1) at a point and the pad height there. Where two pads'
- * margins meet, heights blend with steep weights, so there is no seam, and
- * each flat top stays flat.
+ * margins meet, heights blend with weights that grow without bound towards a
+ * pad's own edge, so there is no seam, each flat top stays flat, and the ground
+ * at a pad's edge always belongs to that pad: a lower neighbour can never pull
+ * it down and leave the terrace wall hanging in the air.
  */
 export function padAt(x: number, z: number): [number, number] {
   let best = 0;
@@ -111,7 +114,7 @@ export function padAt(x: number, z: number): [number, number] {
     const dist = Math.hypot(Math.max(lx, 0), Math.max(lz, 0));
     const w = 1 - smooth(0, PAD_FALL, dist);
     if (w <= 0) continue;
-    const w4 = w * w * w * w;
+    const w4 = (w * w * w * w) / (1.0001 - w);
     sw += w4;
     sh += w4 * v.y;
     if (w > best) best = w;
@@ -130,12 +133,15 @@ export function nearHouse(x: number, z: number) {
 
 /**
  * Height of the terrace wall under each pad's edge on the downhill (fill) side.
- * The stone plinth under the slab holds the pad; the ground only banks up to
- * its foot, so a terrace reads as a clean dry-stone wall, not a smeared ramp.
+ * The stone plinth under the slab holds the pad; the ground banks up to just
+ * under it, so a terrace reads as a low dry-stone wall set into the slope.
  */
-export const TERRACE_WALL = 0.9;
-/** Depth of the plinth below the pad: always below the ground inside the pad. */
-export const PLINTH_DEPTH = TERRACE_WALL + 1.6;
+export const TERRACE_WALL = 0.5;
+/**
+ * Depth of the plinth below the pad. Deep enough to stay buried under the
+ * banked ground and under the maquette's contour layer (up to one STEP lower).
+ */
+export const PLINTH_DEPTH = 3.6;
 
 /** Ground around a pad: cut down to just under the pad top uphill, banked up to the wall foot downhill. */
 export function ground(b: number, w: number, ph: number) {
@@ -147,11 +153,6 @@ export function ground(b: number, w: number, ph: number) {
 export function height(x: number, z: number) {
   const [w, h] = padAt(x, z);
   return ground(baseHeight(x, z), w, h);
-}
-
-export function stepped(h: number, pad: number) {
-  const s = Math.floor(h / STEP) * STEP;
-  return s + (h - s) * pad;
 }
 
 export type Tree = { x: number; y: number; z: number; s: number; r: number; k: number };
