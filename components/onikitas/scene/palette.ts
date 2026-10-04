@@ -17,8 +17,11 @@ type Key = {
 
 const KEYS: Key[] = [
   { h: 5.0, zenith: "#1f2c3a", horizon: "#6e6a74", sun: "#ff9e7a", sunI: 0.0, sky: "#56647a", ground: "#3a3630", hemiI: 0.35, stars: 0.6 },
-  { h: 5.683, zenith: "#50657b", horizon: "#e9c2a6", sun: "#ffb088", sunI: 1.9, sky: "#9aa8bc", ground: "#7d7064", hemiI: 0.7, stars: 0.12 },
-  { h: 6.5, zenith: "#7086a0", horizon: "#ecd2bc", sun: "#ffc89e", sunI: 3.0, sky: "#b3c0cf", ground: "#9a8c7c", hemiI: 0.78, stars: 0 },
+  // dawn: the sky fill carries ~30% less blue than a pure blue hour would, so
+  // the limewash maquette in the arch reads chalk-white, not grey-blue; the
+  // warm horizon and the peach sun keep the hour
+  { h: 5.683, zenith: "#50657b", horizon: "#e9c2a6", sun: "#ffb088", sunI: 1.9, sky: "#a2aab8", ground: "#95877a", hemiI: 0.98, stars: 0.12 },
+  { h: 6.5, zenith: "#7086a0", horizon: "#ecd2bc", sun: "#ffc89e", sunI: 3.0, sky: "#b7c0cb", ground: "#9a8c7c", hemiI: 0.78, stars: 0 },
   { h: 8.0, zenith: "#83a0b8", horizon: "#e9e1d4", sun: "#ffead2", sunI: 3.6, sky: "#c3cfda", ground: "#a89b88", hemiI: 0.66, stars: 0 },
   { h: 12.0, zenith: "#779cb8", horizon: "#ebe9e3", sun: "#fff8ee", sunI: 3.7, sky: "#c8d3dd", ground: "#ada08c", hemiI: 0.6, stars: 0 },
   { h: 16.0, zenith: "#7e9db5", horizon: "#ede3d3", sun: "#ffecd6", sunI: 3.6, sky: "#c4cdd4", ground: "#ab9b80", hemiI: 0.64, stars: 0 },

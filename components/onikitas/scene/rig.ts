@@ -52,6 +52,41 @@ const PORTRAIT_LIFT = 7;
 
 /** Tangent of half the landscape camera's vertical field of view (38deg). */
 const TAN_HALF = Math.tan((19 * Math.PI) / 180);
+/** Same for portrait screens (58deg, see Director in Scene.tsx). */
+const TAN_HALF_PORTRAIT = Math.tan((29 * Math.PI) / 180);
+
+const NIGHT_DRIFT = new THREE.Vector3(0, -1, -7);
+/** World radius kept around each house centre when fitting the night frame. */
+const HOUSE_R = 4.5;
+
+/**
+ * Narrow portrait screens: how far the night camera has to back away from its
+ * aim so all twelve houses fit across the width (with a margin). 0 when they
+ * already fit, so wide screens keep the authored frame. Memoised per aspect.
+ */
+const nightFit = new Map<number, number>();
+function nightPullback(aspect: number) {
+  const key = Math.round(aspect * 100);
+  const hit = nightFit.get(key);
+  if (hit !== undefined) return hit;
+  const k = keys[keys.length - 1];
+  const pos = k.pos.clone().add(NIGHT_DRIFT);
+  const tgt = k.tgt.clone();
+  tgt.y += 1.2;
+  const fwd = tgt.clone().sub(pos).normalize();
+  const right = fwd.clone().cross(new THREE.Vector3(0, 1, 0)).normalize();
+  const tanH = TAN_HALF_PORTRAIT * aspect * 0.93;
+  let need = 0;
+  const d = new THREE.Vector3();
+  for (const v of villaSites) {
+    d.set(v.x, v.y, v.z).sub(pos);
+    const lateral = Math.abs(d.dot(right)) + HOUSE_R;
+    const depth = d.dot(fwd);
+    need = Math.max(need, lateral / tanH - depth);
+  }
+  nightFit.set(key, need);
+  return need;
+}
 
 export function cameraGoal(chapter: number, t: number, out: { pos: THREE.Vector3; tgt: THREE.Vector3 }, sel: number, selected: number, portrait = false, aspect = 1.6) {
   if (chapter <= 0) {
@@ -84,8 +119,13 @@ export function cameraGoal(chapter: number, t: number, out: { pos: THREE.Vector3
   if (c === 6) {
     // night holds: once the lamps are lit, a slow drift closer, under the stars
     const drift = smooth(0.5, 1, t);
-    out.pos.add(tmp.set(0, -1 * drift, -7 * drift));
+    out.pos.addScaledVector(NIGHT_DRIFT, drift);
     out.tgt.y += 1.2 * drift;
+    // portrait: back away along the view line until every house is in frame
+    if (portrait) {
+      const back = nightPullback(aspect) * local;
+      if (back > 0) out.pos.addScaledVector(tmp.copy(out.pos).sub(out.tgt).normalize(), back);
+    }
   }
   // portrait, maquette hours: aim a little higher so the village, not the flat
   // model sea, fills the lower half under the copy; gone once kuşluk is real

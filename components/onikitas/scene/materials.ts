@@ -175,13 +175,22 @@ export function terrainMaterial() {
         vec3 dry = vec3(0.36, 0.31, 0.21);
         vec3 maquis = vec3(0.12, 0.145, 0.085);
         vec3 earth = vec3(0.33, 0.255, 0.18);
-        vec3 rock = vec3(0.335, 0.318, 0.285);
-        vec3 real = mix(dry, maquis, smoothstep(0.3, 0.55, n1 + 0.18 * (n2 - 0.5)));
+        vec3 rock = vec3(0.31, 0.29, 0.255);
+        // fine grain (grass tufts, gravel): keeps the ground crisp close to the
+        // lens instead of a soft magnified blur; fades out before it can alias
+        // projected on the face's dominant plane, so banks are not streaked
+        vec2 gp = tw.y >= max(tw.x, tw.z) ? vWp.xz : (tw.x > tw.z ? vWp.zy : vWp.xy);
+        float gw = length(fwidth(gp));
+        float n5 = oki_noise(gp * 7.3) * 0.6 + oki_noise(gp * 15.1 + 3.7) * 0.4;
+        float grain = (n5 - 0.5) * (1.0 - smoothstep(0.05, 0.22, gw));
+        vec3 real = mix(dry, maquis, smoothstep(0.34, 0.5, n1 + 0.18 * (n2 - 0.5) + grain * 0.08));
         real = mix(real, earth, smoothstep(0.2, 0.5, slope + (n2 - 0.5) * 0.3) * 0.75);
-        float rk = smoothstep(0.71, 0.82, n4 + slope * 0.25 + (n3 - 0.5) * 0.1);
-        real = mix(real, rock * (0.85 + 0.3 * n3), rk * 0.8);
+        // limestone outcrops: about half as many as before, warmer and duller,
+        // so they read as rock in the scrub rather than torn white paper
+        float rk = smoothstep(0.77, 0.86, n4 + slope * 0.25 + (n3 - 0.5) * 0.1);
+        real = mix(real, rock * (0.78 + 0.22 * n3), rk * 0.6);
         real = mix(real, vec3(0.6, 0.56, 0.48), 1.0 - smoothstep(0.35, 1.9, vH));
-        real *= 0.86 + 0.28 * n3;
+        real *= (0.86 + 0.28 * n3) * (1.0 + grain * 0.32);
         float r = oki_reveal(vWp, 0.0);
         csm_DiffuseColor = vec4(mix(clay, real, r), 1.0);
         csm_Emissive = vec3(1.0, 0.6, 0.32) * oki_edge(vWp, 0.0) * 0.85;
@@ -189,7 +198,7 @@ export function terrainMaterial() {
   });
 }
 
-// ---------- Olive trees (instanced): model lollipops -> silver-green olives ----------
+// ---------- Olive trees (instanced): white model trees -> silver-green olives ----------
 
 export function treeMaterial() {
   return new CustomShaderMaterial({
@@ -199,7 +208,8 @@ export function treeMaterial() {
     uniforms: U,
     vertexShader: /* glsl */ `
       uniform float uTime; uniform float uWind;
-      varying vec3 vWp; varying float vK; varying float vLocalY; varying float vGust;
+      attribute float aCl;
+      varying vec3 vWp; varying float vK; varying float vCl; varying float vGust;
       void main(){
         vec4 base = modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0);
         vK = fract(sin(dot(base.xz, vec2(12.9898, 78.233))) * 43758.5453);
@@ -211,21 +221,25 @@ export function treeMaterial() {
         p.z += (g * 0.4 + flutter * 0.06) * uWind * 0.08 * bend;
         csm_Position = p;
         vGust = g * uWind;
-        vLocalY = position.y;
+        vCl = aCl;
         vWp = (modelMatrix * instanceMatrix * vec4(p, 1.0)).xyz;
       }`,
     fragmentShader: /* glsl */ `
-      varying vec3 vWp; varying float vK; varying float vLocalY; varying float vGust;
+      varying vec3 vWp; varying float vK; varying float vCl; varying float vGust;
       ${NOISE}${REVEAL}${CLAY}
       void main(){
         float r = oki_reveal(vWp, 0.0);
-        vec3 leaf = mix(vec3(0.15, 0.17, 0.11), vec3(0.28, 0.3, 0.22), vK);
+        float isBark = step(vCl, -0.5);
+        // each clump its own tone, each tree its own mix
+        float tone = clamp(vK * 0.7 + vCl * 0.45 - 0.1, 0.0, 1.0);
+        vec3 leaf = mix(vec3(0.14, 0.165, 0.105), vec3(0.3, 0.315, 0.225), tone);
         // olive leaves turn their silver undersides in the wind
         float silver = smoothstep(0.55, 0.95, oki_noise(vWp.xz * 1.7 + vGust * 3.0)) * vGust;
         leaf = mix(leaf, vec3(0.5, 0.52, 0.46), silver * 0.8);
         vec3 bark = vec3(0.12, 0.1, 0.08);
-        vec3 real = vLocalY < 0.62 ? bark : leaf;
-        vec3 clay = OKI_CLAY * (vLocalY < 0.62 ? 0.8 : 0.97);
+        vec3 real = mix(leaf, bark, isBark);
+        // maquette: white model trees, the trunks a shade under the foliage
+        vec3 clay = OKI_CLAY * mix(0.955 + 0.03 * vCl, 0.8, isBark);
         csm_DiffuseColor = vec4(mix(clay, real, r), 1.0);
       }`,
   });

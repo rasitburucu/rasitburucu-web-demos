@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { useEffect, useRef, useState } from "react";
-import { useThree } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
+import { store } from "@/lib/onikitas/store";
 import type { EffectComposer } from "postprocessing";
 
 // Post-processing shaders normally compile on the composer's first render, all
@@ -94,4 +95,30 @@ export function useWarmComposer(ref: React.RefObject<EffectComposer | null>) {
     };
   }, [gl, scene, camera, ref]);
   return warm;
+}
+
+// The first frames are drawn without post-processing (the renderer's own ACES
+// curve, the same one the effect pass uses). When the composer takes over, its
+// effects start at zero and rise together, so the hand-over never shows as a
+// jump. Once faded in, a later tier swap (high -> mid) cuts straight in.
+let fadedOnce = false;
+const FADE_S = 1.4;
+
+/** Drives `apply(k)` from 0 to 1 once `on` is true; calls `onDone` at 1. */
+export function useFadeIn(on: boolean, apply: (k: number) => void, onDone?: () => void) {
+  const k = useRef(-1);
+  const finished = useRef(false);
+  useFrame((_, delta) => {
+    if (!on || finished.current) return;
+    if (k.current < 0) k.current = fadedOnce || store.still >= 0 ? 1 : 0;
+    k.current = Math.min(1, k.current + Math.min(delta, 1 / 20) / FADE_S);
+    const x = k.current;
+    // ease-out cubic: most of the change happens early, the tail settles
+    apply(1 - Math.pow(1 - x, 3));
+    if (x >= 1) {
+      finished.current = true;
+      fadedOnce = true;
+      onDone?.();
+    }
+  });
 }

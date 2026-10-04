@@ -462,7 +462,7 @@ function Ready({ world, post, onCompiled }: { world: React.RefObject<THREE.Group
   return null;
 }
 
-/** Last loader stone: a couple of settled frames with the final look in place. */
+/** Last loader stone: a couple of settled frames after the first one. */
 function Settle() {
   useEffect(() => {
     let alive = true;
@@ -484,21 +484,28 @@ function Settle() {
   return null;
 }
 
-// Post-processing is split per tier so phones never download it, and loads
-// only after the first frame so its shaders never delay that frame.
+// Post-processing is split per tier so phones never download it. Its code is
+// fetched only once the scene has settled (the "ready" event), so the loader
+// never waits on it: the first frames use the renderer's own ACES tone mapping
+// (the curve the effect pass applies too), and when the composer is compiled
+// its effects fade in from zero (useFadeIn in ./warm), so there is no jump.
 const PostHigh = lazy(() => import("./PostHigh"));
 const PostMid = lazy(() => import("./PostMid"));
 function Post({ tier }: { tier: Tier }) {
-  const [on_, setOn] = useState(false);
-  const [warm, setWarm] = useState(false);
-  useEffect(() => on("frame", () => setOn(true)), []);
-  const onReady = useMemo(() => () => setWarm(true), []);
-  if (!on_) return null;
-  if (tier === "low") return <Settle />;
+  const [frame, setFrame] = useState(false);
+  const [wanted, setWanted] = useState(store.ready);
+  useEffect(() => on("frame", () => setFrame(true)), []);
+  useEffect(() => on("ready", () => setWanted(true)), []);
+  const onDone = useMemo(() => () => emit("post"), []);
+  useEffect(() => {
+    if (wanted && tier === "low") emit("post");
+  }, [wanted, tier]);
   return (
     <>
-      <Suspense fallback={null}>{tier === "high" ? <PostHigh onReady={onReady} /> : <PostMid onReady={onReady} />}</Suspense>
-      {warm ? <Settle /> : null}
+      {frame ? <Settle /> : null}
+      {wanted && tier !== "low" ? (
+        <Suspense fallback={null}>{tier === "high" ? <PostHigh onReady={onDone} /> : <PostMid onReady={onDone} />}</Suspense>
+      ) : null}
     </>
   );
 }
@@ -508,12 +515,13 @@ function Post({ tier }: { tier: Tier }) {
 export default function Scene({ tier: initial }: { tier: Tier }) {
   const [tier, setTier] = useState<Tier>(initial);
   const [dpr, setDpr] = useState(Q[initial].dpr[1]);
-  // frame-rate watch starts once loading is over: build steps are not a slow GPU
+  // frame-rate watch starts once loading and the effects' fade-in are over:
+  // build steps and shader compiles are not a slow GPU
   const [watch, setWatch] = useState(false);
   useEffect(() => {
     // the scene code has arrived
     addLoad(1);
-    return on("ready", () => setWatch(true));
+    return on("post", () => setWatch(true));
   }, []);
   const degrade = () => {
     if (store.still >= 0) return;
@@ -527,9 +535,11 @@ export default function Scene({ tier: initial }: { tier: Tier }) {
     <div className="oki-canvas" aria-hidden="true">
     <Canvas
       shadows={{ type: THREE.PCFShadowMap }}
-      // with post-processing, tone mapping happens in the effect pass; set it off
-      // from the start so no shader has to recompile when the effects arrive
-      flat={tier !== "low"}
+      // ACES on the renderer: it shapes the frames drawn before the effects
+      // arrive. Scene shaders drawn into the composer's target skip it (three.js
+      // tone-maps only on-screen draws), and Ready compiles both variants up
+      // front, so nothing recompiles when the composer takes over.
+      flat={false}
       dpr={dpr}
       gl={{ antialias: tier === "low", powerPreference: "high-performance", stencil: false, alpha: false }}
       camera={{ fov: 38, near: NEAR, far: FAR, position: [0, 20, 80] }}
