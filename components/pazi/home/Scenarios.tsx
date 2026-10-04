@@ -63,7 +63,6 @@ export function Scenarios() {
               <li key={it.key} className="pz-scen-item">
                 <Product kind={c.kind} />
                 <div className="pz-scen-body">
-                  <p className="pz-scen-tag">{s.tag}</p>
                   <h3 className="pz-h3">{it.name}</h3>
                   <p className="pz-scen-where">{it.where}</p>
                   <p>{it.text}</p>

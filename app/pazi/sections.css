@@ -518,6 +518,18 @@
 .pz-hmi[data-status="custom"] .pz-hmi-status dd {
   color: var(--pz-yellow);
 }
+.pz-hmi[data-zone="slow"] .pz-lamp {
+  background: var(--pz-yellow);
+  box-shadow: 0 0 0 3px rgba(245, 168, 0, 0.2);
+}
+.pz-hmi[data-zone="stop"] .pz-lamp {
+  background: #e0533b;
+  box-shadow: 0 0 0 3px rgba(224, 83, 59, 0.2);
+}
+.pz-hmi[data-zone="slow"] .pz-hmi-status dd,
+.pz-hmi[data-zone="stop"] .pz-hmi-status dd {
+  color: var(--pz-yellow);
+}
 .pz-hmi-ctrl {
   display: flex;
   flex-wrap: wrap;
@@ -665,10 +677,15 @@
   padding: 20px 0 22px;
   min-height: 17vh;
   border-bottom: 1px solid var(--pz-line-soft);
-  transition: opacity 260ms var(--pz-ease);
 }
-.js .pz-steps-list li[data-current="false"] {
-  opacity: 0.5;
+/* inactive steps dim by colour only (ink-2 on the floor is about 6:1), never by opacity */
+.pz-steps-list h3,
+.pz-steps-list p {
+  transition: color 260ms var(--pz-ease);
+}
+.js .pz-steps-list li[data-current="false"] h3,
+.js .pz-steps-list li[data-current="false"] p {
+  color: var(--pz-ink-2);
 }
 .pz-steps-idx {
   font-size: 0.9375rem;
@@ -1008,6 +1025,66 @@
   }
 }
 
+/* phones: one datasheet per model, a single column (the table above is hidden, not duplicated for assistive tech) */
+.pz-foy {
+  display: none;
+}
+@media (max-width: 560px) {
+  .pz-spec {
+    display: none;
+  }
+  .pz-foy {
+    display: block;
+  }
+  .pz-foy .pz-spec-corner {
+    padding: 0 0 14px !important;
+  }
+  .pz-foy .pz-spec-key-note {
+    margin-bottom: 0;
+  }
+  .pz-foy-card {
+    padding: 22px 0 24px;
+    border-top: 2px solid var(--pz-ink);
+  }
+  .pz-foy-card .pz-spec-name {
+    margin: 14px 0 0;
+    font-size: 2.25rem;
+  }
+  .pz-foy-card .pz-spec-fit {
+    min-height: 0;
+    max-width: none;
+    margin: 8px 0 16px;
+    font-size: 0.9375rem;
+  }
+  .pz-foy-rows {
+    margin: 0 0 20px;
+  }
+  .pz-foy-rows > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--pz-line-soft);
+  }
+  .pz-foy-rows dt {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--pz-ink-2);
+  }
+  .pz-foy-rows dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-stretch: 87.5%;
+    text-align: right;
+  }
+  .pz-foy-card .pz-spec-open {
+    width: 100%;
+    min-height: 44px;
+    font-size: 0.9375rem;
+  }
+}
+
 /* ------------------------------------------------------------------ safety */
 
 .pz-safety {
@@ -1219,14 +1296,6 @@
   width: 100%;
   height: auto;
   display: block;
-}
-.pz-scen-tag {
-  display: inline-block;
-  margin: 0 0 8px;
-  padding: 2px 8px;
-  font-family: var(--pz-f-mono);
-  font-size: 0.6875rem;
-  border: 1px solid var(--pz-ink);
 }
 .pz-scen-where {
   margin: 4px 0 6px;

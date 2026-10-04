@@ -96,5 +96,5 @@ Radius 2px (her şey). Easing `--pz-ease: cubic-bezier(0.16,1,0.3,1)`, `--pz-mov
 | IFR %59 verisi | Doğrulanamadı, siteye konmadı | Kaynak doğrulanırsa |
 | Fiyat | Bilerek yok; kullanıcı teklif tutarını girer | Karar verildi |
 | 1024×768'de HMI şeridi 3 px taşıyor | Turun hedef ölçüleri dışında; dar sütunda alt başlık bir satır uzuyor | İsteğe bağlı cila |
-| Operatör iç bölgedeyken durum hücresi "Uygun" kalıyor (robot ışığı kırmızı, tarama görünüyor) | Turun iş listesinde yok | Gerekirse |
+| ~~Operatör iç bölgedeyken durum hücresi "Uygun" kalıyor~~ | Kapandı (gelistir2, 2026-10-04): şerit bölgeyi yansıtıyor (Tam hız / Yavaşladı / Durdu), `aria-live="polite"` | Kapandı |
 | `site_sokum.py --headed` bu makinede yine durağan çizime düşüyor | Betik GPU bayrağı açmıyor; 3B kanıtı ayrı Playwright çekimiyle (`--enable-gpu`) alındı | Eklenti tarafında |
