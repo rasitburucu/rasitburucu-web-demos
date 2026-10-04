@@ -503,6 +503,13 @@ function build(section: HTMLElement) {
 
   // head leaves as the walk starts
   tl.to(head, { opacity: 0, y: -18, duration: 0.5, ease: "power1.in" }, "intro+=0.55");
+  // short phones: the one-line title shares the row under the window with the level ruler,
+  // so the ruler arrives as the heading leaves (the skip link serves until then)
+  const toc = section.querySelector<HTMLElement>(".rv-walk-toc")!;
+  if (window.matchMedia("(max-width: 860px) and (max-height: 780px)").matches) {
+    gsap.set(toc, { autoAlpha: 0 });
+    tl.to(toc, { autoAlpha: 1, duration: 0.4, ease: "power1.out" }, "intro+=0.9");
+  }
 
   for (let i = 0; i < 4; i++) {
     const at = FIRST + i * SPACING;
@@ -594,6 +601,7 @@ function build(section: HTMLElement) {
     open.scrollTrigger?.kill();
     splits.forEach((s) => s.revert());
     section.classList.remove("is-live", "is-active");
+    gsap.set(toc, { clearProps: "opacity,visibility" });
     stage.style.removeProperty("--sun");
     stage.style.removeProperty("--end");
     portals.forEach((p) => {

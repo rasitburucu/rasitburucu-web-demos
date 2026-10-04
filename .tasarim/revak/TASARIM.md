@@ -210,3 +210,6 @@ Ekranlar: `ekran/gelistir-2026-10-04/` (dogrula çıktısı; `sheet-walk-d.png`,
 | Kitabe | Marcellus büyük harf, oyuk görünümü (koyu iç, alt kenarda ışık, üst kenarda gölge). Ad boşken okulun sözü iki satır. Ad: tek satır, 24 harfe kadar sığacak boyut (`--n`), Türkçe büyük harf `tr-TR` ile (i → İ, ı → I). Kazıma: harf başına 80 ms, keski izi + taş kırıntısı (CSS, transform/opaklık) |
 | Gizlilik | Ad yalnız React durumunda; form gönderilmez, `autocomplete=off`, localStorage yok |
 | Ölçüm (4× CPU, telefon 390×844 DPR3) | Bölüm boyunca kaydırma: ana iş parçacığı kare başına 1,9 ms (6×'te 3,7 ms), kare aralığı p95 6,1 ms (kare kaçırma yok), raster görevi 11 (taşlar yeniden boyanmıyor), yazılım GPU'da kare başına 1,2 ms (yürüyüş 3,2 ms) |
+
+## 2026-10-05 düzeltme: küçük telefonda "Revak boyunca" başlığı kemere binmesin
+Kemer kadrajı aynı. Telefonda başlık satır aralığı 0,98 → 0,9. Kısa telefonda (yükseklik ≤ 780 px) başlık tek satır (11,6vw), sözlük satırı, giriş ve atlama bağlantısı sıkılaştı; tek satır başlıkla aynı sıraya düşen kademe cetveli (I-IV) başlık çıkarken belirir. Ölçüm (kemer altı ile başlık üstü arası, artı = boşluk): 360×740 −58 → +45 px, 375×667 −103 → +3 px, 390×844 −9 → +2 px; alt çubukla çakışma yok (7 px). Kareler: `ekran/gelistir3/E-kucuk-telefon-*.png`
