@@ -157,6 +157,9 @@ export function OnKayitFlow() {
       onBack={step > 0 ? () => (review ? (setReview(false), go(3)) : go(step - 1)) : undefined}
       onNext={next}
       nextLabel={step === 3 ? t.s4.submit : review ? c.toSummary : undefined}
+      nextDisabled={step === 0 && !v.kademe}
+      nextDescribedBy={f.shown("kademe") ? "rv-f-kademe-err" : "rv-f-sinif"}
+      submitNote={step === 3}
       aside={<HelpCard note={t.helpNote} />}
       plate={step < 3 && !review ? <KademePlate kademe={v.kademe || shared.kademe || ""} /> : undefined}
     >
