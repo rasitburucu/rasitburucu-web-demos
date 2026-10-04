@@ -2017,19 +2017,23 @@ html[data-past="true"] .oki-header::before {
   --bed-x: 46px;
   --bed-y: 34px;
   --bed-f: 22px;
+  /* Raşit, 2026-10-05: the ground is 40% fainter (--bed-k) and covers 20% less (--bed-s);
+     header, clock and day list go fainter and tighter still (see below) */
+  --bed-k: 0.6;
+  --bed-s: 0.8;
   content: "";
   position: absolute;
-  inset: calc(var(--bed-y) * -1) calc(var(--bed-x) * -1);
+  inset: calc(var(--bed-y) * var(--bed-s) * -1) calc(var(--bed-x) * var(--bed-s) * -1);
   z-index: -1;
   pointer-events: none;
-  background: color-mix(in srgb, var(--scrim-c) var(--bed-a, 86%), transparent);
-  border-radius: calc(var(--bed-f) * 2);
+  background: color-mix(in srgb, var(--scrim-c) calc(var(--bed-a, 86%) * var(--bed-k)), transparent);
+  border-radius: calc(var(--bed-f) * var(--bed-s) * 2);
   /* the edge dissolves over the whole margin: no box edge, no corners */
-  filter: blur(var(--bed-f));
+  filter: blur(calc(var(--bed-f) * var(--bed-s)));
 }
 /* a copy's bed hugs its widest line (--bed-l / --bed-r, measured in Experience) */
 .oki-copy::before {
-  inset: calc(var(--bed-y) * -1) calc(var(--bed-r, 0px) - var(--bed-x)) calc(var(--bed-y) * -1) calc(var(--bed-l, 0px) - var(--bed-x));
+  inset: calc(var(--bed-y) * var(--bed-s) * -1) calc(var(--bed-r, 0px) - var(--bed-x) * var(--bed-s)) calc(var(--bed-y) * var(--bed-s) * -1) calc(var(--bed-l, 0px) - var(--bed-x) * var(--bed-s));
 }
 /* the logo and the menu words: a lighter, tighter bed */
 .oki-bed::before,
@@ -2038,15 +2042,21 @@ html[data-past="true"] .oki-header::before {
   --bed-y: 26px;
   --bed-f: 18px;
   --bed-a: 86%;
+  --bed-k: 0.42;
+  --bed-s: 0.7;
 }
 .oki-days::before {
   --bed-x: 42px;
   --bed-y: 30px;
+  --bed-k: 0.42;
+  --bed-s: 0.7;
 }
 /* the big clock sits low, over the brightest ground of the afternoon */
 .oki-hud::before {
   --bed-y: 46px;
   --bed-a: 90%;
+  --bed-k: 0.42;
+  --bed-s: 0.7;
 }
 html[data-past="true"] .oki-bed::before,
 html[data-past="true"] .oki-menu::before {
