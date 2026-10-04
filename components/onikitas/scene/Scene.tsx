@@ -11,7 +11,7 @@ import { buildBackdrop, buildMaquette, buildTerrain, buildTreeGeometry, buildVil
 import { maquetteMaterial, skyMaterial, terrainMaterial, treeMaterial, U, villaMaterial, wallMaterial, waterMaterial, windowMaterial } from "./materials";
 import { createLight, sampleLight } from "./palette";
 import { cameraGoal, wallFrame } from "./rig";
-import { makeLeafTexture } from "./leaves";
+import { addLeafLayer, leafSheet, leafTexture } from "./leaves";
 
 // seg: real terrain grid; maq: contour maquette grid (its flat sheets need
 // fewer cells; the cut edges are interpolated, so contours stay smooth)
@@ -131,8 +131,14 @@ function World({ tier }: { tier: Tier }) {
       const { treeGeo, mats } = await step("trees", () => ({ treeGeo: buildTreeGeometry(), mats: treeMatrices(makeTrees(q.trees)) }));
       made.push(treeGeo);
       if (!alive) return;
-      await step("leaves", () => {
-        U.uLeaves.value = makeLeafTexture();
+      const sheet = leafSheet();
+      // half a step: the loader counts the leaves once
+      timed("leaves-near", () => addLeafLayer(sheet, true));
+      await breathe();
+      if (!alive) return;
+      await step("leaves-far", () => {
+        addLeafLayer(sheet, false);
+        U.uLeaves.value = leafTexture(sheet);
       });
       if (!alive) return;
       performance.mark("oki:build-end");
@@ -290,7 +296,7 @@ function WorldMeshes({ built, tier }: { built: Built; tier: Tier }) {
       </group>
       <Sun tier={tier} />
       <Director wallRef={wallRef} />
-      <Ready world={world} post={tier !== "low"} onCompiled={() => setShown(true)} />
+      <Ready world={world} onCompiled={() => setShown(true)} />
     </>
   );
 }
@@ -431,8 +437,11 @@ function Director({ wallRef }: { wallRef: React.RefObject<THREE.Mesh | null> }) 
  * Shaders compile while the world is still hidden: one mesh at a time with a
  * frame between, programs linking in parallel (KHR_parallel_shader_compile), so
  * the main thread never blocks. Then the world shows and the first frame counts.
+ * Only the on-screen variant compiles here; the variant the effects need (drawn
+ * into a render target, linear output) compiles later, with the effects
+ * themselves, before they take over (see useWarmComposer in ./warm).
  */
-function Ready({ world, post, onCompiled }: { world: React.RefObject<THREE.Group | null>; post: boolean; onCompiled: () => void }) {
+function Ready({ world, onCompiled }: { world: React.RefObject<THREE.Group | null>; onCompiled: () => void }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
@@ -444,24 +453,17 @@ function Ready({ world, post, onCompiled }: { world: React.RefObject<THREE.Group
     world.current?.traverse((o) => {
       if ((o as THREE.Mesh).isMesh) meshes.push(o);
     });
-    // With post-processing the scene is drawn into a render target (linear
-    // output), before that straight to the screen (sRGB): two shader variants.
-    const rt = post ? new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType }) : null;
-    const targets = rt ? [null, rt] : [null];
     (async () => {
       for (const m of meshes) {
         if (!alive) return;
         const prev = gl.getRenderTarget();
-        const jobs = targets.map((t) => {
-          gl.setRenderTarget(t);
-          return gl.compileAsync(m, camera, scene);
-        });
+        gl.setRenderTarget(null);
+        const job = gl.compileAsync(m, camera, scene);
         gl.setRenderTarget(prev);
-        await Promise.all(jobs);
+        await job;
         await breathe();
       }
     })()
-      .finally(() => rt?.dispose())
       .catch(() => undefined)
       .then(() => {
         if (!alive) return;
@@ -481,7 +483,7 @@ function Ready({ world, post, onCompiled }: { world: React.RefObject<THREE.Group
     return () => {
       alive = false;
     };
-  }, [gl, scene, camera, world, post]);
+  }, [gl, scene, camera, world]);
   return null;
 }
 

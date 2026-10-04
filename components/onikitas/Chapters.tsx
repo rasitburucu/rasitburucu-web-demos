@@ -4,6 +4,7 @@ import { credits, type CreditGroup } from "@/content/onikitas/credits";
 import { chapters, formatHour, sectionVh } from "@/lib/onikitas/chapters";
 import { Sundial } from "./Sundial";
 import { Registry } from "./Registry";
+import { asset } from "@/lib/asset";
 
 /** Letters rise out of a mask when the chapter becomes active. Real text for AT. */
 function Split({ text, id }: { text: string; id: string }) {
@@ -29,6 +30,20 @@ function Split({ text, id }: { text: string; id: string }) {
   );
 }
 
+/**
+ * Which side of the screen each hour's copy stands on; the side rails follow
+ * it (s: dawn, copy left and no clock yet; c: night, copy centred on top).
+ */
+const SIDE: Record<string, "s" | "l" | "r" | "c"> = {
+  safak: "s",
+  sabah: "l",
+  kusluk: "r",
+  ogle: "l",
+  ikindi: "r",
+  aksam: "l",
+  yatsi: "c",
+};
+
 export function Chapters() {
   return (
     <main id="icerik" className="oki-main">
@@ -40,6 +55,7 @@ export function Chapters() {
             id={c.id}
             data-chapter={i}
             data-name={copy.name}
+            data-side={SIDE[c.id]}
             className={`oki-chapter oki-chapter--${c.id}`}
             style={{ height: `${sectionVh(c)}svh` }}
             aria-labelledby={`${c.id}-title`}
@@ -74,7 +90,12 @@ export function Chapters() {
                 ) : null}
               </div>
               {c.id === "aksam" ? (
-                <div className="oki-dial-panel" data-dial-panel id="ziyaret-panel">
+                <div
+                  className="oki-dial-panel"
+                  data-dial-panel
+                  id="ziyaret-panel"
+                  style={{ "--trav-tex": `url("${asset("/onikitas/tex/travertine.webp")}")` } as React.CSSProperties}
+                >
                   <Sundial />
                 </div>
               ) : null}

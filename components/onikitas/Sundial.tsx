@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { emit, on, store } from "@/lib/onikitas/store";
-import { DIAL_MAX, DIAL_MIN, formatHour } from "@/lib/onikitas/chapters";
+import { DIAL_MAX, DIAL_MIN, formatHour, parseHour } from "@/lib/onikitas/chapters";
 import { tr, villas } from "@/content/onikitas/tr";
 import { VisitDialog } from "./VisitDialog";
 
@@ -33,12 +33,19 @@ function pointAt(h: number, rad = R) {
 }
 const snap = (h: number) => Math.min(DIAL_MAX, Math.max(DIAL_MIN, Math.round(h * 12) / 12));
 
-const TICKS = Array.from({ length: DIAL_MAX - DIAL_MIN + 1 }, (_, i) => DIAL_MIN + i);
-const LABELS = [6, 9, 12, 15, 18, 21];
+// a tick every quarter hour, a label every hour
+const TICKS = Array.from({ length: (DIAL_MAX - DIAL_MIN) * 4 + 1 }, (_, i) => DIAL_MIN + i / 4);
+const LABELS = Array.from({ length: DIAL_MAX - DIAL_MIN + 1 }, (_, i) => DIAL_MIN + i);
+
+/** A house's best hour, on the dial. */
+const bestHour = (i: number) => snap(parseHour(villas[i].hour));
 
 export function Sundial() {
-  const [hour, setHour] = useState(19 + 40 / 60);
-  const [sel, setSel] = useState(6);
+  // opens on the selected house's best hour (Villa VII: 20:00)
+  const [hour, setHour] = useState(() => bestHour(store.selected));
+  const [sel, setSel] = useState(store.selected);
+  // once the visitor moves the sun, picking a house no longer moves it
+  const own = useRef(false);
   const svg = useRef<SVGSVGElement>(null);
   const face = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
@@ -49,14 +56,6 @@ export function Sundial() {
   const hourRef = useRef(hour);
   const groupId = useId();
 
-  useEffect(
-    () =>
-      on("selected", () => {
-        setSel(store.selected);
-      }),
-    [],
-  );
-
   const commit = useCallback((h: number) => {
     const v = snap(h);
     hourRef.current = v;
@@ -64,6 +63,17 @@ export function Sundial() {
     store.dialHour = v;
     emit("dial");
   }, []);
+
+  // a house picked anywhere (its stone, the 3D slope, the registry) brings the
+  // sun to that house's best hour, unless the visitor has set the hour
+  useEffect(
+    () =>
+      on("selected", () => {
+        setSel(store.selected);
+        if (!own.current) commit(bestHour(store.selected));
+      }),
+    [commit],
+  );
 
   const fromPointer = (e: React.PointerEvent) => {
     const el = svg.current;
@@ -74,6 +84,7 @@ export function Sundial() {
     const y = CY - (e.clientY - b.top) * sx;
     let a = Math.atan2(Math.max(y, -40), x);
     if (a < 0) a = x < 0 ? Math.PI : 0;
+    own.current = true;
     commit(DIAL_MIN + ((Math.PI - a) / Math.PI) * (DIAL_MAX - DIAL_MIN));
   };
 
@@ -88,11 +99,11 @@ export function Sundial() {
     else if (e.key === "End") h = DIAL_MAX;
     else return;
     e.preventDefault();
+    own.current = true;
     commit(h);
   };
 
   const choose = (i: number) => {
-    setSel(i);
     store.selected = i;
     emit("selected");
   };
@@ -168,7 +179,9 @@ export function Sundial() {
             return <line key={h} x1={i.x} y1={i.y} x2={o.x} y2={o.y} className="oki-dial__tick" data-major={major || undefined} />;
           })}
           {LABELS.map((h) => {
-            const p = pointAt(h, LABEL_R);
+            // the two end labels lift off the horizon line, along the arc
+            const at = h === DIAL_MIN ? h + 0.32 : h === DIAL_MAX ? h - 0.32 : h;
+            const p = pointAt(at, LABEL_R);
             return (
               <text key={h} x={p.x} y={p.y} className="oki-dial__label" textAnchor="middle" dominantBaseline="central">
                 {String(h).padStart(2, "0")}

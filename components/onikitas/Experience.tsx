@@ -69,9 +69,13 @@ const COPY_WINDOW: [number, number][] = [
   [0.08, 1.5],
 ];
 const DIAL_WINDOW: [number, number] = [0.3, 1.5];
-/** Evening tone switch (decimal hours), with a small hysteresis band. */
-const TONE_DARK_FROM = 18.0;
-const TONE_LIGHT_BELOW = 17.85;
+/**
+ * Evening tone switch (decimal hours), with a small hysteresis band. Late
+ * enough that the golden hour keeps the limewash rails and dark ink; the
+ * night rails come with the dusk.
+ */
+const TONE_DARK_FROM = 19.4;
+const TONE_LIGHT_BELOW = 19.25;
 
 function useDirector(mode: Mode) {
   useEffect(() => {
@@ -147,11 +151,10 @@ function useDirector(mode: Mode) {
       store.t = t;
       store.scrollHour = hourFor(c, t);
       store.reveal = revealFor(c, t);
-      if (c !== 5 && store.dialHour !== null) {
-        store.dialHour = null;
-        emit("dial");
-      }
-      store.hour = c === 5 && store.dialHour !== null ? store.dialHour : store.scrollHour;
+      // the dial's hour rules the scene only while the dial is on screen; the
+      // choice itself is kept, so coming back finds the same light
+      const dialOn = c === 5 && t >= DIAL_WINDOW[0];
+      store.hour = dialOn && store.dialHour !== null ? store.dialHour : store.scrollHour;
 
       // copy blocks fade by chapter-local windows
       for (let i = 0; i < copies.length; i++) {
@@ -165,12 +168,11 @@ function useDirector(mode: Mode) {
           el.dataset.on = on ? "true" : "false";
         }
       }
-      if (dial) {
-        const on = c === 5 && t >= DIAL_WINDOW[0];
-        if (on !== dialShown) {
-          dialShown = on;
-          dial.dataset.on = on ? "true" : "false";
-        }
+      if (dialOn !== dialShown) {
+        dialShown = dialOn;
+        store.dialOn = dialOn;
+        if (dial) dial.dataset.on = dialOn ? "true" : "false";
+        emit("dial");
       }
 
       const minute = Math.round(store.hour * 60);
@@ -181,6 +183,7 @@ function useDirector(mode: Mode) {
       if (c !== lastChapter) {
         lastChapter = c;
         if (clockName) clockName.textContent = sections[c]?.dataset.name ?? "";
+        root.dataset.side = sections[c]?.dataset.side ?? "l";
         ticks.forEach((tk, i) => (tk.dataset.active = i === c ? "true" : "false"));
         emit("tone");
       }
@@ -228,22 +231,37 @@ export function Experience({ children }: { children: ReactNode }) {
     const params = new URLSearchParams(location.search);
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const forced = params.get("mode");
-    const gpu = probeGL();
-    // a software rasteriser can draw the scene but not at a usable frame rate
-    const ok = gpu.ok && (forced === "webgl" || !SOFTWARE_GL.test(gpu.renderer));
     const q = params.get("tier") as Tier | null;
-    // mode decision happens once on the client, after first paint
-    const decide = window.setTimeout(() => {
+    // The mode decision (and with it the scene's ~1 MB of code and its shader
+    // compiles) waits until the first paint is on screen and the main thread
+    // is idle, so the headline and its fonts never queue behind three.js.
+    let raf = 0;
+    let idle = 0;
+    let timer = 0;
+    const decide = () => {
+      // the probe context costs tens of ms in the GPU process: after the paint too
+      const gpu = probeGL();
+      // a software rasteriser can draw the scene but not at a usable frame rate
+      const ok = gpu.ok && (forced === "webgl" || !SOFTWARE_GL.test(gpu.renderer));
       if (!ok || forced === "stills" || (reduce && params.get("still") === null && forced !== "webgl")) setMode("stills");
       else {
         setTier(q === "high" || q === "mid" || q === "low" ? q : detectTier(gpu.renderer));
         setMode("webgl");
       }
-    }, 0);
+    };
+    const ric = (window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    raf = requestAnimationFrame(() => {
+      raf = requestAnimationFrame(() => {
+        if (ric) idle = ric(decide, { timeout: 700 });
+        else timer = window.setTimeout(decide, 60);
+      });
+    });
     document.fonts?.ready.then(() => addLoad(1));
     const off = on("ready", () => setReady(true));
     return () => {
-      clearTimeout(decide);
+      cancelAnimationFrame(raf);
+      if (idle) (window as Window & { cancelIdleCallback?: (h: number) => void }).cancelIdleCallback?.(idle);
+      clearTimeout(timer);
       off();
     };
   }, []);

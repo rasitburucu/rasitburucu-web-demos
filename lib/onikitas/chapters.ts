@@ -27,10 +27,28 @@ export const chapters: Chapter[] = [
   { id: "kusluk", from: 7.75, to: 11.75, vh: 150, span: [0, 1] },
   { id: "ogle", from: 11.75, to: 14.5, vh: 90, span: [0, 1] },
   { id: "ikindi", from: 14.5, to: 17.75, vh: 100, span: [0, 1] },
-  { id: "aksam", from: 17.75, to: 19.667, vh: 180, span: [0, 0.4] },
+  // evening ends at 20:00, the hour the dial opens on (Villa VII's hour); the
+  // night starts after the sun is down (20:15), so the dial's evening hours
+  // never print under the night's name
+  { id: "aksam", from: 17.75, to: 20, vh: 180, span: [0, 0.4] },
   // night: the lamps come on over the first 55%, then the slope holds, calm
-  { id: "yatsi", from: 19.667, to: 21.5, vh: 90, span: [0, 0.55] },
+  { id: "yatsi", from: 20.5, to: 21.5, vh: 90, span: [0, 0.55] },
 ];
+
+/**
+ * Last hour a chapter may show: one minute before the next chapter starts, so
+ * the clock never prints the next chapter's start time under this one's name.
+ */
+const lastHour = (i: number) => {
+  const next = chapters[i + 1];
+  return next ? Math.min(chapters[i].to, next.from - 1 / 60) : chapters[i].to;
+};
+
+/** "HH:MM" -> decimal hours. */
+export function parseHour(hhmm: string) {
+  const [h, m] = hhmm.split(":").map(Number);
+  return h + m / 60;
+}
 
 /** Height of a chapter section in svh: its scroll length plus the sticky screen. */
 export const sectionVh = (c: Chapter) => c.vh + 100;
@@ -46,8 +64,9 @@ export const STILLS: [number, number][] = [
   [6, 0.7],
 ];
 
-export const DIAL_MIN = 5;
-export const DIAL_MAX = 22;
+/** The dial spans the afternoon and evening: every house's best hour (16:10 to 20:15) fits with room around it. */
+export const DIAL_MIN = 15;
+export const DIAL_MAX = 21;
 
 export const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 export const smooth = (a: number, b: number, v: number) => {
@@ -58,7 +77,7 @@ export const smooth = (a: number, b: number, v: number) => {
 export function hourFor(index: number, t: number) {
   const c = chapters[index];
   const k = clamp01((t - c.span[0]) / (c.span[1] - c.span[0]));
-  return c.from + (c.to - c.from) * k;
+  return c.from + (lastHour(index) - c.from) * k;
 }
 
 /** Maquette -> real sweep, 0..1, driven by scroll (not by the dial). */
