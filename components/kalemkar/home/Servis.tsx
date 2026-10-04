@@ -121,6 +121,34 @@ function useFlight(grid: React.RefObject<HTMLDivElement | null>, stage: React.Re
   }, [grid, stage, fly]);
 }
 
+/**
+ * Nine small marks round the lower rim, in the sini's own language (like the
+ * punched dots of the engraving): served plates are filled, the plate on the
+ * sini is green. Pure state, no motion of its own, so reduced motion shows the
+ * same count. Hidden while the sini is still the empty hero sini.
+ */
+function CourseDots({ served, total }: { served: number; total: number }) {
+  const step = 8; // degrees between marks
+  const start = 90 - ((total - 1) * step) / 2; // centred under the sini (90° = straight down)
+  return (
+    <svg className="kk-dots" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">
+      {Array.from({ length: total }, (_, i) => {
+        // Left to right: the first course on the left, as the counter reads.
+        const a = ((start + (total - 1 - i) * step) * Math.PI) / 180;
+        return (
+          <circle
+            key={i}
+            cx={(500 + Math.cos(a) * 470).toFixed(1)}
+            cy={(500 + Math.sin(a) * 470).toFixed(1)}
+            r="7"
+            data-s={i < served ? "done" : i === served ? "now" : undefined}
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
 export function Servis() {
   const [active, setActive] = useState(-1);
   const prev = useRef(-1);
@@ -141,8 +169,9 @@ export function Servis() {
       (entries) => {
         for (const e of entries) if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i));
       },
-      // On phones the sticky sini covers the top third, so the serving line sits lower.
-      { rootMargin: matchMedia("(max-width: 767px)").matches ? "-64% 0px -34% 0px" : "-48% 0px -48% 0px" },
+      // On phones the sticky sini band covers about the top 31 %: the serving
+      // line sits just below it, where the block's text is read.
+      { rootMargin: matchMedia("(max-width: 767px)").matches ? "-36% 0px -62% 0px" : "-48% 0px -48% 0px" },
     );
     steps.current.forEach((el) => el && io.observe(el));
     return () => io.disconnect();
@@ -294,6 +323,7 @@ export function Servis() {
                     </div>
                   ))}
                 </div>
+                <CourseDots served={active} total={DISHES.length} />
               </Sini>
             </div>
           </div>

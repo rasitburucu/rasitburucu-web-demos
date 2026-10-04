@@ -2,14 +2,14 @@
 
 Yapılmış olandan yazıldı. Sonraki değişiklikler bu dosyaya uyar ya da dosyayı günceller.
 
-- Son güncelleme: 2026-10-04 (cila turu 2) · Yerel: `http://localhost:3310/web/kalemkar/` · Canlıda değil (worktree `demo/kalemkar`, commit yok)
+- Son güncelleme: 2026-10-04 (geliştirme turu, jüri 7,2 sonrası; dal `gelistir/kalemkar`) · Yerel: `http://localhost:3310/web/kalemkar/` · Canlıda değil (worktree `demo/kalemkar`, commit yok)
 
 ## Kullanılan tokenlar (`app/kalemkar/kalemkar.css`, `.kk-root`)
 | Token | Değer | Kullanım |
 |---|---|---|
 | `--kk-bg` | #17130F | zemin, `theme-color`, kaydırma çubuğu izi |
 | `--kk-surface` / `--kk-surface-2` | #211B16 / #2C241D | şef bölümü, alanlar / açılış bölümü, notlar, şerit |
-| `--kk-ink` / `-2` / `-3` | #EEE5D6 / #B3A794 / #8A7F6F | metin rolleri |
+| `--kk-ink` / `-2` / `-3` | #EEE5D6 / #B3A794 / #A09482 | metin rolleri; `-3` zemine karşı 6,2:1, `--kk-surface-2`ye karşı 5,1:1 (önce #8A7F6F, 4,7:1) |
 | `--kk-line` / `-2` | rgba(238,229,214,.14 / .26) | çizgiler, çip çerçevesi |
 | `--kk-accent` | #9DB26A | seçili durum, ana eylem, alerji işareti, "örnek" etiketi, seçim, odak |
 | `--kk-warn` | #E0B36A | uyarı notu kenarı, 31 Aralık işareti |
@@ -26,7 +26,7 @@ Tarayıcı yüzeyleri: `::selection` fıstık, `caret-color` fıstık, `scrollba
 |---|---|---|
 | Sini | `components/kalemkar/sini/Sini.tsx` | Tek nesne: hero (dönen kazıma yazı + imleç parıltısı), serve (tabak katmanı), table (kuverler, alerji işareti, tabak sayısı noktaları, tezgâh tepsisine dönüşme) |
 | SentenceForm | `components/kalemkar/home/SentenceForm.tsx` | İlk ekranda "[kişi] için [akşam] akşamı" + bu haftanın boş oturumları |
-| Servis | `components/kalemkar/home/Servis.tsx` | Girişten servise tek sini (kaydırma güdümlü CSS; JS yalnız iki kutuyu ölçer), metin solda / sini sağda yapışkan, 9 tabak servisi (IntersectionObserver + Web Animations API); uçuş olmayan yerde saydamlıkla el değiştirme |
+| Servis | `components/kalemkar/home/Servis.tsx` | Girişten servise tek sini (kaydırma güdümlü CSS; JS yalnız iki kutuyu ölçer), metin solda / sini sağda yapışkan, 9 tabak servisi (IntersectionObserver + Web Animations API); uçuş olmayan yerde saydamlıkla el değiştirme. Tabak blokları 60svh (son 70svh). Sininin alt kenarında 9 nokta (`CourseDots`): servis edilen dolu krem, sinideki tabak fıstık yeşili; hareketsiz durum, azaltılmış harekette de aynı. Telefonda sini 40vw, sayaçla aynı satırda; altında zemin renginde düz bant + 56 px solma |
 | PageTransitions | `components/kalemkar/shell/PageTransitions.tsx` | Aynı belge View Transitions: iç bağlantılarda sayfa geçişi, görünen sini `kk-sini` adıyla yeni sayfadaki siniye dönüşür |
 | FloorPlan | `components/kalemkar/home/FloorPlan.tsx` | Tepeden kat planı; alan seçimi, rezervasyona deneyimle geçiş |
 | Chef, Know, Opening | `components/kalemkar/home/Sections.tsx`, `Opening.tsx` | Şef, açılır kurallar, aylık açılış geri sayımı |
@@ -47,12 +47,22 @@ Tarayıcı yüzeyleri: `::selection` fıstık, `caret-color` fıstık, `scrollba
 | Rezervasyon adımı | İleri / Geri / adım adı | yeni adımın parçaları 12px yandan (ileri: sağdan, geri: soldan) 380 ms `--kk-out`, 30 ms kademe; üstte ilerleme çizgisi `scaleX(adım/6)` 520 ms | 120 ms saydamlık; çizgi anında |
 | Mobil rezervasyon sinisi | kişi, oda ya da alerji değişince | 112 → 180 px, 380 ms `--kk-out`, 2 sn sonra geri | anında |
 | Mobil menü | Menü düğmesi | `@starting-style`: 220 ms solma + 10px iniş `--kk-drawer`; kapanış 160 ms | anında |
-| Mobil alt çubuk | ana sayfada giriş cümlesi ekrandan çıkınca | 300 ms `--kk-drawer` alttan gelir | anında |
+| Mobil alt çubuk | ana sayfada giriş cümlesi ekrandan çıkınca gelir; servis bölümü ekranın ortasındayken çekilir | 300 ms `--kk-drawer` alttan gelir | anında |
 | Kuverlerin yer değiştirmesi | kişi sayısı / deneyim değişimi | FLIP 560 ms `--kk-out`, kuver başına 18 ms kademe; yeni kuver 460 ms ölçek+saydamlık | 120 ms saydamlık |
 | Sini → tezgâh tepsisi | deneyim "tezgâh" | yuvarlak sini scaleY .34 + solma 520 ms `--kk-io`; tepsi scaleX .42→1, 640 ms `--kk-out` | anında |
 | Çip, düğme, gün, alan | hover (yalnız ince imleç) / basma | 140 ms renk; basmada düğme .97, çip .96, gün .94 | renk aynı, ölçek yok |
 
 GSAP, Lenis ve Framer Motion bu demoda yüklenmiyor; bütün hareket CSS + Web Animations API.
+
+## Ölçümler, geliştirme turu (2026-10-04, `out/` + `dogrula.py`; ekranlar `ekran/gelistir-2026-10-04/`)
+| Ölçüt | Önce (canlı, jüri) | Sonra (yerel) |
+|---|---|---|
+| CLS masaüstü | 0,1378 | 0,0023 |
+| CLS mobil | 0,0413 | 0 |
+| Sayfa boyu (ekran) | 12,7 | 10,94 |
+| LCP masaüstü / mobil | 748 / 1240 ms (canlı ağ) | 196 / 116 ms (yerel) |
+
+CLS kaynağı (ölçüldü, `layout-shift` attribution): şerit ya da başlık değildi. Tarihler yüklendikten sonra gün seçicisi "bir akşam"dan "Perşembe, 8 Ekim"e uzuyor, "Masalara bak" düğmesi alt satıra kayıyor ve giriş metni 54 px uzuyordu (0,1397). Cümle artık kendi satırında, düğme hep altında; ≤1080 px'te gün seçicisi en uzun etiketin genişliğini baştan ayırıyor. 820 px'te serbest oturum çiplerinin satır kırılımından 0,0094 kalıyor.
 
 ## Ölçümler (2026-10-04, `next build` + eklentinin `dogrula.py`'si, yerel statik sunucu)
 | Ölçüt | Değer |
@@ -72,7 +82,11 @@ GSAP, Lenis ve Framer Motion bu demoda yüklenmiyor; bütün hareket CSS + Web A
 | Firefox'ta sininin uçuşu yok | `animation-timeline` Firefox kararlı sürümde yok; orada iki sini saydamlıkla el değiştirir (bilgi kaybı yok) | Firefox desteği gelince kendiliğinden |
 | Sayfa geçişi Chromium ve Safari 18+'da | View Transitions; diğerlerinde normal geçiş | - |
 | Tabaklar hâlâ dokuz ayrı fotoğrafçının yemeği | Yemek kısmı tek tabağa oturtuldu, renk ve ışık eşitlendi; yemeklerin kendi çekim açıları farklı | gerçek müşteride tek çekim günü |
-| Salon fotoğrafı stok bir kemerli taş oda (pencereden kaya görünüyor) | Karlı kapı kırpıldı, gölgeler açıldı; Gaziantep taş ev iç mekânı açık lisanslı bulunamadı (arama aracı bu oturumda kullanılamadı) | daha iyi kare bulununca |
+| Salon fotoğrafı Mardin'de bir kesme taş misafir odası (Pexels 36108014), Antep değil | Antep taş evi iç mekânı açık lisansla bulunamadı; doku (kesme taş, niş, ablak şerit) en yakın aile. Akşam ışığına çekildi (parlaklık %50, sıcak) | gerçek müşteride mekân çekimi |
+| Firik tabağı değişmedi (kuzu görünmüyor) | Pexels'te tepeden, boşluklu "firik + kuzu" karesi yok; metin fotoğrafa uydurulmadı (METIN-ONAY.md öneri) | gerçek müşteride tek çekim günü |
+| Yeni domates ve lahana kareleri küçük porsiyon + boş tabak; kalan yedi tabak kenara kadar dolu | Turun kapsamı üç tabaktı; yedisinde kaynak fotoğrafın kendi tabağı kesilip atıldığı için boşluk yok | tek çekim günü ya da sonraki tur |
+| Görsel betiği ortak `scripts/` klasöründe; yeni kareler `.tasarim/kalemkar/araclar/kareleri-yenile.mjs` ile üretildi | Bu tur ortak klasöre dokunmadı; `scripts/process-kalemkar-images.mjs` içindeki domates/salata kimlikleri ve `kiler` girdisi eskide kaldı (ham dosyalar zaten repoda yok) | ana repo birleştirmesinde betiğe taşınmalı |
+| Unsplash aracı bu oturumda kullanılamadı (hesap e-postası onaysız); arama yalnız Pexels'te yapıldı | - | - |
 | Şef bölümünde gerçek şef fotoğrafı yok | Stok "çorbaya süs koyan aşçı" karesi Antep'e ait değildi; yerine kendi sini render'ımız + iki tabakla kompozisyon | gerçek müşteride şef çekimi |
 | Mobil rezervasyon sinisinin büyümesi bir yerleşim geçişi (sütun genişliği) | Seyrek ve küçük alan; dönüşümle yapılırsa şerit yüksekliği atlar | izlenecek |
 | 404 tasarımı `/web/kalemkar/404/` adresinde; bilinmeyen alt yolların buraya düşmesi ana sitenin yönlendirmesine bağlı | Statik dışa aktarım iç içe not-found üretmez; bu repoda çözülemez | yayın sırasında (ana site kuralı) |

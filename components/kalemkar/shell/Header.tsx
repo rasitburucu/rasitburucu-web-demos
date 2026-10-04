@@ -140,6 +140,7 @@ export function MobileBar() {
   const flow = useFlowMode();
   const pathname = usePathname() ?? "";
   const [away, setAway] = useState(() => !/\/kalemkar\/?$/.test(pathname));
+  const [serving, setServing] = useState(false);
 
   // On the home page the first screen already has the booking sentence and its
   // button: the bar waits until that has scrolled away (no second green button).
@@ -154,10 +155,23 @@ export function MobileBar() {
     return () => io.disconnect();
   }, [pathname]);
 
+  // The service scene already fills the phone screen (header, sini, text):
+  // the bar steps aside while it is on screen and comes back after it.
+  useEffect(() => {
+    const serve = document.querySelector<HTMLElement>("[data-demo='kalemkar'] .kk-serve-grid");
+    if (!serve || !("IntersectionObserver" in window)) {
+      setServing(false);
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => setServing(e.isIntersecting), { rootMargin: "-40% 0px -40% 0px" });
+    io.observe(serve);
+    return () => io.disconnect();
+  }, [pathname]);
+
   if (flow) return null;
   const m = tr.mobileBar;
   return (
-    <nav className="kk-mbar" aria-label={m.label} data-away={away || undefined}>
+    <nav className="kk-mbar" aria-label={m.label} data-away={(away && !serving) || undefined}>
       <a href={tr.contact.phoneHref} className="kk-mbar-call">
         {m.call}
       </a>

@@ -52,7 +52,7 @@ export const tr = {
     peopleLabel: "Kişi sayısı",
     dayLabel: "Akşam",
     dayLoading: "bir akşam",
-    submit: "Masalara bak",
+    submit: "Masanızı ayırın",
     free: "Bu hafta boş:",
     freeNone: "Bu hafta boş oturum kalmadı. Gelecek haftaya bakın.",
     facts: "Her akşam tek menü: dokuz tabak, üç saat, on bir masa.",
@@ -219,7 +219,7 @@ export const tr = {
     total: "Toplam",
     summaryLabel: "Seçimleriniz",
     summaryEmpty: "Henüz seçim yok.",
-    sum: { where: "Masa", day: "Akşam", time: "Saat", menu: "Menü", notes: "Notlar", pairing: "alkolsüz eşleşme", guestNotes: (n: number) => `${n} misafir` },
+    sum: { where: "Masa", day: "Akşam", time: "Saat", menu: "Menü", notes: "Not bırakan", pairing: "alkolsüz eşleşme", guestNotes: (n: number) => `${n} misafir` },
     steps: ["Deneyim", "Akşam", "Saat", "Misafirler", "İletişim", "Onay"],
 
     experience: {
