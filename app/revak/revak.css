@@ -2556,6 +2556,34 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   margin-left: auto;
   min-width: 11rem;
 }
+.rv-flow-actions {
+  flex-wrap: wrap;
+}
+/* the concept's "goes nowhere" line, directly under the submit button */
+.rv-demo-note {
+  flex: 0 0 100%;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--rv-ash);
+  text-align: right;
+}
+form:not(.rv-flow-main) > .rv-demo-note {
+  margin-top: 0.6rem;
+  text-align: left;
+}
+/* wizard "Devam edin" before the level is chosen: looks inactive, still answers a click (focus + message) */
+.rv-flow-actions .rv-btn[aria-disabled="true"] {
+  --b-bg: var(--rv-stone-lo);
+  --b-bd: var(--rv-line);
+  --b-fg: var(--rv-ash);
+  opacity: 1;
+  cursor: not-allowed;
+}
+.rv-flow-actions .rv-btn[aria-disabled="true"]:hover {
+  --b-bg: var(--rv-stone-lo);
+  --b-bd: var(--rv-line);
+}
 .rv-flow-aside {
   position: sticky;
   top: calc(var(--rv-header-h) + 2rem);
@@ -2659,6 +2687,9 @@ html.js .rv-root [data-reveal]:not([data-shown]) img {
   .rv-flow-actions .rv-btn--ink {
     flex: 1;
     min-width: 0;
+  }
+  .rv-demo-note {
+    text-align: center;
   }
 }
 

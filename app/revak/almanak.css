@@ -359,6 +359,10 @@ html.lenis.lenis-stopped {
 .rv-fact:nth-child(3) {
   margin-left: 8.33%;
 }
+.rv-fact:last-child {
+  /* room under the last line's big numeral, so it never meets the rule of the notes */
+  padding-bottom: 0.4em;
+}
 .rv-fact:nth-child(4) {
   /* 4 columns, not 5: the sans "1" is wider than Marcellus' I, and "kampüs." must stay on its line */
   margin-left: 33.33%;
@@ -374,10 +378,11 @@ html.lenis.lenis-stopped {
   vertical-align: -0.08em;
 }
 .rv-fact-ref {
-  margin: 0 0.15em 0 0.05em;
+  /* the footnote letter closes the sentence, after the full stop, not beside the numeral */
+  margin: 0 0 0 0.2em;
   font: 600 0.34em/1 var(--rv-f-sans);
   color: var(--rv-seal-deep);
-  vertical-align: 1.9em;
+  vertical-align: 1.2em;
 }
 .rv-facts-notes {
   display: grid;
@@ -397,11 +402,18 @@ html.lenis.lenis-stopped {
   grid-template-columns: 1.4rem 1fr;
 }
 .rv-facts-notes li::before {
-  content: counter(note);
+  content: counter(note, lower-alpha);
   font-weight: 600;
   color: var(--rv-seal-deep);
 }
+/* the notes' own margin was lost to the reset (.rv-root ol): without it the last numeral met the rule */
+.rv-root .rv-facts-notes {
+  margin-top: clamp(1.25rem, 3vw, 2.5rem);
+}
 @media (max-width: 860px) {
+  .rv-fact + .rv-fact {
+    margin-top: 0.25em;
+  }
   .rv-fact:nth-child(n) {
     margin-left: 0;
   }
@@ -903,6 +915,9 @@ html.lenis.lenis-stopped {
   opacity: 0;
   pointer-events: none;
 }
+.rv-walk-cap {
+  display: none;
+}
 .rv-walk-age-n {
   font-family: var(--rv-f-serif);
   font-style: normal;
@@ -1032,11 +1047,10 @@ html.lenis.lenis-stopped {
     font-size: 0.98rem;
     line-height: 1.45;
   }
+  /* a stop on a phone: name, one line, the two links. Class size and languages sit on the level's own page;
+     with them the last stop's link ran under the bottom bar */
   .rv-walk:is(.is-live, .rv-live *) .rv-chapter-facts {
-    font-size: 0.85rem;
-  }
-  .rv-walk:is(.is-live, .rv-live *) .rv-chapter-facts div {
-    grid-template-columns: 6.5rem 1fr;
+    display: none;
   }
   .rv-walk:is(.is-live, .rv-live *) .rv-chapter-moment {
     display: none;
@@ -1079,6 +1093,43 @@ html.lenis.lenis-stopped {
   }
   .rv-walk-age-n {
     font-size: 38vw;
+  }
+  /* between two stops: the counter's level, named under it (the stops themselves show the full text) */
+  .rv-walk.is-live .rv-walk-cap {
+    display: block;
+    position: absolute;
+    left: var(--rv-gutter);
+    right: var(--rv-gutter);
+    top: calc(44svh + 60px + 31vw + 0.6rem);
+    bottom: calc(72px + env(safe-area-inset-bottom));
+    opacity: 0;
+    pointer-events: none;
+  }
+  .rv-walk-cap-item {
+    display: none;
+  }
+  .rv-walk-cap-item[data-on] {
+    display: block;
+  }
+  .rv-walk-cap-name {
+    font-family: var(--rv-f-serif);
+    font-size: 1.6rem;
+    line-height: 1.1;
+    color: var(--rv-ink);
+  }
+  .rv-walk-cap-line {
+    margin-top: 0.25rem;
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: #2c3544;
+  }
+  .rv-walk-cap-more {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .rv-walk-cap[data-show] .rv-walk-cap-more {
+    pointer-events: auto;
   }
 }
 
@@ -1770,4 +1821,43 @@ select.rv-input {
 /* the 404 render cut to the arch, like every render on the site */
 .rv-404-arch img {
   border-radius: 100vmax 100vmax var(--rv-radius) var(--rv-radius);
+}
+
+/* ---------- home rhythm (2. tur): section gaps 96-128 px, giant titles only for the walk and the closing ---------- */
+
+/* each section keeps 48-64 px above and below: 96 px between two on a phone, 128 px on a desktop */
+.rv-root:has(.rv-cover) .rv-section {
+  padding-block: clamp(3rem, 2rem + 2.4vw, 4rem);
+}
+.rv-root:has(.rv-cover) .rv-cover {
+  padding-bottom: clamp(2.5rem, 4vw, 3rem);
+}
+.rv-root:has(.rv-cover) .rv-facts {
+  padding: clamp(3rem, 2rem + 2.4vw, 4rem) 0;
+}
+.rv-root:has(.rv-cover) .rv-campus2 {
+  padding-bottom: clamp(3rem, 2rem + 2.4vw, 4rem);
+}
+/* titles: the walk ("Revak boyunca") and the closing keep the giant size; every other section title is about half */
+.rv-root:has(.rv-cover) .rv-h2,
+.rv-root:has(.rv-cover) .rv-manifesto-title {
+  font-size: clamp(2rem, 1.2rem + 2.2vw, 3.2rem);
+  line-height: 1.08;
+}
+
+/* short phones (SE class): a smaller counter, the level's line drops out, the stop's red button leaves
+   (the bottom bar carries "Ön kayıt" on every screen) so the link stays above the bar */
+@media (max-width: 860px) and (max-height: 740px) {
+  .rv-walk-age-n {
+    font-size: 28vw;
+  }
+  .rv-walk.is-live .rv-walk-cap {
+    top: calc(44svh + 60px + 23vw + 0.5rem);
+  }
+  .rv-walk-cap-line {
+    display: none;
+  }
+  .rv-walk:is(.is-live, .rv-live *) .rv-chapter-cta {
+    display: none;
+  }
 }

@@ -6,7 +6,7 @@ import { tr } from "@/content/revak/tr";
 import { KADEMELER, isKademe, readParam, useShared, type Kademe } from "@/lib/revak/store";
 import { emailOk, phoneOk } from "@/lib/revak/format";
 import { KvkkLink } from "../ui/Drawer";
-import { Choices, KvkkCheck, PhoneField, SealMark, TextField, useFlowForm, useFocusOnMount } from "./kit";
+import { Choices, DemoNote, KvkkCheck, PhoneField, SealMark, TextField, useFlowForm, useFocusOnMount } from "./kit";
 
 const c = tr.flows.common;
 const t = tr.flows.ucret;
@@ -120,6 +120,7 @@ export function UcretFlow() {
           <button type="submit" className="rv-btn rv-btn--seal">
             {t.submit}
           </button>
+          <DemoNote />
         </div>
       </form>
       <aside className="rv-flow-aside rv-fee-aside" aria-labelledby="rv-fee-aside">

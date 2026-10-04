@@ -156,12 +156,13 @@ export const tr = {
 
   proof: {
     title: "Kısaca Revak.",
-    // One typographic paragraph: each numeral sits in the running text.
+    // One typographic paragraph: each numeral sits in the running text; the footnote letter closes the sentence.
+    refLabel: "dipnot",
     lines: [
-      { pre: "Her sınıfta en fazla ", big: "18", post: " öğrenci." },
-      { pre: "Anaokulunda ", big: "2", post: " dil, 5. sınıfta üçüncüsü." },
-      { pre: "Lisenin son ", big: "2", post: " yılında uluslararası diploma programı." },
-      { pre: "Anaokulundan liseye ", big: "1", post: " kampüs." },
+      { pre: "Her sınıfta en fazla ", big: "18", post: " öğrenci.", ref: "a" },
+      { pre: "Anaokulunda ", big: "2", post: " dil, 5. sınıfta üçüncüsü.", ref: "b" },
+      { pre: "Lisenin son ", big: "2", post: " yılında uluslararası diploma programı.", ref: "c" },
+      { pre: "Anaokulundan liseye ", big: "1", post: " kampüs.", ref: "d" },
     ],
     notes: [
       "Anaokulunda 14 çocuk ve iki öğretmen.",
@@ -683,6 +684,8 @@ export const tr = {
     common: {
       back: "Geri",
       next: "Devam edin",
+      // under every submit button of the concept: the forms go nowhere (approved by Raşit, 2026-10-04)
+      demoNote: "Bu bir tasarım örneği; form hiçbir yere gönderilmez.",
       close: "Kabul sayfasına dön",
       closeShort: "Kapat",
       step: (i: number, n: number) => `Adım ${i} / ${n}`,

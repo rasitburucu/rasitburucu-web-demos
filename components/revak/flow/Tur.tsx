@@ -157,6 +157,7 @@ export function TurFlow() {
       onBack={step > 0 ? () => go(step - 1) : undefined}
       onNext={next}
       nextLabel={step === 2 ? t.s3.submit : undefined}
+      submitNote={step === 2}
       aside={summary}
     >
       {step === 0 && (

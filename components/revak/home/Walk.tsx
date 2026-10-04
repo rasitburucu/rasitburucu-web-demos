@@ -140,6 +140,17 @@ export function Walk() {
   const router = useRouter();
   const { update } = useShared();
 
+  // "Bu kademeyi tanıyın": the level page opens through the same arch transition as the CTA.
+  const openLevel = (e: React.MouseEvent<HTMLAnchorElement>, k: (typeof KADEMELER)[number]) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    e.preventDefault();
+    const live = root.current?.classList.contains("is-live");
+    const photo = live
+      ? root.current?.querySelector<HTMLElement>(`.rv-portal-photo[data-k="${k}"]`)
+      : e.currentTarget.closest(".rv-chapter")?.querySelector<HTMLElement>(".rv-chapter-plate .rv-photo");
+    archNavigate((h) => router.push(h), `/revak/egitim/${k}/`, photo ?? null);
+  };
+
   useGSAP(
     () => {
       const el = root.current;
@@ -194,6 +205,21 @@ export function Walk() {
             <span className="rv-walk-age-l">{t.ageLabel}</span>
           </p>
 
+          {/* Phones: between two stops the counter has the column to itself; the level it
+              belongs to stays named under it (name, one line, link). Decorative duplicate of
+              the chapter text, so out of the reading order and the tab order. */}
+          <div className="rv-walk-cap" aria-hidden="true">
+            {KADEMELER.map((k) => (
+              <div key={k} className="rv-walk-cap-item" data-k={k}>
+                <p className="rv-walk-cap-name">{t.items[k].name}</p>
+                <p className="rv-walk-cap-line">{t.items[k].line}</p>
+                <Link href={`/revak/egitim/${k}/`} className="rv-textlink rv-walk-cap-more" tabIndex={-1} onClick={(e) => openLevel(e, k)}>
+                  {t.more}
+                </Link>
+              </div>
+            ))}
+          </div>
+
           <ol className="rv-chapters">
             {KADEMELER.map((k, i) => {
               const l = t.items[k];
@@ -239,19 +265,7 @@ export function Walk() {
                     >
                       {t.cta}
                     </Link>
-                    <Link
-                      href={`/revak/egitim/${k}/`}
-                      className="rv-textlink rv-chapter-more"
-                      onClick={(e) => {
-                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-                        e.preventDefault();
-                        const live = root.current?.classList.contains("is-live");
-                        const photo = live
-                          ? root.current?.querySelector<HTMLElement>(`.rv-portal-photo[data-k="${k}"]`)
-                          : e.currentTarget.closest(".rv-chapter")?.querySelector<HTMLElement>(".rv-chapter-plate .rv-photo");
-                        archNavigate((h) => router.push(h), `/revak/egitim/${k}/`, photo ?? null);
-                      }}
-                    >
+                    <Link href={`/revak/egitim/${k}/`} className="rv-textlink rv-chapter-more" onClick={(e) => openLevel(e, k)}>
                       {t.more}
                     </Link>
                   </div>
@@ -305,6 +319,9 @@ function build(section: HTMLElement) {
   const tocBtns = Array.from(section.querySelectorAll<HTMLButtonElement>(".rv-walk-toc button"));
   const tocFill = section.querySelector<HTMLElement>(".rv-walk-toc-bar > span")!;
   const age = section.querySelector<HTMLElement>(".rv-walk-age")!;
+  const cap = section.querySelector<HTMLElement>(".rv-walk-cap")!;
+  const capItems = Array.from(cap.querySelectorAll<HTMLElement>(".rv-walk-cap-item"));
+  let capAt = -2;
   const under = section.querySelector<HTMLElement>(".rv-walk-under")!;
   const levelOf = portals.map((p) => {
     const n = Number(p.dataset.p);
@@ -422,7 +439,16 @@ function build(section: HTMLElement) {
     // name on its way out); arriving it gives way before the next name rises.
     // (the first approach is short, 1.85 units: there the age stays until Anaokulu rises)
     const nearStop = leaving ? (stopDist - 0.04) / 0.2 : nearest === 0 ? (stopDist - 0.1) / 0.18 : (stopDist - 0.3) / 0.25;
-    age.style.opacity = walking ? Math.min(fromHead, gsap.utils.clamp(0, 1, nearStop)).toFixed(3) : "0";
+    const ageO = walking ? Math.min(fromHead, gsap.utils.clamp(0, 1, nearStop)) : 0;
+    age.style.opacity = ageO.toFixed(3);
+    // phones: the level the counter belongs to is named under it, fading with it
+    cap.style.opacity = ageO.toFixed(3);
+    cap.toggleAttribute("data-show", ageO > 0.55);
+    const capLevel = Math.max(0, reached);
+    if (capLevel !== capAt) {
+      capAt = capLevel;
+      capItems.forEach((it, i) => it.toggleAttribute("data-on", i === capLevel));
+    }
     const a = ageAt(c);
     if (a !== shownAge) {
       shownAge = a;
@@ -546,6 +572,9 @@ function build(section: HTMLElement) {
     joints.forEach((j) => (j.style.transform = ""));
     chapters.forEach((c) => c.removeAttribute("data-on"));
     age.style.opacity = "";
+    cap.style.opacity = "";
+    cap.removeAttribute("data-show");
+    capItems.forEach((it) => it.removeAttribute("data-on"));
     under.style.opacity = "";
     ageN.textContent = "3";
   };

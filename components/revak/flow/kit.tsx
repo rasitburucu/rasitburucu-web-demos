@@ -408,6 +408,9 @@ export function FlowShell({
   onNext,
   nextLabel,
   nextTone = "seal",
+  nextDisabled = false,
+  nextDescribedBy,
+  submitNote = false,
   aside,
   plate,
 }: {
@@ -422,6 +425,11 @@ export function FlowShell({
   onNext: () => void;
   nextLabel?: string;
   nextTone?: "ink" | "seal";
+  /** Looks inactive (aria-disabled) until the step is answerable; a click still submits, which focuses the first missing field. */
+  nextDisabled?: boolean;
+  nextDescribedBy?: string;
+  /** The concept's "this form goes nowhere" line beside the final submit button. */
+  submitNote?: boolean;
   aside?: React.ReactNode;
   plate?: React.ReactNode;
 }) {
@@ -504,15 +512,26 @@ export function FlowShell({
               {c.back}
             </button>
           )}
-          <button type="submit" className={nextTone === "seal" ? "rv-btn rv-btn--seal" : "rv-btn rv-btn--ink"}>
+          <button
+            type="submit"
+            className={nextTone === "seal" ? "rv-btn rv-btn--seal" : "rv-btn rv-btn--ink"}
+            aria-disabled={nextDisabled || undefined}
+            aria-describedby={nextDisabled ? nextDescribedBy : undefined}
+          >
             {nextLabel ?? c.next}
           </button>
+          {submitNote && <DemoNote />}
         </div>
       </form>
 
       {aside && <div className="rv-flow-aside">{aside}</div>}
     </div>
   );
+}
+
+/** One line under a submit button: the concept's forms are not sent anywhere. */
+export function DemoNote() {
+  return <p className="rv-demo-note">{c.demoNote}</p>;
 }
 
 export function Review({ sections }: { sections: { title: string; onEdit: () => void; rows: [string, string][] }[] }) {

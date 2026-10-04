@@ -13,3 +13,14 @@ Raşit onaylayacak. Her satır `content/revak/tr.ts`'te.
 **ONAYLANDI:** Raşit, 2026-10-04 (bu dosyadaki bütün satırlar; firik tabağı olduğu gibi kalır).
 
 Revak telefon şeridi kısa kalır; karşılığında ön kayıt formunun gönder düğmesi yanına tek satır not eklenecek: "Bu bir tasarım örneği; form hiçbir yere gönderilmez." (Raşit onayı, 2026-10-04)
+
+## 2026-10-04 ikinci tur (jürinin küçük bulguları)
+
+| Yer | Eski | Yeni | Neden |
+|---|---|---|---|
+| Ön kayıt, kampüs turu, bursluluk, ücret bilgisi formları ve kampüs sayfasındaki geri arama formu: gönder düğmesinin altı (`flows.common.demoNote`) | (yoktu) | Bu bir tasarım örneği; form hiçbir yere gönderilmez. | Telefon şeridi kısaldığı için not düğmenin yanına taşındı. **ONAYLI** (Raşit, 2026-10-04, yukarıdaki not) |
+| "Kısaca Revak" dipnot işaretleri (`proof.lines[].ref`) | 1, 2, 3, 4 (rakamın yanında üs) | a, b, c, d (cümlenin sonunda); alttaki liste de harfle | Büyük rakamın yanındaki üs sayı gibi okunuyordu (18¹, 2³) |
+| Dipnot işaretinin ekran okuyucu etiketi (`proof.refLabel`) | (yoktu) | dipnot (okunuşu: "dipnot a") | Yalnız ekran okuyucu için; görünmez |
+
+Not: sihirbazın pasif "Devam edin" düğmesi, tur sayfasındaki "Bu kademeyi tanıyın" bağlantısının telefonda altta yinelenmesi ve bölüm başlıklarının küçülmesi yeni metin gerektirmedi (mevcut `sinifPick`, `errors.kademe`, `levels.more` kullanıldı).
+

@@ -48,12 +48,15 @@ export default function RevakHome() {
             {tr.proof.title}
           </h2>
           <p className="rv-facts-text">
-            {tr.proof.lines.map((l, i) => (
-              <span key={i} className="rv-fact">
+            {tr.proof.lines.map((l) => (
+              <span key={l.ref} className="rv-fact">
                 {l.pre}
                 <span className="rv-fact-big">{l.big}</span>
-                <sup className="rv-fact-ref">{i + 1}</sup>
-                {l.post}{" "}
+                {l.post}
+                <sup className="rv-fact-ref">
+                  <span className="rv-sr">{tr.proof.refLabel} </span>
+                  {l.ref}
+                </sup>{" "}
               </span>
             ))}
           </p>

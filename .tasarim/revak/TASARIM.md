@@ -171,6 +171,17 @@ Ekranlar: `ekran/gelistir-2026-10-04/` (dogrula çıktısı; `sheet-walk-d.png`,
 |---|---|---|
 | Blender render yenilenmedi | Blender MCP bağlantısı kurulamadı (addon el sıkışması başarısız); taş tonu sharp ile verildi, sert gün ışığı ve derz gölgesi gerçek render değil | Blender açık ve MCP eklentisi çalışırken: `face-am/pm` sert güneş (açı ~0,25), alçak yan ışık |
 | JS paketleri yüklenmezse yürüyüş | `html.rv-live` satır içi betikle konduğu için, paketler düşerse sahne başlıkla kalır, kademeler gizli | Yalnız inline betik çalışıp React paketi düşerse; gerçek riski düşük |
-| Telefonda Lise durağında "Bu kademeyi tanıyın" alt çubuğun altında kalıyor | Lise metni uzun (önceden de vardı) | sonraki tur |
+| ~~Telefonda Lise durağında "Bu kademeyi tanıyın" alt çubuğun altında kalıyor~~ | Kapandı (2. tur): telefonda durak sınıf mevcudu/dil satırlarını göstermiyor; 667 px yüksekliğinde kırmızı düğme de çıkıyor | — |
 | `dogrula.py` "Türkçe glif" uyarısı | `Revak Rakam` yalnız rakam içerir, harfler Marcellus'tan gelir: yanlış alarm | — |
 | Rakam yüzünde orantılı rakam (`pnum`) yok | Google alt kümesinde OpenType özelliği yok; "1" geniş tabular. "Kısaca Revak" 4. satırı bu yüzden 4 sütun içeri alındı | gerekirse |
+
+## 2026-10-04 ikinci tur (jürinin küçük bulguları)
+| Konu | Ne yapıldı |
+|---|---|
+| Form notu | Gönder düğmesinin altında "Bu bir tasarım örneği; form hiçbir yere gönderilmez." (ön kayıt, tur, bursluluk, ücret, kampüs geri arama) |
+| Kısaca dipnotları | a-d harfi, cümle sonunda; liste harfle eşleşir; son satırın altı 0,4 em + not listesi kenar boşluğu (kenar boşluğu `.rv-root ol` sıfırlamasına yenilmişti) |
+| Sihirbaz | Kademe seçilmeden "Devam edin" `aria-disabled` + soluk görünüm; tıklanınca kademe alanına odak ve "Kademeyi seçin." |
+| Telefonda yürüyüş | Sayaç altında kademe adı + satır + "Bu kademeyi tanıyın" (sayaçla birlikte belirir/kaybolur; süs kopyası, okuma ve sekme sırasında yok). Duraklarda facts gizli; kısa telefonda (<=740 px) sayaç küçük, satır ve kırmızı düğme gizli |
+| Bölüm ritmi | Ana sayfada bölümler arası 96 (telefon) - 128 px (masaüstü); önceden ~269 px |
+| Başlık boyutu | Dev başlık: yürüyüş ("Revak boyunca") ve kapanış. Yarı boyut (≈51 px masaüstü, 32 px telefon): Üniversite rehberliği, Üç alışkanlık, Ders bittiğinde, Kampüs, Etkinlikler, SSS; "Kısaca Revak" zaten küçük |
+

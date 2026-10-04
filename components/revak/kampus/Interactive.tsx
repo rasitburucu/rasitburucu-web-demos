@@ -9,6 +9,7 @@ import { Icon } from "../ui/Icon";
 import { Photo } from "../ui/Photo";
 import { servis } from "@/content/revak/yasam";
 import { Sample } from "../ui/Bits";
+import { DemoNote } from "../flow/kit";
 
 /* ---------- "Bir gün burada": a school day, stop by stop ---------- */
 
@@ -242,6 +243,7 @@ export function RouteCheck() {
                 <button type="submit" className="rv-btn rv-btn--ink" style={{ justifySelf: "start" }}>
                   {t.requestCta}
                 </button>
+                <DemoNote />
               </form>
             )}
           </div>
