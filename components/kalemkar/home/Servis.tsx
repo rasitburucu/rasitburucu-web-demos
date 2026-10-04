@@ -142,8 +142,8 @@ export function Servis() {
         for (const e of entries) if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i));
       },
       // On phones the sticky sini band covers about the top third: the serving
-      // line sits just below it, where the block's text is read.
-      { rootMargin: matchMedia("(max-width: 767px)").matches ? "-38% 0px -60% 0px" : "-48% 0px -48% 0px" },
+      // line sits at mid-screen, so a plate turns active while its title is still readable below the band.
+      { rootMargin: matchMedia("(max-width: 767px)").matches ? "-55% 0px -43% 0px" : "-48% 0px -48% 0px" },
     );
     steps.current.forEach((el) => el && io.observe(el));
     return () => io.disconnect();

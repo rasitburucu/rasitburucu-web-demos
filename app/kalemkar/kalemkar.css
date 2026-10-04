@@ -459,7 +459,8 @@ html:not(.js) .kk-step-thumb img { width: 120px; height: 120px; border-radius: 5
   .kk-serve-text { display: contents; }
   .kk-serve-head { order: 0; padding: 0 0 24px; }
   .kk-serve-stage { order: 1; justify-self: stretch; }
-  .kk-serve-steps { order: 2; }
+  /* the band's fade must never lie over the first plate's title while the band is still in the flow */
+  .kk-serve-steps { order: 2; padding-top: 48px; }
   /* Sini above one caption line (count and plate name); the solid band and the
      fade under it keep the previous plate's text from showing through. The
      sini is about half the screen width but, with the header, never more than

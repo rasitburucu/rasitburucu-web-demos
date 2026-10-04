@@ -1436,12 +1436,14 @@ html.js .oki-loader[data-quick="true"][data-leaving="true"] {
 }
 .oki-registry__inner {
   max-width: 1400px;
+  margin-inline: auto;
 }
 .oki-registry__head {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
   gap: 1.25rem clamp(2rem, 6vw, 6rem);
-  align-items: end;
+  /* the lead's last line sits on the title's baseline */
+  align-items: last baseline;
 }
 .oki-registry__head h2 {
   font-family: var(--font-display), serif;
@@ -1473,7 +1475,8 @@ html.js .oki-loader[data-quick="true"][data-leaving="true"] {
 .oki-registry__table th,
 .oki-registry__table td {
   padding: 0.85rem 0.7rem;
-  text-align: left;
+  /* every column between the villa number and the button is centred, heading and value alike */
+  text-align: center;
   vertical-align: middle;
   border-bottom: 1px solid #f2eee624;
 }
@@ -1486,11 +1489,12 @@ html.js .oki-loader[data-quick="true"][data-leaving="true"] {
   white-space: nowrap;
 }
 .oki-registry__table [data-num] {
-  text-align: right;
+  text-align: center;
 }
 .oki-registry__table th:first-child,
 .oki-registry__table td:first-child {
   padding-left: 0;
+  text-align: left;
 }
 .oki-registry__table th:last-child,
 .oki-registry__table td:last-child {
@@ -1990,8 +1994,8 @@ html[data-past="true"] .oki-header::before {
 
 /* ---------- text beds (2026-10-05, third round) ----------
    The scene stays clear everywhere: no rails, no veils. Only the text gets a
-   soft ground under it, the box it covers plus 24-48px, its edge eased over
-   --bed-f. The core is dense enough that body ink holds 4.5:1 over the darkest
+   soft ground under it, the box it covers plus 26-46px, its edge blurred over
+   --bed-f so it fades out with no visible box. The core is dense enough that body ink holds 4.5:1 over the darkest
    scene pixel behind it (measured, see .tasarim/onikitas/TASARIM.md); at night
    the same bed is navy under limewash ink. */
 .oki-copy,
@@ -2010,20 +2014,18 @@ html[data-past="true"] .oki-header::before {
 .oki-days::before,
 .oki-menu::before,
 .oki-bed::before {
-  --bed-x: 40px;
-  --bed-y: 28px;
-  --bed-f: 24px;
-  --bed-mask: transparent, rgb(0 0 0 / 0.12) calc(var(--bed-f) * 0.25), rgb(0 0 0 / 0.5) calc(var(--bed-f) * 0.5), rgb(0 0 0 / 0.88) calc(var(--bed-f) * 0.75), #000 var(--bed-f), #000 calc(100% - var(--bed-f)), rgb(0 0 0 / 0.88) calc(100% - var(--bed-f) * 0.75), rgb(0 0 0 / 0.5) calc(100% - var(--bed-f) * 0.5), rgb(0 0 0 / 0.12) calc(100% - var(--bed-f) * 0.25), transparent;
+  --bed-x: 46px;
+  --bed-y: 34px;
+  --bed-f: 22px;
   content: "";
   position: absolute;
   inset: calc(var(--bed-y) * -1) calc(var(--bed-x) * -1);
   z-index: -1;
   pointer-events: none;
   background: color-mix(in srgb, var(--scrim-c) var(--bed-a, 86%), transparent);
-  -webkit-mask-image: linear-gradient(to right, var(--bed-mask)), linear-gradient(to bottom, var(--bed-mask));
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, var(--bed-mask)), linear-gradient(to bottom, var(--bed-mask));
-  mask-composite: intersect;
+  border-radius: calc(var(--bed-f) * 2);
+  /* the edge dissolves over the whole margin: no box edge, no corners */
+  filter: blur(var(--bed-f));
 }
 /* a copy's bed hugs its widest line (--bed-l / --bed-r, measured in Experience) */
 .oki-copy::before {
@@ -2032,18 +2034,18 @@ html[data-past="true"] .oki-header::before {
 /* the logo and the menu words: a lighter, tighter bed */
 .oki-bed::before,
 .oki-menu::before {
-  --bed-x: 36px;
-  --bed-y: 16px;
-  --bed-f: 20px;
+  --bed-x: 40px;
+  --bed-y: 26px;
+  --bed-f: 18px;
   --bed-a: 86%;
 }
 .oki-days::before {
-  --bed-x: 32px;
-  --bed-y: 20px;
+  --bed-x: 42px;
+  --bed-y: 30px;
 }
 /* the big clock sits low, over the brightest ground of the afternoon */
 .oki-hud::before {
-  --bed-y: 36px;
+  --bed-y: 46px;
   --bed-a: 90%;
 }
 html[data-past="true"] .oki-bed::before,
