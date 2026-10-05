@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gelidonya, Yön C, Aşı Masası (ilk ekran prototipi)</title>
+<meta name="description" content="Konsept çalışma. Gelidonya kurgusal bir fide ve sera firmasıdır.">
+<meta name="theme-color" content="#B0156C">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Yön C: Aşı Masası. Tokenlar: iyileştirme odasının pembe LED ışığı, aşı klipslerinin renkleri, torf, mor-siyah gövde gölgesi */
+:root{
+  --zemin:#FBFAFB;
+  --metin:#1E0E19;      /* LED altında gövdenin gölgesi; zemin üstünde 17:1 */
+  --metin-2:#5A4553;    /* 8,4:1 */
+  --cizgi:#D9D0D6;
+  --led:#B0156C;        /* iyileştirme odasının pembe LED ışığı */
+  --led-koyu:#6E0A44;
+  --led-acik:#F7D7EA;
+  --klips-amber:#F2A516; --klips-camgobegi:#14A398; --klips-acik:#E7E2EA;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --gosterim:"Bricolage Grotesque",system-ui,sans-serif;
+  --govde:"Onest",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--zemin);color:var(--metin);font-family:var(--govde)}
+body{min-height:100vh;overflow-x:hidden}
+::selection{background:var(--led);color:#fff}
+:focus-visible{outline:3px solid var(--led);outline-offset:3px}
+a{color:inherit;text-underline-offset:3px}
+.serit{background:var(--metin);color:#EADFE6;font-size:13px;padding:8px 24px;text-align:center}
+.serit a{color:#fff;font-weight:700}.serit .kisa{display:none}
+header.ust{display:flex;align-items:center;gap:34px;height:66px;padding:0 32px;border-bottom:1px solid var(--cizgi)}
+.logo{text-decoration:none;display:flex;align-items:baseline;gap:10px}
+.logo b{font-family:var(--gosterim);font-variation-settings:"opsz" 96,"wdth" 80;font-weight:800;font-size:30px;letter-spacing:-.01em}
+.logo span{font-size:13px;color:var(--metin-2);font-weight:500}
+nav.menu{display:flex;gap:24px;font-size:15.5px;font-weight:500}
+nav.menu a{text-decoration:none;padding:6px 0}
+nav.menu a[aria-current]{box-shadow:inset 0 -2px 0 var(--led)}
+.ust-sag{margin-left:auto;display:flex;align-items:center;gap:18px;font-size:15px}
+.tel{font-weight:700;text-decoration:none}.tel small{font-weight:400;font-size:12px;color:var(--metin-2);margin-left:4px}
+.alici{text-decoration:none;font-weight:600;border:1.5px solid var(--metin);padding:9px 14px;border-radius:999px}
+.dil{font-size:13px;color:var(--metin-2)}
+.menu-dugme{display:none}
+
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,46%);min-height:calc(100vh - 99px)}
+.sol{padding:30px 44px 28px 32px;display:flex;flex-direction:column;gap:18px}
+h1{font-family:var(--gosterim);font-variation-settings:"opsz" 96,"wdth" 84;font-weight:700;font-size:clamp(2.5rem,1.2rem + 3.1vw,4.7rem);line-height:.94;letter-spacing:-.012em;text-wrap:balance;max-width:12.5em}
+.alt{font-size:18px;line-height:1.5;color:var(--metin-2);max-width:33em;text-wrap:pretty}
+form{display:flex;flex-direction:column;gap:14px}
+.yarim{display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;align-items:start;padding-top:14px;border-top:1px solid var(--cizgi)}
+.yarim h2{font-family:var(--gosterim);font-variation-settings:"opsz" 24,"wdth" 85;font-weight:700;font-size:20px;line-height:1.05}
+.yarim h2 small{display:block;font-family:var(--govde);font-weight:500;font-size:13px;color:var(--metin-2);margin-top:3px}
+.cipler{display:flex;flex-wrap:wrap;gap:6px}
+.cip{position:relative}
+.cip input{position:absolute;inset:0;width:100%;height:100%;opacity:0;margin:0;cursor:pointer}
+.cip span{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 15px;border:1.5px solid var(--metin);border-radius:999px;font-size:15.5px;font-weight:600;background:#fff;transition:background-color .14s,color .14s}
+.cip input:checked+span{background:var(--metin);color:#fff}
+.cip input:focus-visible+span{outline:3px solid var(--led);outline-offset:2px}
+.klips{width:12px;height:18px;border-radius:4px;border:1.5px solid rgba(0,0,0,.35);flex:0 0 auto}
+.kucuk{font-size:13px;line-height:1.4;color:var(--metin-2);margin-top:8px}
+.kutu{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:15px;font-weight:500;min-height:32px}
+.kutu input{width:20px;height:20px;accent-color:var(--metin)}
+.son{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.alan{display:flex;flex-direction:column;gap:4px}
+.alan label{font-size:13px;font-weight:600}
+.sayac{display:flex;border:1.5px solid var(--metin);border-radius:999px;overflow:hidden;background:#fff;height:52px}
+.sayac button{width:48px;border:0;background:#fff;font-size:22px;font-weight:600;cursor:pointer;color:var(--metin)}
+.sayac output{display:flex;align-items:center;justify-content:center;min-width:110px;font-family:var(--gosterim);font-variation-settings:"opsz" 48,"wdth" 85;font-weight:700;font-size:24px}
+select{height:52px;border:1.5px solid var(--metin);border-radius:999px;padding:0 40px 0 16px;font:600 15.5px var(--govde);color:var(--metin);background:#fff;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--metin) 50%),linear-gradient(-45deg,transparent 50%,var(--metin) 50%);background-position:calc(100% - 22px) 22px,calc(100% - 16px) 22px;background-size:6px 6px;background-repeat:no-repeat}
+.dugme{align-self:flex-end;height:52px;padding:0 24px;border:0;border-radius:999px;background:var(--led);color:#fff;font:700 17px var(--govde);cursor:pointer;white-space:nowrap}
+.dugme:hover{background:#951059}
+.not{font-size:13px;color:var(--metin-2);line-height:1.4}
+
+/* İyileştirme odası paneli */
+.oda{position:relative;overflow:hidden;background:var(--led);color:#fff}
+.oda svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.oda .surec{position:absolute;left:26px;bottom:24px;display:flex;flex-direction:column;align-items:flex-start;gap:0;font-size:13.5px;font-weight:600;color:#FFE9F4}
+.oda .surec span{display:flex;align-items:center}
+.oda .surec span{padding:3px 0 3px 18px;position:relative}.oda .surec span::before{content:"";position:absolute;left:4px;top:0;bottom:0;width:1.5px;background:#FFC3E2}.oda .surec span::after{content:"";position:absolute;left:1px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:#FFC3E2}
+.oda .surec .simdi{color:#fff;font-weight:800}.oda .surec .simdi::after{background:#fff;width:10px;height:10px;margin-top:-5px;left:0}
+.yaz{position:absolute;color:#fff;font-size:14px;line-height:1.35;max-width:15em;text-shadow:0 1px 14px rgba(90,6,54,.85)}
+.yaz b{display:block;font-family:var(--gosterim);font-variation-settings:"opsz" 96,"wdth" 80;font-weight:760;font-size:44px;line-height:.95;letter-spacing:-.01em}
+.yaz small{display:block;font-size:12.5px;font-weight:600;letter-spacing:.02em;color:#FFD3EA;margin-bottom:4px}
+#yUst{right:26px;top:26px;text-align:right}
+#yAlt{right:26px;bottom:64px;text-align:right}
+#yAsi{left:26px;top:47%;max-width:12em}
+.alt-bar{display:none}
+@media (max-width:900px){
+  .serit{font-size:12px;padding:6px 12px}.serit .uzun{display:none}.serit .kisa{display:inline}
+  header.ust{height:58px;padding:0 16px;gap:10px}
+  nav.menu,.dil,.alici{display:none}.logo span{display:none}.logo b{font-size:27px}.tel small{display:none}
+  .menu-dugme{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;height:44px;padding:0 14px;border:1.5px solid var(--metin);border-radius:999px;background:transparent;font-weight:600;color:var(--metin)}
+  .ust-sag{margin-left:0}
+  main{grid-template-columns:minmax(0,1fr)}
+  .oda{order:-1;height:208px}
+  .yaz b{font-size:26px}.yaz{font-size:12px}
+  #yUst{top:14px;right:14px}#yAlt{bottom:14px;right:14px}#yAsi{display:none}
+  .oda .surec{display:none}
+  .sol{padding:16px 16px 104px;gap:12px}
+  h1{font-size:2.35rem}
+  .alt{display:none}
+  .yarim{grid-template-columns:minmax(0,1fr);gap:8px;padding-top:10px}
+  .yarim h2{font-size:17px}.yarim h2 small{display:inline;margin-left:6px}
+  .cipler{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.cip{flex:0 0 auto}
+  .kucuk{display:none}
+  .son .dugme{display:none}
+  .alt-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--metin);color:#fff;padding:10px 12px 10px 16px;gap:10px;align-items:center}
+  .alt-bar .oz{flex:1;font-size:13px;line-height:1.25;color:#E5D6DF}
+  .alt-bar .oz b{display:block;font-family:var(--gosterim);font-variation-settings:"opsz" 48,"wdth" 80;font-weight:760;font-size:22px;color:#fff}
+  .alt-bar .dugme{align-self:center;height:50px;font-size:16px;padding:0 18px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="serit">Konsept çalışma — <a href="https://rasitburucu.com">rasitburucu.com</a>. <span class="uzun">Gelidonya kurgusal bir markadır; bu sayfadaki formlar hiçbir yere gönderilmez.</span><span class="kisa">Kurgusal marka; formlar gönderilmez.</span></div>
+<header class="ust">
+  <a class="logo" href="#"><b>gelidonya</b><span>sera ve fidelik, Kumluca</span></a>
+  <nav class="menu" aria-label="Ana menü"><a href="#" aria-current="page">Fide siparişi</a><a href="#">Anaçlar</a><a href="#">Seralarımız</a><a href="#">Ürünlerimiz</a><a href="#">İletişim</a></nav>
+  <button class="menu-dugme" type="button">Menü</button>
+  <div class="ust-sag"><a class="tel" href="tel:+902420000000">0242 000 00 00<small>[örnek]</small></a><a class="alici" href="#">Ürün ve ihracat</a><span class="dil">TR, EN yakında</span></div>
+</header>
+<main>
+  <section class="sol">
+    <h1>Çeşidinizi seçin, kökünü biz verelim.</h1>
+    <p class="alt">Kendi seralarımızda kullandığımız aşılı fideyi bölge üreticisi için de yetiştiriyoruz. Bildiğiniz çeşidi güçlü bir anaçla birleştiririz: kök toprağı tutar, üst taraf alıştığınız meyveyi verir.</p>
+    <form id="siparis" novalidate>
+      <div class="yarim">
+        <h2>Üst<small>çeşidiniz</small></h2>
+        <div>
+          <div class="cipler" id="cesit"></div>
+          <label class="kutu"><input type="checkbox" id="tohum"> Tohumu ben getireceğim</label>
+        </div>
+      </div>
+      <div class="yarim">
+        <h2>Alt<small>anaç, yani kök</small></h2>
+        <div>
+          <div class="cipler" id="anac"></div>
+          <p class="kucuk">Anaç adları örnektir. Serinize hangisinin uyduğuna toprak analizinize bakarak birlikte karar veririz.</p>
+        </div>
+      </div>
+      <div class="yarim">
+        <h2>Ne zaman<small>kaç fide</small></h2>
+        <div class="son">
+          <div class="alan"><label id="adetEtk">Adet</label><div class="sayac" role="group" aria-labelledby="adetEtk"><button type="button" data-d="-500" aria-label="500 azalt">−</button><output id="adet">6.000</output><button type="button" data-d="500" aria-label="500 artır">+</button></div></div>
+          <div class="alan"><label for="hafta">Teslim haftası</label><select id="hafta"></select></div>
+          <button class="dugme" type="submit">Ön rezervasyon yap</button>
+        </div>
+      </div>
+      <p class="not" id="not">Demo: form hiçbir yere gönderilmez.</p>
+    </form>
+  </section>
+
+  <section class="oda" aria-label="Seçtiğiniz aşılı fide">
+    <svg id="fide" viewBox="80 0 530 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+    <p class="yaz" id="yUst"><small>Üst, kalem</small><b id="yUstAd">Domates</b></p>
+    <p class="yaz" id="yAsi"><small>Aşı noktası</small>Klips, kesik kaynayana kadar iki gövdeyi bir arada tutar.</p>
+    <p class="yaz" id="yAlt"><small>Alt, anaç</small><b id="yAltAd">Toprağa dayanıklı</b></p>
+    <div class="surec" aria-label="Aşılı fidenin yolu"><span>Ekim</span><span class="simdi">Aşı</span><span>İyileştirme odası</span><span>Sertleştirme</span><span>Teslim</span></div>
+  </section>
+</main>
+<div class="alt-bar"><div class="oz"><b id="mOz">6.000 aşılı domates</b><span id="mOz2">Teslim 7. hafta</span></div><button class="dugme" type="submit" form="siparis">Ön rezervasyon</button></div>
+
+<script>
+const CESIT=[{id:'domates',ad:'Domates'},{id:'biber',ad:'Biber'},{id:'patlican',ad:'Patlıcan'},{id:'hiyar',ad:'Hıyar'},{id:'karpuz',ad:'Karpuz'},{id:'kavun',ad:'Kavun'}];
+const ANAC=[{id:'toprak',ad:'Toprağa dayanıklı',renk:'#14A398'},{id:'guclu',ad:'Güçlü kök',renk:'#F2A516'},{id:'soguk',ad:'Soğuğa dayanıklı',renk:'#E7E2EA'},{id:'yok',ad:'Aşısız',renk:null}];
+const S={cesit:'domates',anac:'toprak',adet:6000};
+const AY=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'],GUN=864e5,BUGUN=new Date(Date.UTC(2026,9,5));
+const nf=n=>n.toLocaleString('tr-TR');
+function pzt(d){const t=new Date(d);const g=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()-g+1);return t}
+function iso(d){const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));const g=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-g);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return{w:Math.ceil(((t-y0)/GUN+1)/7),y:t.getUTCFullYear()}}
+function aralik(m){const s=new Date(m.getTime()+6*GUN);return m.getUTCMonth()===s.getUTCMonth()?`${m.getUTCDate()}–${s.getUTCDate()} ${AY[s.getUTCMonth()]}`:`${m.getUTCDate()} ${AY[m.getUTCMonth()]}–${s.getUTCDate()} ${AY[s.getUTCMonth()]}`}
+
+document.getElementById('cesit').innerHTML=CESIT.map(c=>`<label class="cip"><input type="radio" name="cesit" value="${c.id}" ${c.id===S.cesit?'checked':''}><span>${c.ad}</span></label>`).join('');
+document.getElementById('anac').innerHTML=ANAC.map(a=>`<label class="cip"><input type="radio" name="anac" value="${a.id}" ${a.id===S.anac?'checked':''}><span>${a.renk?`<i class="klips" style="background:${a.renk}"></i>`:''}${a.ad}</span></label>`).join('');
+function haftalar(){const sure=S.anac==='yok'?6:8;const ilk=new Date(pzt(BUGUN).getTime()+(sure+1)*7*GUN);const sel=document.getElementById('hafta');const onceki=sel.value;
+  sel.innerHTML=Array.from({length:18},(_,i)=>{const m=new Date(ilk.getTime()+i*7*GUN),h=iso(m);return `<option value="${m.getTime()}">${h.w}. hafta${h.y!==2026?' '+h.y:''} (${aralik(m)})</option>`}).join('');
+  const hedef=[...sel.options].find(o=>{const h=iso(new Date(+o.value));return h.y===2027&&h.w===7});
+  sel.value=[...sel.options].some(o=>o.value===onceki)?onceki:(hedef?hedef.value:sel.options[0].value)}
+
+/* ---------- Bitki çizimi (SVG, prosedürel) ---------- */
+const svg=document.getElementById('fide'),NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e};
+function rnd(s){return()=>{s=(s*16807)%2147483647;return (s-1)/2147483646}}
+// yaprakçık: uzunluk boyunca dişli kenar
+function yaprakcik(x,y,len,wid,ang,dis=6,genlik=.1,uc=.8){
+  const pts=[],N=48;for(let s of[1,-1])for(let i=0;i<=N;i++){const t=s>0?i/N:1-i/N;const env=Math.pow(Math.sin(Math.PI*Math.pow(t,uc)),.85);const serr=1+genlik*Math.sin(t*dis*2*Math.PI)*(t>.08&&t<.95?1:0);pts.push([t*len,s*wid*env*serr])}
+  const c=Math.cos(ang),sn=Math.sin(ang);return 'M'+pts.map(([px,py])=>`${(x+px*c-py*sn).toFixed(1)} ${(y+px*sn+py*c).toFixed(1)}`).join('L')+'Z'}
+function yaprak(g,tip,x,y,ang,olcek,R){
+  const parca=[];const ekle=(d)=>parca.push(d);
+  const L=olcek;
+  if(tip==='domates'){ // bileşik yaprak
+    const sap=L*1.25;const ex=x+Math.cos(ang)*sap,ey=y+Math.sin(ang)*sap;
+    el('path',{d:`M${x} ${y} Q${x+Math.cos(ang-.15)*sap*.5} ${y+Math.sin(ang-.15)*sap*.5} ${ex} ${ey}`,stroke:'#1C2A17','stroke-width':L*.05,fill:'none','stroke-linecap':'round'},g);
+    for(let i=1;i<=3;i++){const t=i/3.4;const px=x+Math.cos(ang)*sap*t,py=y+Math.sin(ang)*sap*t;const k=1-i*.13;
+      ekle(yaprakcik(px,py,L*.5*k,L*.17*k,ang-1.05+R()*.15,7,.11));ekle(yaprakcik(px,py,L*.5*k,L*.17*k,ang+1.05-R()*.15,7,.11))}
+    ekle(yaprakcik(ex-Math.cos(ang)*L*.05,ey-Math.sin(ang)*L*.05,L*.62,L*.22,ang,8,.1));
+  } else if(tip==='biber'){ekle(yaprakcik(x,y,L*1.35,L*.33,ang,1,0,.9))}
+  else if(tip==='patlican'){ekle(yaprakcik(x,y,L*1.3,L*.55,ang,3,.09,.95))}
+  else if(tip==='hiyar'){ekle(yaprakcik(x,y,L*1.2,L*.62,ang,3,.14,1.05));}
+  else if(tip==='kavun'){ekle(yaprakcik(x,y,L*1.05,L*.6,ang,5,.08,1.2))}
+  else if(tip==='karpuz'){for(const d of[-.9,-.45,0,.45,.9])ekle(yaprakcik(x,y,L*(1.1-Math.abs(d)*.3),L*.15,ang+d,4,.35))}
+  parca.forEach(d=>{el('path',{d,fill:'url(#yaprakR)'},g);el('path',{d,fill:'none',stroke:'#FF8FC8','stroke-opacity':.55,'stroke-width':1.6},g)});
+  // damar
+  el('path',{d:`M${x} ${y} L${x+Math.cos(ang)*L*1.1} ${y+Math.sin(ang)*L*1.1}`,stroke:'#7FA36A','stroke-opacity':.5,'stroke-width':L*.02,fill:'none'},g);
+}
+let ilk=true;
+function ciz(){
+  const azH=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  svg.innerHTML='';const R=rnd(7);
+  const anac=ANAC.find(a=>a.id===S.anac),asisiz=S.anac==='yok';
+  const d=el('defs',{});
+  d.innerHTML=`<linearGradient id="isik" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D4388E"/><stop offset=".55" stop-color="#B0156C"/><stop offset="1" stop-color="#7A0C4B"/></linearGradient>
+  <linearGradient id="govde" x1="0" x2="1"><stop offset="0" stop-color="#FF7CC0" stop-opacity=".9"/><stop offset=".18" stop-color="#3B4A2C"/><stop offset=".7" stop-color="#1F2A17"/><stop offset="1" stop-color="#121A0E"/></linearGradient>
+  <linearGradient id="govde2" x1="0" x2="1"><stop offset="0" stop-color="#FF7CC0" stop-opacity=".85"/><stop offset=".2" stop-color="#4A3B2A"/><stop offset=".7" stop-color="#2B2117"/><stop offset="1" stop-color="#17110C"/></linearGradient>
+  <linearGradient id="yaprakR" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3D5A2E"/><stop offset="1" stop-color="#16220F"/></linearGradient>
+  <linearGradient id="torf" x1="0" x2="1"><stop offset="0" stop-color="#5A3E2A"/><stop offset=".6" stop-color="#3A271A"/><stop offset="1" stop-color="#22160E"/></linearGradient>
+  <radialGradient id="leke" cx=".5" cy="0" r=".9"><stop offset="0" stop-color="#FFE0F0" stop-opacity=".55"/><stop offset="1" stop-color="#FFE0F0" stop-opacity="0"/></radialGradient>`;
+  el('rect',{x:0,y:0,width:640,height:800,fill:'url(#isik)'});
+  // LED çubukları
+  for(const [y,o] of [[10,.95],[30,.6]]){el('rect',{x:-10,y,width:660,height:5,rx:2.5,fill:'#FFE3F2',opacity:o});}
+  el('ellipse',{cx:320,cy:0,rx:520,ry:300,fill:'url(#leke)'});
+  // sera tezgâhının uzak gölgeleri: arka plandaki fideler (bulanık siluet)
+  const bul=el('filter',{id:'bulanik',x:'-50%',y:'-50%',width:'200%',height:'200%'},d);el('feGaussianBlur',{stdDeviation:9},bul);
+  const arka=el('g',{opacity:.5,filter:'url(#bulanik)'});
+  el('rect',{x:-20,y:690,width:680,height:140,fill:'#5A0836'},arka);
+  for(let i=0;i<12;i++){const x=-10+i*58+R()*20,y=640+R()*40;el('ellipse',{cx:x,cy:y,rx:30+R()*14,ry:12+R()*6,fill:'#3E1A2E'},arka);el('ellipse',{cx:x+14,cy:y-8,rx:20,ry:9,fill:'#4C2A3A'},arka)}
+  const gx=300; // gövde ekseni
+  const asiY=430;
+  // Alt: anaç ve torf topağı
+  const alt=el('g',{id:'alt'});
+  const torf=el('g',{},alt);
+  el('path',{d:'M215 640 L385 640 L372 820 L228 820 Z',fill:'url(#torf)'},torf);
+  el('path',{d:'M215 640 L385 640 L380 652 L220 652 Z',fill:'#6B4A32'},torf);
+  for(let i=0;i<70;i++){el('circle',{cx:222+R()*156,cy:648+R()*170,r:1+R()*2.6,fill:'#EFE9E1',opacity:.85},torf)}
+  for(let i=0;i<9;i++){const x=230+R()*140;el('path',{d:`M${x} ${700+R()*90} q${R()*40-20} ${30+R()*30} ${R()*60-30} ${60+R()*40}`,stroke:'#F3E6EE','stroke-width':1.8+R()*1.4,fill:'none',opacity:.9},torf)}
+  const altGovde=asisiz?'url(#govde)':'url(#govde2)';
+  el('path',{d:`M${gx-27} 648 C${gx-26} 560 ${gx-24} 500 ${gx-24} ${asiY+8} L${gx+24} ${asiY+8+ (asisiz?0:-28)} C${gx+24} 520 ${gx+27} 580 ${gx+28} 648 Z`,fill:altGovde},alt);
+  if(!asisiz){ // anacın kendi kotiledon izi
+    el('ellipse',{cx:gx+26,cy:540,rx:9,ry:5,fill:'#120C08',opacity:.7},alt)}
+  // Üst: kalem
+  const ust=el('g',{id:'ust'});
+  el('path',{d:`M${gx-23} ${asiY+(asisiz?10:-2)} L${gx+23} ${asiY+(asisiz?10:-30)} C${gx+22} 300 ${gx+16} 160 ${gx+30} -20 L${gx-14} -20 C${gx-22} 160 ${gx-24} 300 ${gx-23} ${asiY} Z`,fill:'url(#govde)'},ust);
+  // gövde tüyleri (domates)
+  if(S.cesit==='domates'){for(let i=0;i<60;i++){const y=R()*400+20;const s=R()>.5?1:-1;const x=gx+s*(20+R()*4)-(y<200?(200-y)*.04:0);el('line',{x1:x,y1:y,x2:x+s*(5+R()*6),y2:y-3-R()*4,stroke:'#FFB6DC','stroke-width':.9,opacity:.75},ust)}}
+  const tip=S.cesit;const olc=tip==='domates'?150:tip==='karpuz'?170:150;
+  yaprak(ust,tip,gx-12,300,Math.PI+.35,olc,R);
+  yaprak(ust,tip,gx+18,150,-.25,olc*1.05,R);
+  yaprak(ust,tip,gx-6,40,Math.PI+.75,olc*.9,R);
+  // Aşı noktası ve klips
+  if(!asisiz){
+    const k=el('g',{id:'klips'});
+    el('path',{d:`M${gx-26} ${asiY+2} L${gx+26} ${asiY-30}`,stroke:'#FFD9EC','stroke-width':2.2,opacity:.95},k);
+    el('rect',{x:gx-40,y:asiY-58,width:80,height:84,rx:18,fill:anac.renk,opacity:.62},k);
+    el('rect',{x:gx-40,y:asiY-58,width:80,height:84,rx:18,fill:'none',stroke:'#fff','stroke-opacity':.7,'stroke-width':2},k);
+    el('rect',{x:gx-30,y:asiY-52,width:9,height:70,rx:4.5,fill:'#fff',opacity:.55},k);
+    el('line',{x1:gx+40,y1:asiY-46,x2:gx+40,y2:asiY+14,stroke:'#1E0E19','stroke-width':3,opacity:.45},k);
+    if(!ilk&&!azH){k.animate([{transform:'scale(1.35,1)',opacity:.2},{transform:'scale(1,1)',opacity:1}],{duration:420,easing:'cubic-bezier(.16,1,.3,1)'});k.style.transformOrigin=`${gx}px ${asiY-16}px`}
+  }
+  if(!ilk&&!azH){ust.animate([{transform:'translateY(-46px)',opacity:.0},{transform:'translateY(0)',opacity:1}],{duration:520,easing:'cubic-bezier(.16,1,.3,1)'})}
+  ilk=false;
+}
+function guncelle(){
+  const c=CESIT.find(x=>x.id===S.cesit),a=ANAC.find(x=>x.id===S.anac);
+  document.getElementById('yUstAd').textContent=c.ad;document.getElementById('yAltAd').textContent=a.ad;
+  document.getElementById('yAsi').style.visibility=S.anac==='yok'?'hidden':'visible';
+  document.getElementById('adet').textContent=nf(S.adet);
+  const h=iso(new Date(+document.getElementById('hafta').value));
+  document.getElementById('mOz').textContent=`${nf(S.adet)} ${S.anac==='yok'?'':'aşılı '}${c.ad.toLocaleLowerCase('tr')}`;
+  document.getElementById('mOz2').textContent=`${a.ad}, teslim ${h.w}. hafta`;
+}
+document.getElementById('cesit').addEventListener('change',e=>{S.cesit=e.target.value;ciz();guncelle()});
+document.getElementById('anac').addEventListener('change',e=>{S.anac=e.target.value;haftalar();ciz();guncelle()});
+document.getElementById('hafta').addEventListener('change',guncelle);
+document.querySelectorAll('.sayac button').forEach(b=>b.addEventListener('click',()=>{S.adet=Math.max(500,S.adet+ +b.dataset.d);guncelle()}));
+document.getElementById('siparis').addEventListener('submit',e=>{e.preventDefault();const n=document.getElementById('not');n.textContent='Ön rezervasyon fişiniz hazır. Bu bir konsept çalışmadır; hiçbir yere gönderilmedi.';n.style.color='var(--led-koyu)';n.style.fontWeight='600'});
+haftalar();ciz();guncelle();
+</script>
+</body>
+</html>

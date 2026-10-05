@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gelidonya, Yön B, Ekim Cetveli (ilk ekran prototipi)</title>
+<meta name="description" content="Konsept çalışma. Gelidonya kurgusal bir fide ve sera firmasıdır.">
+<meta name="theme-color" content="#2338A6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans+Extra+Condensed:wght@600;700;800;900&family=Sofia+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Yön B: Ekim Cetveli. İki mürekkepli baskı: ultramarin (Gelidonya Burnu'nun denizi, Ro-Ro ihracat yolu) + floresan turuncu (cetvelin okuma penceresi) */
+:root{
+  --kagit:#FBFBF8;        /* kuşe karton, nötr beyaz (krem değil) */
+  --murekkep:#2338A6;     /* ultramarin baskı mürekkebi */
+  --murekkep-koyu:#121A52;/* gövde metni, kâğıt üstünde 15:1 */
+  --murekkep-2:#3E477C;   /* ikincil metin, 8,4:1 */
+  --tint:#E7EAF6;         /* %10 ultramarin tram */
+  --turuncu:#FF5B1F;      /* floresan turuncu, yalnız okuma penceresi ve seçili */
+  --turuncu-koyu:#B83A0B; /* turuncu metin gerekiyorsa */
+  --ease:cubic-bezier(.16,1,.3,1);
+  --gosterim:"Sofia Sans Extra Condensed","Arial Narrow",sans-serif;
+  --govde:"Sofia Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--kagit);color:var(--murekkep-koyu);font-family:var(--govde)}
+body{min-height:100vh;overflow-x:hidden}
+::selection{background:var(--turuncu);color:var(--murekkep-koyu)}
+:focus-visible{outline:3px solid var(--turuncu);outline-offset:3px}
+a{color:inherit;text-underline-offset:3px}
+
+.serit{background:var(--murekkep-koyu);color:#E6E9F6;font-size:13px;padding:8px 24px;text-align:center}
+.serit a{color:#fff;font-weight:700}
+.serit .kisa{display:none}
+
+header.ust{display:flex;align-items:center;gap:34px;height:66px;padding:0 32px;border-bottom:1.5px solid var(--murekkep)}
+.logo{display:flex;flex-direction:column;text-decoration:none;color:var(--murekkep)}
+.logo b{font-family:var(--gosterim);font-weight:900;font-size:31px;letter-spacing:.08em;line-height:.9}
+.logo span{font-size:11.5px;font-weight:700;letter-spacing:.02em;color:var(--murekkep-2)}
+nav.menu{display:flex;gap:24px;font-size:15.5px;font-weight:600}
+nav.menu a{text-decoration:none;padding:6px 0}
+nav.menu a[aria-current]{box-shadow:inset 0 -3px 0 var(--turuncu)}
+.ust-sag{margin-left:auto;display:flex;gap:18px;align-items:center;font-size:15px}
+.tel{font-weight:800;text-decoration:none;color:var(--murekkep)}
+.tel small{font-weight:500;font-size:12px;color:var(--murekkep-2);margin-left:4px}
+.dil{font-size:13px;color:var(--murekkep-2)}
+.menu-dugme{display:none}
+
+main{position:relative;display:grid;grid-template-columns:minmax(0,600px) minmax(0,1fr);min-height:calc(100vh - 101px)}
+.sol{position:relative;z-index:2;padding:26px 36px 28px 32px;display:flex;flex-direction:column;gap:18px;background:var(--kagit)}
+.sekmeler{display:flex;gap:0;border:1.5px solid var(--murekkep);align-self:flex-start}
+.sekmeler button{font:700 15px/1 var(--govde);padding:12px 16px;min-height:46px;border:0;background:transparent;color:var(--murekkep);cursor:pointer}
+.sekmeler button[aria-selected=true]{background:var(--murekkep);color:#fff}
+h1{font-family:var(--gosterim);font-weight:800;font-size:clamp(3rem,1.4rem + 4vw,6.1rem);line-height:.88;letter-spacing:-.005em;color:var(--murekkep);text-wrap:balance}
+.alt{font-size:18px;line-height:1.45;color:var(--murekkep-2);max-width:31em;text-wrap:pretty}
+
+.kupon{position:relative;border:2px dashed var(--murekkep);padding:18px 20px 18px;background:#fff;display:flex;flex-direction:column;gap:14px}
+.kupon-yok::before{content:"";position:absolute;top:50%;width:18px;height:18px;margin-top:-9px;border-radius:50%;background:var(--kagit);border:2px dashed var(--murekkep)}
+.satir{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center}
+.etk{font-family:var(--gosterim);font-weight:800;font-size:17px;letter-spacing:.04em;text-transform:uppercase;color:var(--murekkep)}
+.cipler{display:flex;flex-wrap:wrap;gap:5px}
+.cip{position:relative}
+.cip input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;width:100%;height:100%}
+.cip span{display:flex;align-items:center;gap:4px;min-height:40px;padding:0 11px;border:1.5px solid var(--murekkep);font-size:15px;font-weight:700;color:var(--murekkep);background:#fff}
+.cip span i{font-style:normal;font-weight:500;font-size:12.5px;color:var(--murekkep-2)}
+.cip input:checked+span{background:var(--murekkep);color:#fff}
+.cip input:checked+span i{color:#C9D0F0}
+.cip input:focus-visible+span{outline:3px solid var(--turuncu);outline-offset:2px}
+.adimci{display:flex;align-items:stretch;border:1.5px solid var(--murekkep);width:max-content}
+.adimci button{width:48px;min-height:48px;border:0;background:#fff;color:var(--murekkep);font-size:24px;font-weight:700;cursor:pointer}
+.adimci output{display:flex;align-items:center;justify-content:center;min-width:132px;padding:0 10px;border-left:1.5px solid var(--murekkep);border-right:1.5px solid var(--murekkep);font-family:var(--gosterim);font-weight:800;font-size:28px;color:var(--murekkep)}
+.adimci output small{font-family:var(--govde);font-size:14px;font-weight:600;margin-left:6px}
+.esit{font-size:16px;font-weight:700;margin-left:12px}
+.okuma{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1.5px solid var(--murekkep);padding-top:12px;gap:10px}
+.okuma div{display:flex;flex-direction:column;gap:2px}
+.okuma b{font-family:var(--gosterim);font-weight:800;font-size:27px;line-height:1;color:var(--murekkep)}
+.okuma span{font-size:13px;color:var(--murekkep-2);line-height:1.3}
+.okuma .sec b{color:var(--murekkep-koyu);box-shadow:inset 0 -6px 0 rgba(255,91,31,.55)}
+.alt-satir{display:flex;align-items:center;gap:16px}
+.dugme{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 24px;border:0;background:var(--murekkep);color:#fff;font:800 18px/1 var(--govde);cursor:pointer;white-space:nowrap}
+.dugme:hover{background:#1A2C8C}
+.dugme[disabled]{background:#9AA2C9;cursor:not-allowed}
+.not{font-size:12.5px;line-height:1.4;color:var(--murekkep-2)}
+.uyari{font-size:14px;font-weight:700;color:var(--turuncu-koyu)}
+[hidden]{display:none!important}
+
+/* Cetvelin oturduğu deniz */
+.deniz{position:relative;overflow:hidden;background:var(--murekkep)}
+.deniz::before{content:"";position:absolute;inset:0;opacity:.18;background-image:radial-gradient(circle at 1px 1px,#fff 1px,transparent 1.4px);background-size:7px 7px}
+.cetvel{position:absolute;width:min(900px,66vw);aspect-ratio:1;left:50%;top:52px;transform:translateX(-42%);touch-action:none;user-select:none}
+.cetvel svg{width:100%;height:100%;overflow:visible;display:block}
+#taban{cursor:grab}
+#taban.surukle{cursor:grabbing}
+.ipucu{position:absolute;left:26px;top:84px;color:#E7EAF6;font-size:14px;font-weight:600;max-width:13em;line-height:1.35}
+.cevir{position:absolute;left:24px;top:22px;display:flex;gap:6px;z-index:3}
+.cevir button{min-width:48px;min-height:48px;border:1.5px solid #fff;background:var(--murekkep);color:#fff;font:800 15px/1 var(--govde);padding:0 14px;cursor:pointer}
+.cevir button:hover{background:#1A2C8C}
+
+.alt-bar{display:none}
+@media (max-width:900px){
+  .serit{font-size:12px;padding:6px 12px}.serit .uzun{display:none}.serit .kisa{display:inline}
+  header.ust{height:58px;padding:0 16px;gap:10px}
+  nav.menu,.dil{display:none}
+  .logo b{font-size:26px}.logo span{display:none}
+  .tel small{display:none}
+  .menu-dugme{display:inline-flex;align-items:center;justify-content:center;margin-left:auto;min-width:48px;height:44px;border:1.5px solid var(--murekkep);background:transparent;color:var(--murekkep);font-weight:700}
+  .ust-sag{margin-left:0}
+  main{grid-template-columns:minmax(0,1fr)}
+  .sol{padding:14px 16px 104px;gap:12px}
+  h1{font-size:2.9rem}
+  .alt{display:none}
+  .deniz{order:-1;height:236px}
+  .cetvel{width:560px;left:50%;top:22px;transform:translateX(-50%)}
+  .ipucu{display:none}
+  .cevir{left:auto;top:auto;right:10px;bottom:10px}
+  .cevir button{min-width:44px;min-height:44px;padding:0 10px;font-size:13px}
+  .cevir .metin{display:none}
+  .sol .h1-kap{order:-2}.sol .sekmeler{order:-1}
+  .kupon{padding:14px 14px}
+  .satir{grid-template-columns:minmax(0,1fr)}
+  .cipler{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .cip{flex:0 0 auto}
+  .okuma b{font-size:23px}
+  .alt-satir{display:none}
+  .alt-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--murekkep-koyu);color:#fff;padding:10px 12px 10px 16px;gap:10px;align-items:center}
+  .alt-bar .oz{flex:1;font-size:13px;line-height:1.25;color:#CBD1EE}
+  .alt-bar .oz b{display:block;font-family:var(--gosterim);font-weight:800;font-size:24px;color:#fff}
+  .alt-bar .dugme{background:var(--turuncu);color:var(--murekkep-koyu);min-height:50px;font-size:16px;padding:0 16px}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="serit">Konsept çalışma — <a href="https://rasitburucu.com">rasitburucu.com</a>. <span class="uzun">Gelidonya kurgusal bir markadır; bu sayfadaki formlar hiçbir yere gönderilmez.</span><span class="kisa">Kurgusal marka; formlar gönderilmez.</span></div>
+<header class="ust">
+  <a class="logo" href="#"><b>GELİDONYA</b><span>Sera ve fidelik, Kumluca</span></a>
+  <nav class="menu" aria-label="Ana menü"><a href="#" aria-current="page">Ekim cetveli</a><a href="#">Seralarımız</a><a href="#">Fidelik</a><a href="#">Ürünlerimiz</a><a href="#">İletişim</a></nav>
+  <button class="menu-dugme" type="button">Menü</button>
+  <div class="ust-sag"><a class="tel" href="tel:+902420000000">0242 000 00 00<small>[örnek]</small></a><span class="dil">TR, EN yakında</span></div>
+</header>
+
+<main>
+  <section class="sol">
+    <div class="h1-kap"><h1 id="baslik">Fideniz, dikim haftanızda serada.</h1></div>
+    <div class="sekmeler" role="tablist" aria-label="Kim için">
+      <button role="tab" id="t-uretici" aria-selected="true" aria-controls="k-uretici">Fide siparişi</button>
+      <button role="tab" id="t-alici" aria-selected="false" aria-controls="k-alici">Ürünlerimiz: hasat takvimi</button>
+    </div>
+    <p class="alt" id="alt">Kendi seralarımıza diktiğimiz fideden; domatesten kavuna, aşılı ve aşısız. Dikeceğiniz haftayı seçin; tohumun hangi hafta ekileceği ve ilk hasadın aşağı yukarı ne zaman başlayacağı aynı anda belli olsun.</p>
+
+    <form class="kupon" id="k-uretici" role="tabpanel" aria-labelledby="t-uretici" novalidate>
+      <div class="satir"><span class="etk">Ürün</span><div class="cipler" id="urunler"></div></div>
+      <div class="satir"><span class="etk">Miktar</span>
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px"><div class="adimci"><button type="button" data-d="-1" aria-label="Bir dönüm azalt">−</button><output id="donum">3<small>dönüm</small></output><button type="button" data-d="1" aria-label="Bir dönüm artır">+</button></div><span class="esit" id="fide">= 5.700 fide</span></div></div>
+      <div class="okuma" aria-live="polite">
+        <div><b id="oEkim">52. hafta</b><span id="oEkimT">Tohum ekimi</span></div>
+        <div class="sec"><b id="oTeslim">7. hafta</b><span id="oTeslimT">Teslim ve dikim</span></div>
+        <div><b id="oHasat">17. hafta</b><span id="oHasatT">İlk hasat, yaklaşık</span></div>
+      </div>
+      <p class="uyari" id="uyari" hidden></p>
+      <div class="alt-satir"><button class="dugme" id="gonder" type="submit">Ön rezervasyon yap</button><p class="not">Süreler örnektir; siparişte ziraat mühendisimiz teyit eder. Demo: form gönderilmez.</p></div>
+    </form>
+
+    <form class="kupon" id="k-alici" role="tabpanel" aria-labelledby="t-alici" hidden novalidate>
+      <div class="satir"><span class="etk">Hafta</span><div><b id="aHafta" style="font-family:var(--gosterim);font-size:28px;color:var(--murekkep)">7. hafta 2027</b> <span id="aAralik" style="font-size:15px;color:var(--murekkep-2)"></span></div></div>
+      <div class="satir"><span class="etk">Hasatta</span><div class="cipler" id="hasatta"></div></div>
+      <div class="satir"><span class="etk">Nereye</span><div class="cipler" id="ulkeler"></div></div>
+      <div class="alt-satir"><button class="dugme" type="submit">Fiyat sorun</button><p class="not">Takvim örnektir; çeşide, dikim zamanına ve havaya göre kayar. Fiyatı haftaya ve miktara göre veriyoruz.</p></div>
+    </form>
+  </section>
+
+  <section class="deniz" aria-label="Ekim cetveli">
+    <div class="cetvel" id="cetvel">
+      <svg viewBox="-500 -500 1000 1000" aria-hidden="false">
+        <defs>
+          <filter id="golge" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0A1040" flood-opacity=".45"/></filter>
+          <filter id="golge2" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0A1040" flood-opacity=".35"/></filter>
+          <mask id="pencereler" maskUnits="userSpaceOnUse" x="-500" y="-500" width="1000" height="1000"><circle r="384" fill="#fff"/><g id="delikler" fill="#000"></g></mask>
+        </defs>
+        <g id="taban" role="slider" tabindex="0" aria-label="Dikim haftası" aria-valuemin="1" aria-valuemax="53"></g>
+        <g id="ust" pointer-events="none"></g>
+      </svg>
+    </div>
+    <div class="cevir"><button type="button" id="geri" aria-label="Bir hafta önce">‹ <span class="metin">Önceki hafta</span></button><button type="button" id="ileri" aria-label="Bir hafta sonra"><span class="metin">Sonraki hafta</span> ›</button></div>
+    <p class="ipucu">Takvimi elle ya da oklarla çevirin. Turuncu pencere dikim haftanız.</p>
+  </section>
+</main>
+
+<div class="alt-bar"><div class="oz"><b id="mOz">7. hafta, 5.700 fide</b><span id="mOz2">Tohum 52. haftada ekilir</span></div><button class="dugme" type="submit" form="k-uretici" id="mGonder">Ön rezervasyon</button></div>
+
+<script>
+/* ÖRNEK değerler. Kaynaklı: aşılı 1.800–2.000 fide/da, aşısız 2.500–3.000; aşılı 45–60 gün, aşısız 40–45 gün.
+   Hasada kadar hafta ve hasat sezonları kaynaksızdır; sitede "yaklaşık / örnek" diye yazar. */
+const URUN=[
+ {id:'domates-a',ad:'Domates',tur:'aşılı',sik:1900,sure:8,hasat:10,sezon:[[11,1],[6,30]]},
+ {id:'domates',ad:'Domates',tur:'aşısız',sik:2500,sure:6,hasat:10,sezon:[[11,1],[6,30]]},
+ {id:'biber',ad:'Biber',tur:'aşısız',sik:2500,sure:6,hasat:9,sezon:[[11,1],[5,31]]},
+ {id:'patlican-a',ad:'Patlıcan',tur:'aşılı',sik:1900,sure:8,hasat:9,sezon:[[11,15],[5,31]]},
+ {id:'hiyar-a',ad:'Hıyar',tur:'aşılı',sik:1900,sure:7,hasat:6,sezon:[[10,15],[5,31]]},
+ {id:'karpuz-a',ad:'Karpuz',tur:'aşılı',sik:500,sure:7,hasat:11,sezon:[[4,15],[6,30]]},
+ {id:'kavun-a',ad:'Kavun',tur:'aşılı',sik:800,sure:7,hasat:10,sezon:[[5,1],[7,15]]}
+];
+const SEZON=[['Domates',URUN[0].sezon],['Biber',URUN[2].sezon],['Patlıcan',URUN[3].sezon],['Hıyar',URUN[4].sezon],['Karpuz',URUN[5].sezon],['Kavun',URUN[6].sezon]];
+const AY=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const AYU=['OCAK','ŞUBAT','MART','NİSAN','MAYIS','HAZİRAN','TEMMUZ','AĞUSTOS','EYLÜL','EKİM','KASIM','ARALIK'];
+const GUN=864e5, BUGUN=new Date(Date.UTC(2026,9,5)); // prototip: sabit bugün
+const nf=n=>n.toLocaleString('tr-TR');
+function pzt(d){const t=new Date(d);const g=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()-g+1);return t}
+function iso(d){const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));const g=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-g);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return{w:Math.ceil(((t-y0)/GUN+1)/7),y:t.getUTCFullYear()}}
+function aralik(m){const s=new Date(m.getTime()+6*GUN);return m.getUTCMonth()===s.getUTCMonth()?`${m.getUTCDate()}–${s.getUTCDate()} ${AY[s.getUTCMonth()]}`:`${m.getUTCDate()} ${AY[m.getUTCMonth()]}–${s.getUTCDate()} ${AY[s.getUTCMonth()]}`}
+// yıl içi açı: 1 Ocak = 0°, saat yönünde
+function aci(d){const y0=Date.UTC(d.getUTCFullYear(),0,1);return ((d-y0)/GUN)/365*360}
+const P=(r,a)=>{const t=a*Math.PI/180;return[r*Math.sin(t),-r*Math.cos(t)]};
+const yay=(r,a1,a2)=>{const[x1,y1]=P(r,a1),[x2,y2]=P(r,a2);return `M${x1.toFixed(2)} ${y1.toFixed(2)} A${r} ${r} 0 ${((a2-a1+360)%360)>180?1:0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`};
+const dilim=(r1,r2,a1,a2)=>{const[a,b]=P(r2,a1),[c,d]=P(r2,a2),[e,f]=P(r1,a2),[g,h]=P(r1,a1);const big=((a2-a1+360)%360)>180?1:0;return `M${a} ${b} A${r2} ${r2} 0 ${big} 1 ${c} ${d} L${e} ${f} A${r1} ${r1} 0 ${big} 0 ${g} ${h}Z`};
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);p&&p.appendChild(e);return e};
+const HAFTA_ACI=360/52.18;
+
+const S={mod:'uretici',urun:'domates-a',donum:3,teslim:null,ulke:'Almanya'};
+const U=()=>URUN.find(u=>u.id===S.urun);
+const enErken=()=>new Date(pzt(BUGUN).getTime()+(U().sure+1)*7*GUN);
+// varsayılan teslim: 2027'nin 7. haftası (ilkbahar dikimi, şubat ortası)
+S.teslim=new Date(Date.UTC(2027,1,15));
+
+/* ---------- Taban: yıl takvimi (döner) ---------- */
+const taban=document.getElementById('taban'),ust=document.getElementById('ust'),delikler=document.getElementById('delikler');
+function tabanCiz(){
+  taban.innerHTML='';
+  el('circle',{r:482,fill:'#F3F5FC',stroke:'#2338A6','stroke-width':2.5},taban);
+  el('circle',{r:470,fill:'none',stroke:'#2338A6','stroke-width':1},taban);
+  // ay dilimleri
+  for(let m=0;m<12;m++){
+    const a1=aci(new Date(Date.UTC(2027,m,1))),a2=aci(new Date(Date.UTC(2027,m+1,1)))||360;
+    el('path',{d:dilim(424,470,a1,a2===0?360:a2),fill:m%2?'#2338A6':'#F3F5FC',stroke:'#2338A6','stroke-width':1},taban);
+    const id='ay'+m,orta=(a1+(a2===0?360:a2))/2;
+    el('path',{id,d:yay(440,orta-40,orta+40),fill:'none'},taban);
+    const t=el('text',{'font-family':'Sofia Sans Extra Condensed','font-weight':800,'font-size':26,'letter-spacing':2,fill:m%2?'#FFFFFF':'#2338A6'},taban);
+    const tp=el('textPath',{href:'#'+id,startOffset:'50%','text-anchor':'middle'},t);tp.textContent=AYU[m];
+  }
+  // hafta çentikleri ve küçük numaralar
+  for(let w=1;w<=52;w++){
+    const m=new Date(Date.UTC(2027,0,4+(w-1)*7));const a=aci(m)+3.5*360/365;
+    const[x1,y1]=P(424,a),[x2,y2]=P(w%4===1?406:414,a);
+    el('line',{x1,y1,x2,y2,stroke:'#2338A6','stroke-width':w%4===1?2:1},taban);
+    const[tx,ty]=P(396,a);el('text',{x:tx,y:ty,'font-family':'Sofia Sans','font-weight':700,'font-size':12,fill:'#2338A6','text-anchor':'middle','dominant-baseline':'central',transform:`rotate(${a} ${tx} ${ty})`},taban).textContent=w;
+  }
+  // gizli ölçek: pencerelerde okunan iri hafta numaraları
+  for(let w=1;w<=52;w++){
+    const m=new Date(Date.UTC(2027,0,4+(w-1)*7));const a=aci(m)+3.5*360/365;
+    const[tx,ty]=P(344,a);
+    el('text',{x:tx,y:ty,'font-family':'Sofia Sans Extra Condensed','font-weight':900,'font-size':40,fill:'#121A52','text-anchor':'middle','dominant-baseline':'central',transform:`rotate(${a} ${tx} ${ty})`},taban).textContent=w;
+    const[mx,my]=P(312,a);el('text',{x:mx,y:my,'font-family':'Sofia Sans','font-weight':700,'font-size':13,fill:'#3E477C','text-anchor':'middle','dominant-baseline':'central',transform:`rotate(${a} ${mx} ${my})`},taban).textContent=AY[m.getUTCMonth()].toLocaleUpperCase('tr');
+  }
+  // alıcı halkaları: hasat sezonları (örnek)
+  SEZON.forEach(([ad,[[m1,d1],[m2,d2]]],i)=>{
+    const r=128+i*30,a1=aci(new Date(Date.UTC(2027,m1-1,d1))),a2=aci(new Date(Date.UTC(2027,m2-1,d2)));
+    el('circle',{r,fill:'none',stroke:'#9AA4D6','stroke-width':1.2,'stroke-dasharray':'2 6'},taban);
+    el('path',{d:yay(r,a1,a2<a1?a2+360:a2).replace(/A/,'A'),fill:'none',stroke:'#2338A6','stroke-width':20,'stroke-linecap':'butt'},taban);
+  });
+}
+
+/* ---------- Üst disk: sabit, pencereli ---------- */
+function ustCiz(){
+  const u=U();ust.innerHTML='';delikler.innerHTML='';
+  const pen=(a,r1,r2,gen)=>[dilim(r1,r2,a-gen/2,a+gen/2)];
+  const uretici=S.mod==='uretici';
+  const A0=0,Ae=-u.sure*HAFTA_ACI,Ah=u.hasat*HAFTA_ACI;
+  const deliklerListe=uretici?[[A0,306,372,7.4],[Ae,306,372,7.4],[Ah,306,372,7.4]]:[[A0,306,372,7.4],[A0,108,302,5.2]];
+  deliklerListe.forEach(([a,r1,r2,g])=>el('path',{d:dilim(r1,r2,a-g/2,a+g/2),rx:4},delikler));
+  const disk=el('g',{filter:'url(#golge)'},ust);
+  el('circle',{r:384,fill:'#FFFFFF',mask:'url(#pencereler)'},disk);
+  const baski=el('g',{},ust);
+  el('circle',{r:376,fill:'none',stroke:'#2338A6','stroke-width':1.2,mask:'url(#pencereler)'},baski);
+  el('circle',{r:58,fill:'none',stroke:'#2338A6','stroke-width':1.2},baski);
+  el('circle',{r:6,fill:'#2338A6'},baski);
+  // pencere çerçeveleri
+  deliklerListe.forEach(([a,r1,r2,g],i)=>el('path',{d:dilim(r1,r2,a-g/2,a+g/2),fill:'none',stroke:i===0||!uretici?'#FF5B1F':'#2338A6','stroke-width':i===0?5:3},baski));
+  // okuma iğnesi: dış halkada seçili hafta
+  el('path',{d:dilim(386,474,-3.7,3.7),fill:'none',stroke:'#FF5B1F','stroke-width':5},baski);
+  el('path',{d:'M-14 -478 L14 -478 L0 -458 Z',fill:'#FF5B1F'},baski);
+  const yazi=(r,a,metin,boy=22,renk='#2338A6',agirlik=800)=>{const id='y'+Math.random().toString(36).slice(2,7);el('path',{id,d:yay(r,a-50,a+50),fill:'none'},baski);
+    const t=el('text',{'font-family':'Sofia Sans Extra Condensed','font-weight':agirlik,'font-size':boy,'letter-spacing':1.5,fill:renk},baski);const tp=el('textPath',{href:'#'+id,startOffset:'50%','text-anchor':'middle'},t);tp.textContent=metin};
+  if(uretici){
+    yazi(282,A0,'TESLİM VE DİKİM',24,'#B83A0B',900);
+    yazi(282,Ae,'TOHUM EKİMİ',22);
+    yazi(282,Ah,'İLK HASAT ≈',22);
+    // aralık yayları
+    const ok=(a1,a2,metin)=>{el('path',{d:yay(250,a1+4,a2-4),fill:'none',stroke:'#2338A6','stroke-width':1.5,'stroke-dasharray':'1 5','stroke-linecap':'round'},baski);yazi(232,(a1+a2)/2,metin,17,'#3E477C',700)};
+    ok(Ae,A0,`${u.sure} HAFTA FİDELİKTE`);ok(A0,Ah,`≈ ${u.hasat} HAFTA SERADA (ÖRNEK)`);
+    const ad=el('text',{x:0,y:-128,'text-anchor':'middle','font-family':'Sofia Sans Extra Condensed','font-weight':900,'font-size':66,fill:'#2338A6'},baski);ad.textContent=u.ad.toLocaleUpperCase('tr');
+    el('text',{x:0,y:-92,'text-anchor':'middle','font-family':'Sofia Sans','font-weight':700,'font-size':20,fill:'#3E477C'},baski).textContent=u.tur==='aşılı'?'aşılı fide':'aşısız fide';
+    el('text',{x:0,y:110,'text-anchor':'middle','font-family':'Sofia Sans Extra Condensed','font-weight':800,'font-size':22,'letter-spacing':4,fill:'#2338A6'},baski).textContent='GELİDONYA EKİM CETVELİ';
+    el('text',{x:0,y:136,'text-anchor':'middle','font-family':'Sofia Sans','font-weight':600,'font-size':14,fill:'#3E477C'},baski).textContent='Kumluca, Antalya. Süreler örnektir.';
+  } else {
+    yazi(282,A0+16,'BU HAFTA HASATTA',22,'#B83A0B',900);
+    SEZON.forEach(([ad],i)=>{const r=128+i*30;const[x,y]=P(r,0);
+      el('text',{x:x+(i%2?14:-14),y:y,'text-anchor':i%2?'start':'end','dominant-baseline':'central','font-family':'Sofia Sans','font-weight':700,'font-size':14,fill:'#121A52',transform:`rotate(-90 ${x} ${y})`},baski).textContent=ad});
+    el('text',{x:0,y:110,'text-anchor':'middle','font-family':'Sofia Sans Extra Condensed','font-weight':800,'font-size':22,'letter-spacing':4,fill:'#2338A6'},baski).textContent='SERALARIMIZIN HASADI';
+    el('text',{x:0,y:136,'text-anchor':'middle','font-family':'Sofia Sans','font-weight':600,'font-size':14,fill:'#3E477C'},baski).textContent='Örnek takvim; çeşide ve havaya göre kayar.';
+  }
+}
+
+/* ---------- Durum ve döndürme ---------- */
+let donus=0,hedefDonus=0,anim=0;
+const azHareket=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function tabanAcisi(d){return -(aci(d)+3.5*360/365)}
+function uygula(){taban.setAttribute('transform',`rotate(${donus})`)}
+function dondur(yeni,hemen){hedefDonus=yeni;const fark=((hedefDonus-donus+540)%360)-180;hedefDonus=donus+fark;
+  if(hemen||azHareket){donus=hedefDonus;uygula();return}
+  const bas=donus,t0=performance.now();cancelAnimationFrame(anim);
+  const ad=now=>{const k=Math.min(1,(now-t0)/520),e=1-Math.pow(1-k,4);donus=bas+(hedefDonus-bas)*e;uygula();if(k<1)anim=requestAnimationFrame(ad)};anim=requestAnimationFrame(ad)}
+
+function guncelle(hemen){
+  const u=U(),ht=iso(S.teslim),ekim=new Date(S.teslim.getTime()-u.sure*7*GUN),he=iso(ekim),hasat=new Date(S.teslim.getTime()+u.hasat*7*GUN),hh=iso(hasat);
+  const fide=S.donum*u.sik;
+  document.getElementById('donum').innerHTML=`${S.donum}<small>dönüm</small>`;
+  document.getElementById('fide').textContent=`= ${nf(fide)} fide`;
+  document.getElementById('oEkim').textContent=`${he.w}. hafta`;document.getElementById('oEkimT').textContent=`Tohum ekimi, ${aralik(ekim)}`;
+  document.getElementById('oTeslim').textContent=`${ht.w}. hafta`;document.getElementById('oTeslimT').textContent=`Teslim ve dikim, ${aralik(S.teslim)}${ht.y!==2026?' '+ht.y:''}`;
+  document.getElementById('oHasat').textContent=`≈ ${hh.w}. hafta`;document.getElementById('oHasatT').textContent=`İlk hasat, yaklaşık (örnek)`;
+  const gec=S.teslim<enErken();const uy=document.getElementById('uyari');
+  uy.hidden=!gec;if(gec){const e=iso(enErken());uy.textContent=`Bu hafta için tohum ekmeye geç kaldık. ${u.ad} (${u.tur}) için en erken teslim: ${e.w}. hafta (${aralik(enErken())}).`}
+  document.getElementById('gonder').disabled=gec;document.getElementById('mGonder').disabled=gec&&S.mod==='uretici';
+  document.getElementById('mOz').textContent=S.mod==='uretici'?`${ht.w}. hafta, ${nf(fide)} fide`:`${ht.w}. hafta, ${AY[S.teslim.getUTCMonth()]}`;
+  document.getElementById('mOz2').textContent=S.mod==='uretici'?(gec?'Bu hafta için geç':`Tohum ${he.w}. haftada ekilir`):'Hasattakiler için fiyat sorun';
+  // alıcı
+  document.getElementById('aHafta').textContent=`${ht.w}. hafta ${ht.y}`;document.getElementById('aAralik').textContent=aralik(S.teslim);
+  const gun=S.teslim;const icinde=([m1,d1],[m2,d2])=>{const y=gun.getUTCFullYear();const a=Date.UTC(y,m1-1,d1),b=Date.UTC(y,m2-1,d2),t=gun.getTime();return a<=b?(t>=a&&t<=b):(t>=a||t<=b)};
+  const liste=SEZON.filter(([,s])=>icinde(s[0],s[1])).map(([a])=>a);
+  document.getElementById('hasatta').innerHTML=liste.length?liste.map(a=>`<label class="cip"><input type="checkbox" checked><span>${a}</span></label>`).join(''):'<span class="not">Bu hafta örtüaltı hasadı yok; ilk ürün ekim ortasında.</span>';
+  const t=document.getElementById('taban');t.setAttribute('aria-valuenow',ht.w);t.setAttribute('aria-valuetext',`${ht.w}. hafta, ${aralik(S.teslim)} ${ht.y}`);
+  dondur(tabanAcisi(S.teslim),hemen);
+}
+function haftaKaydir(n){S.teslim=new Date(S.teslim.getTime()+n*7*GUN);guncelle()}
+
+// çipler
+document.getElementById('urunler').innerHTML=URUN.map(u=>`<label class="cip"><input type="radio" name="urun" value="${u.id}" ${u.id===S.urun?'checked':''}><span>${u.ad}<i>${u.tur}</i></span></label>`).join('');
+document.getElementById('urunler').addEventListener('change',e=>{S.urun=e.target.value;ustCiz();guncelle()});
+document.getElementById('ulkeler').innerHTML=['Yurt içi','Rusya','Romanya','Almanya','Diğer'].map(u=>`<label class="cip"><input type="radio" name="ulke" ${u==='Yurt içi'?'checked':''}><span>${u}</span></label>`).join('');
+document.querySelectorAll('.adimci button').forEach(b=>b.addEventListener('click',()=>{S.donum=Math.max(1,S.donum+ +b.dataset.d);guncelle(true)}));
+document.getElementById('geri').onclick=()=>haftaKaydir(-1);document.getElementById('ileri').onclick=()=>haftaKaydir(1);
+taban.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1,PageUp:4,PageDown:-4}[e.key];if(k){e.preventDefault();haftaKaydir(k)}});
+// sekmeler
+function mod(m){S.mod=m;document.getElementById('t-uretici').setAttribute('aria-selected',m==='uretici');document.getElementById('t-alici').setAttribute('aria-selected',m==='alici');
+  document.getElementById('k-uretici').hidden=m!=='uretici';document.getElementById('k-alici').hidden=m!=='alici';
+  document.getElementById('baslik').textContent=m==='uretici'?'Fideniz, dikim haftanızda serada.':'Seramızda bu hafta ne hasatta?';
+  document.getElementById('alt').textContent=m==='uretici'?'Kendi seralarımıza diktiğimiz fideden; domatesten kavuna, aşılı ve aşısız. Dikeceğiniz haftayı seçin; tohumun hangi hafta ekileceği ve ilk hasadın aşağı yukarı ne zaman başlayacağı aynı anda belli olsun.':'Kumluca ve Finike’deki kendi seralarımızın kış ve ilkbahar ürünü. Haftayı seçin, o hafta hasatta olanı görün; yurt içi ya da ihracat için fiyat sorun.';
+  document.getElementById('mGonder').textContent=m==='uretici'?'Ön rezervasyon':'Fiyat sorun';document.getElementById('mGonder').setAttribute('form',m==='uretici'?'k-uretici':'k-alici');
+  ustCiz();guncelle(true)}
+document.getElementById('t-uretici').onclick=()=>mod('uretici');document.getElementById('t-alici').onclick=()=>mod('alici');
+document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',e=>{e.preventDefault();const n=f.querySelector('.not');n.textContent='Fişiniz hazır. Bu bir konsept çalışmadır; hiçbir yere gönderilmedi.';n.style.color='var(--turuncu-koyu)'}));
+
+// sürükleyerek çevirme
+(()=>{const svg=document.querySelector('#cetvel svg');let bas=null;
+  const acisi=e=>{const r=svg.getBoundingClientRect();const x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2);return Math.atan2(x,-y)*180/Math.PI};
+  taban.addEventListener('pointerdown',e=>{bas={a:acisi(e),d:donus,t:S.teslim};taban.setPointerCapture(e.pointerId);taban.classList.add('surukle');cancelAnimationFrame(anim)});
+  taban.addEventListener('pointermove',e=>{if(!bas)return;let fark=acisi(e)-bas.a;fark=((fark+540)%360)-180;donus=bas.d+fark;uygula();
+    const hafta=Math.round(-fark/HAFTA_ACI);const yeni=new Date(bas.t.getTime()+hafta*7*GUN);if(yeni.getTime()!==S.teslim.getTime()){S.teslim=yeni;const h=donus;guncelle(true);donus=h;uygula()}});
+  const bit=()=>{if(!bas)return;bas=null;taban.classList.remove('surukle');guncelle()};
+  taban.addEventListener('pointerup',bit);taban.addEventListener('pointercancel',bit)})();
+
+tabanCiz();ustCiz();guncelle(true);
+document.fonts&&document.fonts.ready.then(()=>{tabanCiz();uygula()});
+</script>
+</body>
+</html>

@@ -5,6 +5,8 @@ const demos = [
   { href: "/revak", name: "Revak Okulları", note: "İstanbul'da anaokulundan liseye kurgusal özel okul; ön kayıt, tur ve bursluluk akışlarıyla" },
   { href: "/kalemkar", name: "Kalemkâr", note: "Gaziantep'te tek menülü kurgusal şef restoranı; bakır sini üstünde rezervasyon akışıyla" },
   { href: "/pazi", name: "Pazı Robotik", note: "Gebze'de kurgusal cobot paletleme entegratörü; canlı robot hücresi ve ön fizibilite akışıyla" },
+  { href: "/sazbahce", name: "Sazbahçe", note: "Uluabat Gölü kıyısında kurgusal düğün ve davet bahçesi; misafir sayısına göre dizilen kıyı planı ve teklif özetiyle" },
+  { href: "/gelidonya", name: "Gelidonya", note: "Kumluca'da kurgusal sera üreticisi ve fidelik; sera içinden açılan, viyolle sayan fide ön rezervasyonu" },
 ];
 
 export default function Index() {

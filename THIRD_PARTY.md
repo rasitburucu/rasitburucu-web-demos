@@ -67,3 +67,75 @@ Arazi, evler, zeytinler, deniz, gökyüzü, yaprak gölgeleri ve isteğe bağlı
 | Instrument Sans (Instrument), latin ve latin-ext | font | https://fonts.google.com/specimen/Instrument+Sans (next/font/google) | SIL OFL 1.1 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Metin ve arayüz |
 | White Plaster Rough 01 (Poly Haven) | doku | https://polyhaven.com/a/white_plaster_rough_01 | CC0 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Kireç duvar ve cepheler |
 | Travertine 009 (ambientCG) | doku | https://ambientcg.com/view?id=Travertine009 | CC0 | Hayır (yine de künyede anılıyor) | 2026-10-04 | Teraslar ve havuz kenarları |
+
+## Sazbahçe (`/web/sazbahce/`)
+
+Kök `THIRD_PARTY.md`'ye birleştirilecek satırlar. Yalnız gerçek göl fotoğrafları Pexels'ten (alan fotoğrafları çıkarıldı, yerlerine kendi render'larımız geldi). Fotoğraflar Pexels sayfasından yerel indirildi (hot-link yok), `scripts/process-sazbahce-images.mjs` ile tek akşam tonuna çekildi ve AVIF/WebP'ye çevrildi. Ham dosyalar `scripts/.raw/sazbahce/` (git dışında). Kaynaklar sitede de "Proje künyesi"nde listeli (`content/sazbahce/credits.ts`).
+
+### Fotoğraflar (Pexels License: ücretsiz, ticari kullanım serbest, atıf zorunlu değil; yine de atıf verildi)
+
+| Dosya anahtarı | Pexels sayfası | Yazar | Kullanım | Tarih |
+|---|---|---|---|---|
+| golyazi | https://www.pexels.com/photo/serene-sunset-at-lake-ulubat-in-golyazi-bursa-36520717/ | mustafa memish | İlk ekran, Uluabat Gölü (gerçek yer) | 2026-10-05 |
+| sazlik | https://www.pexels.com/photo/serene-lake-view-with-rowboat-and-reeds-in-bursa-33066315/ | Ali Uğur | Ziyaret, Uluabat sazlığı (gerçek yer) | 2026-10-05 |
+| liman | https://www.pexels.com/photo/harbour-in-bursa-19962368/ | Betül Şen | Ziyaret, Gölyazı kıyısı (gerçek yer) | 2026-10-05 |
+
+### Yazı karakterleri (SIL Open Font License 1.1)
+
+| Font | Kaynak | Dosya | Not |
+|---|---|---|---|
+| Anybody (The Anybody Project Authors, Etcetera Type Co.) | https://github.com/google/fonts/tree/main/ofl/anybody | `app/sazbahce/fonts/anybody-tr.woff2` + `OFL-Anybody.txt` | wdth 100–150, wght 500–850 kesildi; Latin + Türkçe alt küme |
+| Onest (The Onest Project Authors) | https://github.com/google/fonts/tree/main/ofl/onest | `app/sazbahce/fonts/onest-tr.woff2` + `OFL-Onest.txt` | wght 400–700 kesildi; Latin + Türkçe alt küme |
+
+### 3B modeller ve dokular (Poly Haven, CC0; atıf zorunlu değil)
+Alan render'larında kullanıldı; render'a gömülü, siteye dosya olarak girmez. İndirme: `.tasarim/sazbahce/blender/ph_get.py` (2026-10-05).
+
+| Varlık | Tür | Sayfa | Kullanım |
+|---|---|---|---|
+| dining_chair_02 | model | https://polyhaven.com/a/dining_chair_02 | Ağ Ambarı sandalyeleri |
+| wooden_lantern_01 | model | https://polyhaven.com/a/wooden_lantern_01 | Yol ve iskele fenerleri |
+| Lantern_01 | model | https://polyhaven.com/a/Lantern_01 | Ceviz dallarında, iskele korkuluğunda fenerler |
+| caged_hanging_light | model | https://polyhaven.com/a/caged_hanging_light | Ambar avizeleri |
+| tea_set_01 | model | https://polyhaven.com/a/tea_set_01 | Kına masası |
+| grass_medium_01, grass_medium_02 | model | https://polyhaven.com/a/grass_medium_01 | Çayırda çimen tutamları |
+| leafy_grass, old_wood_floor, raw_plank_wall, plastered_stone_wall, stone_wall_04, roof_planks, clay_roof_tiles_02, rough_linen, gravel_ground_01, brown_mud_02, bark_brown_02 | doku | https://polyhaven.com/textures | Zemin, ahşap, taş duvar, çatı, örtü, kabuk |
+
+### Kendi üretimimiz
+- Dört alanın 8 görseli (Söğüt Çayırı, Ağ Ambarı, Ceviz Avlusu, İskele; ikişer kare): Blender 5.2 Cycles, komut satırından ayrı süreçle (`blender -b -P sazbahce_scene.py`). Söğütler, ceviz, saz, hasır sandalye, masa örtüleri, ambar, ağlar, avlu, ev, iskele, karşı kıyı kodla modellendi. Betik ve .blend dosyaları `.tasarim/sazbahce/blender/`.
+- Kıyı planı, masa yerleşim algoritması, bölge haritası, favicon/işaret: kodla çizildi (SVG).
+- Ambar sunum perdesindeki görüntü, sitenin Gölyazı fotoğrafıdır (yukarıdaki Pexels satırı).
+
+## Gelidonya (`/web/gelidonya/`)
+
+Tarih: 2026-10-05. Demo: `gelidonya` (rasitburucu.com/web/gelidonya/).
+
+### Yazı karakterleri
+| Varlık | Kaynak | Lisans | Ne için | Dosya |
+|---|---|---|---|---|
+| Big Shoulders Display (değişken, wght 100–900) | https://fonts.google.com/specimen/Big+Shoulders+Display · github.com/xotypeco/big_shoulders | SIL OFL 1.1 | Başlıklar, iri rakamlar, viyol isim kazığı | `app/gelidonya/fonts/big-shoulders-display-tr.woff2` (Latin + Türkçe alt küme, fontTools) + `OFL-BigShouldersDisplay.txt` |
+| Schibsted Grotesk (değişken, wght 400–900) | https://fonts.google.com/specimen/Schibsted+Grotesk · github.com/schibsted/schibsted-grotesk | SIL OFL 1.1 | Gövde, form, etiket | `app/gelidonya/fonts/schibsted-grotesk-tr.woff2` + `OFL-SchibstedGrotesk.txt` |
+
+Türkçe glif (ğ Ğ ı İ ş Ş) alt kümede var. Kaynak TTF: google/fonts deposu (2026-10-05 indirildi, yön aşamasında).
+
+### Görseller (hepsi kendi üretimimiz; dış görsel yok)
+| Görsel | Nasıl | Lisans | Kaynak dosya |
+|---|---|---|---|
+| Sera içi (`public/gelidonya/sera-ici-*`, `sera-ici-dar-*`, OG kartı) | Blender 5.2.2 Cycles, tamamen koddan: domates bitkisi, sera iskeleti, örtü, torba, boru (`scripts/gelidonya-blender/bitki.py`, `sera.py`) | Kendi çalışmamız | `.tasarim/gelidonya/blender/gelidonya-sera.blend` (kamera `GD_Kamera`) |
+| Ürünlerimiz açılış görseli (`urun-*`) | Sera içi render'ının kırpımı (salkım yakın çekimi `GD_SalkimKamera` artık sitede yok) | Kendi çalışmamız | aynı .blend |
+| Fidelik (`fidelik-*`) ve ziyaret görünümü (`ziyaret-*`, İletişim) | Blender, koddan: viyol, torf, fide, tezgâh (`fide.py`); kameralar `GD_FideKamera`, `GD_ZiyaretKamera` | Kendi çalışmamız | `.tasarim/gelidonya/blender/gelidonya-fidelik.blend` |
+| Ova (`ova-*`) | Blender, koddan: arazi gürültüsü, sera blokları, deniz, gökyüzü (`ova.py`); gerçek harita ya da fotoğraf izlenmedi | Kendi çalışmamız | `.tasarim/gelidonya/blender/gelidonya-ova.blend` |
+| Sipariş viyolü ve fideler (`viyol-*-torf`, `fide-*`) | Blender, koddan, üstten ortografik kareler (`viyol_kare.py`); tarayıcıda `lib/gelidonya/viyol-kare.ts` ile doldurulur, isim kazığı canvas (`viyol-ciz.ts`) | Kendi çalışmamız | Ana kareler `.tasarim/gelidonya/blender/render/viyol/` |
+| İletişim harita kesiti | Elle yazılmış SVG (`HaritaKesiti`), gerçek harita izlenmedi, örnek konum | Kendi çalışmamız | — |
+
+HDRI, doku ya da hazır model kullanılmadı (Poly Haven dahil). Işık: Blender gökyüzü dokusu + güneş lambası.
+
+### Bilgi kaynakları (sitede alıntı değil, değerin dayanağı)
+| Bilgi | Kaynak | Not |
+|---|---|---|
+| Dekara 2.800 aşısız, tek tepe domates fidesi | T.C. Tarım ve Orman Bakanlığı, Bitkisel Üretim Genel Müdürlüğü, "Topraksız Ortamda Domates Üretimi İçin Jeotermal Sera Yatırımı Fizibilite Raporu (5.000 m² Üretim Alanı)", s. 9. https://www.tarimorman.gov.tr/BUGEM/Belgeler/YATIRIMCI%20REHBER%C4%B0/Topraksiz%20Ortamda%20Domates%20Uretimi%20I%C3%A7in%20Jeotermal%20Sera%20Yatirimi%20Fizibilite%20Raporu%20(5.000%20m2%20Uretim%20Alani).pdf | Sitede kaynak bağlantısıyla. Aşılı domates 1.400 = 2.800 tepe ÷ 2 gövde (bizim türetmemiz, sitede formül açık) |
+| Aşılı fide 45–60 gün, aşısız 40–45 gün; aşılı domates (çift gövde) 55–65 gün; aşılı karpuz 35–55 gün; 45 göz (domates/biber/patlıcan), 24–32 göz (karpuz/kavun); cuma–cumartesi kargo yok | agrowy.com, "Fidelikler nasıl ve ne zaman sipariş alır" (yön aşaması araştırması) | Sektör yazısı; sitede "≈" ve "örnek" |
+| Biber, patlıcan, hıyar, karpuz, kavun dekar sıklığı | Kaynak bulunamadı | Sitede "Örnek değer, kaynak yok" yazar (içerik açığı) |
+| Hasat sezonu ayları | Genel bölge bilgisi, kaynaksız | Sitede "örnek takvim" |
+
+### Kütüphane
+Yeni paket eklenmedi (repo bağımlılıkları: Next 15.5, React 19). three/GSAP/Lenis bu demoda kullanılmadı.

@@ -9,3 +9,9 @@ next-env.d.ts
 scripts/.raw/
 .preview/
 .tasarim/*/ekran/
+.tasarim/*/ekran-insa/
+.tasarim/*/blender/assets/
+.tasarim/*/blender/render/
+.tasarim/*/blender/**/*.png
+*.blend
+*.blend1

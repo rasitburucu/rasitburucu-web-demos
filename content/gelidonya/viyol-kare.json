@@ -1,0 +1,102 @@
+{
+  "sizes": {
+    "viyol-45-torf": [
+      1200,
+      754
+    ],
+    "viyol-28-torf": [
+      1199,
+      770
+    ],
+    "fide-domates": [
+      892,
+      446
+    ],
+    "fide-biber": [
+      892,
+      446
+    ],
+    "fide-patlican": [
+      892,
+      446
+    ],
+    "fide-hiyar": [
+      892,
+      446
+    ],
+    "fide-karpuz": [
+      1146,
+      573
+    ],
+    "fide-kavun": [
+      1146,
+      573
+    ]
+  },
+  "trays": {
+    "28": {
+      "cols": 7,
+      "rows": 4,
+      "cell": 143.24,
+      "x0": 98.27,
+      "y0": 98.27,
+      "tray": [
+        85.04,
+        85.04,
+        1029.17,
+        599.43
+      ]
+    },
+    "45": {
+      "cols": 9,
+      "rows": 5,
+      "cell": 111.5,
+      "x0": 98.27,
+      "y0": 98.27,
+      "tray": [
+        85.04,
+        85.04,
+        1029.92,
+        583.94
+      ]
+    }
+  },
+  "sheets": {
+    "domates": {
+      "cells": 45,
+      "step": 222.99,
+      "cols": 4,
+      "rows": 2
+    },
+    "biber": {
+      "cells": 45,
+      "step": 222.99,
+      "cols": 4,
+      "rows": 2
+    },
+    "patlican": {
+      "cells": 45,
+      "step": 222.99,
+      "cols": 4,
+      "rows": 2
+    },
+    "hiyar": {
+      "cells": 45,
+      "step": 222.99,
+      "cols": 4,
+      "rows": 2
+    },
+    "karpuz": {
+      "cells": 28,
+      "step": 286.49,
+      "cols": 4,
+      "rows": 2
+    },
+    "kavun": {
+      "cells": 28,
+      "step": 286.49,
+      "cols": 4,
+      "rows": 2
+    }
+  }
+}

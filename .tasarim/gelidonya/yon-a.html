@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gelidonya, Yön A, Viyol Masası (ilk ekran prototipi)</title>
+<meta name="description" content="Konsept çalışma. Gelidonya kurgusal bir fide ve sera firmasıdır.">
+<meta name="theme-color" content="#F3F4F1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Yön A: Viyol Masası. Tokenlar malzemeden: EPS beyazı, viyol siyahı, galvaniz tezgâh, torf, kotiledon yeşili */
+:root{
+  --zemin:#F3F4F1;      /* strafor (EPS) viyol beyazı, soğuk */
+  --metin:#111311;      /* PS viyol siyahı */
+  --metin-2:#454A44;    /* zemin üstünde 8,2:1 */
+  --cizgi:#C6CAC3;
+  --tezgah:#BEC2BB;     /* galvaniz genişletilmiş metal tezgâh */
+  --tezgah-2:#AEB3AB;
+  --torf:#4A3826;
+  --yesil:#3F8F1F;      /* kotiledon; yalnız "dolu göz" anlamında */
+  --yesil-koyu:#235A0E; /* metin ve odak için, zemin üstünde 7,5:1 */
+  --etiket:#FFFFFF;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --gosterim:"Big Shoulders Display", "Arial Narrow", sans-serif;
+  --govde:"Schibsted Grotesk", system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--zemin);color:var(--metin);font-family:var(--govde);-webkit-text-size-adjust:100%}
+body{min-height:100vh;background:var(--zemin)}
+::selection{background:var(--yesil);color:#fff}
+:focus-visible{outline:3px solid var(--yesil-koyu);outline-offset:3px}
+a{color:inherit;text-underline-offset:3px;text-decoration-thickness:1px}
+
+.serit{background:var(--metin);color:#E9EBE6;font-size:13px;line-height:1.3;padding:8px 24px;text-align:center}
+.serit a{color:#fff;font-weight:600}
+
+header.ust{display:flex;align-items:center;gap:32px;padding:0 32px;height:68px;border-bottom:2px solid var(--metin)}
+.logo{display:flex;align-items:baseline;gap:10px;text-decoration:none}
+.logo b{font-family:var(--gosterim);font-weight:900;font-size:30px;letter-spacing:.02em;line-height:1}
+.logo span{font-size:13px;font-weight:600;color:var(--metin-2)}
+nav.menu{display:flex;gap:26px;font-size:15px;font-weight:500}
+nav.menu a{text-decoration:none;padding:6px 0}
+nav.menu a[aria-current]{border-bottom:2px solid var(--metin)}
+.ust-sag{margin-left:auto;display:flex;align-items:center;gap:18px;font-size:15px}
+.tel{font-weight:700;text-decoration:none}
+.tel small{font-weight:500;color:var(--metin-2);font-size:12px;margin-left:4px}
+.alici{border:2px solid var(--metin);padding:9px 14px;font-weight:600;text-decoration:none;white-space:nowrap}
+.dil{font-size:13px;color:var(--metin-2)}
+
+main{display:grid;grid-template-columns:minmax(500px,41%) minmax(0,1fr);min-height:calc(100vh - 101px)}
+.sol{min-width:0;padding:28px 40px 28px 32px;display:flex;flex-direction:column;gap:18px;border-right:2px solid var(--metin)}
+h1{font-family:var(--gosterim);font-weight:800;text-transform:uppercase;font-size:clamp(2.4rem,1rem + 3vw,4.35rem);line-height:.9;letter-spacing:.005em;text-wrap:balance}
+.alt{font-size:18px;line-height:1.45;color:var(--metin-2);max-width:34em;text-wrap:pretty}
+
+form{display:flex;flex-direction:column;gap:16px}
+fieldset{border:0;padding:0;min-width:0}
+legend,.etk{font-size:13px;font-weight:700;letter-spacing:.01em;margin-bottom:8px;display:block}
+.cipler{display:flex;flex-wrap:wrap;gap:6px}
+.cip{position:relative}
+.cip input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.cip span{display:flex;align-items:center;gap:6px;min-height:46px;padding:0 14px;border:2px solid var(--metin);font-size:16px;font-weight:600;background:#fff;transition:background-color .14s,color .14s}
+.cip span i{font-style:normal;font-weight:500;font-size:13px;color:var(--metin-2)}
+.cip input:checked+span{background:var(--metin);color:#fff}
+.cip input:checked+span i{color:#C9D6C1}
+.cip input:focus-visible+span{outline:3px solid var(--yesil-koyu);outline-offset:2px}
+
+.miktar{display:flex;gap:10px;align-items:stretch}
+.birim{display:flex;border:2px solid var(--metin)}
+.birim label{position:relative;display:flex}
+.birim input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.birim span{display:flex;align-items:center;padding:0 14px;font-weight:600;font-size:15px}
+.birim input:checked+span{background:var(--metin);color:#fff}
+.birim input:focus-visible+span{outline:3px solid var(--yesil-koyu);outline-offset:-5px}
+.sayac{display:flex;align-items:stretch;border:2px solid var(--metin);background:#fff;flex:1;max-width:280px}
+.sayac button{width:56px;border:0;background:#fff;font-size:28px;font-weight:600;cursor:pointer;color:var(--metin)}
+.sayac button:active{background:#E6E8E3}
+.sayac input{width:100%;min-width:0;border:0;border-left:2px solid var(--metin);border-right:2px solid var(--metin);text-align:center;font-family:var(--gosterim);font-weight:800;font-size:40px;color:var(--metin);background:#fff;padding:0}
+.sayac input::-webkit-inner-spin-button{appearance:none}
+
+.haftalar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin;scrollbar-color:var(--metin) transparent;scroll-snap-type:x proximity}
+.haftalar .cip{flex:0 0 auto;scroll-snap-align:start}
+.haftalar .cip span{flex-direction:column;align-items:flex-start;justify-content:center;gap:0;min-height:56px;padding:0 12px;line-height:1.15}
+.haftalar .cip span b{font-size:16px}
+.haftalar .cip span i{font-size:13px}
+
+.gonder{display:flex;align-items:center;gap:18px;margin-top:4px}
+.dugme{display:inline-flex;align-items:center;justify-content:center;min-height:58px;padding:0 26px;background:var(--metin);color:#fff;border:0;font-family:var(--govde);font-size:18px;font-weight:700;cursor:pointer;white-space:nowrap}
+.dugme:hover{background:#2A2E2A}
+.not{font-size:13px;line-height:1.4;color:var(--metin-2);max-width:22em}
+
+/* Tezgâh */
+.tezgah{position:relative;overflow:hidden;background-color:var(--tezgah);
+  background-image:
+   repeating-linear-gradient(60deg, rgba(0,0,0,.075) 0 1.5px, transparent 1.5px 13px),
+   repeating-linear-gradient(-60deg, rgba(255,255,255,.22) 0 1.5px, transparent 1.5px 13px),
+   radial-gradient(120% 90% at 30% 10%, rgba(255,255,255,.35), transparent 60%);
+}
+.tezgah canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.etiket{position:absolute;left:28px;bottom:30px;width:330px;background:var(--etiket);color:var(--metin);padding:18px 20px 16px 46px;transform:rotate(-1.6deg);box-shadow:0 1px 0 rgba(0,0,0,.08),0 14px 24px -12px rgba(20,24,20,.45);clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 62%,14px 50%,0 38%)}
+.etiket::before{content:"";position:absolute;left:18px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--tezgah-2);box-shadow:inset 0 1px 2px rgba(0,0,0,.35)}
+.etiket h2{font-family:var(--gosterim);font-weight:800;font-size:30px;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.etiket h2 small{font-family:var(--govde);font-size:14px;font-weight:600;text-transform:none;letter-spacing:0;margin-left:6px;color:var(--metin-2)}
+.etiket dl{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;margin-top:12px;font-size:14px}
+.etiket dt{color:var(--metin-2)}
+.etiket dd{font-weight:700}
+.etiket dd.iri{font-family:var(--gosterim);font-size:26px;line-height:.95;font-weight:800}
+.hesap{margin-top:12px;padding-top:10px;border-top:1.5px dashed var(--cizgi);font-size:12.5px;line-height:1.4;color:var(--metin-2)}
+.son-viyol{position:absolute;right:30px;top:24px;background:var(--metin);color:#fff;font-size:14px;font-weight:600;padding:8px 12px}
+
+/* Fişin kendisi (gönderim sonrası) */
+.fis{display:none;border:2px solid var(--metin);background:#fff;padding:14px 16px;font-size:15px;line-height:1.45}
+.fis.acik{display:block}
+.fis b{font-weight:700}
+
+/* Telefon alt bar */
+.alt-bar{display:none}
+
+@media (max-width: 900px){
+  header.ust{gap:12px;padding:0 16px;height:60px}
+  nav.menu,.dil,.alici{display:none}
+  .logo b{font-size:26px}
+  .logo span{display:none}
+  .tel small{display:none}
+  .menu-dugme{display:inline-flex!important}
+  main{grid-template-columns:minmax(0,1fr);min-height:0}
+  .serit{font-size:12px;padding:6px 12px}
+  .serit .uzun{display:none}
+  .serit .kisa{display:inline!important}
+  .sol{padding:18px 16px 110px;border-right:0;gap:14px}
+  h1{font-size:2.45rem;line-height:.92}
+  .alt{font-size:15px;line-height:1.4}
+  .tezgah{order:-1;height:124px;border-bottom:2px solid var(--metin)}
+  .tezgah .etiket,.tezgah .son-viyol{display:none}
+  .gonder{display:none}
+  .cip span{min-height:44px;padding:0 12px;font-size:15px}
+  .alt-bar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--metin);color:#fff;padding:10px 12px 10px 16px;gap:12px;align-items:center}
+  .alt-bar .ozet{flex:1;font-size:13px;line-height:1.25;color:#D9DED6}
+  .alt-bar .ozet b{display:block;font-family:var(--gosterim);font-size:24px;font-weight:800;color:#fff}
+  .alt-bar .dugme{background:#fff;color:var(--metin);min-height:52px;padding:0 16px;font-size:16px}
+}
+.menu-dugme{display:none;margin-left:auto;align-items:center;justify-content:center;width:48px;height:44px;border:2px solid var(--metin);background:transparent;font-weight:700;font-size:14px}
+@media (max-width:900px){.ust-sag{margin-left:0}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="serit">Konsept çalışma — <a href="https://rasitburucu.com">rasitburucu.com</a>. <span class="uzun">Gelidonya kurgusal bir markadır; bu sayfadaki formlar hiçbir yere gönderilmez.</span><span class="kisa" style="display:none">Kurgusal marka; formlar gönderilmez.</span></div>
+<header class="ust">
+  <a class="logo" href="#"><b>GELİDONYA</b><span>Sera ve fidelik, Kumluca</span></a>
+  <nav class="menu" aria-label="Ana menü">
+    <a href="#" aria-current="page">Fide siparişi</a><a href="#">Aşılı fide</a><a href="#">Seralarımız</a><a href="#">Ürünlerimiz</a><a href="#">İletişim</a>
+  </nav>
+  <button class="menu-dugme" type="button" aria-label="Menüyü aç">Menü</button>
+  <div class="ust-sag">
+    <a class="tel" href="tel:+902420000000">0242 000 00 00<small>[örnek]</small></a>
+    <a class="alici" href="#">Ürün ve ihracat</a>
+    <span class="dil">TR, EN yakında</span>
+  </div>
+</header>
+
+<main>
+  <section class="sol" aria-labelledby="baslik">
+    <h1 id="baslik">Dikim gününüzü söyleyin, fideniz o sabah serada olsun.</h1>
+    <p class="alt">Kendi seralarımıza diktiğimiz fideyi sizin için de yetiştiriyoruz. Tohumu teslim haftanızdan geriye sayarak ekeriz; ne zaman ekildiğini de, ne zaman geleceğini de bugünden bilirsiniz.</p>
+
+    <form id="siparis" novalidate>
+      <fieldset>
+        <legend>Ürün</legend>
+        <div class="cipler" id="urunler"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Ne kadar</legend>
+        <div class="miktar">
+          <div class="birim" role="radiogroup" aria-label="Birim">
+            <label><input type="radio" name="birim" value="donum" checked><span>Dönüm</span></label>
+            <label><input type="radio" name="birim" value="adet"><span>Adet</span></label>
+          </div>
+          <div class="sayac">
+            <button type="button" data-adim="-1" aria-label="Azalt">−</button>
+            <input id="miktar" inputmode="numeric" value="3" aria-label="Miktar (dönüm)">
+            <button type="button" data-adim="1" aria-label="Artır">+</button>
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Dikim haftası (fideniz bu hafta teslim edilir)</legend>
+        <div class="haftalar" id="haftalar"></div>
+      </fieldset>
+      <div class="gonder">
+        <button class="dugme" type="submit">Ön rezervasyon yap</button>
+        <p class="not">Ad ve telefonunuzu bir sonraki adımda alırız. Demo: hiçbir yere gönderilmez.</p>
+      </div>
+      <div class="fis" id="fis" role="status"></div>
+    </form>
+  </section>
+
+  <section class="tezgah" aria-label="Siparişinizin viyolleri">
+    <canvas id="tuval" aria-hidden="true"></canvas>
+    <div class="son-viyol" id="sonViyol"></div>
+    <div class="etiket" id="etiket">
+      <h2 id="eUrun">Domates <small>aşılı</small></h2>
+      <dl>
+        <dt>Fide</dt><dd class="iri" id="eFide">5.700</dd>
+        <dt>Viyol</dt><dd id="eViyol">127 viyol, 45 gözlü</dd>
+        <dt>Tohum ekimi</dt><dd id="eEkim">51. hafta</dd>
+        <dt>Teslim</dt><dd id="eTeslim">7. hafta</dd>
+      </dl>
+      <p class="hesap" id="eHesap"></p>
+    </div>
+  </section>
+</main>
+
+<div class="alt-bar" aria-live="polite">
+  <div class="ozet"><b id="mOzet">5.700 fide</b><span id="mOzet2">127 viyol, teslim 7. hafta</span></div>
+  <button class="dugme" type="submit" form="siparis">Ön rezervasyon</button>
+</div>
+
+<script>
+/* Örnek değerler: sıklık, göz ve süre ürün başına ÖRNEKTİR. Kaynaklı aralıklar: aşılı 1.800–2.000/da, aşısız 2.500–3.000/da;
+   aşılı 45–60 gün, aşısız 40–45 gün; 45 göz (domates/biber/patlıcan), 24–32 göz (karpuz/kavun). Diğerleri içerik açığı. */
+const URUNLER=[
+ {id:'domates-a',ad:'Domates',tur:'aşılı',sik:1900,goz:45,sure:8,sekil:'domates'},
+ {id:'domates',ad:'Domates',tur:'aşısız',sik:2500,goz:45,sure:6,sekil:'domates'},
+ {id:'biber',ad:'Biber',tur:'aşısız',sik:2500,goz:45,sure:6,sekil:'biber'},
+ {id:'patlican-a',ad:'Patlıcan',tur:'aşılı',sik:1900,goz:45,sure:8,sekil:'patlican'},
+ {id:'hiyar-a',ad:'Hıyar',tur:'aşılı',sik:1900,goz:45,sure:7,sekil:'hiyar'},
+ {id:'karpuz-a',ad:'Karpuz',tur:'aşılı',sik:500,goz:28,sure:7,sekil:'karpuz'},
+ {id:'kavun-a',ad:'Kavun',tur:'aşılı',sik:800,goz:28,sure:7,sekil:'kavun'}
+];
+const AY=['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const BUGUN=new Date(Date.UTC(2026,9,5)); // prototip: sabit "bugün" (5 Ekim 2026, 41. hafta)
+const GUN=864e5;
+function pazartesi(d){const t=new Date(d);const g=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()-g+1);return t}
+function isoHafta(d){const t=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));const g=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-g);const y0=new Date(Date.UTC(t.getUTCFullYear(),0,1));return {w:Math.ceil(((t-y0)/GUN+1)/7),y:t.getUTCFullYear()}}
+function aralik(m){const s=new Date(m.getTime()+6*GUN);return m.getUTCMonth()===s.getUTCMonth()?`${m.getUTCDate()}–${s.getUTCDate()} ${AY[s.getUTCMonth()]}`:`${m.getUTCDate()} ${AY[m.getUTCMonth()]}–${s.getUTCDate()} ${AY[s.getUTCMonth()]}`}
+const nf=n=>n.toLocaleString('tr-TR');
+const BU_PZT=pazartesi(BUGUN);
+
+const durum={urun:'domates-a',birim:'donum',miktar:3,teslim:null};
+const urun=()=>URUNLER.find(u=>u.id===durum.urun);
+
+// Ürün çipleri
+const urunlerEl=document.getElementById('urunler');
+urunlerEl.innerHTML=URUNLER.map(u=>`<label class="cip"><input type="radio" name="urun" value="${u.id}" ${u.id===durum.urun?'checked':''}><span>${u.ad}<i>${u.tur}</i></span></label>`).join('');
+urunlerEl.addEventListener('change',e=>{durum.urun=e.target.value;haftalariKur();guncelle(true)});
+
+// Haftalar: en erken teslim = bu hafta + üretim süresi + 1 hafta sipariş payı
+const haftaEl=document.getElementById('haftalar');
+function haftalariKur(){
+  const u=urun();
+  const ilk=new Date(BU_PZT.getTime()+(u.sure+1)*7*GUN);
+  const liste=[];for(let i=0;i<16;i++){liste.push(new Date(ilk.getTime()+i*7*GUN))}
+  const hedef=liste.find(m=>{const h=isoHafta(m);return h.y===2027&&h.w===7});
+  if(!durum.teslim||!liste.some(m=>m.getTime()===durum.teslim.getTime())) durum.teslim=hedef||liste[0];
+  haftaEl.innerHTML=liste.map(m=>{const h=isoHafta(m);const sec=m.getTime()===durum.teslim.getTime();
+    return `<label class="cip"><input type="radio" name="hafta" value="${m.getTime()}" ${sec?'checked':''}><span><b>${h.w}. hafta${h.y!==2026?' '+h.y:''}</b><i>${aralik(m)}</i></span></label>`}).join('');
+  const s=haftaEl.querySelector('input:checked');if(s){const p=s.closest('.cip');haftaEl.scrollLeft=Math.max(0,p.offsetLeft-haftaEl.offsetLeft-60)}
+}
+haftaEl.addEventListener('change',e=>{durum.teslim=new Date(+e.target.value);guncelle(false)});
+
+// Miktar
+const miktarEl=document.getElementById('miktar');
+document.querySelectorAll('.sayac button').forEach(b=>b.addEventListener('click',()=>{
+  const adim=durum.birim==='donum'?1:500;durum.miktar=Math.max(durum.birim==='donum'?1:100,durum.miktar+ +b.dataset.adim*adim);miktarEl.value=nf(durum.miktar);guncelle(true)}));
+miktarEl.addEventListener('input',()=>{const v=parseInt(miktarEl.value.replace(/\D/g,''))||0;durum.miktar=Math.min(v,durum.birim==='donum'?500:900000);guncelle(true)});
+document.querySelectorAll('input[name=birim]').forEach(r=>r.addEventListener('change',()=>{
+  const u=urun();const f=hesap().fide;durum.birim=r.value;
+  durum.miktar=durum.birim==='adet'?f:Math.max(1,Math.round(f/u.sik));miktarEl.value=nf(durum.miktar);
+  miktarEl.setAttribute('aria-label',durum.birim==='adet'?'Miktar (adet)':'Miktar (dönüm)');guncelle(false)}));
+
+function hesap(){const u=urun();const fide=durum.birim==='donum'?durum.miktar*u.sik:durum.miktar;const viyol=Math.max(1,Math.ceil(fide/u.goz));const son=fide-(viyol-1)*u.goz;
+  const ekim=new Date(durum.teslim.getTime()-u.sure*7*GUN);return {u,fide,viyol,son,ekim}}
+
+function guncelle(yeniViyol){
+  const r=hesap(),u=r.u,ht=isoHafta(durum.teslim),he=isoHafta(r.ekim);
+  document.getElementById('eUrun').innerHTML=`${u.ad} <small>${u.tur}</small>`;
+  document.getElementById('eFide').textContent=nf(r.fide);
+  document.getElementById('eViyol').textContent=`${nf(r.viyol)} viyol, ${u.goz} gözlü`;
+  document.getElementById('eEkim').textContent=`${he.w}. hafta (${aralik(r.ekim)})`;
+  document.getElementById('eTeslim').textContent=`${ht.w}. hafta (${aralik(durum.teslim)}${ht.y!==2026?' '+ht.y:''})`;
+  document.getElementById('eHesap').textContent=durum.birim==='donum'
+    ?`${nf(durum.miktar)} dönüm × ${nf(u.sik)} fide = ${nf(r.fide)} fide. ${nf(r.fide)} ÷ ${u.goz} göz = ${nf(r.viyol)} viyol. Sıklık, göz ve ${u.sure} haftalık süre örnektir; siparişte ziraat mühendisimiz teyit eder.`
+    :`${nf(r.fide)} fide ÷ ${u.goz} göz = ${nf(r.viyol)} viyol. Tohum, teslimden ${u.sure} hafta önce ekilir (örnek süre; mevsime göre değişir).`;
+  document.getElementById('sonViyol').textContent=`Son viyol: ${r.son} / ${u.goz} göz dolu`;
+  document.getElementById('mOzet').textContent=`${nf(r.fide)} fide`;
+  document.getElementById('mOzet2').textContent=`${nf(r.viyol)} viyol, teslim ${ht.w}. hafta`;
+  ciz.hedef(r,yeniViyol);
+}
+
+document.getElementById('siparis').addEventListener('submit',e=>{e.preventDefault();const r=hesap(),ht=isoHafta(durum.teslim);
+  const f=document.getElementById('fis');f.classList.add('acik');
+  f.innerHTML=`<b>Ön rezervasyon fişi hazır.</b> ${r.u.ad} (${r.u.tur}), ${nf(r.fide)} fide, ${ht.w}. hafta teslim. Bir sonraki adımda ad, telefon ve teslim yerini sorarız. Bu bir konsept çalışmadır; fiş hiçbir yere gönderilmedi.`;
+  f.scrollIntoView({block:'nearest'})});
+
+/* ---------- Tuval: tezgâh üstünde siparişin viyolleri ---------- */
+const ciz=(()=>{
+  const tv=document.getElementById('tuval'),cx=tv.getContext('2d');
+  const azHareket=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W=0,H=0,dpr=1,veri=null,t0=0,anim=0,eskiViyol=0,yeniBaslangic=0;
+  function boyut(){const r=tv.getBoundingClientRect();dpr=Math.min(devicePixelRatio||1,2);W=r.width;H=r.height;tv.width=W*dpr;tv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
+  function rnd(s){return()=>{s=(s*16807)%2147483647;return (s-1)/2147483646}}
+  const yerlesim=g=>g===28?{c:7,r:4}:{c:9,r:5};
+  const mobil=()=>W<700;
+
+  // Torf gözü
+  function goz(x,y,s,dolu,R){
+    cx.fillStyle='#070808';cx.fillRect(x,y,s,s);
+    const ic=s*.08;
+    const gr=cx.createLinearGradient(x,y,x,y+s);gr.addColorStop(0,'#000');gr.addColorStop(1,'#141616');
+    cx.fillStyle=gr;cx.fillRect(x+ic,y+ic,s-2*ic,s-2*ic);
+    if(!dolu){cx.fillStyle='#262a2a';cx.beginPath();cx.arc(x+s/2,y+s/2,s*.07,0,7);cx.fill();return}
+    const t=cx.createRadialGradient(x+s*.45,y+s*.4,s*.05,x+s/2,y+s/2,s*.5);
+    t.addColorStop(0,'#6a5138');t.addColorStop(.7,'#4a3826');t.addColorStop(1,'#2a1f15');
+    cx.fillStyle=t;cx.fillRect(x+ic,y+ic,s-2*ic,s-2*ic);
+    if(s>14){cx.fillStyle='rgba(240,238,230,.85)';for(let i=0;i<Math.round(s/5);i++){cx.beginPath();cx.arc(x+ic+R()*(s-2*ic),y+ic+R()*(s-2*ic),Math.max(.6,s*.018*(0.6+R())),0,7);cx.fill()}}
+  }
+  // Yaprak yolu (tek yaprak, uç +x yönünde)
+  function yaprak(l,w,tip){
+    cx.beginPath();
+    if(tip==='domates'){ // bileşik yaprak: sap + 3 çift yaprakçık
+      cx.moveTo(0,0);
+      for(let i=1;i<=3;i++){const px=l*i/3.6,lw=w*(1-i*.12);
+        cx.ellipse(px,-lw*.9,lw*.75,lw*.42,-0.7,0,7);cx.moveTo(px,0);cx.ellipse(px,lw*.9,lw*.75,lw*.42,0.7,0,7);cx.moveTo(px,0)}
+      cx.ellipse(l*.92,0,w*.75,w*.45,0,0,7);
+    } else if(tip==='karpuz'){ // derin loblu
+      for(let i=-2;i<=2;i++){const a=i*.42;cx.moveTo(0,0);cx.ellipse(Math.cos(a)*l*.48,Math.sin(a)*l*.48,l*.36,w*.32,a,0,7)}
+    } else if(tip==='hiyar'||tip==='kavun'){ // el ayası
+      cx.moveTo(0,0);cx.ellipse(l*.5,0,l*.5,w*(tip==='kavun'?.95:.8),0,0,7);
+      cx.moveTo(l*.35,-w*.4);cx.ellipse(l*.38,-w*.55,l*.28,w*.32,-0.6,0,7);cx.moveTo(l*.35,w*.4);cx.ellipse(l*.38,w*.55,l*.28,w*.32,.6,0,7);
+    } else { // biber, patlıcan: düz kenarlı yumurta
+      cx.moveTo(0,0);cx.bezierCurveTo(l*.25,-w,l*.75,-w*.9,l,0);cx.bezierCurveTo(l*.75,w*.9,l*.25,w,0,0);
+    }
+  }
+  function fide(xm,ym,s,u,R,k){ // k: büyüme 0..1
+    if(k<=0)return;
+    const tip=u.sekil,rot=R()*Math.PI*2,sc=(0.86+R()*.28)*k;
+    cx.save();cx.translate(xm,ym);cx.rotate(rot);cx.scale(sc,sc);
+    // gölge
+    cx.save();cx.translate(s*.04,s*.06);cx.globalAlpha=.32;cx.fillStyle='#000';
+    const kot=tip==='karpuz'||tip==='hiyar'||tip==='kavun';
+    const kl=s*(kot?.27:.3),kw=s*(kot?.13:.065);
+    for(const a of[0,Math.PI]){cx.save();cx.rotate(a);cx.beginPath();cx.ellipse(kl*.55,0,kl*.55,kw,0,0,7);cx.fill();cx.restore()}
+    cx.restore();
+    // kotiledonlar
+    for(const a of[0,Math.PI]){cx.save();cx.rotate(a);const g=cx.createLinearGradient(0,-kw,0,kw);g.addColorStop(0,'#8CC25C');g.addColorStop(1,'#4E8F2A');cx.fillStyle=g;cx.beginPath();cx.ellipse(kl*.55,0,kl*.55,kw,0,0,7);cx.fill();
+      cx.strokeStyle='rgba(30,60,15,.35)';cx.lineWidth=Math.max(.5,s*.008);cx.beginPath();cx.moveTo(kl*.1,0);cx.lineTo(kl*.95,0);cx.stroke();cx.restore()}
+    // gerçek yapraklar (dik açıda)
+    const tl=s*(tip==='domates'?.42:tip==='karpuz'?.4:.36),tw=s*(tip==='domates'?.075:tip==='patlican'?.15:.13);
+    const renk=tip==='patlican'?['#5D7A45','#3B5A2B']:tip==='biber'?['#3E8A2C','#1F5A14']:['#4C8F2E','#255E16'];
+    for(const a of[Math.PI/2+R()*.3-.15,-Math.PI/2+R()*.3-.15]){cx.save();cx.rotate(a);
+      cx.save();cx.translate(s*.03,s*.05);cx.globalAlpha=.3;cx.fillStyle='#000';yaprak(tl,tw,tip);cx.fill();cx.restore();
+      const g=cx.createLinearGradient(0,-tw,tl,tw);g.addColorStop(0,renk[0]);g.addColorStop(1,renk[1]);cx.fillStyle=g;yaprak(tl,tw,tip);cx.fill();
+      cx.strokeStyle='rgba(200,235,170,.35)';cx.lineWidth=Math.max(.5,s*.01);cx.beginPath();cx.moveTo(0,0);cx.lineTo(tl*.9,0);cx.stroke();
+      cx.restore()}
+    if(tip==='patlican'){cx.fillStyle='#5B2A4E';cx.beginPath();cx.arc(0,0,s*.035,0,7);cx.fill()}
+    else{cx.fillStyle='#A9D57F';cx.beginPath();cx.arc(0,0,s*.025,0,7);cx.fill()}
+    cx.restore();
+  }
+  function viyol(x,y,w,u,dolu,R,ayrinti,buyume){
+    const {c,r}=yerlesim(u.goz);const kenar=w*.035,s=(w-2*kenar)/c,h=s*r+2*kenar;
+    // gölge
+    cx.save();cx.shadowColor='rgba(20,24,20,.45)';cx.shadowBlur=ayrinti?28:6;cx.shadowOffsetY=ayrinti?16:3;cx.shadowOffsetX=ayrinti?6:1;
+    cx.fillStyle='#17191A';cx.beginPath();cx.roundRect(x,y,w,h,Math.max(2,w*.012));cx.fill();cx.restore();
+    // kenar parlaması
+    cx.strokeStyle='rgba(255,255,255,.14)';cx.lineWidth=Math.max(1,w*.004);cx.beginPath();cx.roundRect(x+1,y+1,w-2,h-2,Math.max(2,w*.012));cx.stroke();
+    let n=0;
+    for(let j=0;j<r;j++)for(let i=0;i<c;i++){
+      const gx=x+kenar+i*s,gy=y+kenar+j*s,d=n<dolu;
+      if(ayrinti){goz(gx,gy,s,d,R);if(d)fide(gx+s/2,gy+s/2,s,u,R,buyume?buyume(n):1)}
+      else{cx.fillStyle=d?'#3A2C1F':'#050606';cx.fillRect(gx+s*.1,gy+s*.1,s*.8,s*.8);
+        if(d){cx.fillStyle=(n*7%5===0)?'#7DB84E':'#5A9E34';const q=s*.42;cx.beginPath();cx.ellipse(gx+s/2,gy+s/2,q,q*.55,(n*1.3)%3,0,7);cx.fill()}}
+      n++;
+    }
+    return h;
+  }
+  function kazik(x,y,s,u){ // viyole saplanmış plastik isim etiketi
+    cx.save();cx.translate(x,y);cx.rotate(-.18);
+    cx.shadowColor='rgba(0,0,0,.35)';cx.shadowBlur=8;cx.shadowOffsetY=5;
+    cx.fillStyle='#FBFBF7';cx.beginPath();cx.moveTo(0,0);cx.lineTo(s*2.4,0);cx.lineTo(s*2.4,s*.62);cx.lineTo(0,s*.62);cx.closePath();cx.fill();
+    cx.shadowColor='transparent';cx.fillStyle='#111311';cx.font=`800 ${Math.round(s*.36)}px "Big Shoulders Display", sans-serif`;cx.textBaseline='middle';
+    cx.fillText((u.ad+(u.tur==='aşılı'?' (A)':'')).toLocaleUpperCase('tr'),s*.16,s*.33);
+    cx.restore();
+  }
+  function kare(now){
+    cx.clearRect(0,0,W,H);if(!veri)return;
+    const {u,viyol:N,son}=veri;const R=rnd(97);
+    const gecen=azHareket?1e9:now-t0;
+    if(mobil()){
+      // telefonda yalnız son viyol, bant boyunca
+      const w=Math.min(W*1.04,H*2.25);const x=(W-w)/2+W*.02,y=H*.08;
+      cx.save();cx.translate(W/2,H/2);cx.rotate(-.04);cx.translate(-W/2,-H/2);
+      viyol(x,y,w,u,son,R,true,n=>Math.min(1,Math.max(0,(gecen-n*16)/280)));
+      cx.restore();
+      cx.fillStyle='rgba(17,19,17,.86)';cx.fillRect(0,H-30,W,30);cx.fillStyle='#fff';cx.font='600 13px "Schibsted Grotesk", sans-serif';cx.textBaseline='middle';
+      cx.fillText(`${nf(N)} viyol; son viyolde ${son} / ${u.goz} göz dolu`,14,H-15);
+      return gecen<1500;
+    }
+    // Arka: siparişin bütün viyolleri (küçük ölçek)
+    const alanX=28,alanY=72,alanW=W-56,alanH=H*.5;
+    const {c:gc,r:gr}=yerlesim(u.goz);const oran=(gr+.08*gr)/(gc+.07*gc);
+    let best={w:0,c:1};const goster=Math.min(N,900);
+    for(let c=1;c<=goster;c++){const w=Math.min((alanW-(c-1)*8)/c,170);const rows=Math.ceil(goster/c);const h=w*oran;if(rows*(h+8)-8<=alanH&&w>best.w)best={w,c}}
+    const w=best.w,c=best.c,h=w*oran;
+    for(let i=0;i<goster;i++){
+      const x=alanX+(i%c)*(w+8),y=alanY+Math.floor(i/c)*(h+8);
+      const giris=i>=eskiViyol?Math.min(1,Math.max(0,(gecen-(i-eskiViyol)*6)/260)):1;
+      if(giris<=0)continue;
+      cx.save();cx.globalAlpha=giris;cx.translate(0,(1-giris)*-10);
+      viyol(x,y,w,u,i===N-1?son:u.goz,rnd(i+3),w>120,null);cx.restore();
+    }
+    if(N>goster){cx.fillStyle='#111311';cx.font='700 15px "Schibsted Grotesk", sans-serif';cx.fillText(`+${nf(N-goster)} viyol daha`,alanX,alanY+alanH+18)}
+    // Ön: son viyol, büyük ve ayrıntılı
+    const bw=Math.min(W-420,560),bx=W-bw-36,by=H-bw*oran-48;
+    cx.save();cx.translate(bx+bw/2,by+bw*.3);cx.rotate(-.05);cx.translate(-(bx+bw/2),-(by+bw*.3));
+    const bh=viyol(bx,by,bw,u,son,rnd(11),true,n=>Math.min(1,Math.max(0,(gecen-n*22)/320)));
+    kazik(bx+bw*.82,by-bw*.02,bw/11,u);
+    cx.restore();
+    return gecen<2500;
+  }
+  function dongu(now){const devam=kare(now);if(devam&&!azHareket)anim=requestAnimationFrame(dongu);else anim=0}
+  function hedef(r,yeni){const eski=veri;veri=r;
+    eskiViyol=(eski&&eski.u.id===r.u.id&&yeni)?Math.min(eski.viyol,r.viyol):(yeni?0:r.viyol);
+    if(eski&&eski.u.id!==r.u.id)eskiViyol=0;
+    t0=performance.now();if(!anim)anim=requestAnimationFrame(dongu)}
+  addEventListener('resize',()=>{boyut();kare(performance.now()+1e6)});
+  boyut();
+  document.fonts&&document.fonts.ready.then(()=>kare(performance.now()+1e6));
+  return {hedef};
+})();
+
+haftalariKur();guncelle(true);
+</script>
+</body>
+</html>
