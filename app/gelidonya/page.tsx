@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { tr } from "@/content/gelidonya/tr";
 import { Hero } from "@/components/gelidonya/home/Hero";
-import { Tezgah } from "@/components/gelidonya/home/Tezgah";
-import { Seralar, Urunler, Yol, Ziyaret } from "@/components/gelidonya/home/Sections";
+import { HesapProvider } from "@/lib/gelidonya/hesap-ctx";
+import {
+  HazirOnizleme,
+  Kendi,
+  SurecSection,
+  UrunKapisi,
+  Ziyaret,
+} from "@/components/gelidonya/home/Sections";
 
 export const metadata: Metadata = {
   title: { absolute: tr.meta.title },
@@ -11,13 +17,15 @@ export const metadata: Metadata = {
 
 export default function GelidonyaHome() {
   return (
-    <div className="gd-home">
-      <Hero />
-      <Tezgah />
-      <Seralar />
-      <Yol />
-      <Urunler />
-      <Ziyaret />
-    </div>
+    <HesapProvider>
+      <div className="gd-home">
+        <Hero />
+        <HazirOnizleme />
+        <SurecSection />
+        <Kendi />
+        <UrunKapisi />
+        <Ziyaret />
+      </div>
+    </HesapProvider>
   );
 }

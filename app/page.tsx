@@ -6,7 +6,7 @@ const demos = [
   { href: "/kalemkar", name: "Kalemkâr", note: "Gaziantep'te tek menülü kurgusal şef restoranı; bakır sini üstünde rezervasyon akışıyla" },
   { href: "/pazi", name: "Pazı Robotik", note: "Gebze'de kurgusal cobot paletleme entegratörü; canlı robot hücresi ve ön fizibilite akışıyla" },
   { href: "/sazbahce", name: "Sazbahçe", note: "Uluabat Gölü kıyısında kurgusal düğün ve davet bahçesi; misafir sayısına göre dizilen kıyı planı ve teklif özetiyle" },
-  { href: "/gelidonya", name: "Gelidonya", note: "Kumluca'da kurgusal sera üreticisi ve fidelik; sera içinden açılan, viyolle sayan fide ön rezervasyonu" },
+  { href: "/gelidonya", name: "Gelidonya", note: "Kumluca'da kurgusal sera üreticisi ve fidelik; hazır fide listesi, fide hesabı, OpenStreetMap haritası" },
 ];
 
 export default function Index() {

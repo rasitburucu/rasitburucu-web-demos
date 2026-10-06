@@ -4,19 +4,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { tr } from "@/content/gelidonya/tr";
-import { isoWeek, nf } from "@/lib/gelidonya/hesap";
-import { useOrder } from "@/lib/gelidonya/siparis";
+import { PhoneIcon, useWa, WaIcon } from "./Wa";
 
-/** Phone only: on the home page the live order summary and the next step;
- *  elsewhere a call button and the way to the order. */
+/** Phone and small tablet: call, WhatsApp, directions, always one thumb away.
+ *  Steps aside while the first screen's own buttons, a form or the footer are
+ *  on screen, so nothing is covered twice. Fixed, so it never moves the page. */
 export function MobileBar() {
   const pathname = usePathname() ?? "";
-  const home = /\/gelidonya\/?$/.test(pathname);
-  const { result, order } = useOrder();
-  const [hidden, setHidden] = useState(false);
+  const [hidden, setHidden] = useState(true);
+  const { open } = useWa();
   const m = tr.mobileBar;
 
-  // step aside while the delivery form (or the footer) is on screen
   useEffect(() => {
     const els = Array.from(document.querySelectorAll<HTMLElement>("[data-demo='gelidonya'] [data-gd-bar-hide]"));
     if (!els.length || !("IntersectionObserver" in window)) {
@@ -32,35 +30,28 @@ export function MobileBar() {
         }
         setHidden(seen.size > 0);
       },
-      { rootMargin: "0px 0px -15% 0px" },
+      { rootMargin: "0px 0px -10% 0px" },
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, [pathname]);
 
-  if (home) {
-    return (
-      <div className="gd-mbar" data-hidden={hidden || undefined}>
-        <p className="gd-mbar-sum" aria-live="polite">
-          <b className="gd-tnum">{m.summary(nf(result.fide))}</b>
-          <span aria-hidden="true">
-            {m.summary2(nf(result.viyol), isoWeek(result.sowing).w, isoWeek(order.delivery).w)}
-          </span>
-          <span className="gd-sr">{m.summary2Long(nf(result.viyol), isoWeek(result.sowing).w, isoWeek(order.delivery).w)}</span>
-        </p>
-        <a href="#tezgah" className="gd-btn gd-btn--light">
-          {m.cta}
-        </a>
-      </div>
-    );
-  }
   return (
     <nav className="gd-mbar" aria-label={m.label} data-hidden={hidden || undefined}>
-      <a href={tr.brand.phoneHref} className="gd-btn gd-btn--ghost">
+      <a href={tr.brand.phoneHref} className="gd-mbar-btn">
+        <PhoneIcon />
         {m.call}
       </a>
-      <Link href={`${tr.base}/#siparis`} className="gd-btn gd-btn--light">
-        {m.order}
+      <button type="button" className="gd-mbar-btn" onClick={() => open(tr.wa.general)} aria-haspopup="dialog">
+        <WaIcon />
+        {m.wa}
+      </button>
+      <Link href={`${tr.base}/iletisim/#harita`} className="gd-mbar-btn">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="gd-ico">
+          <path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11Z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+          <circle cx="12" cy="10" r="2.4" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
+        {m.route}
       </Link>
     </nav>
   );

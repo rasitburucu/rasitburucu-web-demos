@@ -29,10 +29,9 @@ export function Footer() {
       <div className="gd-wrap">
         <div className="gd-footer-cols">
           <div>
-            <h2>{f.brand}</h2>
-            <p className="gd-footer-word">
+            <h2 className="gd-footer-word">
               <Wordmark />
-            </p>
+            </h2>
             <p>{b.line}</p>
           </div>
           <div>
@@ -46,10 +45,7 @@ export function Footer() {
               <p key={h}>{h}</p>
             ))}
             <p>
-              <a href={c.mapsHref} target="_blank" rel="noopener noreferrer">
-                {tr.iletisim.mapLink}
-                <span className="gd-sr"> {tr.iletisim.newTab}</span>
-              </a>
+              <Link href={`${tr.base}/iletisim/#harita`}>{tr.ziyaret.map}</Link>
             </p>
           </div>
           <div>
@@ -75,6 +71,7 @@ export function Footer() {
             </ul>
           </div>
         </div>
+        <p className="gd-footer-belge">{f.belge}</p>
         <p className="gd-footer-note">{f.note}</p>
         <details className="gd-kunye">
           <summary>{k.title}</summary>
@@ -90,8 +87,8 @@ export function Footer() {
               <dd>{k.threeText}</dd>
             </div>
             <div>
-              <dt>{k.photos}</dt>
-              <dd>{k.photosText}</dd>
+              <dt>{k.maps}</dt>
+              <dd>{k.mapsText}</dd>
             </div>
             <div>
               <dt>{k.fonts}</dt>

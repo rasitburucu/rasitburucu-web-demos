@@ -5,7 +5,7 @@ import { tr } from "@/content/gelidonya/tr";
 import { Footer, Strip } from "@/components/gelidonya/shell/Shell";
 import { Header } from "@/components/gelidonya/shell/Header";
 import { MobileBar } from "@/components/gelidonya/shell/MobileBar";
-import { OrderProvider } from "@/lib/gelidonya/siparis";
+import { WaProvider } from "@/components/gelidonya/shell/Wa";
 
 // Big Shoulders Display: the narrow, stencil-like capitals painted on seedling
 // trolleys and produce crates; headlines and the big figures.
@@ -53,7 +53,7 @@ export default function GelidonyaLayout({ children }: { children: React.ReactNod
   return (
     <div data-demo="gelidonya" lang="tr" className={`${display.variable} ${sans.variable} gd-root`}>
       <script dangerouslySetInnerHTML={{ __html: JS_FLAG }} />
-      <OrderProvider>
+      <WaProvider>
         <a className="gd-skip" href="#icerik">
           {tr.skip}
         </a>
@@ -64,7 +64,7 @@ export default function GelidonyaLayout({ children }: { children: React.ReactNod
         </main>
         <Footer />
         <MobileBar />
-      </OrderProvider>
+      </WaProvider>
     </div>
   );
 }
