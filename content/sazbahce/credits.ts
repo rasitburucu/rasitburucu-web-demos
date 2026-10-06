@@ -2,7 +2,8 @@
 // Photos: three Pexels photographs of the real lake (Pexels licence, credited anyway).
 // The four areas are our own renders: modelled in Blender 5.2 from a script
 // (.tasarim/sazbahce/blender/sazbahce_scene.py) with CC0 models and textures from
-// Poly Haven. The site plan, table layouts, region map and favicon are drawn in code (SVG).
+// Poly Haven. The site plan, table layouts and favicon are drawn in code (SVG). The visit
+// map is drawn in code from OpenStreetMap data (ODbL; see scripts/fetch-sazbahce-map.mjs).
 
 export type Credit = {
   group: "photo" | "font";

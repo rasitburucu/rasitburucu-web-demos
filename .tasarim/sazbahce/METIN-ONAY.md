@@ -441,3 +441,35 @@ Okuma notları:
 | C23 | `render` (görsel köşesi) | 3B canlandırma | |
 | C24 | `areas.ambar.photoAlt` | Ahşap çatı makaslı ambarda yuvarlak masalar ve ampul dizileri; açık batı kapısından göl görünüyor | |
 | C25 | görsel alt metni (`golyaziM`) | Uluabat Gölü’nde gün batımı, Gölyazı kıyısında kayıklar | |
+
+## Raşit düzeltmesi (2026-10-06)
+
+Ana sayfadaki "Töreni güneşe göre kuruyoruz" bölümü (başlık, alt metin, not, gün batımı grafiği ve tablosu) Raşit'in isteğiyle kaldırıldı. "Gelmeden önce" yerinde kalıyor. Takvim ve planlayıcıdaki gün batımı saati bilgisi duruyor.
+
+## Harita (2026-10-06)
+
+Ziyaret sayfasındaki şematik harita, OpenStreetMap verisinden çizilmiş gerçek haritaya çevrildi (iki ölçek: Bölge, Yakın). Yol tariflerinden süreler çıkarıldı (kaynağı yoktu); yerine gerçek yol adları geldi. Kaldırılanlar: "Şematik harita; ölçekli değildir.", eski üç süreli tarif, sayfadaki tek "Haritada aç" bağlantısı (alt bilgideki duruyor).
+
+| # | Yer (anahtar) | Metin | Onay |
+|---|---|---|---|
+| H1 | `visitPage.ways[0]` Bursa merkezden | İzmir Yolu’ndan (D200) batıya, Karacabey yönüne gidin. Bursa Batı kavşağını geçtikten sonra Gölyazı sapağından sola, Gölyazı yoluna dönün. | |
+| H2 | `visitPage.ways[1]` İstanbul’dan | Osmangazi Köprüsü üzerinden O-5 otoyoluyla Bursa’ya gelin. İzmir yönünde devam edip Bursa Çevre Yolu Batı kavşağından D200’e geçin; Karacabey yönünde Gölyazı sapağından sola dönün. | |
+| H3 | `visitPage.ways[2]` Havalimanından | Bursa Yenişehir Havalimanı’ndan Bursa’ya gelip Bursa merkezden tarifini izleyin. İstanbul’un havalimanlarından gelenler için İstanbul tarifi geçerli. | |
+| H4 | `visitPage.distanceNote` | Süre yazmadık; trafiğe göre çok değişiyor. Güncel süre için haritanın altındaki bağlantılardan yol tarifi alın. | |
+| H5 | `visitPage.map.scaleLabel` (düğme grubu, ekran okuyucu) | Harita ölçeği | |
+| H6 | `visitPage.map.views.region` | Bölge | |
+| H7 | `visitPage.map.views.close` | Yakın | |
+| H8 | `visitPage.map.regionLabel` (ekran okuyucu) | Bölge haritası: Marmara Denizi kuzeyde, Bursa doğuda, Uluabat Gölü batıda. Sazbahçe gölün doğu ucunda, Gölyazı’nın kuzeyinde; O-5 otoyolu ve D200 Bursa’dan göle uzanıyor. | |
+| H9 | `visitPage.map.closeLabel` (ekran okuyucu) | Yakın harita: D200’den güneye inen Gölyazı yolu, yolun batısında göl kıyısında Sazbahçe, güneyde Gölyazı, doğuda Akçalar. | |
+| H10 | `visitPage.map` yer adları | Marmara Denizi · Uluabat Gölü · Bursa · Mudanya · Karacabey · Gölyazı · Akçalar · Fadıllı | |
+| H11 | `visitPage.map.golyaziYolu` | Gölyazı yolu | |
+| H12 | `visitPage.map` kenar okları | İstanbul ↗ · Bursa → · ← Karacabey | |
+| H13 | `visitPage.map` yol levhaları, kuzey | O-5 · D200 · K | |
+| H14 | `visitPage.map.venue` + `venueNote` (işaret kartı) | Sazbahçe / Kurgusal mekân, konum örnektir | |
+| H15 | `visitPage.map.attribution` + `licence` (harita köşesi) | © OpenStreetMap katkıcıları (ODbL) | |
+| H16 | `visitPage.mapNote` (harita altı) | Harita OpenStreetMap verisinden çizildi: göl kıyısı, yollar ve köyler gerçek. Sazbahçe kurgusal bir mekân; işaretli konum örnektir. | |
+| H17 | `visitPage.mapLinks.google` | Google Haritalar’da yol tarifi | |
+| H18 | `visitPage.mapLinks.apple` | Apple Haritalar’da aç | |
+| H19 | `visitPage.mapLinks.osm` | OpenStreetMap’te aç | |
+| H20 | `visitPage.mapLinks.pinName` (Apple Haritalar’daki iğne adı) | Örnek konum | |
+| H21 | `footer.kunye.renderText` | Dört alanın görselleri bu çalışma için Blender’da modellenip render alındı; mobilya ve dokuların bir kısmı Poly Haven’dan (CC0). Kıyı planı ve masa yerleşimi kodla çizildi (SVG); ziyaret haritası OpenStreetMap verisinden kodla çizildi (© OpenStreetMap katkıcıları, ODbL). | |

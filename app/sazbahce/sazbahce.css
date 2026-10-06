@@ -474,16 +474,6 @@ html:has([data-demo="sazbahce"])[data-sb-menu="open"] { overflow: hidden; }
 .sb-areas-meta { font-size: 14.5px; color: var(--sb-ink-2); }
 .sb-areas-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 30px; }
 
-.sb-sunset { background: var(--sb-paper); border-block: 1px solid var(--sb-line-2); }
-.sb-sunset-in { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 32px 64px; align-items: center; }
-.sb-sunset-fig { display: grid; gap: 12px; }
-.sb-sunset-svg { width: 100%; height: auto; display: block; }
-.sb-sunset-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 16px; }
-.sb-sunset-table th, .sb-sunset-table td { padding: 7px 4px; text-align: center; border-bottom: 1px solid var(--sb-line-2); }
-.sb-sunset-table thead th { font-weight: 600; color: var(--sb-ink-2); font-size: 14px; }
-.sb-sunset-table tbody th { text-align: left; font-weight: 600; white-space: nowrap; }
-.sb-key { display: inline-block; width: 16px; height: 0; border-top: 2.5px solid var(--sb-ink); vertical-align: middle; margin-right: 7px; }
-.sb-key--start { border-top: 2px dashed #b8862f; }
 
 .sb-know-in { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 2fr); gap: 28px 64px; }
 .sb-know-list { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 40px; }
@@ -499,7 +489,7 @@ html:has([data-demo="sazbahce"])[data-sb-menu="open"] { overflow: hidden; }
 .sb-split-text p { color: var(--sb-ink-2); margin-bottom: 18px; }
 
 @media (max-width: 899px) {
-  .sb-band-head, .sb-sunset-in, .sb-know-in { grid-template-columns: 1fr; }
+  .sb-band-head, .sb-know-in { grid-template-columns: 1fr; }
   .sb-split { grid-template-columns: 1fr; }
   .sb-split-item { min-height: 480px; }
 }
@@ -507,10 +497,6 @@ html:has([data-demo="sazbahce"])[data-sb-menu="open"] { overflow: hidden; }
   .sb-areas-row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 78%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 16px; padding-bottom: 6px; scrollbar-width: thin; }
   .sb-areas-row li { scroll-snap-align: start; }
   .sb-know-list { grid-template-columns: 1fr; gap: 18px; }
-  .sb-sunset-table { font-size: 14px; }
-  .sb-sunset-table th, .sb-sunset-table td { padding: 6px 1px; }
-  .sb-sunset-table tbody th { font-size: 12px; }
-  .sb-key { display: none; }
 }
 
 /* ---------- footer ---------- */

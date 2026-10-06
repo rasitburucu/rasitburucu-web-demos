@@ -100,9 +100,22 @@ Alan render'larında kullanıldı; render'a gömülü, siteye dosya olarak girme
 | grass_medium_01, grass_medium_02 | model | https://polyhaven.com/a/grass_medium_01 | Çayırda çimen tutamları |
 | leafy_grass, old_wood_floor, raw_plank_wall, plastered_stone_wall, stone_wall_04, roof_planks, clay_roof_tiles_02, rough_linen, gravel_ground_01, brown_mud_02, bark_brown_02 | doku | https://polyhaven.com/textures | Zemin, ahşap, taş duvar, çatı, örtü, kabuk |
 
+### Harita verisi (OpenStreetMap, ODbL 1.0; atıf zorunlu)
+Ziyaret sayfasındaki harita (`/web/sazbahce/ziyaret/`, `components/sazbahce/pages/VisitMap.tsx`) OpenStreetMap verisinden kendi stilimizle SVG olarak çizildi. Dış karo, iframe ya da betik yok; veri derleme zamanında indirilip `content/sazbahce/map-geo.json` dosyasına işlendi (ana sitenin CSP'si dış kaynağa izin vermiyor).
+
+| Veri | Kaynak | Lisans | Atıf | Tarih | Nerede |
+|---|---|---|---|---|---|
+| Uluabat Gölü kıyısı ve adaları (relation 1273044), Marmara kıyı çizgisi, akarsular, otoyol / devlet yolu / ana yollar, Gölyazı çevresindeki ikincil yollar, il-ilçe-köy adları | OpenStreetMap, Overpass API (https://overpass-api.de) | Open Database License 1.0 (https://opendatacommons.org/licenses/odbl/1-0/) | Evet: haritanın üstünde "© OpenStreetMap katkıcıları (ODbL)", https://www.openstreetmap.org/copyright bağlantısıyla; künyede de anılıyor | 2026-10-06 (OSM tabanı 2026-10-06) | Ziyaret haritası, iki ölçek (bölge, yakın) |
+
+- İndirme ve işleme betiği: `scripts/fetch-sazbahce-map.mjs` (ham Overpass yanıtları `scripts/.raw/sazbahce/osm-*.json`, git dışında; `--fetch` ile yeniden indirir). İşleme: yerel düzleme izdüşüm (1 birim = 10 m), Douglas–Peucker sadeleştirme, kıyı çizgisinden deniz poligonu.
+- `map-geo.json` ODbL anlamında türetilmiş bir veritabanıdır; aynı lisansla paylaşılabilir. Haritanın kendisi (çizim) "Produced Work"tür; atıf haritada görünür.
+- Haritaya işletme ya da kurum adı basılmadı; yalnız yer adları (Bursa, Mudanya, Karacabey, Gölyazı, Akçalar, Fadıllı) ve yol numaraları (O-5, D200).
+- Sazbahçe kurgusaldır. İşaret 40,1845 K / 28,6795 D'de, Gölyazı yolunun batısında tarım arazisinde; OSM'de 700 m içinde işletme, anıt ya da adlı yer yok (2026-10-06 kontrolü). İşaretin yanında "Kurgusal mekân, konum örnektir" yazar. "Haritada aç" bağlantıları (Google Haritalar yol tarifi, Apple Haritalar, OpenStreetMap) bu örnek koordinata yeni sekmede gider; sayfaya dış kaynak yüklemez.
+- Yol tarifi metni OSM'deki yol adlarıyla tutarlı (İzmir Yolu / D200, Bursa Batı ve Bursa Çevre Yolu Batı kavşakları, Gölyazı Yolu Caddesi). Süre yazılmadı.
+
 ### Kendi üretimimiz
 - Dört alanın 8 görseli (Söğüt Çayırı, Ağ Ambarı, Ceviz Avlusu, İskele; ikişer kare): Blender 5.2 Cycles, komut satırından ayrı süreçle (`blender -b -P sazbahce_scene.py`). Söğütler, ceviz, saz, hasır sandalye, masa örtüleri, ambar, ağlar, avlu, ev, iskele, karşı kıyı kodla modellendi. Betik ve .blend dosyaları `.tasarim/sazbahce/blender/`.
-- Kıyı planı, masa yerleşim algoritması, bölge haritası, favicon/işaret: kodla çizildi (SVG).
+- Kıyı planı, masa yerleşim algoritması, favicon/işaret: kodla çizildi (SVG). Ziyaret haritasının çizimi de bizim; verisi OpenStreetMap (yukarıda).
 - Ambar sunum perdesindeki görüntü, sitenin Gölyazı fotoğrafıdır (yukarıdaki Pexels satırı).
 
 ## Gelidonya (`/web/gelidonya/`)

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { tr } from "@/content/sazbahce/tr";
 import { Photo } from "@/components/sazbahce/ui/Photo";
-import { Appointment, RegionMap } from "@/components/sazbahce/pages/Visit";
+import { Appointment } from "@/components/sazbahce/pages/Visit";
+import { VisitMap } from "@/components/sazbahce/pages/VisitMap";
 
 export const metadata: Metadata = {
   title: tr.meta.visitTitle,
@@ -21,7 +22,7 @@ export default function VisitPage() {
 
       <section className="sb-wrap sb-section sb-visit" aria-labelledby="sb-ways-h">
         <figure className="sb-visit-map">
-          <RegionMap />
+          <VisitMap />
           <figcaption className="sb-sample">{v.mapNote}</figcaption>
         </figure>
         <div>
@@ -37,11 +38,6 @@ export default function VisitPage() {
             ))}
           </dl>
           <p className="sb-sample">{v.distanceNote}</p>
-          <p>
-            <a href={tr.contact.mapsHref} target="_blank" rel="noopener noreferrer" className="sb-link">
-              {tr.contact.directions}
-            </a>
-          </p>
         </div>
       </section>
 
