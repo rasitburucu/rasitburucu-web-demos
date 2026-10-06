@@ -1,89 +1,85 @@
-# TASARIM: Gelidonya Sera ve Fidelik
+# TASARIM: Gelidonya Sera ve Fidelik (v2)
 
-İnşadan sonra, kodda gerçekten kullanılan değerlerden yazıldı. Sonraki değişiklik bu dosyaya uyar ya da dosyayı günceller.
+Koddan, gerçekten kullanılan değerlerden yazıldı. v1 (Viyol Masası) belgesi `TASARIM-v1.md`.
 
-- Son güncelleme: 2026-10-06 (cila 2) · Yerel adres: http://localhost:3340/web/gelidonya/ (dal `demo/gelidonya`, çalışma kopyası `rasitburucu-web-demos-wt/gelidonya`) · Yayın: yok (onay bekliyor)
+- Son güncelleme: 2026-10-06 (v2 yeniden yapım) · Çalışma kopyası `rasitburucu-web-demos-wt/gelidonya` (dal `gelistir/gelidonya-v2`, commitsiz) · Yerel: `npx next dev -p 3340` → http://localhost:3340/web/gelidonya/ · Yayın: Raşit'te (sync:site + deploy).
 
-## Kullanılan tokenlar (`app/gelidonya/gelidonya.css`, `.gd-root`)
+## Sayfalar
+| Rota | İş |
+|---|---|
+| `/web/gelidonya/` | İlk ekran (Ara, WhatsApp, hazır fide kapısı "4 HAZIR · 2 BOYLU", fidelik render'ı, fide hesabı) · bu hafta tezgâhta (5 satır) · sipariş nasıl işler (4 adım + kâğıt sipariş formu, hesabın değerleri forma yazılır) · kendi seramız (ova bandı) · ürün kapısı + takvim · fidelik nerede |
+| `/hazir-fide/` (yeni) | Süzülebilir liste (ürün, aşı, viyol, hazır; sıra Hazır → Boylu → Hazır olacak), her satırda "Bu fideyi sor", yazdır, CSV indir, "Son güncelleme: 6 Ekim 2026 [örnek liste]"; telefonda süzgeç tek düğmeye katlanır |
+| `/fidelik/` | Ziyaret render'ı (tezgâh geçidi) · fide üretici belgesi [örnek] · ürün tablosu (aşı, gövde, viyol, süre, dekara tepe, dayanak) · aşılı/aşısız plakası · anaç · viyol tipleri · sipariş ve teslim (#siparis: 4 adım + örnek sipariş formu, ne kadar önce, bayi/kooperatif tablosu, teslim alırken) · dikimden sonraki ilk hafta |
+| `/seralarimiz/` | Ova render'ı (küçültüldü, 8:3) · kışın domates (metin) · topraksız tarım + torba kesiti · fidelik de buradan çıkar (takvim ürün sayfasında) |
+| `/urunlerimiz/` | Başlıkta "Fiyat ve hasat takvimi iste" + ihracat hattı · ürün ve ambalaj tablosu [örnek] + ambalaj ve yükleme plakası (Euro palet, koli, şale) · yükleme · alıcının istediği belgeler [örnek] · 12 aylık tedarik takvimi · ihracat sorumlusu + "Fiyat ve hasat takvimi iste" formu (#talep, gönderilmez) |
+| `/iletisim/` | Santral + üç görev kartı (sipariş-sevkiyat, ziraat mühendisi, ihracat) · OSM haritası (Yakın / Bölge) + adres, teslim noktası, "gelmeden önce arayın", saatler. Ziyaret randevusu formu kaldırıldı (sahada seracı arar ve gelir) |
+
+## Tokenlar (`app/gelidonya/gelidonya.css`, `.gd-root`)
 | Token | Değer | Kullanım |
 |---|---|---|
-| `--gd-bg` | `#f3f4f1` | zemin, masa paneli, `theme-color` |
-| `--gd-surface` | `#ffffff` | form alanları, kartlar, etiket, tablo |
-| `--gd-ink` | `#111311` | metin, kenar çizgileri (2 px), seçili çip, koyu bantlar |
-| `--gd-ink-2` | `#454a44` | ikincil metin |
-| `--gd-bench` / `--gd-bench-2` | `#bec2bb` / `#9ea39b` | galvaniz tezgâh deseni, ince çizgiler |
-| `--gd-green` | `#3f8f1f` | yalnız "dolu" anlamı (son adım işareti, menüde geçerli sayfa) |
-| `--gd-focus` | `#235a0e` | 3 px odak halkası, `caret-color` |
-| `--gd-tomato` | `#b3261e` | form hatası, fiş damgası, 404'teki boş göz |
-| Tip | `--gd-t-h1: clamp(2.25rem, 3vw + 0.4rem, 3.6rem)` (≤599 px: 2.35rem), `--gd-t-h2: clamp(2rem, 3vw + 0.5rem, 3.5rem)`, h3 1.25rem, gövde 1.0625rem, satır 1.5 | |
-| Yazı | Big Shoulders Display 800 büyük harf (başlık, iri rakam, isim kazığı); Schibsted Grotesk 400–700 (gövde, form) | yerel woff2, Latin + Türkçe alt küme |
-| Ölçü | `--gd-gutter: clamp(16px, 3vw, 48px)`, `--gd-max: 1360px`, başlık çubuğu 72 px (≤599 px: 60), radius 0 (viyol çizimi 3 px) | |
-| Hareket | `--gd-ease-out: cubic-bezier(0.16, 1, 0.3, 1)`, `--gd-ease-io: cubic-bezier(0.77, 0, 0.175, 1)` | |
-| Tarayıcı yüzeyleri | `::selection` ink/bg, `scrollbar-color #454a44 #dfe1dc`, `accent-color` ink, `scroll-padding-top 88px`, alanlarda `scroll-margin-top` başlık + 28 px | |
+| `--gd-bg` / `--gd-surface` | `#f3f4f1` / `#fff` | zemin / tablo, form, kart |
+| `--gd-ink` / `--gd-ink-2` | `#111311` / `#454a44` | metin, 2 px kenarlar, koyu bant / ikincil metin |
+| `--gd-bench` / `--gd-bench-2` | `#bec2bb` / `#9ea39b` | ince çizgiler |
+| `--gd-green` | `#3f8f1f` | yalnız "Hazır" durumu, hesapta fide sayısı imi, liste kapısında hazır imi, haritada fidelik |
+| `--gd-focus` | `#235a0e` | 3 px odak halkası, caret |
+| `--gd-tomato` | `#b3261e` | hata, 404, çizimde tepe kesimi, sipariş formunun seri numarası |
+| tükenmez mavisi | `#23408e` | yalnız sipariş formuna yazılmış değerler (`.gd-ink-blue`); değer değişince 900 ms açık mavi zemin sönümü (azaltılmış harekette yok) |
+| `--gd-max` | `90rem` | içerik azami genişliği |
+| `--gd-side` | `max(gutter, (100cqw − max)/2 + gutter)` | sayfa kenarından içerik sütununa uzaklık; `.gd-root` boyut kapsayıcısı (`container-type: inline-size`), kaydırma çubuğundan etkilenmez |
+| `--gd-gutter` | `clamp(1rem, 3.2vw, 3rem)` | |
+| Kök yazı | 100 % · ≥1800 px 106,25 % · ≥2300 px 118,75 % | rem ile verilen her şey (tip, boşluk, düğme) birlikte büyür |
+| Tip | h1 `clamp(2.4rem, 1.6rem + 2.6vw, 4.25rem)`, ilk ekranda `clamp(2.4rem, 1.2rem + 2.6vw, 5rem)` (1100–1279: 2.6rem; ≤767: `clamp(2rem, 1.2rem + 3.6vw, 2.6rem)`); h2 `clamp(2rem, 1.5rem + 1.7vw, 3.25rem)`; gövde 1.0625rem | Big Shoulders Display 800 büyük harf + Schibsted Grotesk |
+| Bölüm boşluğu | `clamp(3.5rem, 2rem + 4vw, 7rem)` | |
+| Başlık çubuğu | şerit 2rem + başlık 4.5rem (≤599: 3.75rem) | |
 
-İlk ekran (cila 2): render tam genişlikte arka plan (`object-position: 66% 45%`, kaçış noktası ~x %66, y %43); masa paneli `minmax(0, 600px)` render'ın önünde, sağ kenarında gölge (`16px 0 36px -22px`), iç sol boşluk logo hizasında. h1 masaüstünde `min(var(--gd-t-h1), 2.6rem)`. Dikim haftası masaüstünde 3×2 ızgara + Önceki/Sonraki haftalar (sayfa başına 6). Etiket sağ üstte 250 px; viyol sağ altta `min(470px, 33vw)`, `perspective(1000px) rotateX(34deg)` ile koridor zeminine yatık, 8° düzlem içi dönüş, yazısı altında düz şeritte. Telefonda viyol banttan ~35 px taşar (desk üst boşluğu 58 px); alt çubuk görünürken ilk ekrandaki düğme satırı gizli.
+## İlk ekran düzeni
+- ≥1100 px: ızgara `calc(var(--gd-side) + clamp(25rem, 38cqw, 40rem)) | 1fr`; render sol kenarı bu çizgide, sağ kenara kadar (`object-position 62% 45%`); panel dikeyde ortalı; hesap kartı ikinci sütunda alta yaslı, genişlik `min(35rem, 100% − 2×kenar)`, sonuç rakamları 1.875rem, formül üç satır, altında "Sipariş formunda gör", üst boşluk `clamp(6rem, 18vh, 20rem)`. Yükseklik `min(100svh − üst, 76rem)`.
+- 900–1099: render bant (`clamp(10rem, 30vw, 20rem)`), panel iki sütun (metin+düğmeler | liste kapısı), hesap kartı tam genişlik.
+- ≤767: render bandı `clamp(8.5rem, 34vw, 14rem)` (dar kırpım), tek sütun, Ara + WhatsApp yan yana (≤379 alt alta), hesap 2 sütun; h1 için 3 satır yer ayrılır (≤479, yazı değişiminde kayma yok).
+- Hesap: 12 sütunlu form (ürün 4, dönüm 4, aşı 4 | gövde 3, viyol 3, dikim haftası 6). Hafta seçimi yerel `<select>` (kayan çip yok). Tek gövdeli ürünlerde "Çift" devre dışı, açıklama sabit yerde. Formül ve not için en uzun hâlin satır yüksekliği ayrılır (masaüstünde 2, telefonda 3–4 satır).
 
-## Bileşen envanteri
+## Bileşenler
 | Bileşen | Dosya | İş |
 |---|---|---|
-| `OrderProvider`, `useOrder` | `lib/gelidonya/siparis.tsx` | Tek sipariş durumu (ürün, birim, miktar, teslim haftası, yedek); ilk ekran, tezgâh ve telefon çubuğu paylaşır. Sunucu sabit tarihle (5 Eki 2026) çizer, tarayıcıda gerçek tarihe geçer |
-| Hesap | `lib/gelidonya/hesap.ts` | fide = dönüm × dekara fide (+%5), viyol = ⌈fide ÷ göz⌉, ekim = teslim − süre; ISO hafta, hafta aralığı |
-| Viyol kareleri | `lib/gelidonya/viyol-kare.ts` + `content/gelidonya/viyol-kare.json` | Blender'dan torflu viyol (45/28) ve ürün başına 8 fide sprite'ı (`scripts/gelidonya-blender/viyol_kare.py`); dolu gözlere fide konur (±%15 boy, ±11° dönüş). AVIF, yoksa WebP |
-| İsim kazığı | `lib/gelidonya/viyol-ciz.ts` | Canvas'ta plastik kazık; gölgesi sol üst ışığa göre |
-| `Hero` | `components/gelidonya/home/Hero.tsx` | Sera render'ı + masa paneli (h1 iki sabit satır, ürün/miktar/hafta) + asılı etiket + son viyol |
-| `Etiket` | `home/Etiket.tsx` | Araba etiketi: fide, viyol, tohum ekimi, teslim, açık formül, kaynak bağlantısı |
-| `SonViyol` | `home/SonViyol.tsx` | Son viyol canvas'ı, göz dolumu |
-| `Tezgah` | `home/Tezgah.tsx` | Bütün viyoller (en çok 900): 220 px üstünde render karesi, altında temiz sayım (siyah kasa, fide başına yeşil nokta, boş göz torf); uzak sıralar canvas içinde %10 küçülür (perspektif, keskin); tuval yüksekliği sıralara eşit (en çok 560 / telefonda 320 px); altında "94 viyol; sonuncusunda 15 / 45 göz dolu". Teslim formu, fiş (tohum satırı "Fidelik temin eder / Üretici getirir", telefon 0532 000 00 00 biçiminde) |
-| `Seralar`, `Yol`, `Urunler`, `Sezon`, `Ziyaret` | `home/Sections.tsx` | Ova bandı, fidenin yolu (6 adım), hasat takvimi (masaüstü: 14 px ince çubuk; ≤599 px: ürün başına tek satır şerit + "Kas–May"), ziyaret bandı |
-| Harita kesiti | `ui/Cizimler.tsx` `HaritaKesiti` | İletişim: şematik yol tarifi (örnek konum), yanında büyük telefon; form 2/3 genişlik |
-| `TorbaKesiti`, `AsiNoktasi` | `ui/Cizimler.tsx` | Etiketli SVG kesitler (Seralarımız, Fidelik) |
-| `Resim` | `ui/Resim.tsx` | AVIF/WebP `<picture>`, telefona dar kırpım |
-| `AliciFormu`, `RandevuFormu` | `pages/*.tsx` | Gönderilmeyen alıcı talebi ve ziyaret randevusu; özet kartı |
-| İletişim düzeni | `app/gelidonya/iletisim/page.tsx`, `.gd-visit*` | Diğer alt sayfalardan farklı: solda bilgi künyesi (dl), sağda tam yükseklik fidelik görünümü; telefonda görsel üstte |
-| Kabuk | `shell/Shell.tsx`, `Header.tsx`, `MobileBar.tsx`, `NotFound.tsx` | Şerit, başlık + menü, alt bilgi künyesi, telefon alt çubuğu, 404 |
+| `Hero`, `Hesap` | `components/gelidonya/home/` | İlk ekran; hesap `lib/gelidonya/hesap.ts` (`calc`: fide = ⌈dönüm × dekara tepe ÷ gövde⌉, viyol = ⌈fide ÷ göz⌉, ekim = dikim − süre) |
+| `HazirOnizleme`, `SurecSection`/`Surec`, `Kendi`, `Sezon`, `UrunKapisi`, `Ziyaret` | `home/Sections.tsx` | Ana sayfa bölümleri; `Surec` Fidelik'te de |
+| `HazirTablo` | `ui/HazirTablo.tsx` | Liste tablosu; ≤1099 px kart (600–1099 iki sütun), durum imi, satır mesajı |
+| `HazirListe` | `pages/HazirListe.tsx` | Süzgeç (yerel select, sabit ızgara, sonuç sayısı `aria-live`), boş durum, yazdır, CSV |
+| `Harita` | `pages/Harita.tsx` + `content/gelidonya/map-geo.json` | OSM'den SVG; Yakın (10 km, 16:10; telefonda 6,2 km, 4:5) / Bölge (126 km; telefonda 84 km); ölçek değişimi 600 ms (azaltılmış harekette anında); atıf; Google/Apple/OSM bağlantıları |
+| `TorbaKesiti`, `AsiKarsilastirma`, `AmbalajPlakasi` | `ui/Cizimler.tsx` | Numaralı plakalar; açıklama HTML listede; torba boyuna kesitinin telefonda dar kırpımı |
+| `SiparisFormu` | `ui/SiparisFormu.tsx` + `lib/gelidonya/hesap-ctx.tsx` | Kâğıt sipariş formu (No 0412 [örnek]); ana sayfada `HesapProvider` ile hesap kartının değerlerini yazar, Fidelik'te örnek değerlerle |
+| `WaProvider`, `WaButton` | `shell/Wa.tsx` | Her WhatsApp düğmesi `<dialog>` açar: hazır mesaj, "Metni kopyala", demo notu. Gerçek `wa.me` yok |
+| `MobileBar` | `shell/MobileBar.tsx` | ≤899: Ara · WhatsApp · Yol tarifi; ilk ekran düğmeleri ve alt bilgi görünürken, menü açıkken gizli |
+| `AliciFormu`, `RandevuFormu` | `pages/` | Gönderilmeyen formlar, özet kartı |
 
-## Hareket envanteri
-| An | Tetikleyici | Süre / easing | Azaltılmış hareket |
+## Betikler
+- `scripts/fetch-gelidonya-map.mjs`: Overpass → `content/gelidonya/map-geo.json` (ham önbellek `scripts/.raw/gelidonya/`, git dışı; `--fetch` ile yeniden indirir). Fidelik işareti 36.3372 K 30.3058 D (kurgusal, kontrol notu betikte).
+- `scripts/process-gelidonya-images.mjs`: render → AVIF/WebP (viyol kareleri bölümü çıkarıldı).
+
+## Ölçümler (statik çıktı, ana sitenin CSP başlıklarıyla yerel sunucu, Playwright Chromium, kısma yok, 2026-10-06)
+| Sayfa | LCP 1440 / 390 | CLS 1440 / 390 | Aktarım (sıkıştırmasız, alt sınır) |
 |---|---|---|---|
-| Göz dolumu (imza 1) | ilk yükleme, ürün/miktar/yedek değişimi | göz başına 22 ms aralık, 300 ms büyüme | anında dolu (kanıt: `ekran-insa/dolum-karsilastirma.png`, 150. ms) |
-| Viyollerin tezgâha inmesi (imza 2) | tezgâh görünür olunca, miktar artınca | 6 ms aralık, 260 ms, 12 px iniş + opaklık | anında yerinde |
-| Fiş damgası (imza 3) | form gönderilince | 420 ms `--gd-ease-out`, 120 ms gecikme | damga sabit, animasyon yok |
-| Telefon alt çubuğu | form ya da alt bilgi görünürken çekilir | 200 ms `--gd-ease-out` | aynı (durum geri bildirimi) |
-| Düğme/çip | hover, basış | 120 ms renk, 1 px basış | aynı |
-Render'lar durağan; paralaks, kaydırma sahnesi, Lenis, GSAP yok.
+| ana | 0,19 / 0,17 sn (render) | 0,005 / 0,001 | ~1,26 MB / 0,85 MB |
+| hazir-fide | 0,13 / 0,12 sn | 0,005 / 0 | ~1,18 / 0,81 MB |
+| fidelik | 0,20 / 0,18 sn | 0,001 / 0 | ~1,42 / 1,00 MB |
+| seralarimiz | 0,17 / 0,16 sn | 0,001 / 0 | ~1,42 / 1,19 MB |
+| urunlerimiz | 0,16 / 0,15 sn (metin) | 0,004 / 0 | ~1,21 / 0,89 MB |
+| iletisim | 0,16 / 0,19 sn | 0,001 / 0 | ~1,32 / 0,91 MB |
+İlk yük JS (Next raporu): ana 122 KB, alt sayfalar 107–122 KB, iletişim 165 KB (harita verisi ~50 KB). Etkileşim denetimi (`etk.py`): hesapta 6 ürün × aşı, 250 dönüm ve son hafta seçiminde kart, sonuç ve sonraki bölüm konumu sabit (1440, 1100, 390, 2560); liste süzgecinde kutu ve tablo konumu sabit; WhatsApp penceresi açılır, kopyalar, Esc ile kapanır. Konsol hatası, CSP ihlali, dış istek: yok (`kk6.py`). Yatay taşma: 390/600/768/900/1100/1440/1920/2560 hepsinde 0.
 
-## Ölçümler, ilk inşa (2026-10-05, statik çıktı, yerel sunucu, Playwright Chromium, kısma yok)
-| Sayfa | LCP (1440 / 390) | LCP öğesi | CLS (1440 / 390) | Yatay taşma | Konsol |
-|---|---|---|---|---|---|
-| ana | 0,15 / 0,14 sn | sera render'ı | 0,017 / 0 | 0 | temiz |
-| fidelik | 0,09 / 0,16 sn | fidelik render'ı | 0 / 0 | 0 | temiz |
-| seralarimiz | 0,09 / 0,10 sn | ova render'ı | 0 / 0 | 0 | temiz |
-| urunlerimiz | 0,13 / 0,11 sn | salkım render'ı | 0,0007 / 0 | 0 | temiz |
-| iletisim | 0,10 / 0,10 sn | giriş paragrafı | 0,001 / 0 | 0 | temiz |
-İlk yük JS (Next raporu): ana 121 KB, alt sayfalar 106–115 KB. LCP görseli: masaüstü `sera-ici-1800.avif` 167 KB, telefon `sera-ici-dar-800.avif` 76 KB. Yerel ölçüm ağ gecikmesi içermez; gerçek telefon değeri yayından sonra PageSpeed ile.
-
-## Bilinen borçlar ve kararlar
-| Konu | Neden ertelendi | Ne zaman |
+## Bilinen borçlar
+| Konu | Neden | Ne zaman |
 |---|---|---|
-| Ova (cila 2'de yeniden kuruldu) hâlâ "arşiv görselleştirmesi" düzeyinde: 8 tünel tipi tekrar ediyor, yol/depo/paketevi az seçiliyor, beşik çatı yok | Daha çok sera tipi, sıkı yol ağı, deniz tarafına sıkı kırpım | Gerekirse 3. render turu |
-| Domates bitkisi yakın planda yapay (taze göz 3); salkım yakın planı kaldırıldı, Ürünlerimiz'de sera koridoru kırpımı | Alfa dokulu yaprak / fotogrametri | Gerekirse |
-| Tezgâh küçük ölçekte nokta matrisi (ilk ekrandaki viyolle görsel süreklilik zayıf) | 94 viyolde render karesi gürültüye dönüyordu; temiz sayım seçildi | Gerekirse 10'luk gruplar + sıra numarası |
-| Ana sayfa alt yarısı kurumsal ritim (iki siyah bant, tablo 3 sayfada) | Brif Seralarımız'a sezon çubuğu istedi | Raşit'in yorumuna göre |
-| Yapraklar: boy ±%25, bitki başına ton ±%8, 9 bitki çeşidi (cila 2); çok yakından hâlâ geometrik kenar seçilebiliyor | Alfa dokulu yaprak kartı ya da fotogrametri gerekir | Gerekirse |
-| Fidelik / Seralarımız / Ürünlerimiz hâlâ aynı aile (başlık + tam genişlik render + bloklar); İletişim farklı | İkisi SVG kesitle kısmen kırıldı | Raşit'in yorumuna göre |
-| EN/RU sürümü yok | Brif: TR önce | Onaydan sonra |
-| Dev sunucu Turbopack ile açılmıyor (node_modules kavşağı kök dışına işaret ediyor); `npx next dev -p 3340` (webpack) kullanıldı | Kavşak yapısı ortak; değiştirilmedi | Ana repoya taşınınca sorun kalmaz |
+| EN (ihracat sayfası) ve RU yok | TR önce; rapor EN'yi öneriyor | TR onayından sonra |
+| OSM'de Kumluca seralarının çoğu işaretli değil; yakın haritada sera dokusu az | Uydurma çizmek yerine yalnız OSM verisi | Gerçek müşteride kendi sera parselleri çizilebilir |
+| Hazır fide listesi statik örnek | Demo; gerçek firmada bir tablo ya da paylaşılan veri kaynağı gerekir | Müşteri işinde |
+| Ova render'ı hâlâ orta kalite | Küçültüldü (8:3; Seralarımız başlığı ve ana sayfa bandı) | Gerekirse yeni render |
+| Sera içi (domates koridoru) render'ı siteden çıktı | Taze göz: yapraklar domates yaprağı gibi okunmuyor, cam seraya benziyor | Plastik örtülü Kumluca serası + parçalı domates yaprağıyla yeni render, ya da gerçek fotoğraf |
 
-## Cila turu (2026-10-05)
-- Render: yaprakçık başına ton (yüz özniteliği `ton`), sararan alt yapraklar, sivri/dişli/kıvrık yaprakçık, gövde tüyü parıltısı (sheen), meyvede tek malzemeyle yeşil→kırılma→turuncu→kırmızı geçişi, coat + yüzey altı saçılma, çanak yaprakları; sis yoğunluğu 0,03 ve ileri saçılma 0,55 (örtü ve iplerde ışık huzmesi), sera kamerasında alan derinliği f/5,6; 384 örnek + gürültü giderme, AgX Medium High Contrast. Ova: arazi ağı 640×520, eğime göre çam ormanı / kireçtaşı, yüzeyde tümsek, speküler kapalı (yamaçtaki bej parlama buradan geliyordu), hava sisi 6e-6. Fidelik: viyol kenarı torfun üstünü kapatıyordu (düzeltildi), çift zemin Cycles'ta kendi kendini gölgeliyordu (kaldırıldı).
-- Önce/sonra: `.tasarim/gelidonya/ekran-insa/render-once-sonra.png` (eski PNG'ler `blender/render/once/`).
-- Küçükler: başlıktaki telefon "örnek numara" etiketli; isim kazığı "DOMATES AŞILI"; İletişim'e görsel ve farklı düzen; h1 telefonda serbest kırılıyor.
-
-## Cila 2 (2026-10-06)
-- **Ova** (`ova.py` baştan): kamera 36 m, 35 mm, sahil boyunca batıya bakış; sabah güneşi 11° (denizde parıltı yolu), yüksekliğe göre incelen pus (atmosferik perspektif). 8 sera tipi (tünel/gotik, eski-yeni, yan havalandırması açık, yeni dikilmiş, boş), örtü örneği başına %60–85 opak, eski örtü tozlu-sarı, ~%17 kireç badanalı, içi ekinli olanlarda yeşil gölge, kemerler örtüden seçilir; ~8.800 blok, selvi/kazuarina rüzgâr kıran sıraları (~11.000 ağaç), narenciye, su deposu ve havuz, paketevi, asfalt + stabilize yollar; Toroslar sırtlı gürültü + çam örtüsü/açıklık/kireçtaşı/oluk. Render 256 örnek, AgX MHC, pozlama −0,3.
-- **Sera içi**: pozlama −0,7 (−0,5 EV, tavan patlaması yok), kamera `shift_y −0,06` (kaçış noktası %66/%43), yaprak boyu ±%25, yaprak tonu ±%8 (bitki başına), 9 bitki çeşidi; meyvede ±%15 boy, beş omuz loblu biçim, ton oynaması. Salkım yakın planı −0,2 pozlamada, sitede bulanık yaprak ve gövde uçları kırpılmış (1800×1012).
-- **Viyol**: canvas çizimi yerine Blender kareleri (`viyol_kare.py`), torflu kasa, fide sprite'ları, gölge sol üst ışıkla.
-- Önce/sonra: `ekran-insa/cila2-once-sonra.jpg`; eski PNG'ler `blender/render/once-cila2/`. Kareler: `ekran-insa/cila2/` (ilk ekran, karpuz 28 göz, fiş, 150 ms dolum / azaltılmış hareket, tam sayfa, 8 kaydırma temas tablosu, render'lar).
-- Ölçüm (statik çıktı, yerel): LCP ana 0,15 / 0,12 sn, alt sayfalar 0,07–0,12 sn; CLS ≤ 0,003; yatay taşma 0; konsol temiz; ilk yük JS ana 122 KB, alt sayfalar 106–115 KB. Hero LCP `sera-ici-1800.avif` 121 KB.
-- Taze göz (üç bağımsız ajan, her biri önceki puanı bilmeden): 7,1 → 7,2 → 7,3, üçünde de karar DÜZELT. Kalan bulgular yukarıdaki borç tablosunda.
-- Kapanış (koordinatör kararı, 7,3'te duruldu): Ürünlerimiz açılış görseli salkım yakın planı yerine sera koridoru render'ının kırpımı (`urun-*`, 2400×960); salkım render'ı sitede kullanılmıyor. h1 "Dikim haftanızı seçin, fideniz o hafta serada olsun."
+## Taze göz (2026-10-06, üç bağımsız ajan, her biri önceki puanı bilmeden)
+| Tur | Puan | Karar | Ana bulgular ve yapılan |
+|---|---|---|---|
+| 1 | 6,9 | DÜZELT | Sera render'ında yaprak domates yaprağı değil → ilk ekran fidelik render'ına geçti; aynı koridor görseli 4 yerde → 0; sipariş formu nesnesi yok → kâğıt sipariş formu (hesap değerlerini yazar); ürün sayfasında alıcı çağrısı yok → başlıkta çağrı + ihracat hattı; "Sorun" → "Arayın ya da yazın"; hazır tarihleri tutarsız → düzeltildi; ziyaret randevusu formu kaldırıldı |
+| 2 | 7,1 | DÜZELT | Ürün sayfasındaki sera render'ı → ambalaj ve yükleme plakası; hesap–form bağı görünmüyor → "Sipariş formunda gör" + mürekkep sönümü; hesap kartı ağır → 35rem, rakamlar 1.875rem, kapı "4 HAZIR · 2 BOYLU"; araştırma sesi metinden çıktı; telefonda süzgeç katlandı; bölüm çizgileri 1 px |
+| 3 | 7,0 | DÜZELT | (puanlatma turu sınırı doldu; ucuz olanlar uygulandı) başlık satır aralığı 0,95 → 1,04 (İ/Ğ çarpması); Fidelik'te formun "2. nüsha" sarı kopyası, farklı örnek sipariş; künye açılır işareti; mikro kusurlar |
+Hedef 7,5'e ulaşılmadı (6,9 → 7,1 → 7,0; ajanlar arası oynama ±0,2). Üç ajanın ortak kalan eleştirisi: sayfa iskeleti kurumsal kalıp, beklenmedik bir "an" yok; telefonda ambalaj plakası küçük; Seralarımız ince (tesis planı, sezon cetveli önerildi); ova render'ı bir ajana göre klişe, diğerine göre güçlü.

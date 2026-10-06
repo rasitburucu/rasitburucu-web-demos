@@ -32,3 +32,15 @@ HDRI, doku ya da hazır model kullanılmadı (Poly Haven dahil). Işık: Blender
 
 ## Kütüphane
 Yeni paket eklenmedi (repo bağımlılıkları: Next 15.5, React 19). three/GSAP/Lenis bu demoda kullanılmadı.
+
+## v2 (2026-10-06) eki: harita verisi
+| Veri | Kaynak | Lisans | Ne için | Dosya |
+|---|---|---|---|---|
+| Antalya–Demre kıyı çizgisi, D400 ve ana yollar, ilçe/köy adları; Kumluca ovasında köy yolları, dereler, OSM'de işaretli sera ve narenciye alanları | OpenStreetMap, Overpass API, derleme zamanında (`scripts/fetch-gelidonya-map.mjs`, ham önbellek `scripts/.raw/gelidonya/`, git dışı) | ODbL 1.0 · © OpenStreetMap katkıcıları; atıf haritanın üstünde ve künyede | İletişim sayfasındaki iki ölçekli harita (Bölge / Yakın); sitenin stilinde SVG, dış istek yok (ana sitenin CSP'si dış kaynağı engeller) | `content/gelidonya/map-geo.json`, `components/gelidonya/pages/Harita.tsx` |
+
+Fidelik işareti kurgusal: 36.3372 K, 30.3058 D, Kumluca'nın ~3,5 km güneyinde, Camikırığı Caddesi'nden doğuya giden adsız tarla yolunun (OSM way 128672229) ~70 m güneyi. 2026-10-06'da OSM'de 700 m içinde işletme, bina, arazi kullanımı ya da adlandırılmış öğe yok. Sitede "Kurgusal firma, konum örnektir".
+
+Kaldırılanlar: `viyol-*-torf`, `fide-*` kareleri ve elle çizilmiş şematik harita kesiti (siteden çıktı; kaynak .blend ve PNG'ler `.tasarim/` altında duruyor).
+Eklenen kendi çizimlerimiz: torba boyuna/enine kesiti, aşılı/aşısız fide plakası (SVG, numaralı açıklamalı, ölçüler örnek).
+Sektör bilgisi (fikir, metin değil): Kumluca fideliklerinin hazır fide listeleri ve sipariş sayfaları, `arastirma/RAPOR.md`.
+Taze göz turlarından sonra (2026-10-06): sera içi render'ları (`sera-ici-*`, `sera-ici-dar-*`, `urun-*`) siteden çıktı (yapraklar domates yaprağı gibi okunmuyordu); ilk ekran ve OG kartı fidelik render'ı. Yeni kendi çizimimiz: ambalaj ve yükleme plakası (Euro palet, koli, şale; ölçüler örnek).

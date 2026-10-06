@@ -376,3 +376,446 @@ Numaralar yukarıdaki tablonun devamı. `mobileBar.summary2`nin eski hali (‹vi
 | 356 | `footer.kunye.threeText (değişti)` | Sera içi, fidelik, ova ve viyol görselleri Blender 5.2 ile koddan kuruldu (bitki, fide, viyol, sera ve arazi kendi modelimiz; hazır model ya da fotoğraf kullanılmadı). Sipariş viyolü tarayıcıda bu karelerden doldurulur. | ☐ |
 | 357 | `hero.title (değişti)` | Dikim haftanızı seçin, fideniz o hafta serada olsun. (eski: "Dikim gününüzü söyleyin, fideniz o sabah serada olsun."; arayüz hafta soruyor) | ☐ |
 | 358 | `urunlerimiz.imageAlt (değişti)` | Seramızın içi: torbalardaki domates sıraları boyunca alttan kızaran salkımlar, aradaki beyaz örtülü geçit. Bilgisayarda çizilmiş görsel. | ☐ |
+
+## v2 (2026-10-06): yeniden yapımın bütün metinleri
+
+Kaynak: `content/gelidonya/tr.ts` (v2) ve `content/gelidonya/urunler.ts`. v1 tablosundaki tezgâh, etiket, fiş, ön rezervasyon metinleri siteden kalktı. `ƒ` ile başlayan satırlar hesaplanan metindir: `${...}` yerine sayfada değer gelir. Hazır fide listesi, ambalaj ve tedarik takvimi `urunler.ts`'te, hepsi örnek ve sitede öyle yazıyor.
+
+| # | Anahtar | Metin (TR) | Onay |
+|---|---|---|---|
+| v2-1 | `wa.button` | WhatsApp'tan yaz | ☐ |
+| v2-2 | `wa.buttonTail` | 'tan yaz | ☐ |
+| v2-3 | `wa.title` | WhatsApp mesajınız hazır | ☐ |
+| v2-4 | `wa.lead` | Gerçek firmada bu düğme WhatsApp'ı açar ve mesaj aşağıdaki metinle hazır gelir. | ☐ |
+| v2-5 | `wa.demo` | Bu bir tasarım örneği; numara kurgusal olduğu için WhatsApp açılmaz, mesaj hiçbir yere gitmez. | ☐ |
+| v2-6 | `wa.copy` | Metni kopyala | ☐ |
+| v2-7 | `wa.copied` | Kopyalandı | ☐ |
+| v2-8 | `wa.close` | Kapat | ☐ |
+| v2-9 | `wa.textLabel` | Mesaj metni | ☐ |
+| v2-10 | `wa.general` | Merhaba, fide hakkında bilgi almak istiyorum. | ☐ |
+| v2-11 | `hero.title` | Kendi seramıza diktiğimiz fideyi sizin için de yetiştiriyoruz. | ☐ |
+| v2-12 | `hero.lead` | Kumluca'da fidelik ve sera. Aşılı ve aşısız domates, biber, patlıcan, hıyar, karpuz ve kavun fidesi; tohumu dikim tarihinizden geriye sayarak ekeriz. | ☐ |
+| v2-13 | `hero.call` | Ara | ☐ |
+| v2-14 | `hero.imageAlt` | Gelidonya fideliği: galvaniz tezgâhlarda uzanan siyah viyoller, gözlerde teslime yakın fideler. Bilgisayarda çizilmiş görsel. | ☐ |
+| v2-15 | `hero.gateTitle` | Hazır fide listesi | ☐ |
+| v2-16 | `hero.gateHazir` | hazır | ☐ |
+| v2-17 | `hero.gateBoylu` | boylu | ☐ |
+| v2-18 | `hero.gateSoon` | ƒ `İki hafta içinde ${n} kalem daha hazır olacak.` | ☐ |
+| v2-19 | `hero.gateDate` | ƒ `Son güncelleme: ${d} (örnek liste)` | ☐ |
+| v2-20 | `hero.gateLink` | Listeyi aç | ☐ |
+| v2-21 | `hero.hours` | Fidelik hafta içi 07.30–17.00, cumartesi 07.30–12.00. | ☐ |
+| v2-22 | `hero.hoursNote` | Saatler ve numara örnektir. | ☐ |
+| v2-23 | `calc.title` | Fide hesabı | ☐ |
+| v2-24 | `calc.lead` | Dönümünüzü ve dikim haftanızı seçin; kaç fide, kaç viyol ve tohumun ne zaman ekileceği çıksın. | ☐ |
+| v2-25 | `calc.product` | Ürün | ☐ |
+| v2-26 | `calc.graft` | Aşı | ☐ |
+| v2-27 | `calc.graftNames.asili` | Aşılı | ☐ |
+| v2-28 | `calc.graftNames.asisiz` | Aşısız | ☐ |
+| v2-29 | `calc.stems` | Gövde | ☐ |
+| v2-30 | `calc.stemNames.1` | Tek | ☐ |
+| v2-31 | `calc.stemNames.2` | Çift | ☐ |
+| v2-32 | `calc.stemOnly` | Bu üründe tek gövde | ☐ |
+| v2-33 | `calc.tray` | Viyol | ☐ |
+| v2-34 | `calc.trayValue` | ƒ `${n} gözlü` | ☐ |
+| v2-35 | `calc.trayShort` | ƒ `${n} göz` | ☐ |
+| v2-36 | `calc.donum` | Dönüm | ☐ |
+| v2-37 | `calc.minus` | Bir dönüm azalt | ☐ |
+| v2-38 | `calc.plus` | Bir dönüm artır | ☐ |
+| v2-39 | `calc.week` | Dikim haftası | ☐ |
+| v2-40 | `calc.weekValue` | ƒ `${w}. hafta · ${range}${y ? ` ${y}` : ""}` | ☐ |
+| v2-41 | `calc.outFide` | Fide | ☐ |
+| v2-42 | `calc.outViyol` | Viyol | ☐ |
+| v2-43 | `calc.outSowing` | Tohum ekimi | ☐ |
+| v2-44 | `calc.outSowingValue` | ƒ `${w}. hafta` | ☐ |
+| v2-45 | `calc.lastTray` | ƒ `son viyolde ${n}/${cells} göz` | ☐ |
+| v2-46 | `calc.formula1` | ƒ `${d} dönüm × ${heads} tepe${stems > 1 ? ` ÷ ${stems} gövde` : ""} = ${fide} fide` | ☐ |
+| v2-47 | `calc.formula2` | ƒ `${fide} fide ÷ ${cells} göz = ${viyol} viyol` | ☐ |
+| v2-48 | `calc.formula3` | ƒ `${week}. hafta − ${weeks} hafta = ${sowing}. hafta (tohum ekimi)` | ☐ |
+| v2-49 | `calc.toForm` | Sipariş formunda gör | ☐ |
+| v2-50 | `calc.noteSourced` | Dekara 2.800 tepe domateste Bakanlık raporundan | ☐ |
+| v2-51 | `calc.noteSource` | kaynağı aç | ☐ |
+| v2-52 | `calc.noteRest` | Diğer sıklıklar ve süreler örnektir; siparişte ziraat mühendisimiz seranıza göre teyit eder. | ☐ |
+| v2-53 | `calc.noteUnsourced` | Bu üründe dekara tepe sayısı ve süre örnektir; siparişte ziraat mühendisimiz seranıza göre teyit eder. | ☐ |
+| v2-54 | `calc.ask` | Bu hesabı WhatsApp'tan sor | ☐ |
+| v2-55 | `calc.message` | ƒ `Merhaba, fide siparişi için soruyorum: ${p}, ${kind}, ${stems} gövde, ${tray} gözlü viyol. ${donum} dönüm (≈ ${fide} fide, ${viyol} viyol). Dikim: ${week}. Köy/mahalle: ` | ☐ |
+| v2-56 | `form.firm` | Sera ve Fidelik · Kumluca | ☐ |
+| v2-57 | `form.title` | Fide sipariş formu | ☐ |
+| v2-58 | `form.no` | No | ☐ |
+| v2-59 | `form.example` | örnek | ☐ |
+| v2-60 | `form.grower` | Üretici | ☐ |
+| v2-61 | `form.growerValue` | [üretici adı] | ☐ |
+| v2-62 | `form.place` | Köy / mahalle | ☐ |
+| v2-63 | `form.placeValue` | Beykonak, Kumluca | ☐ |
+| v2-64 | `form.placeValue2` | Hasyurt, Finike | ☐ |
+| v2-65 | `form.copy` | 2. nüsha · fidelikte kalır | ☐ |
+| v2-66 | `form.phone` | Telefon | ☐ |
+| v2-67 | `form.phoneValue` | 05__ ___ __ __ | ☐ |
+| v2-68 | `form.cols.urun` | Ürün | ☐ |
+| v2-69 | `form.cols.asi` | Aşı / anaç | ☐ |
+| v2-70 | `form.cols.govde` | Gövde | ☐ |
+| v2-71 | `form.cols.viyol` | Viyol × göz | ☐ |
+| v2-72 | `form.cols.adet` | Fide | ☐ |
+| v2-73 | `form.anac` | güçlü anaç | ☐ |
+| v2-74 | `form.delivery` | Teslim (dikim) haftası | ☐ |
+| v2-75 | `form.deliveryValue` | ƒ `${w}. hafta, ${range} ${y} · ±3 gün` | ☐ |
+| v2-76 | `form.sowing` | Tohum ekimi | ☐ |
+| v2-77 | `form.sowingValue` | ƒ `${w}. hafta ${y}` | ☐ |
+| v2-78 | `form.seed` | Tohum | ☐ |
+| v2-79 | `form.seedOurs` | Fidelik | ☐ |
+| v2-80 | `form.seedMine` | Üretici | ☐ |
+| v2-81 | `form.deposit` | Kaparo | ☐ |
+| v2-82 | `form.depositValue` | ______ TL · makbuz no ______ | ☐ |
+| v2-83 | `form.pickup` | Teslim yeri | ☐ |
+| v2-84 | `form.pickupValue` | Fidelik kapısı | ☐ |
+| v2-85 | `form.stampDealer` | Bayi / kooperatif kaşesi | ☐ |
+| v2-86 | `form.signGrower` | Üretici imzası | ☐ |
+| v2-87 | `form.signNursery` | Fidelik onayı | ☐ |
+| v2-88 | `form.caption` | Sipariş bu formla kesinleşir. Örnek form: üstteki fide hesabını değiştirirseniz satırlar da değişir. Seri numarası, kaparo ve koşullar gerçek firmada kendi formundan gelir. | ☐ |
+| v2-89 | `form.captionStatic` | Örnek form: gerçek firmada seri numarası, kaparo ve koşullar kendi formundan gelir. | ☐ |
+| v2-90 | `hazirOn.title` | Bu hafta tezgâhta ne var | ☐ |
+| v2-91 | `hazirOn.lead` | Teslime hazır fidelerden bir kesit. Liste her sabah 08.00'de güncellenir [örnek]. | ☐ |
+| v2-92 | `hazirOn.all` | ƒ `Listenin tamamı (${n} kalem)` | ☐ |
+| v2-93 | `surec.title` | Sipariş nasıl işler | ☐ |
+| v2-94 | `surec.lead` | Siparişi telefonda konuşur, seri numaralı formla ve kaparoyla kesinleştiririz. Bayiniz, komisyoncunuz ya da kooperatifiniz üzerinden de olur. | ☐ |
+| v2-95 | `surec.steps[0].title` | Arayın ya da yazın | ☐ |
+| v2-96 | `surec.steps[0].text` | Bizi arayın ya da WhatsApp'tan yazın. Bayiniz, hal komisyoncunuz ya da tarım kredi kooperatifiniz üzerinden de sipariş verebilirsiniz. | ☐ |
+| v2-97 | `surec.steps[1].title` | Form ve kaparo | ☐ |
+| v2-98 | `surec.steps[1].text` | Çeşit, anaç, gövde, viyol, adet ve dikim tarihi seri numaralı sipariş formuna yazılır; form kaşelenip imzalanır, kaparo makbuzu elinize verilir. | ☐ |
+| v2-99 | `surec.steps[2].title` | Ekim | ☐ |
+| v2-100 | `surec.steps[2].text` | Tohum dikim tarihinizden geriye sayılarak ekilir. Ekildiği gün, aşılıda aşı haftasında da telefonunuza mesaj gelir. | ☐ |
+| v2-101 | `surec.steps[3].title` | Teslim | ☐ |
+| v2-102 | `surec.steps[3].text` | Fide istediğiniz tarihte, ±3 gün içinde hazırdır. Formunuz ve kimliğinizle fidelikten alırsınız; viyol sayısını, cinsi ve adedi irsaliyeyle araca yüklemeden karşılaştırın. | ☐ |
+| v2-103 | `surec.note` | Kaparo oranı ve sipariş koşulları [örnek içerik]. | ☐ |
+| v2-104 | `surec.link` | Sipariş ve teslim ayrıntıları | ☐ |
+| v2-105 | `kendi.title` | Fideyi satmadan önce kendimiz dikiyoruz. | ☐ |
+| v2-106 | `kendi.text[0]` | Kumluca ve Finike'deki seralarımızda kış boyu domates yetiştiriyoruz. Size verdiğimiz fide, kendi seramıza diktiğimiz fideyle aynı tezgâhtan, aynı takvimle çıkar. | ☐ |
+| v2-107 | `kendi.text[1]` | Bir anaç ya da çeşit seramızda iyi gitmediyse ilk biz görürüz; size önerirken bunu da söyleriz. | ☐ |
+| v2-108 | `kendi.imageAlt` | Kumluca ovası: denize kadar uzanan sera çatıları, arkada dağlar. Bilgisayarda çizilmiş görsel. | ☐ |
+| v2-109 | `kendi.link` | Seralarımız | ☐ |
+| v2-110 | `urunKapi.title` | Domatesimizi almak istiyorsanız | ☐ |
+| v2-111 | `urunKapi.text` | Kendi seralarımızın ürününü yurt içine ve yurt dışına satıyoruz. Hangi ay ne hasatta, hangi ambalajla çıkıyor, alıcının hangi belgeleri istediği ürün sayfasında. | ☐ |
+| v2-112 | `urunKapi.cta` | Fiyat ve hasat takvimi iste | ☐ |
+| v2-113 | `urunKapi.seasonCaption` | Hasat sezonu (örnek takvim, Kumluca örtüaltı) | ☐ |
+| v2-114 | `ziyaret.title` | Fidelik nerede | ☐ |
+| v2-115 | `ziyaret.text` | Kumluca'nın güneyinde, ovanın içinde; merkezden on dakika. Fide teslimi fidelik kapısından yapılır. | ☐ |
+| v2-116 | `ziyaret.teslim` | Teslim noktası | ☐ |
+| v2-117 | `ziyaret.teslimText` | Fidelik kapısı, hafta içi 07.30–17.00, cumartesi 07.30–12.00. Pazar teslim yok. | ☐ |
+| v2-118 | `ziyaret.teslimNote` | örnek | ☐ |
+| v2-119 | `ziyaret.map` | Haritada gör ve yol tarifi al | ☐ |
+| v2-120 | `hazir.title` | Hazır fide listesi | ☐ |
+| v2-121 | `hazir.lead` | Tezgâhta teslime hazır ya da birkaç gün içinde hazır olacak fideler. Fide canlı üründür; ayırmadan önce telefonla ya da WhatsApp'tan teyit edin. | ☐ |
+| v2-122 | `hazir.updated` | ƒ `Son güncelleme: ${d}` | ☐ |
+| v2-123 | `hazir.updatedNote` | örnek liste | ☐ |
+| v2-124 | `hazir.filters` | Listeyi süz | ☐ |
+| v2-125 | `hazir.fUrun` | Ürün | ☐ |
+| v2-126 | `hazir.fAsi` | Aşı | ☐ |
+| v2-127 | `hazir.fViyol` | Viyol | ☐ |
+| v2-128 | `hazir.fHazir` | Hazır | ☐ |
+| v2-129 | `hazir.all` | Tümü | ☐ |
+| v2-130 | `hazir.asiNames.asili` | Aşılı | ☐ |
+| v2-131 | `hazir.asiNames.asisiz` | Aşısız | ☐ |
+| v2-132 | `hazir.hazirOpts.today` | Bugün hazır | ☐ |
+| v2-133 | `hazir.hazirOpts.two` | İki hafta içinde | ☐ |
+| v2-134 | `hazir.reset` | Süzgeci temizle | ☐ |
+| v2-135 | `hazir.count` | ƒ (shown === total ? `${total} kalem` : `${total} kalemden ${shown} kalem`) | ☐ |
+| v2-136 | `hazir.empty` | Bu süzgeçle hazır fide yok. Sipariş için arayın; dikim tarihinize göre ekeriz. | ☐ |
+| v2-137 | `hazir.cols.urun` | Ürün | ☐ |
+| v2-138 | `hazir.cols.tip` | Tip | ☐ |
+| v2-139 | `hazir.cols.anac` | Aşı ve anaç | ☐ |
+| v2-140 | `hazir.cols.govde` | Gövde | ☐ |
+| v2-141 | `hazir.cols.viyol` | Viyol | ☐ |
+| v2-142 | `hazir.cols.adet` | Adet | ☐ |
+| v2-143 | `hazir.cols.hazir` | Hazır | ☐ |
+| v2-144 | `hazir.cols.durum` | Durum | ☐ |
+| v2-145 | `hazir.cols.ask` | Sor | ☐ |
+| v2-146 | `hazir.govdeValue` | ƒ (n === 2 ? "Çift" : "Tek") | ☐ |
+| v2-147 | `hazir.viyolValue` | ƒ `${n} gözlü` | ☐ |
+| v2-148 | `hazir.adetValue` | ƒ `${adet} (${viyol} viyol)` | ☐ |
+| v2-149 | `hazir.durum.hazir` | Hazır | ☐ |
+| v2-150 | `hazir.durum.boylu` | Boylu | ☐ |
+| v2-151 | `hazir.durum.olacak` | Hazır olacak | ☐ |
+| v2-152 | `hazir.durumHelp` | Hazır: teslime hazır. Boylu: dikim boyunu geçmek üzere, hemen dikilecek yere uygun. Hazır olacak: tarihte hazır. | ☐ |
+| v2-153 | `hazir.ask` | Bu fideyi sor | ☐ |
+| v2-154 | `hazir.askShort` | Sor | ☐ |
+| v2-155 | `hazir.message` | ƒ `Merhaba, hazır fide listesindeki şu fideyi soruyorum: ${r}. Kaç viyol ayırabilirsiniz?` | ☐ |
+| v2-156 | `hazir.print` | Listeyi yazdır | ☐ |
+| v2-157 | `hazir.csv` | Tabloyu indir (CSV) | ☐ |
+| v2-158 | `hazir.csvName` | gelidonya-hazir-fide-ornek.csv | ☐ |
+| v2-159 | `hazir.typeNote` | Gerçek listede çeşit ve anaç ticari adlarıyla yazılır; bu örnekte tip adı var. Karpuz ve kavun fidesi ocak–şubat dikimi için aralıkta listeye girer. | ☐ |
+| v2-160 | `hazir.printHead` | Gelidonya Sera ve Fidelik · Hazır fide listesi (örnek) · 0242 000 00 00 (örnek numara) | ☐ |
+| v2-161 | `fidelik.title` | Fidelik ve sipariş | ☐ |
+| v2-162 | `fidelik.lead` | Domates, biber, patlıcan, hıyar, karpuz ve kavun fidesi; aşılı ya da aşısız, tek ya da çift gövde. Siparişi dikim tarihinizden geriye sayarak planlarız. | ☐ |
+| v2-163 | `fidelik.imageAlt` | Fideliğin içi: iki yanda viyollerle dolu uzun tezgâhlar, aradaki geçit ileriye uzanıyor. Bilgisayarda çizilmiş görsel. | ☐ |
+| v2-164 | `fidelik.belge` | Fide üretici belgesi (Tarım ve Orman Bakanlığı) | ☐ |
+| v2-165 | `fidelik.belgeNo` | Belge no | ☐ |
+| v2-166 | `fidelik.belgeDate` | Geçerlilik | ☐ |
+| v2-167 | `fidelik.belgeValue` | [örnek] | ☐ |
+| v2-168 | `fidelik.tableTitle` | Ürünler | ☐ |
+| v2-169 | `fidelik.tableNote` | Dekara tepe, viyol ve süre örnektir; çeşide, mevsime, sıra arasına ve gövdeye göre değişir. Siparişte ziraat mühendisimiz sizin seranıza göre teyit eder. | ☐ |
+| v2-170 | `fidelik.cols.urun` | Ürün | ☐ |
+| v2-171 | `fidelik.cols.asi` | Aşı | ☐ |
+| v2-172 | `fidelik.cols.govde` | Gövde | ☐ |
+| v2-173 | `fidelik.cols.viyol` | Viyol | ☐ |
+| v2-174 | `fidelik.cols.sure` | Tohumdan teslime | ☐ |
+| v2-175 | `fidelik.cols.tepe` | Dekara tepe | ☐ |
+| v2-176 | `fidelik.cols.kaynak` | Dayanak | ☐ |
+| v2-177 | `fidelik.weeksValue` | ƒ `≈ ${w} hafta` | ☐ |
+| v2-178 | `fidelik.sourced` | Bakanlık raporu (BÜGEM) | ☐ |
+| v2-179 | `fidelik.unsourced` | Örnek değer, kaynak yok | ☐ |
+| v2-180 | `fidelik.graftTitle` | Aşılı mı, aşısız mı? | ☐ |
+| v2-181 | `fidelik.grafted.title` | Aşılı fide | ☐ |
+| v2-182 | `fidelik.grafted.text[0]` | Kökü güçlü bir anaçtan, gövdesi sizin çeşidinizden. Yıllardır domates dikilen, toprak kökenli hastalığın görüldüğü seralarda ilk tercih. | ☐ |
+| v2-183 | `fidelik.grafted.text[1]` | Domateste çoğu zaman tepesi alınıp iki gövdeye alınır: aynı tepe sayısı için dekara yarı fide gider. Hazırlığı aşısıza göre iki üç hafta uzun sürer. | ☐ |
+| v2-184 | `fidelik.plain.title` | Aşısız fide | ☐ |
+| v2-185 | `fidelik.plain.text[0]` | Daha kısa sürede hazır olur. Toprağı temiz seralarda ve topraksız tarımda birçok üretici aşısız diker. | ☐ |
+| v2-186 | `fidelik.plain.text[1]` | Tek gövdeyle yetiştirilir; her tepe bir fidedir. | ☐ |
+| v2-187 | `fidelik.rootTitle` | Anaç | ☐ |
+| v2-188 | `fidelik.rootText` | Anacın ticari adını siparişte birlikte seçeriz. Burada yalnız ne işe yaradığını yazıyoruz; hangisinin seranıza uyduğunu toprağınızı ve dikim zamanınızı bilen ziraat mühendisimiz söyler. | ☐ |
+| v2-189 | `fidelik.roots[0].title` | Toprak hastalığına dayanıklı | ☐ |
+| v2-190 | `fidelik.roots[0].text` | Aynı yere üst üste domates dikilen, toprağı yorgun seralar için. | ☐ |
+| v2-191 | `fidelik.roots[1].title` | Güçlü anaç | ☐ |
+| v2-192 | `fidelik.roots[1].text` | Sonbaharda dikilip bahara kadar hasat edilecek, uzun sezonlu seralar için. | ☐ |
+| v2-193 | `fidelik.roots[2].title` | Kabak anacı | ☐ |
+| v2-194 | `fidelik.roots[2].text` | Hıyar, karpuz ve kavunda; soğuk toprağa ve kök hastalığına karşı. | ☐ |
+| v2-195 | `fidelik.rootNote` | [Örnek içerik: gerçek fidelikte anaç listesi ve hangi çeşitle eşleştiği burada yazar.] | ☐ |
+| v2-196 | `fidelik.trayTitle` | Viyol tipleri | ☐ |
+| v2-197 | `fidelik.trayLead` | Fideyi viyolün katı olarak sayarız: 14 viyol × 98 göz = 1.372 fide. Göz küçüldükçe fide sıklaşır, boy ve kök hacmi küçülür. | ☐ |
+| v2-198 | `fidelik.trayCols.cells` | Göz | ☐ |
+| v2-199 | `fidelik.trayCols.use` | Nerede | ☐ |
+| v2-200 | `fidelik.trayCols.basis` | Dayanak | ☐ |
+| v2-201 | `fidelik.orderTitle` | Sipariş ve teslim | ☐ |
+| v2-202 | `fidelik.orderLead` | Sipariş telefonla, WhatsApp'tan, bayi ya da kooperatif üzerinden başlar; seri numaralı formla ve kaparoyla kesinleşir. Koşullar [örnek içerik]. | ☐ |
+| v2-203 | `fidelik.when` | Ne kadar önce sipariş verilir | ☐ |
+| v2-204 | `fidelik.whenText` | Aşılı fidede dikimden en az 9–10 hafta, aşısızda 7 hafta önce. Sezon başında (ağustos–eylül ve ocak) tezgâh erken dolar; daha önce yazdırmak teslim tarihinizi garantiler. | ☐ |
+| v2-205 | `fidelik.channelTitle` | Bayi ve kooperatif üzerinden | ☐ |
+| v2-206 | `fidelik.channelText` | Bölgenizdeki bayi, hal komisyoncusu ya da tarım kredi kooperatifi sipariş formunu doldurup kaparoyu alabilir; fide yine fidelikten teslim edilir. | ☐ |
+| v2-207 | `fidelik.channels[0].bolge` | Kumluca merkez ve ova | ☐ |
+| v2-208 | `fidelik.channels[0].kanal` | Fidelik bürosu ve satış temsilcisi | ☐ |
+| v2-209 | `fidelik.channels[1].bolge` | Finike | ☐ |
+| v2-210 | `fidelik.channels[1].kanal` | [örnek içerik: bayi adı] | ☐ |
+| v2-211 | `fidelik.channels[2].bolge` | Demre | ☐ |
+| v2-212 | `fidelik.channels[2].kanal` | [örnek içerik: bayi adı] | ☐ |
+| v2-213 | `fidelik.channels[3].bolge` | Kaş, Kale ve Elmalı | ☐ |
+| v2-214 | `fidelik.channels[3].kanal` | [örnek içerik: kooperatif] | ☐ |
+| v2-215 | `fidelik.channelCols.bolge` | Bölge | ☐ |
+| v2-216 | `fidelik.channelCols.kanal` | Sipariş noktası | ☐ |
+| v2-217 | `fidelik.pickupTitle` | Teslim alırken | ☐ |
+| v2-218 | `fidelik.pickup[0]` | Sipariş formunuzu ve kimliğinizi getirin; başkası alacaksa formun arkasına adını yazın. | ☐ |
+| v2-219 | `fidelik.pickup[1]` | İrsaliyedeki viyol sayısını, cinsi ve adedi araca yüklemeden önce sayın; eksik ya da yanlışı orada söyleyin. | ☐ |
+| v2-220 | `fidelik.pickup[2]` | Fideyi kapalı ya da gölgeli araçla taşıyın; açık kasada rüzgâr yaprağı yakar. | ☐ |
+| v2-221 | `fidelik.pickup[3]` | Kargoyla giden fide cuma ve cumartesi yola çıkmaz; hafta sonunu kolide geçirmesin. | ☐ |
+| v2-222 | `fidelik.farmerTitle` | Dikimden sonraki ilk hafta | ☐ |
+| v2-223 | `fidelik.farmerLead` | Genel bilgi; seranıza özel öneriyi ziraat mühendisimiz verir. | ☐ |
+| v2-224 | `fidelik.farmer[0].title` | Aşı noktası dışarıda kalır | ☐ |
+| v2-225 | `fidelik.farmer[0].text` | Aşılı fideyi aşı noktası toprağa ya da torbaya değmeyecek derinlikte dikin; gömülürse kalem kök salar, anacın faydası gider. | ☐ |
+| v2-226 | `fidelik.farmer[1].title` | Can suyu | ☐ |
+| v2-227 | `fidelik.farmer[1].text` | Dikimden hemen sonra her fideye can suyu verin; viyolden çıkan topak kurumadan toprakla buluşsun. | ☐ |
+| v2-228 | `fidelik.farmer[2].title` | Bekletmeyin | ☐ |
+| v2-229 | `fidelik.farmer[2].text` | Fideyi geldiği gün gölgeye alıp viyolü sulayın; dikimi en geç iki gün içinde yapın. | ☐ |
+| v2-230 | `fidelik.farmer[3].title` | Klipse dokunmayın | ☐ |
+| v2-231 | `fidelik.farmer[3].text` | Aşı klipsi gövde kalınlaştıkça kendiliğinden açılır ve düşer; elle sökmeyin. | ☐ |
+| v2-232 | `fidelik.farmer[4].title` | İpe alma | ☐ |
+| v2-233 | `fidelik.farmer[4].text` | Fide tuttuktan sonra (≈ bir hafta) askı ipine sarın ve klipsle tutturun; çift gövdede her gövde ayrı ipe. | ☐ |
+| v2-234 | `fidelik.cta` | Hazır fide listesine bak | ☐ |
+| v2-235 | `seralarimiz.title` | Seralarımız | ☐ |
+| v2-236 | `seralarimiz.lead` | Kumluca ve Finike'de kendi seralarımızda domates yetiştiriyoruz. Fidelik bu seraların yanında, önce kendi seramız için kuruldu. | ☐ |
+| v2-237 | `seralarimiz.imageAlt` | Kumluca ovası: denize kadar uzanan sera çatıları, arkada dağlar. Bilgisayarda çizilmiş görsel. | ☐ |
+| v2-238 | `seralarimiz.kis.title` | Kışın domates | ☐ |
+| v2-239 | `seralarimiz.kis.text[0]` | Isıtmalı serada eylülde, ısıtmasız serada ekimde dikeriz. İlk salkımlar kasımda kesilir, hasat mayısa kadar sürer. Şubatta ilkbahar dikimi yapılan seralar da var. | ☐ |
+| v2-240 | `seralarimiz.kis.text[1]` | Bitki askı ipine sarılarak tavana doğru büyür; alt yaprakları alınır, salkımlar alttan kızarır. Hasat ekibi aynı sırayı haftada birkaç kez dolaşır. | ☐ |
+| v2-241 | `seralarimiz.topraksiz.title` | Topraksız tarım | ☐ |
+| v2-242 | `seralarimiz.topraksiz.text[0]` | Seraların bir kısmında domates toprağa değil, hindistancevizi lifi (cocopeat) dolu torbalara dikilir. Her bitkiye damla hattından ölçülü su ve gübre gider; fazlası torbanın altındaki yarıktan oluğa süzülür. | ☐ |
+| v2-243 | `seralarimiz.topraksiz.text[1]` | Toprak kökenli hastalık riski azalır, su ve gübre bitkinin ihtiyacına göre ayarlanır. Bu seralarda çoğunlukla aşısız fide kullanırız. | ☐ |
+| v2-244 | `seralarimiz.fidelik.title` | Fidelik de buradan çıkar | ☐ |
+| v2-245 | `seralarimiz.fidelik.text[0]` | Fidelik kendi seralarımıza fide yetiştirmek için kuruldu. Bölgedeki üreticiye verdiğimiz fide de aynı tezgâhlarda, aynı takvimle büyür. | ☐ |
+| v2-246 | `seralarimiz.fidelik.text[1]` | Aşı salonu ve iyileştirme odası, düz fide tezgâhlarından ayrı bölümde; aşılı fide hijyen için ayrı kapıdan girer çıkar. | ☐ |
+| v2-247 | `seralarimiz.seasonNote` | Örnek takvim: dikim zamanına, havaya ve çeşide göre birkaç hafta oynar. | ☐ |
+| v2-248 | `seralarimiz.gap` | [Örnek içerik: gerçek firmada sera alanı, sera yerleri ve ekip burada yazar.] | ☐ |
+| v2-249 | `seralarimiz.cta` | Ürün ve ihracat | ☐ |
+| v2-250 | `urunlerimiz.title` | Ürün ve ihracat | ☐ |
+| v2-251 | `urunlerimiz.lead` | Kendi seralarımızda yetiştirdiğimiz domatesi ve mevsim sebzesini yurt içine ve yurt dışına satıyoruz. Ürünü, haftayı, ambalajı ve nereye istediğinizi yazın; fiyatı ve hasat takvimini haftasına göre gönderelim. | ☐ |
+| v2-252 | `urunlerimiz.productsTitle` | Ürünler ve ambalaj | ☐ |
+| v2-253 | `urunlerimiz.productsCols.urun` | Ürün | ☐ |
+| v2-254 | `urunlerimiz.productsCols.tip` | Tip | ☐ |
+| v2-255 | `urunlerimiz.productsCols.pack` | Ambalaj seçenekleri | ☐ |
+| v2-256 | `urunlerimiz.productsCols.season` | Hasat | ☐ |
+| v2-257 | `urunlerimiz.packNote` | [Örnek içerik: gerçek firmada koli ölçüsü, net ağırlık ve palet düzeni ürün ürün burada yazar.] | ☐ |
+| v2-258 | `urunlerimiz.loadTitle` | Yükleme | ☐ |
+| v2-259 | `urunlerimiz.load[0]` | Euro palet (120 × 80 cm), koli adedi ambalaja göre | ☐ |
+| v2-260 | `urunlerimiz.load[1]` | Soğutmalı TIR ya da konteyner, yükleme sıcaklığı alıcıyla yazılı belirlenir | ☐ |
+| v2-261 | `urunlerimiz.load[2]` | Paketleme ve ön soğutma tesiste, yükleme aynı gün | ☐ |
+| v2-262 | `urunlerimiz.loadNote` | [Örnek içerik] | ☐ |
+| v2-263 | `urunlerimiz.seasonTitle` | 12 aylık tedarik takvimi | ☐ |
+| v2-264 | `urunlerimiz.docsTitle` | Alıcının isteyebileceği belgeler | ☐ |
+| v2-265 | `urunlerimiz.docs[0]` | GlobalG.A.P. sertifikası | ☐ |
+| v2-266 | `urunlerimiz.docs[1]` | İyi Tarım Uygulamaları sertifikası | ☐ |
+| v2-267 | `urunlerimiz.docs[2]` | Kalıntı analiz raporu (akredite laboratuvar) | ☐ |
+| v2-268 | `urunlerimiz.docs[3]` | Bitki sağlık sertifikası | ☐ |
+| v2-269 | `urunlerimiz.docs[4]` | Menşe şahadetnamesi | ☐ |
+| v2-270 | `urunlerimiz.docsNote` | [Örnek içerik: gerçek firmada hangi belgenin olduğu, belge numarası ve geçerlilik tarihi burada yazar. Bu sitede hiçbir belgenin varlığı iddia edilmez.] | ☐ |
+| v2-271 | `urunlerimiz.headCta` | Fiyat ve hasat takvimi iste | ☐ |
+| v2-272 | `urunlerimiz.headCall` | İhracat hattı | ☐ |
+| v2-273 | `urunlerimiz.contactTitle` | İhracat sorumlusu | ☐ |
+| v2-274 | `urunlerimiz.contactText` | Fiyat, numune ve yükleme haftası için doğrudan yazabilirsiniz. | ☐ |
+| v2-275 | `urunlerimiz.waMessage` | Merhaba, kendi seralarınızın ürünü için fiyat ve hasat takvimi istiyorum. Ürün: , hafta: , varış: , ambalaj: , miktar:  | ☐ |
+| v2-276 | `urunlerimiz.formTitle` | Fiyat ve hasat takvimi iste | ☐ |
+| v2-277 | `urunlerimiz.formLead` | Fiyat haftaya, miktara ve ambalaja göre değişir. Talebinizi okuyup aynı gün döneriz. | ☐ |
+| v2-278 | `urunlerimiz.fields.product` | Ürün | ☐ |
+| v2-279 | `urunlerimiz.fields.week` | Hangi hafta | ☐ |
+| v2-280 | `urunlerimiz.fields.weekHint` | Örnek: 48. hafta ya da Aralık başı | ☐ |
+| v2-281 | `urunlerimiz.fields.where` | Varış ülkesi ve şehri | ☐ |
+| v2-282 | `urunlerimiz.fields.whereHint` | Ülke, şehir | ☐ |
+| v2-283 | `urunlerimiz.fields.pack` | Ambalaj | ☐ |
+| v2-284 | `urunlerimiz.fields.amount` | Miktar | ☐ |
+| v2-285 | `urunlerimiz.fields.unit` | Birim | ☐ |
+| v2-286 | `urunlerimiz.fields.units[0]` | Palet | ☐ |
+| v2-287 | `urunlerimiz.fields.units[1]` | TIR | ☐ |
+| v2-288 | `urunlerimiz.fields.units[2]` | Koli | ☐ |
+| v2-289 | `urunlerimiz.fields.company` | Firma | ☐ |
+| v2-290 | `urunlerimiz.fields.name` | Adınız | ☐ |
+| v2-291 | `urunlerimiz.fields.contact` | E-posta ya da telefon | ☐ |
+| v2-292 | `urunlerimiz.fields.note` | Not (isteğe bağlı) | ☐ |
+| v2-293 | `urunlerimiz.submit` | Talebi hazırla | ☐ |
+| v2-294 | `urunlerimiz.demo` | Bu bir tasarım örneği; form hiçbir yere gönderilmez. | ☐ |
+| v2-295 | `urunlerimiz.required` | Bu alanı doldurun. | ☐ |
+| v2-296 | `urunlerimiz.summaryTitle` | Talebiniz hazır | ☐ |
+| v2-297 | `urunlerimiz.summaryText` | İhracat sorumlumuz bu talebi okuyup fiyat, hasat takvimi ve yükleme haftasıyla döner. | ☐ |
+| v2-298 | `urunlerimiz.summaryDemo` | Tasarım örneği: talep hiçbir yere gönderilmedi. | ☐ |
+| v2-299 | `urunlerimiz.summaryEdit` | Talebi değiştir | ☐ |
+| v2-300 | `iletisim.title` | İletişim ve ziyaret | ☐ |
+| v2-301 | `iletisim.lead` | Kimi arayacağınızı işe göre yazdık. Fide teslimi ve ziyaret fidelik kapısından. | ☐ |
+| v2-302 | `iletisim.rolesTitle` | Kimi arayayım | ☐ |
+| v2-303 | `iletisim.roles[0].role` | Sipariş ve sevkiyat | ☐ |
+| v2-304 | `iletisim.roles[0].who` | Fidelik sorumlusu | ☐ |
+| v2-305 | `iletisim.roles[0].for` | Hazır fide, sipariş formu, teslim günü | ☐ |
+| v2-306 | `iletisim.roles[0].phone` | 0242 000 00 01 | ☐ |
+| v2-307 | `iletisim.roles[0].href` | tel:+902420000001 | ☐ |
+| v2-308 | `iletisim.roles[1].role` | Çeşit ve anaç | ☐ |
+| v2-309 | `iletisim.roles[1].who` | Ziraat mühendisi | ☐ |
+| v2-310 | `iletisim.roles[1].for` | Hangi anaç, kaç gövde, ne zaman dikim | ☐ |
+| v2-311 | `iletisim.roles[1].phone` | 0242 000 00 02 | ☐ |
+| v2-312 | `iletisim.roles[1].href` | tel:+902420000002 | ☐ |
+| v2-313 | `iletisim.roles[2].role` | Ürün ve ihracat | ☐ |
+| v2-314 | `iletisim.roles[2].who` | İhracat sorumlusu | ☐ |
+| v2-315 | `iletisim.roles[2].for` | Kendi seralarımızın ürünü, ambalaj, fiyat | ☐ |
+| v2-316 | `iletisim.roles[2].phone` | 0242 000 00 03 | ☐ |
+| v2-317 | `iletisim.roles[2].href` | tel:+902420000003 | ☐ |
+| v2-318 | `iletisim.roleNote` | Kişi adları yerine görev yazıldı; numaralar örnektir. | ☐ |
+| v2-319 | `iletisim.exportMail` | ihracat@gelidonya.com.tr | ☐ |
+| v2-320 | `iletisim.central` | Santral | ☐ |
+| v2-321 | `iletisim.addressTitle` | Adres | ☐ |
+| v2-322 | `iletisim.hoursTitle` | Çalışma saatleri | ☐ |
+| v2-323 | `iletisim.teslimTitle` | Fide teslimi | ☐ |
+| v2-324 | `iletisim.mapTitle` | Haritada | ☐ |
+| v2-325 | `iletisim.mapLead` | Kumluca'dan Camikırığı Caddesi'yle denize doğru inin; yaklaşık 2 km sonra sola, tarla yoluna dönün. Fidelik bir kilometre ileride, yolun sağında. (Örnek konum.) | ☐ |
+| v2-326 | `iletisim.imageAlt` | Fideliğin içi: iki yanda viyollerle dolu uzun tezgâhlar, aradaki geçit ileriye uzanıyor. Bilgisayarda çizilmiş görsel. | ☐ |
+| v2-327 | `iletisim.visitTitle` | Gelmeden önce arayın | ☐ |
+| v2-328 | `iletisim.visitText` | Fide teslimi ve fidelik gezisi için önce sipariş ve sevkiyat hattını arayın; tezgâhta ne olduğunu, kimin karşılayacağını söyleriz. Fidelikte kapalı ayakkabı giyin. | ☐ |
+| v2-329 | `iletisim.newTab` | (yeni sekmede açılır) | ☐ |
+| v2-330 | `map.scaleLabel` | Harita ölçeği | ☐ |
+| v2-331 | `map.views.region` | Bölge | ☐ |
+| v2-332 | `map.views.close` | Yakın | ☐ |
+| v2-333 | `map.regionLabel` | Antalya'dan Demre'ye kıyı ve D400 yolu; Kemer, Kumluca, Finike ve Demre. Gelidonya fideliği Kumluca'nın güneydoğusunda işaretli. | ☐ |
+| v2-334 | `map.closeLabel` | Kumluca ovası: D400, Camikırığı Caddesi, köy yolları ve dereler. Gelidonya fideliği Kumluca'nın yaklaşık 3,5 km güneyinde, Camikırığı Caddesi'nden doğuya giden bir tarla yolunun üzerinde işaretli. | ☐ |
+| v2-335 | `map.venue` | Gelidonya fidelik | ☐ |
+| v2-336 | `map.venueNote` | Kurgusal firma, konum örnektir | ☐ |
+| v2-337 | `map.sea` | Akdeniz | ☐ |
+| v2-338 | `map.cape` | Gelidonya Burnu | ☐ |
+| v2-339 | `map.toElmali` | Elmalı | ☐ |
+| v2-340 | `map.north` | K | ☐ |
+| v2-341 | `map.attribution` | © OpenStreetMap katkıcıları | ☐ |
+| v2-342 | `map.licence` | ODbL | ☐ |
+| v2-343 | `map.links.google` | Google Haritalar'da aç | ☐ |
+| v2-344 | `map.links.apple` | Apple Haritalar'da aç | ☐ |
+| v2-345 | `map.links.osm` | OpenStreetMap'te aç | ☐ |
+| v2-346 | `map.links.pinName` | Gelidonya fidelik (örnek konum) | ☐ |
+| v2-347 | `contact.address[0]` | Fidelik Yolu No: 12 [örnek] | ☐ |
+| v2-348 | `contact.address[1]` | Kum Mahallesi, Kumluca / Antalya | ☐ |
+| v2-349 | `contact.hours[0]` | Fidelik ve büro: hafta içi 07.30–17.00 | ☐ |
+| v2-350 | `contact.hours[1]` | Cumartesi 07.30–12.00, pazar kapalı [örnek] | ☐ |
+| v2-351 | `mobileBar.label` | Hızlı eylemler | ☐ |
+| v2-352 | `mobileBar.call` | Ara | ☐ |
+| v2-353 | `mobileBar.wa` | WhatsApp | ☐ |
+| v2-354 | `mobileBar.route` | Yol tarifi | ☐ |
+| v2-355 | `footer.brand` | Gelidonya | ☐ |
+| v2-356 | `footer.visit` | Fidelik | ☐ |
+| v2-357 | `footer.contact` | İletişim | ☐ |
+| v2-358 | `footer.pages` | Sayfalar | ☐ |
+| v2-359 | `footer.belge` | Fide üretici belge no: [örnek] · geçerlilik: [örnek] | ☐ |
+| v2-360 | `footer.note` | Gelidonya kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Adres, telefonlar, e-posta, hazır fide listesi, fide değerleri, ambalaj ve hasat takvimi örnektir; formlar ve WhatsApp düğmeleri hiçbir yere mesaj göndermez. | ☐ |
+| v2-361 | `footer.kunye.title` | Proje künyesi | ☐ |
+| v2-362 | `footer.kunye.design` | Tasarım ve geliştirme: | ☐ |
+| v2-363 | `footer.kunye.designBy` | Raşit Burucu | ☐ |
+| v2-364 | `footer.kunye.designHref` | https://rasitburucu.com | ☐ |
+| v2-365 | `footer.kunye.three` | 3B ve render: | ☐ |
+| v2-366 | `footer.kunye.threeText` | Sera içi, fidelik ve ova görselleri Blender 5.2 ile koddan kuruldu (bitki, fide, viyol, sera ve arazi kendi modelimiz; hazır model ya da fotoğraf kullanılmadı). | ☐ |
+| v2-367 | `footer.kunye.maps` | Harita: | ☐ |
+| v2-368 | `footer.kunye.mapsText` | OpenStreetMap verisinden (© OpenStreetMap katkıcıları, ODbL) kendi çizimimiz; dış harita servisi yüklenmez. | ☐ |
+| v2-369 | `footer.kunye.fonts` | Yazı karakterleri: | ☐ |
+| v2-370 | `footer.kunye.fontsText` | Big Shoulders Display (Patric King, Xotype) ve Schibsted Grotesk (Schibsted), SIL Open Font License 1.1. | ☐ |
+| v2-371 | `footer.kunye.year` | Yıl: | ☐ |
+| v2-372 | `footer.kunye.yearText` | 2026 | ☐ |
+| v2-373 | `footer.copyright` | © 2026 Gelidonya Sera ve Fidelik · Konsept çalışma — rasitburucu.com | ☐ |
+| v2-374 | `cizim.legend` | Çizimdeki numaralar | ☐ |
+| v2-375 | `cizim.note` | Ölçüler örnektir; torba, damlatıcı ve sıklık seranın sistemine göre değişir. | ☐ |
+| v2-376 | `cizim.torba.title` | Torbada domates: boyuna ve enine kesit | ☐ |
+| v2-377 | `cizim.torba.desc` | Bir metrelik hindistancevizi lifi torbasına dikilmiş üç domates. Her bitkinin dibinde damlatıcı çubuğu, torbanın altında drenaj yarığı ve toplama oluğu; gövde klipsle askı ipine tutturulmuş. Sağda aynı torbanın enine kesiti. | ☐ |
+| v2-378 | `cizim.torba.long` | Boyuna kesit | ☐ |
+| v2-379 | `cizim.torba.cross` | Enine kesit | ☐ |
+| v2-380 | `cizim.torba.parts[0]` | Askı ipi: tele bağlı, bitki ona sarılarak büyür | ☐ |
+| v2-381 | `cizim.torba.parts[1]` | Gövde klipsi: gövdeyi ipe tutturur | ☐ |
+| v2-382 | `cizim.torba.parts[2]` | Fide küpü: viyolden gelen topak torbaya oturtulur | ☐ |
+| v2-383 | `cizim.torba.parts[3]` | Damlatıcı çubuğu: suyu ve gübreyi kök dibine verir | ☐ |
+| v2-384 | `cizim.torba.parts[4]` | Damla hattı (PE boru) ve damlatıcı | ☐ |
+| v2-385 | `cizim.torba.parts[5]` | Torba: hindistancevizi lifi (cocopeat), UV dayanımlı örtü | ☐ |
+| v2-386 | `cizim.torba.parts[6]` | Kök bölgesi: kökler torbanın içine yayılır | ☐ |
+| v2-387 | `cizim.torba.parts[7]` | Drenaj yarığı: fazla su torbanın altından çıkar | ☐ |
+| v2-388 | `cizim.torba.parts[8]` | Toplama oluğu: drenaj suyunu sera ucuna taşır | ☐ |
+| v2-389 | `cizim.torba.dims.bag` | 100 cm | ☐ |
+| v2-390 | `cizim.torba.dims.plant` | ≈ 33 cm | ☐ |
+| v2-391 | `cizim.torba.dims.height` | 10 cm | ☐ |
+| v2-392 | `cizim.torba.dims.width` | 20 cm | ☐ |
+| v2-393 | `cizim.torba.dims.wire` | tele ≈ 3,5 m | ☐ |
+| v2-394 | `cizim.ambalaj.title` | Ambalaj ve yükleme | ☐ |
+| v2-395 | `cizim.ambalaj.cap` | Euro palet üstünde karton koli · koli ve şale üstten | ☐ |
+| v2-396 | `cizim.ambalaj.desc` | Solda Euro palet üstünde yedi kat, katta üç yüz karton koli; köşebentler, iki çember ve palet etiketi. Sağ üstte üstten açık bir koli: tek kat salkım domates. Sağ altta 250 ve 500 gramlık şaleler. | ☐ |
+| v2-397 | `cizim.ambalaj.parts[0]` | Karton koli 40 × 30 cm, 5 kg salkım domates, tek kat | ☐ |
+| v2-398 | `cizim.ambalaj.parts[1]` | Şale 250 g ve 500 g, kokteyl domates | ☐ |
+| v2-399 | `cizim.ambalaj.parts[2]` | Euro palet 120 × 80 cm | ☐ |
+| v2-400 | `cizim.ambalaj.parts[3]` | Köşebent: koli sütunlarını taşımada sabit tutar | ☐ |
+| v2-401 | `cizim.ambalaj.parts[4]` | Çember ya da streç film | ☐ |
+| v2-402 | `cizim.ambalaj.parts[5]` | Palet etiketi: ürün, lot numarası, hasat tarihi, net ağırlık | ☐ |
+| v2-403 | `cizim.ambalaj.parts[6]` | Havalandırma delikleri: ön soğutmada hava koliden geçer | ☐ |
+| v2-404 | `cizim.ambalaj.note` | Ölçü, kat sayısı ve ağırlıklar örnektir; gerçek firmada alıcının şartnamesine göre yazılır. | ☐ |
+| v2-405 | `cizim.asi.title` | Aşılı ve aşısız fide | ☐ |
+| v2-406 | `cizim.asi.desc` | Solda aşılı fide: altta anacın güçlü kökü ve gövdesi, aşı noktasında silikon klips, üstte çeşidin gövdesi; tepesi alınmış, iki gövdeye ayrılıyor. Sağda aşısız fide: kendi kökü ve tek gövdesi. | ☐ |
+| v2-407 | `cizim.asi.grafted` | Aşılı · çift gövde | ☐ |
+| v2-408 | `cizim.asi.plain` | Aşısız · tek gövde | ☐ |
+| v2-409 | `cizim.asi.parts[0]` | Kalem: sizin seçtiğiniz çeşidin gövdesi ve yaprakları | ☐ |
+| v2-410 | `cizim.asi.parts[1]` | Tepe kesimi: iki gerçek yapraktan sonra tepe alınır | ☐ |
+| v2-411 | `cizim.asi.parts[2]` | İki gövde: koltuklardan çıkan iki sürgün ayrı iplere alınır | ☐ |
+| v2-412 | `cizim.asi.parts[3]` | Aşı klipsi: aşı noktasını kaynayana kadar tutar, sonra düşer | ☐ |
+| v2-413 | `cizim.asi.parts[4]` | Aşı noktası: dikimde toprak ya da torba üstünde kalır | ☐ |
+| v2-414 | `cizim.asi.parts[5]` | Anaç gövdesi | ☐ |
+| v2-415 | `cizim.asi.parts[6]` | Anaç kökü: güçlü, geniş kök sistemi | ☐ |
+| v2-416 | `cizim.asi.parts[7]` | Torf topağı: viyol gözünden çıkan kök topu | ☐ |
+| v2-417 | `cizim.asi.parts[8]` | Aşısız fidenin kendi kökü ve tek gövdesi | ☐ |
+| v2-418 | `cizim.asi.soil` | Dikim seviyesi | ☐ |
+| v2-419 | `cizim.asi.gap` | ≥ 3 cm | ☐ |
+| v2-420 | `nav.label` | Ana menü | ☐ |
+| v2-421 | `nav.menu` | Menü | ☐ |
+| v2-422 | `nav.close` | Kapat | ☐ |
+| v2-423 | `nav.items[0].label` | Hazır fide | ☐ |
+| v2-424 | `nav.items[0].href` | /gelidonya/hazir-fide/ | ☐ |
+| v2-425 | `nav.items[1].label` | Fidelik ve sipariş | ☐ |
+| v2-426 | `nav.items[1].href` | /gelidonya/fidelik/ | ☐ |
+| v2-427 | `nav.items[2].label` | Seralarımız | ☐ |
+| v2-428 | `nav.items[2].href` | /gelidonya/seralarimiz/ | ☐ |
+| v2-429 | `nav.items[3].label` | Ürün ve ihracat | ☐ |
+| v2-430 | `nav.items[3].href` | /gelidonya/urunlerimiz/ | ☐ |
+| v2-431 | `nav.items[4].label` | İletişim | ☐ |
+| v2-432 | `nav.items[4].href` | /gelidonya/iletisim/ | ☐ |
+| v2-433 | `nav.call` | Ara | ☐ |
+| v2-434 | `meta.title` | Gelidonya | Sera ve fidelik, Kumluca | ☐ |
+| v2-435 | `meta.description` | Kumluca'da kendi seralarında domates yetiştiren Gelidonya'dan aşılı ve aşısız fide: hazır fide listesi, sipariş ve teslim, fide hesabı, ziyaret. Konsept çalışma. | ☐ |
+| v2-436 | `meta.notFoundTitle` | Sayfa bulunamadı | Gelidonya | ☐ |
