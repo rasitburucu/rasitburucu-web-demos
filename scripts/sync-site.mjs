@@ -27,3 +27,6 @@ for (const entry of readdirSync(out)) {
   cpSync(join(out, entry), join(target, entry), { recursive: true });
 }
 console.log(`Synced out/ -> ${target}`);
+
+// Next 15.5 router fallback patch (raw index.txt on failed RSC fetch); see the script header.
+execSync("node scripts/patch-web-demos.mjs", { cwd: site, stdio: "inherit" });
