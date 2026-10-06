@@ -4,14 +4,16 @@ import { useEffect, useRef, useState } from "react";
 import { tr } from "@/content/gelidonya/tr";
 import { MAHSUL } from "@/content/gelidonya/urunler";
 
-type F = { product: string; amount: string; unit: string; where: string; when: string; pack: string; company: string; name: string; contact: string; note: string };
-const REQUIRED: (keyof F)[] = ["amount", "where", "when", "name", "contact"];
+type F = { product: string; amount: string; unit: string; where: string; week: string; pack: string; company: string; name: string; contact: string; note: string };
+const REQUIRED: (keyof F)[] = ["week", "where", "amount", "name", "contact"];
+const label = (m: (typeof MAHSUL)[number]) => `${m.name}, ${m.type}`;
 
 /** Buyer request for our own produce. Never sent: shows a summary instead. */
 export function AliciFormu() {
   const u = tr.urunlerimiz;
   const fl = u.fields;
-  const [v, setV] = useState<F>({ product: MAHSUL[0].name, amount: "", unit: fl.units[1], where: "", when: "", pack: u.pack[0], company: "", name: "", contact: "", note: "" });
+  const [v, setV] = useState<F>({ product: label(MAHSUL[0]), amount: "", unit: fl.units[0], where: "", week: "", pack: MAHSUL[0].pack[0], company: "", name: "", contact: "", note: "" });
+  const packs = MAHSUL.find((m) => label(m) === v.product)?.pack ?? [];
   const [err, setErr] = useState<Partial<Record<keyof F, string>>>({});
   const [done, setDone] = useState(false);
   const box = useRef<HTMLDivElement>(null);
@@ -21,7 +23,13 @@ export function AliciFormu() {
   }, [done]);
 
   const set = (k: keyof F) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setV((s) => ({ ...s, [k]: e.target.value }));
+    const val = e.target.value;
+    setV((s) => {
+      const next = { ...s, [k]: val };
+      // a new product brings its own packs
+      if (k === "product") next.pack = MAHSUL.find((m) => label(m) === val)?.pack[0] ?? s.pack;
+      return next;
+    });
     if (err[k]) setErr((x) => ({ ...x, [k]: undefined }));
   };
 
@@ -64,8 +72,8 @@ export function AliciFormu() {
     const rows: [string, string][] = [
       [fl.product, v.product],
       [fl.amount, `${v.amount} ${v.unit.toLocaleLowerCase("tr")}`],
+      [fl.week, v.week],
       [fl.where, v.where],
-      [fl.when, v.when],
       [fl.pack, v.pack],
       [fl.company, v.company || "—"],
       [fl.name, v.name],
@@ -97,7 +105,7 @@ export function AliciFormu() {
   }
 
   return (
-    <form className="gd-card gd-form" onSubmit={submit} noValidate aria-labelledby="gd-a-title" data-gd-bar-hide>
+    <form className="gd-card gd-form" onSubmit={submit} noValidate aria-labelledby="gd-a-title">
       <h2 id="gd-a-title" className="gd-h3">
         {u.formTitle}
       </h2>
@@ -107,7 +115,17 @@ export function AliciFormu() {
           <label htmlFor="gd-a-product">{fl.product}</label>
           <select id="gd-a-product" value={v.product} onChange={set("product")}>
             {MAHSUL.map((m) => (
-              <option key={m.id}>{m.name}</option>
+              <option key={m.id}>{label(m)}</option>
+            ))}
+          </select>
+        </div>
+        {input("week", fl.week, { hint: fl.weekHint })}
+        {input("where", fl.where, { hint: fl.whereHint })}
+        <div className="gd-input gd-input--full">
+          <label htmlFor="gd-a-pack">{fl.pack}</label>
+          <select id="gd-a-pack" value={v.pack} onChange={set("pack")}>
+            {packs.map((x) => (
+              <option key={x}>{x}</option>
             ))}
           </select>
         </div>
@@ -116,16 +134,6 @@ export function AliciFormu() {
           <label htmlFor="gd-a-unit">{fl.unit}</label>
           <select id="gd-a-unit" value={v.unit} onChange={set("unit")}>
             {fl.units.map((x) => (
-              <option key={x}>{x}</option>
-            ))}
-          </select>
-        </div>
-        {input("where", fl.where, { hint: fl.whereHint })}
-        {input("when", fl.when, { hint: fl.whenHint })}
-        <div className="gd-input gd-input--full">
-          <label htmlFor="gd-a-pack">{fl.pack}</label>
-          <select id="gd-a-pack" value={v.pack} onChange={set("pack")}>
-            {u.pack.map((x) => (
               <option key={x}>{x}</option>
             ))}
           </select>

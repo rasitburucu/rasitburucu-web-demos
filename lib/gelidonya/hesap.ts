@@ -1,14 +1,15 @@
-// Gelidonya: the order arithmetic, shown openly on the site.
-//   fide   = dönüm × dekara fide (or the count typed in), + 5 % spare if chosen
+// Gelidonya: the seedling arithmetic, shown openly on the site.
+//   fide   = dönüm × dekara tepe ÷ gövde sayısı   (rounded up)
 //   viyol  = ⌈fide ÷ göz⌉, the last tray partly filled
-//   ekim   = teslim haftası − üretim süresi (hafta)
-import { FIDELER, type Fide } from "@/content/gelidonya/urunler";
+//   ekim   = dikim haftası − tohumdan teslime süre (hafta)
+import { urunById, type Asi, type Urun } from "@/content/gelidonya/urunler";
 
 export const DAY = 864e5;
 const AY = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+export const AY_UZUN = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 
 /** Fixed "today" for the server render; the client swaps in the real date. */
-export const DEMO_TODAY = Date.UTC(2026, 9, 5);
+export const DEMO_TODAY = Date.UTC(2026, 9, 6);
 
 export const nf = (n: number) => n.toLocaleString("tr-TR");
 
@@ -36,46 +37,56 @@ export function weekRange(mon: number) {
     : `${a.getUTCDate()} ${AY[a.getUTCMonth()]}–${b.getUTCDate()} ${AY[b.getUTCMonth()]}`;
 }
 
-export const fideById = (id: string) => FIDELER.find((f) => f.id === id) ?? FIDELER[0];
+/** "6 Ekim" */
+export const gunAy = (t: number) => {
+  const d = new Date(t);
+  return `${d.getUTCDate()} ${AY_UZUN[d.getUTCMonth()]}`;
+};
 
-/** Delivery weeks on offer: from (this week + growing time + 1 week) on, 20 weeks. */
-export function deliveryWeeks(today: number, f: Fide, count = 20) {
-  const first = monday(today) + (f.weeks + 1) * 7 * DAY;
+/** "6 Ekim 2026" */
+export const tarih = (t: number) => `${gunAy(t)} ${new Date(t).getUTCFullYear()}`;
+
+export const weeksFor = (u: Urun, a: Asi) => u.weeks[a] ?? u.weeks.asili ?? 6;
+
+/** Planting weeks on offer: from (this week + growing time + 1) on, 26 weeks. */
+export function plantingWeeks(today: number, u: Urun, a: Asi, count = 26) {
+  const first = monday(today) + (weeksFor(u, a) + 1) * 7 * DAY;
   return Array.from({ length: count }, (_, i) => first + i * 7 * DAY);
 }
 
-/** Default delivery: week 7 of next year when on offer (a usual Kumluca planting), else the first. */
+/** Default planting: week 7 of next year when on offer (a usual spring planting), else the first. */
 export function defaultWeek(weeks: number[], today: number) {
   const y = new Date(today).getUTCFullYear() + 1;
-  return weeks.find((m) => {
-    const h = isoWeek(m);
-    return h.y === y && h.w === 7;
-  }) ?? weeks[0];
+  return (
+    weeks.find((m) => {
+      const h = isoWeek(m);
+      return h.y === y && h.w === 7;
+    }) ?? weeks[0]
+  );
 }
 
-export type Order = {
-  fideId: string;
-  unit: "donum" | "adet";
-  amount: number;
-  delivery: number;
-  spare: boolean;
+export type Hesap = {
+  urun: string;
+  graft: Asi;
+  stems: 1 | 2;
+  tray: number;
+  donum: number;
+  week: number;
 };
 
-export function calc(o: Order) {
-  const f = fideById(o.fideId);
-  const base = o.unit === "donum" ? o.amount * f.rate : o.amount;
-  const spareN = o.spare ? Math.ceil(base * 0.05) : 0;
-  const fide = Math.max(0, base + spareN);
-  const viyol = Math.max(1, Math.ceil(fide / f.cells));
-  const last = fide === 0 ? 0 : fide - (viyol - 1) * f.cells;
-  const sowing = o.delivery - f.weeks * 7 * DAY;
-  return { f, base, spareN, fide, viyol, last, sowing };
+export function calc(h: Hesap) {
+  const u = urunById(h.urun);
+  const stems = u.stems.includes(h.stems) ? h.stems : 1;
+  const heads = h.donum * u.heads;
+  const fide = Math.ceil(heads / stems);
+  const viyol = Math.max(1, Math.ceil(fide / h.tray));
+  const last = fide === 0 ? 0 : fide - (viyol - 1) * h.tray;
+  const weeks = weeksFor(u, h.graft);
+  const sowing = h.week - weeks * 7 * DAY;
+  return { u, stems, heads, fide, viyol, last, weeks, sowing };
 }
 
-export const LIMITS = {
-  donum: { min: 1, max: 500, step: 1 },
-  adet: { min: 100, max: 900000, step: 500 },
-};
+export const DONUM = { min: 1, max: 300 };
 
 /** "05320000000" -> "0532 000 00 00" (10 digits without the leading 0 too). */
 export function telYaz(v: string) {
