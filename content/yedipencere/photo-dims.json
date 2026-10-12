@@ -1,0 +1,88 @@
+{
+ "korfez": {
+  "ratio": 0.6881,
+  "widths": [
+   300,
+   640,
+   960
+  ],
+  "src": "korfez_igor-sporynin_jxAhpeXqylQ.jpg"
+ },
+ "hidirlik": {
+  "ratio": 0.6881,
+  "widths": [
+   300,
+   640
+  ],
+  "src": "hidirlik_sergey-konstantinov_QWxc5zGHMxc.jpg"
+ },
+ "kosk": {
+  "ratio": 1.5506,
+  "widths": [
+   480,
+   960,
+   1440
+  ],
+  "src": "kosk_igor-sporynin_YUu9QqvNy64.jpg"
+ },
+ "taslik": {
+  "ratio": 0.6881,
+  "widths": [
+   300,
+   640,
+   960
+  ],
+  "src": "taslik_kseniia-ilinykh_xG2uKMgxGzw.jpg"
+ },
+ "cumba": {
+  "ratio": 1.5506,
+  "widths": [
+   480,
+   960,
+   1440
+  ],
+  "src": "cumba_daniel-silva_0WMdxGvqhfE.jpg"
+ },
+ "avlu": {
+  "ratio": 0.6881,
+  "widths": [
+   300,
+   640,
+   960
+  ],
+  "src": "avlu_yana-ralko_5fixJa9vMoU.jpg"
+ },
+ "sofa": {
+  "ratio": 0.6881,
+  "widths": [
+   300,
+   640,
+   960
+  ],
+  "src": "sofa_bob-jenkin_k6Fia0wSpvc.jpg"
+ },
+ "ic-zemin": {
+  "ratio": 0.6,
+  "widths": [
+   640,
+   1080
+  ],
+  "src": "ic-zemin_merve-eglence_27772361.jpg"
+ },
+ "ic-birinci": {
+  "ratio": 0.6,
+  "widths": [
+   640,
+   1080
+  ],
+  "src": "ic-birinci_mesut-musluer_11987617.jpg"
+ },
+ "ic-kosk": {
+  "ratio": 0.6,
+  "widths": [
+   640,
+   1080
+  ],
+  "src": "ic-kosk_helloaesthe_15699340.jpg"
+ }
+}

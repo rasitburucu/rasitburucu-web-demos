@@ -1,0 +1,1882 @@
+{
+ "source": "© OpenStreetMap contributors (ODbL 1.0), read through the Overpass API; elevation SRTM 30 m through OpenTopoData",
+ "fetched": "2026-10-09",
+ "door": {
+  "lat": 36.88184,
+  "lon": 30.70364,
+  "street": "Hıdırlık Sokak",
+  "ele": 32
+ },
+ "starts": {
+  "kalekapisi": {
+   "name": "Kale Kapısı",
+   "osm": "node/1740310345",
+   "lat": 36.887045,
+   "lon": 30.705551,
+   "note": "nostaljik tramvay durağı; taksi ve transfer burada bırakır",
+   "ele": 40
+  },
+  "ismetpasa": {
+   "name": "İsmetpaşa",
+   "osm": "node/2307526731",
+   "lat": 36.88833,
+   "lon": 30.707021,
+   "note": "AntRay durağı (havalimanı ve otogar hattı)",
+   "ele": 46
+  },
+  "hadrian": {
+   "name": "Üç Kapılar",
+   "osm": "node/1656005397",
+   "lat": 36.88531,
+   "lon": 30.708919,
+   "note": "Hadrian Kapısı'nın dışındaki tramvay durağı; çevresinde otoparklar var",
+   "ele": 43
+  },
+  "cumhuriyet": {
+   "name": "Cumhuriyet Meydanı otoparkı",
+   "osm": "node/2752820741",
+   "lat": 36.887285,
+   "lon": 30.703068,
+   "note": "yeraltı otoparkı",
+   "ele": 43
+  },
+  "marina": {
+   "name": "Yat Limanı",
+   "osm": "node/1420290795",
+   "lat": 36.884363,
+   "lon": 30.70215,
+   "note": "eski liman",
+   "ele": 0
+  }
+ },
+ "elevator": {
+  "osm": "node/6078370965",
+  "lat": 36.8857809,
+  "lon": 30.7016873
+ },
+ "routes": {
+  "kalekapisi": {
+   "snap": 15,
+   "short": {
+    "m": 737,
+    "flights": 0,
+    "stepsOsm": 0,
+    "stepsUnknown": 0,
+    "ele": [
+     [
+      0,
+      42
+     ],
+     [
+      11,
+      43
+     ],
+     [
+      247,
+      31
+     ],
+     [
+      300,
+      27
+     ],
+     [
+      311,
+      27
+     ],
+     [
+      385,
+      16
+     ],
+     [
+      466,
+      26
+     ],
+     [
+      581,
+      36
+     ],
+     [
+      591,
+      36
+     ],
+     [
+      737,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": "Cumhuriyet Caddesi",
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": "asphalt",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 11,
+      "ways": [
+       27290521
+      ]
+     },
+     {
+      "name": "Uzuncarşı Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 11,
+      "m": 236,
+      "ways": [
+       1452653083,
+       42463648
+      ]
+     },
+     {
+      "name": "Uzuncarşı Geçidi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 247,
+      "m": 54,
+      "ways": [
+       159082492
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 300,
+      "m": 10,
+      "ways": [
+       358589292
+      ]
+     },
+     {
+      "name": "Aralık Geçidi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 311,
+      "m": 74,
+      "ways": [
+       358589291,
+       159082482
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 385,
+      "m": 81,
+      "ways": [
+       34624617
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 466,
+      "m": 115,
+      "ways": [
+       55463886
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 581,
+      "m": 10,
+      "ways": [
+       159082497
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 591,
+      "m": 147,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": [
+     {
+      "name": "Saat Kulesi",
+      "nameEn": "Clock Tower",
+      "at": 33,
+      "side": "left",
+      "off": 9
+     }
+    ]
+   },
+   "luggage": null
+  },
+  "ismetpasa": {
+   "snap": 13,
+   "short": {
+    "m": 952,
+    "flights": 0,
+    "stepsOsm": 0,
+    "stepsUnknown": 0,
+    "ele": [
+     [
+      0,
+      46
+     ],
+     [
+      194,
+      44
+     ],
+     [
+      226,
+      43
+     ],
+     [
+      462,
+      31
+     ],
+     [
+      515,
+      27
+     ],
+     [
+      525,
+      27
+     ],
+     [
+      599,
+      16
+     ],
+     [
+      680,
+      26
+     ],
+     [
+      795,
+      36
+     ],
+     [
+      805,
+      36
+     ],
+     [
+      952,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": "Old Bazaar",
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 194,
+      "ways": [
+       707640751,
+       707640750,
+       42940796,
+       54057326
+      ]
+     },
+     {
+      "name": "Cumhuriyet Caddesi",
+      "nameEn": null,
+      "kind": "living_street",
+      "surface": "asphalt",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 194,
+      "m": 32,
+      "ways": [
+       1452653084
+      ]
+     },
+     {
+      "name": "Uzuncarşı Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 226,
+      "m": 236,
+      "ways": [
+       1452653083,
+       42463648
+      ]
+     },
+     {
+      "name": "Uzuncarşı Geçidi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 462,
+      "m": 54,
+      "ways": [
+       159082492
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 515,
+      "m": 10,
+      "ways": [
+       358589292
+      ]
+     },
+     {
+      "name": "Aralık Geçidi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 525,
+      "m": 74,
+      "ways": [
+       358589291,
+       159082482
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 599,
+      "m": 81,
+      "ways": [
+       34624617
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 680,
+      "m": 115,
+      "ways": [
+       55463886
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 795,
+      "m": 10,
+      "ways": [
+       159082497
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 805,
+      "m": 147,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": [
+     {
+      "name": "Saat Kulesi",
+      "nameEn": "Clock Tower",
+      "at": 247,
+      "side": "left",
+      "off": 9
+     }
+    ]
+   },
+   "luggage": null
+  },
+  "hadrian": {
+   "snap": 7,
+   "short": {
+    "m": 739,
+    "flights": 2,
+    "stepsOsm": 23,
+    "stepsUnknown": 0,
+    "ele": [
+     [
+      0,
+      43
+     ],
+     [
+      11,
+      43
+     ],
+     [
+      29,
+      43
+     ],
+     [
+      56,
+      44
+     ],
+     [
+      61,
+      44
+     ],
+     [
+      72,
+      44
+     ],
+     [
+      82,
+      44
+     ],
+     [
+      93,
+      44
+     ],
+     [
+      476,
+      38
+     ],
+     [
+      671,
+      35
+     ],
+     [
+      739,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 11,
+      "ways": [
+       1062568435
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 11,
+      "m": 18,
+      "ways": [
+       1107549738
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 29,
+      "m": 27,
+      "ways": [
+       1026710704
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 56,
+      "m": 5,
+      "ways": [
+       42600721
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "steps",
+      "surface": "stone",
+      "steps": 10,
+      "incline": "down",
+      "handrail": null,
+      "turn": "straight",
+      "at": 61,
+      "m": 11,
+      "ways": [
+       760054462
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 72,
+      "m": 10,
+      "ways": [
+       707638084
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "steps",
+      "surface": "stone",
+      "steps": 13,
+      "incline": "up",
+      "handrail": null,
+      "turn": "straight",
+      "at": 82,
+      "m": 10,
+      "ways": [
+       707638083
+      ]
+     },
+     {
+      "name": "Hesapçı Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 93,
+      "m": 383,
+      "ways": [
+       32085246
+      ]
+     },
+     {
+      "name": "Hesapci Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 476,
+      "m": 195,
+      "ways": [
+       34624701
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 671,
+      "m": 69,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": [
+     {
+      "name": "Hadrian Kapısı",
+      "nameEn": "Hadrian's Gate",
+      "at": 77,
+      "side": "left",
+      "off": 0
+     },
+     {
+      "name": "Kesik Minare",
+      "nameEn": null,
+      "at": 462,
+      "side": "left",
+      "off": 3
+     },
+     {
+      "name": "Hıdırlık Kulesi",
+      "nameEn": "Hıdırlık Tower",
+      "at": 692,
+      "side": "left",
+      "off": 40
+     }
+    ]
+   },
+   "luggage": {
+    "m": 854,
+    "flights": 0,
+    "stepsOsm": 0,
+    "stepsUnknown": 0,
+    "ele": [
+     [
+      0,
+      43
+     ],
+     [
+      11,
+      43
+     ],
+     [
+      29,
+      43
+     ],
+     [
+      67,
+      43
+     ],
+     [
+      117,
+      40
+     ],
+     [
+      249,
+      42
+     ],
+     [
+      260,
+      42
+     ],
+     [
+      285,
+      42
+     ],
+     [
+      367,
+      40
+     ],
+     [
+      590,
+      38
+     ],
+     [
+      785,
+      35
+     ],
+     [
+      854,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 11,
+      "ways": [
+       1062568435
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 11,
+      "m": 18,
+      "ways": [
+       1107549738
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 29,
+      "m": 39,
+      "ways": [
+       1026710704
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 67,
+      "m": 50,
+      "ways": [
+       1107827987
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "service",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 117,
+      "m": 131,
+      "ways": [
+       1107827989
+      ]
+     },
+     {
+      "name": "Kocatepe Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 249,
+      "m": 12,
+      "ways": [
+       123113931
+      ]
+     },
+     {
+      "name": "Kandiller Geçidi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 260,
+      "m": 24,
+      "ways": [
+       27290523
+      ]
+     },
+     {
+      "name": "Kandiller Geçiti Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 285,
+      "m": 83,
+      "ways": [
+       159082486
+      ]
+     },
+     {
+      "name": "Hesapçı Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 367,
+      "m": 223,
+      "ways": [
+       32085246
+      ]
+     },
+     {
+      "name": "Hesapci Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 590,
+      "m": 195,
+      "ways": [
+       34624701
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 785,
+      "m": 69,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": [
+     {
+      "name": "Hadrian Kapısı",
+      "nameEn": "Hadrian's Gate",
+      "at": 29,
+      "side": "right",
+      "off": 30
+     },
+     {
+      "name": "Kesik Minare",
+      "nameEn": null,
+      "at": 576,
+      "side": "left",
+      "off": 3
+     },
+     {
+      "name": "Hıdırlık Kulesi",
+      "nameEn": "Hıdırlık Tower",
+      "at": 807,
+      "side": "left",
+      "off": 40
+     }
+    ]
+   }
+  },
+  "cumhuriyet": {
+   "snap": 0,
+   "short": {
+    "m": 961,
+    "flights": 1,
+    "stepsOsm": 0,
+    "stepsUnknown": 1,
+    "ele": [
+     [
+      0,
+      44
+     ],
+     [
+      33,
+      44
+     ],
+     [
+      95,
+      40
+     ],
+     [
+      174,
+      41
+     ],
+     [
+      222,
+      34
+     ],
+     [
+      313,
+      30
+     ],
+     [
+      329,
+      27
+     ],
+     [
+      397,
+      24
+     ],
+     [
+      470,
+      24
+     ],
+     [
+      526,
+      20
+     ],
+     [
+      689,
+      26
+     ],
+     [
+      804,
+      36
+     ],
+     [
+      814,
+      36
+     ],
+     [
+      961,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "service",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 33,
+      "ways": [
+       270240280
+      ]
+     },
+     {
+      "name": "Şehit Binbaşı Cengiz Toytunç Caddesi",
+      "nameEn": null,
+      "kind": "secondary",
+      "surface": "asphalt",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 33,
+      "m": 62,
+      "ways": [
+       1062569845
+      ]
+     },
+     {
+      "name": "Cumhuriyet Caddesi",
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": "asphalt",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "sharp-left",
+      "at": 95,
+      "m": 79,
+      "ways": [
+       27290521
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 174,
+      "m": 48,
+      "ways": [
+       1026710703
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 222,
+      "m": 91,
+      "ways": [
+       79234505
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 313,
+      "m": 16,
+      "ways": [
+       738261848
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "steps",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 329,
+      "m": 68,
+      "ways": [
+       738261847
+      ]
+     },
+     {
+      "name": "Aydoğdu Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 397,
+      "m": 73,
+      "ways": [
+       1117314765
+      ]
+     },
+     {
+      "name": "Merdivenli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 470,
+      "m": 57,
+      "ways": [
+       42940800
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 526,
+      "m": 163,
+      "ways": [
+       34624617
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 689,
+      "m": 115,
+      "ways": [
+       55463886
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 804,
+      "m": 10,
+      "ways": [
+       159082497
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 814,
+      "m": 147,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": []
+   },
+   "luggage": {
+    "m": 1071,
+    "flights": 0,
+    "stepsOsm": 0,
+    "stepsUnknown": 0,
+    "ele": [
+     [
+      0,
+      44
+     ],
+     [
+      33,
+      44
+     ],
+     [
+      95,
+      40
+     ],
+     [
+      231,
+      36
+     ],
+     [
+      242,
+      34
+     ],
+     [
+      326,
+      20
+     ],
+     [
+      338,
+      17
+     ],
+     [
+      366,
+      11
+     ],
+     [
+      507,
+      24
+     ],
+     [
+      580,
+      24
+     ],
+     [
+      636,
+      20
+     ],
+     [
+      799,
+      26
+     ],
+     [
+      914,
+      36
+     ],
+     [
+      924,
+      36
+     ],
+     [
+      1071,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "service",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 33,
+      "ways": [
+       270240280
+      ]
+     },
+     {
+      "name": "Şehit Binbaşı Cengiz Toytunç Caddesi",
+      "nameEn": null,
+      "kind": "secondary",
+      "surface": "asphalt",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 33,
+      "m": 62,
+      "ways": [
+       1062569845
+      ]
+     },
+     {
+      "name": "Cumhuriyet Caddesi",
+      "nameEn": null,
+      "kind": "secondary",
+      "surface": "asphalt",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 95,
+      "m": 136,
+      "ways": [
+       436531882
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 231,
+      "m": 11,
+      "ways": [
+       32915263
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 242,
+      "m": 84,
+      "ways": [
+       1152709266,
+       1452423893
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 326,
+      "m": 11,
+      "ways": [
+       1452423895,
+       1452423896
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 338,
+      "m": 28,
+      "ways": [
+       511840599
+      ]
+     },
+     {
+      "name": "İskele Caddesi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 366,
+      "m": 141,
+      "ways": [
+       230154443
+      ]
+     },
+     {
+      "name": "Aydoğdu Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 507,
+      "m": 73,
+      "ways": [
+       1117314765
+      ]
+     },
+     {
+      "name": "Merdivenli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 580,
+      "m": 57,
+      "ways": [
+       42940800
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 636,
+      "m": 163,
+      "ways": [
+       34624617
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 799,
+      "m": 115,
+      "ways": [
+       55463886
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 914,
+      "m": 10,
+      "ways": [
+       159082497
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 924,
+      "m": 147,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": []
+   }
+  },
+  "marina": {
+   "snap": 61,
+   "short": {
+    "m": 767,
+    "flights": 1,
+    "stepsOsm": 0,
+    "stepsUnknown": 1,
+    "ele": [
+     [
+      0,
+      2
+     ],
+     [
+      178,
+      11
+     ],
+     [
+      253,
+      10
+     ],
+     [
+      303,
+      15
+     ],
+     [
+      345,
+      20
+     ],
+     [
+      496,
+      26
+     ],
+     [
+      611,
+      36
+     ],
+     [
+      620,
+      36
+     ],
+     [
+      767,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 178,
+      "ways": [
+       42459037,
+       32915263
+      ]
+     },
+     {
+      "name": "Tuz Kapısı Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 178,
+      "m": 74,
+      "ways": [
+       42607457
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "paving_stones",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-left",
+      "at": 253,
+      "m": 50,
+      "ways": [
+       34624107
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "steps",
+      "surface": "rock",
+      "steps": null,
+      "incline": "up",
+      "handrail": "yes",
+      "turn": "straight",
+      "at": 303,
+      "m": 42,
+      "ways": [
+       34624509
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 345,
+      "m": 151,
+      "ways": [
+       34624617
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 496,
+      "m": 115,
+      "ways": [
+       55463886
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 611,
+      "m": 10,
+      "ways": [
+       159082497
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 620,
+      "m": 147,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": []
+   },
+   "luggage": {
+    "m": 852,
+    "flights": 0,
+    "stepsOsm": 0,
+    "stepsUnknown": 0,
+    "ele": [
+     [
+      0,
+      2
+     ],
+     [
+      100,
+      7
+     ],
+     [
+      135,
+      9
+     ],
+     [
+      146,
+      11
+     ],
+     [
+      287,
+      24
+     ],
+     [
+      360,
+      24
+     ],
+     [
+      417,
+      20
+     ],
+     [
+      580,
+      26
+     ],
+     [
+      695,
+      36
+     ],
+     [
+      705,
+      36
+     ],
+     [
+      852,
+      32
+     ]
+    ],
+    "segments": [
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": null,
+      "at": 0,
+      "m": 100,
+      "ways": [
+       42459037,
+       32915263
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "pedestrian",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 100,
+      "m": 35,
+      "ways": [
+       1452424960
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "footway",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "left",
+      "at": 135,
+      "m": 12,
+      "ways": [
+       1062268788
+      ]
+     },
+     {
+      "name": "İskele Caddesi",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 146,
+      "m": 141,
+      "ways": [
+       230154443
+      ]
+     },
+     {
+      "name": "Aydoğdu Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 287,
+      "m": 73,
+      "ways": [
+       1117314765
+      ]
+     },
+     {
+      "name": "Merdivenli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": "sett",
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 360,
+      "m": 57,
+      "ways": [
+       42940800
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 417,
+      "m": 163,
+      "ways": [
+       34624617
+      ]
+     },
+     {
+      "name": null,
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "straight",
+      "at": 580,
+      "m": 115,
+      "ways": [
+       55463886
+      ]
+     },
+     {
+      "name": "Mermerli Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "slight-right",
+      "at": 695,
+      "m": 10,
+      "ways": [
+       159082497
+      ]
+     },
+     {
+      "name": "Hıdırlık Sokak",
+      "nameEn": null,
+      "kind": "residential",
+      "surface": null,
+      "steps": null,
+      "incline": null,
+      "handrail": null,
+      "turn": "right",
+      "at": 705,
+      "m": 147,
+      "ways": [
+       55384092
+      ]
+     }
+    ],
+    "landmarks": []
+   }
+  }
+ }
+}
