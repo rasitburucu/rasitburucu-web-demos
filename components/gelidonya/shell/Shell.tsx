@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { navPages, tr } from "@/content/gelidonya/tr";
+import { Ornek } from "../ui/Ornek";
 
 export function Strip() {
   const s = tr.strip;
@@ -37,8 +38,11 @@ export function Footer() {
           <div>
             <h2>{f.visit}</h2>
             <address>
-              {c.address.map((l) => (
-                <span key={l}>{l}</span>
+              {c.address.map((l, i) => (
+                <span key={l}>
+                  {l}
+                  {i === 0 && <Ornek />}
+                </span>
               ))}
             </address>
             {c.hours.map((h) => (
@@ -53,11 +57,12 @@ export function Footer() {
             <p>
               <a href={b.phoneHref} className="gd-tnum">
                 {b.phone}
-              </a>{" "}
-              <span className="gd-muted">[{b.phoneNote}]</span>
+              </a>
+              <Ornek />
             </p>
             <p>
-              {b.email} <span className="gd-muted">[{b.emailNote}]</span>
+              {b.email}
+              <Ornek />
             </p>
           </div>
           <div>
@@ -71,7 +76,10 @@ export function Footer() {
             </ul>
           </div>
         </div>
-        <p className="gd-footer-belge">{f.belge}</p>
+        <p className="gd-footer-belge">
+          {f.belge}
+          <Ornek />
+        </p>
         <p className="gd-footer-note">{f.note}</p>
         <details className="gd-kunye">
           <summary>{k.title}</summary>

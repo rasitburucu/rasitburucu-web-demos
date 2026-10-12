@@ -3,34 +3,49 @@ import { tr } from "@/content/gelidonya/tr";
 import { HAZIR, LISTE_TARIHI, MAHSUL } from "@/content/gelidonya/urunler";
 import { tarih } from "@/lib/gelidonya/hesap";
 import { Resim } from "../ui/Resim";
+import { Ornek } from "../ui/Ornek";
 import { HazirTablo } from "../ui/HazirTablo";
 import { SiparisFormu } from "../ui/SiparisFormu";
 import type { HesapState } from "@/lib/gelidonya/hesap-ctx";
 
 const B = tr.base;
 
-/** A slice of the ready list: what is on the bench this week. */
+/** A slice of the ready list on the deep seedling green: what is on the bench
+ *  this week, the counts set large like a chalk board at the nursery door. */
 export function HazirOnizleme() {
   const h = tr.hazirOn;
   const rows = HAZIR.filter((r) => r.durum !== "olacak").slice(0, 5);
+  const now = HAZIR.filter((r) => r.durum === "hazir").length;
+  const boylu = HAZIR.filter((r) => r.durum === "boylu").length;
   return (
-    <section className="gd-sec gd-sec--white" aria-labelledby="gd-hon-title">
+    <section className="gd-sec gd-sec--leaf gd-hon" aria-labelledby="gd-hon-title">
       <div className="gd-wrap">
-        <div className="gd-sec-head">
-          <div>
+        <div className="gd-hon-head">
+          <div className="gd-hon-title">
             <h2 id="gd-hon-title" className="gd-h2">
               {h.title}
             </h2>
             <p className="gd-lead">{h.lead}</p>
           </div>
-          <p className="gd-updated">
-            {tr.hazir.updated(tarih(LISTE_TARIHI))}{" "}
-            <span className="gd-muted">[{tr.hazir.updatedNote}]</span>
-          </p>
+          <div className="gd-hon-count">
+            <p className="gd-sr">{h.countLabel(now, boylu)}</p>
+            <p className="gd-hon-nums" aria-hidden="true">
+              <span className="gd-hon-n gd-hon-n--hazir">
+                <b className="gd-tnum">{now}</b> {h.countHazir}
+              </span>
+              <span className="gd-hon-n gd-hon-n--boylu">
+                <b className="gd-tnum">{boylu}</b> {h.countBoylu}
+              </span>
+            </p>
+            <p className="gd-updated">
+              {tr.hazir.updated(tarih(LISTE_TARIHI))}
+              <Ornek />
+            </p>
+          </div>
         </div>
         <HazirTablo rows={rows} caption={h.title} />
         <p className="gd-sec-more">
-          <Link href={`${B}/hazir-fide/`} className="gd-btn gd-btn--dark">
+          <Link href={`${B}/hazir-fide/`} className="gd-btn gd-btn--light">
             {h.all(HAZIR.length)}
           </Link>
         </p>
@@ -69,7 +84,6 @@ export function Surec({
         </ol>
         <SiparisFormu live={live} preset={preset} />
       </div>
-      <p className="gd-note">{s.note}</p>
       {withLink && (
         <p>
           <Link href={`${B}/fidelik/#siparis`} className="gd-link">
@@ -265,8 +279,11 @@ export function Ziyaret() {
             <dt>{tr.iletisim.addressTitle}</dt>
             <dd>
               <address>
-                {c.address.map((l) => (
-                  <span key={l}>{l}</span>
+                {c.address.map((l, i) => (
+                  <span key={l}>
+                    {l}
+                    {i === 0 && <Ornek />}
+                  </span>
                 ))}
               </address>
             </dd>
@@ -274,10 +291,7 @@ export function Ziyaret() {
           <div>
             <dt>{z.teslim}</dt>
             <dd>
-              <span>
-                {z.teslimText}{" "}
-                <span className="gd-faint">[{z.teslimNote}]</span>
-              </span>
+              <span>{z.teslimText}</span>
             </dd>
           </div>
           <div>

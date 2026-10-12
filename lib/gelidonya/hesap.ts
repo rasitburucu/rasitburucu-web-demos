@@ -37,6 +37,16 @@ export function weekRange(mon: number) {
     : `${a.getUTCDate()} ${AY[a.getUTCMonth()]}–${b.getUTCDate()} ${AY[b.getUTCMonth()]}`;
 }
 
+/** Any span of days: "4–7 Oca" or "29 Ara–5 Oca". */
+export function dayRange(a: number, b: number) {
+  const x = new Date(a);
+  const y = new Date(b);
+  if (a === b) return `${x.getUTCDate()} ${AY[x.getUTCMonth()]}`;
+  return x.getUTCMonth() === y.getUTCMonth()
+    ? `${x.getUTCDate()}–${y.getUTCDate()} ${AY[y.getUTCMonth()]}`
+    : `${x.getUTCDate()} ${AY[x.getUTCMonth()]}–${y.getUTCDate()} ${AY[y.getUTCMonth()]}`;
+}
+
 /** "6 Ekim" */
 export const gunAy = (t: number) => {
   const d = new Date(t);
@@ -87,6 +97,34 @@ export function calc(h: Hesap) {
 }
 
 export const DONUM = { min: 1, max: 300 };
+
+/** The countdown strip: the stops a seedling passes from sowing to delivery.
+ *  Sowing (the sowing week) and delivery (the planting week) come straight from
+ *  calc(); the stops between are an EXAMPLE calendar placed at fixed shares of
+ *  the total time, and the site says so under the strip.
+ *    germination  ≈ 7 % of the time in, 4 days
+ *    grafting     ≈ 40 %, 4 days; healing the 8 days after (grafted)
+ *    first leaf   ≈ 35 %, 4 days (ungrafted)
+ *    hardening    the last 7 days before delivery */
+export type Asama = "ekim" | "cimlenme" | "yaprak" | "asi" | "kaynasma" | "sertlestirme" | "teslim";
+export type Durak = { id: Asama; a: number; b: number };
+
+export function takvim(sowing: number, weeks: number, graft: Asi): Durak[] {
+  const T = weeks * 7;
+  const at = (f: number) => Math.round(f * T);
+  const d = (id: Asama, a: number, b: number): Durak => ({ id, a: sowing + a * DAY, b: sowing + b * DAY });
+  const cim = Math.max(2, at(0.07));
+  const out = [d("ekim", 0, 6), d("cimlenme", cim, cim + 3)];
+  if (graft === "asili") {
+    const asi = at(0.4);
+    out.push(d("asi", asi, asi + 3), d("kaynasma", asi + 4, asi + 11));
+  } else {
+    const y = at(0.35);
+    out.push(d("yaprak", y, y + 3));
+  }
+  out.push(d("sertlestirme", T - 7, T - 1), d("teslim", T, T + 6));
+  return out;
+}
 
 /** "05320000000" -> "0532 000 00 00" (10 digits without the leading 0 too). */
 export function telYaz(v: string) {

@@ -51,3 +51,32 @@ Kaydırma sahnesi, paralaks, giriş animasyonu yok. Yalnız: düğme/çip renk g
 - Büyük harf gösterim fontu: fide arabası ve koli işaretlemesinin dar harfi; yalnız başlık ve iri rakamda.
 - Numaralı adımlar (Sipariş nasıl işler): içerik gerçek bir sıra.
 - `A · B` satırları yalnız gerçek veri ayrımında (aşı · anaç, belge no · geçerlilik).
+
+## v2.1 cila (2026-10-06)
+
+Raşit'in hükmü v2 için "çok vasat, çok standart". Karar A: iskelet aynı, deri yeni. Bu tur yalnız ana sayfa (ilk ekran + iki bölüm) ve ortak tokenlar.
+
+### Tokenlar (yeni ya da değişen)
+| Rol | Değer | Kontrast | Kaynak |
+|---|---|---|---|
+| zemin | `#F8F7F2` | metin-1 17,4:1, metin-2 8,45:1 | güneş alan sera naylonunun sıcak beyazı (krem değil) |
+| büyük alan yeşili | `#1E4A16` | beyaz 10,3:1, zemin rengi 9,6:1 | derin fide yeşili; hazır liste bandını ve liste kapısını boyar |
+| yeşil üstü ikincil metin | `#C9D8BE` | 6,9:1 | |
+| yeşil üstü işaret | `#9BD16A` | 5,7:1 | "Hazır" karesi, sayı işareti |
+| Beydağları mavi-grisi | `#5E6F7A` | zeminde 4,9:1 | çizimlerin ikincil tonu: geri sayım ekseni ve durak halkaları |
+| domates | `#C62F22` | zeminde 5,1:1, beyazda 5,5:1 | yalnız teslim durağı, formun seri numarası, hata, 404 |
+| küçük yeşil | `#3F8F1F` | 3,8:1 (yalnız grafik) | açık zeminde "Hazır" karesi |
+Metin siyahları (`#111311`, `#454A44`) aynı. Yeşil bantta renk tokenları yerel olarak tersine döner (`--gd-ink` açık), tablo ve düğmeler kendiliğinden uyar; odak halkası bantta açık renk.
+
+### Tipografi kuralı
+Big Shoulders Display yalnız h1 (ilk ekran ve sayfa başlıkları), logo ve iri rakamlarda (fide/viyol/hafta, hazır sayıları, liste kapısındaki sayı). Bölüm başlıkları (`.gd-h2`) Schibsted Grotesk 700, cümle düzeni, `clamp(2rem, 1.35rem + 2.1vw, 3.5rem)`, harf aralığı −0,03em, satır 1,06. Schibsted'in tablo rakamları noktayı da sabit genişlikte basar; "51. hafta" gibi noktalı değerlerde `tabular-nums` kullanılmaz.
+
+### Hareket tezi
+Tek orkestra edilmiş an: geri sayım şeridi görünüme girince fideler sırayla viyol gözünden büyür (bir kez, 420 ms + durak başı 55 ms, toplam ≈ 700 ms, yalnız transform/opacity, ease-out). Gerekçe: şeridin söylediği şey zaman içinde büyümedir; hareket tarihleri okutmadan önce yönü gösterir. Hesap değişince tarihler 260 ms yerine oturur, aşı değişince (6↔5 durak) duraklar transform ile 280 ms kayar. İçerik dinlenme hâlinde görünür; bekleme durumunu yalnız betik koyar. `prefers-reduced-motion: reduce` altında hiçbiri yok, şerit son hâliyle durur.
+
+### Geri sayım şeridinin bilgi işlevi
+Sitenin vaadi "tohumu dikim tarihinizden geriye sayarak ekeriz". Şerit bunu üreticinin takvimine çevirir: seçilen ürün, aşı ve dikim haftası için tohum ekimi haftası → çimlenme → (aşılıda) aşı ve kaynaşma / (aşısızda) ilk gerçek yaprak → sertleştirme → teslim (dikim haftası, ±3 gün). Uçlar hesaptan gelir (hesap ve sipariş formuyla aynı sayı); ara duraklar toplam sürenin sabit payı olduğu için altta "örnek takvim" yazar. Üreticinin sorduğu "ne zaman ekilir, ne zaman aşılanır (mesaj ne zaman gelir), ne zaman alırım" sorularını tek satırda cevaplar. Ekranda yatay sıralı liste (`ol`), 900 px altında dikey zaman çizelgesi; çizimler `aria-hidden`, her durak metinle anlaşılır.
+
+### Yerleşim
+İlk ekran: solda panel (başlık, tek cümle, Ara + WhatsApp, saat, yeşil liste kapısı), sağda render sağ kenara kadar, üstünde hiçbir şey yok. Fide hesabı ilk ekrandan çıktı, hemen altındaki imza bölüme taşındı (denetimler + sonuç + şerit). Hazır liste tam genişlik derin yeşil bant. Sıra: ilk ekran → geri sayım → yeşil liste → sipariş nasıl işler → kendi seramız → domatesimiz → fidelik nerede.
+Görseller `gorsel("fidelik-gunes", "fidelik")` ile seçilir: güneşli render `image-dims.json`'a girdiği an kendiliğinden geçer.

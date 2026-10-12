@@ -28,6 +28,8 @@ export const tr = {
     emailNote: "örnek adres",
   },
   skip: "İçeriğe geç",
+  /** the one small tag on values a real firm would have to supply (phone, address, list date, serials) */
+  ornek: "örnek",
   strip: {
     text: "Konsept çalışma —",
     link: "rasitburucu.com",
@@ -69,13 +71,11 @@ export const tr = {
     imageAlt:
       "Gelidonya fideliği: galvaniz tezgâhlarda uzanan siyah viyoller, gözlerde teslime yakın fideler. Bilgisayarda çizilmiş görsel.",
     gateTitle: "Hazır fide listesi",
-    gateHazir: "hazır",
-    gateBoylu: "boylu",
-    gateSoon: (n: number) => `İki hafta içinde ${n} kalem daha hazır olacak.`,
-    gateDate: (d: string) => `Son güncelleme: ${d} (örnek liste)`,
+    gateToday: "kalem fide bugün teslime hazır",
+    gateMore: (boylu: number, soon: number) => `${boylu} kalem boylu; iki hafta içinde ${soon} kalem daha hazır olacak.`,
+    gateDate: (d: string) => `Liste tarihi: ${d}`,
     gateLink: "Listeyi aç",
     hours: "Fidelik hafta içi 07.30–17.00, cumartesi 07.30–12.00.",
-    hoursNote: "Saatler ve numara örnektir.",
   },
 
   calc: {
@@ -104,6 +104,7 @@ export const tr = {
     formula2: (fide: string, cells: number, viyol: string) => `${fide} fide ÷ ${cells} göz = ${viyol} viyol`,
     formula3: (week: number, weeks: number, sowing: number) => `${week}. hafta − ${weeks} hafta = ${sowing}. hafta (tohum ekimi)`,
     toForm: "Sipariş formunda gör",
+    outTitle: "Sonuç",
     noteSourced: "Dekara 2.800 tepe domateste Bakanlık raporundan",
     noteSource: "kaynağı aç",
     noteRest: "Diğer sıklıklar ve süreler örnektir; siparişte ziraat mühendisimiz seranıza göre teyit eder.",
@@ -113,9 +114,31 @@ export const tr = {
       `Merhaba, fide siparişi için soruyorum: ${p}, ${kind}, ${stems} gövde, ${tray} gözlü viyol. ${donum} dönüm (≈ ${fide} fide, ${viyol} viyol). Dikim: ${week}. Köy/mahalle: `,
   },
 
+  // the signature section: the sum and the countdown strip
+  geri: {
+    title: "Dikim haftanızdan geriye sayarak ekeriz",
+    lead: "Ürünü, dönümü ve dikim haftanızı seçin. Kaç fide ve kaç viyol gerektiği, tohumun hangi hafta ekileceği ve fidenin hangi hafta hangi aşamada olacağı aşağıda çıkar.",
+    stripTitle: (w: number) => `Tohumdan teslime ${w} hafta`,
+    stripLabel: "Fidenin takvimi, tohum ekiminden teslime",
+    week: (w: number) => `${w}. hafta`,
+    note: "Ara aşamalar örnek takvimdir; çeşide ve mevsime göre değişir.",
+    stops: {
+      ekim: { name: "Tohum ekimi", text: "Tohum viyole ekilir; ekildiği gün size mesaj gelir." },
+      cimlenme: { name: "Çimlenme", text: "Fide toprağı yarar, iki çenek yaprağını açar." },
+      yaprak: { name: "İlk gerçek yaprak", text: "Çenek yaprakların üstünde ilk gerçek yaprak çıkar." },
+      asi: { name: "Aşı", text: "Çeşit anaca aşılanıp klipsle tutturulur; size mesaj gelir." },
+      kaynasma: { name: "Kaynaşma", text: "Fide iyileştirme odasında kalır, aşı yeri kaynar." },
+      sertlestirme: { name: "Sertleştirme", text: "Tezgâhta güneşe ve dış havaya alıştırılır." },
+      teslim: { name: "Teslim", text: "Dikim haftanızda fidelik kapısında, ±3 gün." },
+    },
+  },
+
   hazirOn: {
     title: "Bu hafta tezgâhta ne var",
-    lead: "Teslime hazır fidelerden bir kesit. Liste her sabah 08.00'de güncellenir [örnek].",
+    lead: "Teslime hazır fidelerden bir kesit. Liste her sabah 08.00'de güncellenir.",
+    countHazir: "hazır",
+    countBoylu: "boylu",
+    countLabel: (h: number, b: number) => `Bugün tezgâhta ${h} kalem hazır, ${b} kalem boylu fide var.`,
     all: (n: number) => `Listenin tamamı (${n} kalem)`,
   },
 
@@ -140,7 +163,6 @@ export const tr = {
         text: "Fide istediğiniz tarihte, ±3 gün içinde hazırdır. Formunuz ve kimliğinizle fidelikten alırsınız; viyol sayısını, cinsi ve adedi irsaliyeyle araca yüklemeden karşılaştırın.",
       },
     ],
-    note: "Kaparo oranı ve sipariş koşulları [örnek içerik].",
     link: "Sipariş ve teslim ayrıntıları",
   },
 
@@ -434,8 +456,8 @@ export const tr = {
   },
 
   contact: {
-    address: ["Fidelik Yolu No: 12 [örnek]", "Kum Mahallesi, Kumluca / Antalya"],
-    hours: ["Fidelik ve büro: hafta içi 07.30–17.00", "Cumartesi 07.30–12.00, pazar kapalı [örnek]"],
+    address: ["Fidelik Yolu No: 12", "Kum Mahallesi, Kumluca / Antalya"],
+    hours: ["Fidelik ve büro: hafta içi 07.30–17.00", "Cumartesi 07.30–12.00, pazar kapalı"],
   },
 
   mobileBar: {
@@ -450,7 +472,7 @@ export const tr = {
     visit: "Fidelik",
     contact: "İletişim",
     pages: "Sayfalar",
-    belge: "Fide üretici belge no: [örnek] · geçerlilik: [örnek]",
+    belge: "Fide üretici belge no: ______ · geçerlilik: ______",
     note:
       "Gelidonya kurgusal bir markadır; bu site rasitburucu.com için hazırlanmış bir tasarım örneğidir. Adres, telefonlar, e-posta, hazır fide listesi, fide değerleri, ambalaj ve hasat takvimi örnektir; formlar ve WhatsApp düğmeleri hiçbir yere mesaj göndermez.",
     kunye: {

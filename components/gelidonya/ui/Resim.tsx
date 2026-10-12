@@ -3,6 +3,10 @@ import dims from "@/content/gelidonya/image-dims.json";
 
 export type ResimKey = keyof typeof dims;
 
+/** The preferred render when it has been processed into image-dims.json, else
+ *  the fallback: the sunlit renders replace the grey ones by themselves. */
+export const gorsel = (pref: string, fallback: ResimKey): ResimKey => (pref in dims ? (pref as ResimKey) : fallback);
+
 const src = (k: string, w: number, ext: string) => asset(`/gelidonya/${k}-${w}.${ext}`);
 const set = (k: ResimKey, ext: string) => dims[k].widths.map((w) => `${src(k, w, ext)} ${w}w`).join(", ");
 

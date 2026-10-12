@@ -5,6 +5,7 @@ import { calc, defaultWeek, isoWeek, nf, plantingWeeks, weekRange } from "@/lib/
 import { useHesap, type HesapState } from "@/lib/gelidonya/hesap-ctx";
 import { useToday } from "@/lib/gelidonya/today";
 import { urunById } from "@/content/gelidonya/urunler";
+import { Ornek } from "./Ornek";
 
 /** The serial-numbered order form a grower signs at the nursery or the dealer,
  *  drawn as the paper it is. On the home page it carries the calculator's
@@ -32,7 +33,7 @@ export function SiparisFormu({ live = false, preset }: { live?: boolean; preset?
           <p className="gd-doc-title">{f.title}</p>
           {preset && <p className="gd-doc-copy">{f.copy}</p>}
           <p className="gd-doc-no">
-            {f.no} <span className="gd-tnum">{preset ? "0397" : "0412"}</span> <small>[{f.example}]</small>
+            {f.no} <span className="gd-tnum">{preset ? "0397" : "0412"}</span> <Ornek />
           </p>
         </div>
         <dl className="gd-doc-grid">

@@ -6,7 +6,7 @@ import { tr } from "@/content/gelidonya/tr";
 // carries only numbers and dimensions. Measurements are examples (said so).
 
 const INK = "#111311";
-const PAPER = "#f3f4f1";
+const PAPER = "#f8f7f2";
 const STEM = "#3e7a23";
 const STEM_D = "#2b5a17";
 const LEAF = "#4f8f2b";
@@ -19,6 +19,9 @@ const WATER = "#5e8fb8";
 const STEEL = "#c4c8c1";
 const TWINE = "#b8a47e";
 const CLIP = "#e3b02b";
+const ROOTSTOCK = "#5d7f35";
+const TRAY = "#2b2f2c";
+const SEED = "#d9c08a";
 
 /** Deterministic jitter so the drawing is the same on server and client. */
 function rnd(seed: number) {
@@ -690,5 +693,77 @@ export function AmbalajPlakasi() {
         <p className="gd-note">{a.note}</p>
       </figcaption>
     </figure>
+  );
+}
+
+// ------------------------------------------------------------------ fide evreleri
+
+export type Evre = "ekim" | "cimlenme" | "yaprak" | "asi" | "kaynasma" | "sertlestirme" | "teslim";
+
+/** Stem height, true leaves and cotyledons per stage (drawing units). */
+const EVRE: Record<Evre, { h: number; leaves: number; cot: boolean }> = {
+  ekim: { h: 0, leaves: 0, cot: false },
+  cimlenme: { h: 15, leaves: 0, cot: true },
+  yaprak: { h: 28, leaves: 1, cot: true },
+  asi: { h: 34, leaves: 2, cot: false },
+  kaynasma: { h: 44, leaves: 3, cot: false },
+  sertlestirme: { h: 60, leaves: 4, cot: false },
+  teslim: { h: 78, leaves: 5, cot: false },
+};
+
+/** One cell of a tray with the seedling at a stage of its growth: same ink,
+ *  leaf and clip colours as the plates. The plant is its own group so the
+ *  strip can grow it from the cell. */
+export function FideEvresi({ evre, asili }: { evre: Evre; asili: boolean }) {
+  const e = EVRE[evre];
+  const x = 60;
+  const base = 104;
+  const top = base - e.h;
+  const clipY = base - 12;
+  const grafted = asili && e.h > 0 && evre !== "cimlenme" && evre !== "yaprak";
+  const sw = f1(2 + e.h / 34);
+  const leaves = Array.from({ length: e.leaves }, (_, i) => {
+    const n = e.leaves;
+    const y = base - 16 - (i * (e.h - 22)) / Math.max(1, n - 0.6);
+    const right = i % 2 === 0;
+    const L = 15 + n * 2.6 - i * 2.2;
+    return { y, a: right ? -24 - i * 3 : -156 + i * 3, L, s: 0.42 + n * 0.035 - i * 0.02 };
+  });
+  return (
+    <svg viewBox="0 0 120 136" className="gd-fide" aria-hidden="true" focusable="false">
+      {/* tray: the rim, this cell and the edges of its neighbours */}
+      <rect x={6} y={base} width={108} height={30} fill={TRAY} />
+      <path d={`M${x - 19} ${base + 3}H${x + 19}L${x + 10} ${base + 28}H${x - 10}Z`} fill={PEAT} stroke={INK} strokeWidth={1} />
+      <path d={`M6 ${base + 3}H${x - 31}L${x - 40} ${base + 28}H6Z`} fill={PEAT} />
+      <path d={`M114 ${base + 3}H${x + 31}L${x + 40} ${base + 28}H114Z`} fill={PEAT} />
+      <path d={`M${x - 19} ${base + 3}q19 -4 38 0`} fill={PEAT} />
+      <g className="gd-fide-bitki">
+        {e.h === 0 ? (
+          <ellipse cx={x} cy={base + 1} rx={3.6} ry={2.4} fill={SEED} stroke={INK} strokeWidth={0.8} transform={`rotate(-14 ${x} ${base + 1})`} />
+        ) : (
+          <>
+            {grafted && <path d={`M${x} ${base + 2}V${clipY}`} stroke={ROOTSTOCK} strokeWidth={sw + 0.6} strokeLinecap="round" />}
+            <path
+              d={`M${x} ${grafted ? clipY : base + 2}C${x + 1.5} ${f1(base - e.h * 0.5)} ${x - 2} ${f1(top + e.h * 0.2)} ${x} ${top}`}
+              fill="none"
+              stroke={STEM}
+              strokeWidth={sw}
+              strokeLinecap="round"
+            />
+            {e.cot && (
+              <g transform={`translate(${x} ${evre === "cimlenme" ? top + 1 : base - 9})`}>
+                <path d={leaflet(evre === "cimlenme" ? 13 : 15, 4)} fill="#6aa23c" stroke={LEAF_D} strokeWidth={0.8} transform="rotate(-158)" />
+                <path d={leaflet(evre === "cimlenme" ? 13 : 15, 4)} fill="#6aa23c" stroke={LEAF_D} strokeWidth={0.8} transform="rotate(-22)" />
+              </g>
+            )}
+            {leaves.map((l, i) => (
+              <Yaprak key={i} x={x + (l.a < -90 ? -0.5 : 0.5)} y={f1(l.y)} a={l.a} L={l.L} s={l.s} seed={300 + e.leaves * 10 + i} />
+            ))}
+            {e.leaves > 0 && <path d={`M${x} ${top}l-3.5 -7m3.5 7l4 -6`} stroke={STEM} strokeWidth={1.6} strokeLinecap="round" fill="none" />}
+            {grafted && <rect x={x - 4.5} y={clipY - 6} width={9} height={12} rx={2.5} fill={CLIP} stroke={INK} strokeWidth={1} />}
+          </>
+        )}
+      </g>
+    </svg>
   );
 }

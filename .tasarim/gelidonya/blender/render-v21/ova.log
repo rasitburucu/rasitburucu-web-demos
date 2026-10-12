@@ -1,0 +1,4 @@
+KAYA Color Ramp.005
+GUNES ova {'aerosol': 0.3, 'air': 0.9, 'az': 125.0, 'el': 18.0, 'exposure': 0.0, 'falloff': 800.0, 'haze': 1.2e-05, 'haze_aniso': 0.4, 'haze_col': (0.9, 0.92, 0.96), 'ozone': 3.0, 'rock_warm': 1.0, 'sea_deep': (0.005, 0.03, 0.075), 'sea_rough': 0.12, 'sea_shore': (0.015, 0.08, 0.09), 'sky': 0.32, 'sun': 10.0, 'sun_ang': 0.6, 'sun_col': (1.0, 0.8, 0.6)}
+SAVED D:/Yazılım Projeleri/rasitburucu-web-demos/.tasarim/gelidonya/blender/gelidonya-ova-gunes.blend
+DONE D:/Yazılım Projeleri/rasitburucu-web-demos-wt/gelidonya/.tasarim/gelidonya/blender/render-v21/ova.png

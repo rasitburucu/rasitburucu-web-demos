@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { navPages, tr } from "@/content/gelidonya/tr";
 import { Wordmark } from "./Shell";
+import { Ornek } from "../ui/Ornek";
 
 const norm = (s: string) => s.split("#")[0].replace(/\/$/, "");
 const current = (href: string, pathname: string) =>
@@ -61,7 +62,7 @@ export function Header() {
           <a href={b.phoneHref} className="gd-header-phone">
             <span className="gd-sr">{n.call}: </span>
             <span className="gd-tnum">{b.phone}</span>
-            <small>{b.phoneNote}</small>
+            <Ornek />
           </a>
           <button
             ref={btn}
@@ -90,8 +91,8 @@ export function Header() {
         <p className="gd-menu-foot">
           <a href={b.phoneHref} className="gd-tnum">
             {b.phone}
-          </a>{" "}
-          <span className="gd-muted">[{b.phoneNote}]</span>
+          </a>
+          <Ornek />
           <br />
           {tr.contact.hours[0]}
         </p>

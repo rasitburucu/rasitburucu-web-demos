@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { tr } from "@/content/gelidonya/tr";
 import { Hero } from "@/components/gelidonya/home/Hero";
 import { HesapProvider } from "@/lib/gelidonya/hesap-ctx";
+import { GeriSayim } from "@/components/gelidonya/home/GeriSayim";
 import {
   HazirOnizleme,
   Kendi,
@@ -20,6 +21,7 @@ export default function GelidonyaHome() {
     <HesapProvider>
       <div className="gd-home">
         <Hero />
+        <GeriSayim />
         <HazirOnizleme />
         <SurecSection />
         <Kendi />

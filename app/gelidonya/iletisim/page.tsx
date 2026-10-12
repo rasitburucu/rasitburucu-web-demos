@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { tr } from "@/content/gelidonya/tr";
 import { Harita } from "@/components/gelidonya/pages/Harita";
 import { PhoneIcon, WaButton } from "@/components/gelidonya/shell/Wa";
+import { Ornek } from "@/components/gelidonya/ui/Ornek";
 
 export const metadata: Metadata = {
   title: "İletişim ve ziyaret",
@@ -76,8 +77,11 @@ export default function IletisimPage() {
               <dt>{p.addressTitle}</dt>
               <dd>
                 <address>
-                  {c.address.map((l) => (
-                    <span key={l}>{l}</span>
+                  {c.address.map((l, i) => (
+                    <span key={l}>
+                      {l}
+                      {i === 0 && <Ornek />}
+                    </span>
                   ))}
                 </address>
                 <p className="gd-muted">{p.mapLead}</p>

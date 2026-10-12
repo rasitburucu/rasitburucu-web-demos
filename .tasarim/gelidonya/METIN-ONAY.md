@@ -819,3 +819,38 @@ Kaynak: `content/gelidonya/tr.ts` (v2) ve `content/gelidonya/urunler.ts`. v1 tab
 | v2-434 | `meta.title` | Gelidonya | Sera ve fidelik, Kumluca | ☐ |
 | v2-435 | `meta.description` | Kumluca'da kendi seralarında domates yetiştiren Gelidonya'dan aşılı ve aşısız fide: hazır fide listesi, sipariş ve teslim, fide hesabı, ziyaret. Konsept çalışma. | ☐ |
 | v2-436 | `meta.notFoundTitle` | Sayfa bulunamadı | Gelidonya | ☐ |
+
+## v2.1 (onay bekliyor)
+
+Tarih: 2026-10-06 · Yalnız ana sayfa ve ortak kabuk. Yeni ya da değişen satırlar; silinenler en altta.
+"örnek" artık köşeli parantezle değil, tek tip küçük bir etiketle yazılır (telefon, e-posta, adres, liste tarihi, form ve belge numarası). Kurgunun tamamı üst şeritte ve alt bilgide bir kez söylenir.
+
+| # | Anahtar | Metin (TR) | Onay |
+|---|---|---|---|
+| v21-1 | `ornek` | örnek (değerlerin yanındaki küçük etiket) | ☐ |
+| v21-2 | `hero.gateToday` | ‹4› kalem fide bugün teslime hazır | ☐ |
+| v21-3 | `hero.gateMore` | ‹2› kalem boylu; iki hafta içinde ‹5› kalem daha hazır olacak. | ☐ |
+| v21-4 | `hero.gateDate` | Liste tarihi: ‹6 Ekim 2026› [örnek etiketi] | ☐ |
+| v21-5 | `geri.title` | Dikim haftanızdan geriye sayarak ekeriz | ☐ |
+| v21-6 | `geri.lead` | Ürünü, dönümü ve dikim haftanızı seçin. Kaç fide ve kaç viyol gerektiği, tohumun hangi hafta ekileceği ve fidenin hangi hafta hangi aşamada olacağı aşağıda çıkar. | ☐ |
+| v21-7 | `geri.stripTitle` | Tohumdan teslime ‹9› hafta | ☐ |
+| v21-8 | `geri.stripLabel` | Fidenin takvimi, tohum ekiminden teslime (ekran okuyucu etiketi) | ☐ |
+| v21-9 | `geri.week` | ‹51›. hafta | ☐ |
+| v21-10 | `geri.note` | Ara aşamalar örnek takvimdir; çeşide ve mevsime göre değişir. | ☐ |
+| v21-11 | `geri.stops.ekim` | Tohum ekimi · Tohum viyole ekilir; ekildiği gün size mesaj gelir. | ☐ |
+| v21-12 | `geri.stops.cimlenme` | Çimlenme · Fide toprağı yarar, iki çenek yaprağını açar. | ☐ |
+| v21-13 | `geri.stops.yaprak` | İlk gerçek yaprak · Çenek yaprakların üstünde ilk gerçek yaprak çıkar. (aşısızda) | ☐ |
+| v21-14 | `geri.stops.asi` | Aşı · Çeşit anaca aşılanıp klipsle tutturulur; size mesaj gelir. (aşılıda) | ☐ |
+| v21-15 | `geri.stops.kaynasma` | Kaynaşma · Fide iyileştirme odasında kalır, aşı yeri kaynar. (aşılıda) | ☐ |
+| v21-16 | `geri.stops.sertlestirme` | Sertleştirme · Tezgâhta güneşe ve dış havaya alıştırılır. | ☐ |
+| v21-17 | `geri.stops.teslim` | Teslim · Dikim haftanızda fidelik kapısında, ±3 gün. | ☐ |
+| v21-18 | `hazirOn.lead` | Teslime hazır fidelerden bir kesit. Liste her sabah 08.00'de güncellenir. ("[örnek]" çıktı) | ☐ |
+| v21-19 | `hazirOn.countHazir` / `countBoylu` | ‹4› hazır · ‹2› boylu (iri rakam) | ☐ |
+| v21-20 | `hazirOn.countLabel` | Bugün tezgâhta ‹4› kalem hazır, ‹2› kalem boylu fide var. (ekran okuyucu) | ☐ |
+| v21-21 | `contact.address[0]` | Fidelik Yolu No: 12 [örnek etiketi] ("[örnek]" metinden çıktı) | ☐ |
+| v21-22 | `contact.hours[1]` | Cumartesi 07.30–12.00, pazar kapalı ("[örnek]" çıktı) | ☐ |
+| v21-23 | `footer.belge` | Fide üretici belge no: ______ · geçerlilik: ______ [örnek etiketi] | ☐ |
+
+Tohum ekimi ve teslim haftası hesaptan gelir (`hesap.ts`: dikim haftası − tohumdan teslime süre). Ara durakların günleri toplam sürenin sabit payıdır (çimlenme ≈ %7, aşı ≈ %40 ve sonraki 8 gün kaynaşma, ilk gerçek yaprak ≈ %35, sertleştirme son 7 gün); bu yüzden şeridin altında "örnek takvim" notu var.
+
+Silinen satırlar: `hero.gateHazir`, `hero.gateBoylu`, `hero.gateSoon` (yerine v21-2, v21-3), `hero.hoursNote` ("Saatler ve numara örnektir." tekrar), `surec.note` (form açıklaması aynı şeyi söylüyor). Ana sayfada artık kullanılmayan: `calc.lead`, `ziyaret.teslimNote` (iletişim sayfası hâlâ kullanıyor).

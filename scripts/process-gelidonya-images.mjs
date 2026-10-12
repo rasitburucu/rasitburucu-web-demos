@@ -1,12 +1,21 @@
 // Gelidonya: turns the Blender renders (scripts/gelidonya-blender/, PNG
 // masters kept in .tasarim/gelidonya/blender/render/) into AVIF + WebP sets
 // in public/gelidonya/, plus the Open Graph card. Run from the repo root:
-//   node scripts/process-gelidonya-images.mjs [render folder]
+//   node scripts/process-gelidonya-images.mjs [render folder] [--suffix=-gunes] [--only=ova,fidelik]
+// --suffix writes <name><suffix>-<w> files beside the existing set, merges the
+// new keys into image-dims.json and leaves the Open Graph card alone
+// (as does --only, which limits the run to the named jobs).
 import sharp from "sharp";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SRC = process.argv[2] ?? join("..", "rasitburucu-web-demos", ".tasarim", "gelidonya", "blender", "render");
+const flags = Object.fromEntries(
+  process.argv.slice(2).filter((a) => a.startsWith("--")).map((a) => a.slice(2).split("=")),
+);
+const positional = process.argv.slice(2).filter((a) => !a.startsWith("--"));
+const SUFFIX = flags.suffix ?? "";
+const ONLY = flags.only ? flags.only.split(",") : null;
+const SRC = positional[0] ?? join("..", "rasitburucu-web-demos", ".tasarim", "gelidonya", "blender", "render");
 const OUT = join("public", "gelidonya");
 mkdirSync(OUT, { recursive: true });
 
@@ -22,24 +31,26 @@ const JOBS = [
   { name: "ziyaret", file: "ziyaret.png", crop: { left: 420, top: 0, width: 1560, height: 1350 }, widths: [1560, 1000, 700] },
 ];
 
-const dims = {};
-for (const job of JOBS) {
+const DIMS = join("content", "gelidonya", "image-dims.json");
+const dims = (SUFFIX || ONLY) && existsSync(DIMS) ? JSON.parse(readFileSync(DIMS, "utf8")) : {};
+for (const job of JOBS.filter((j) => !ONLY || ONLY.includes(j.name))) {
+  const name = job.name + SUFFIX;
   let base = sharp(join(SRC, job.file));
   if (job.crop) base = base.extract(job.crop);
   if (job.grade) base = base.linear(job.grade.a, job.grade.b).modulate({ saturation: job.grade.sat });
   const buf = await base.toBuffer();
   const meta = await sharp(buf).metadata();
-  dims[job.name] = { w: meta.width, h: meta.height, widths: job.widths };
+  dims[name] = { w: meta.width, h: meta.height, widths: job.widths };
   for (const w of job.widths) {
     const img = sharp(buf).resize({ width: w });
-    await img.clone().avif({ quality: 52, effort: 6 }).toFile(join(OUT, `${job.name}-${w}.avif`));
-    await img.clone().webp({ quality: 74 }).toFile(join(OUT, `${job.name}-${w}.webp`));
+    await img.clone().avif({ quality: 52, effort: 6 }).toFile(join(OUT, `${name}-${w}.avif`));
+    await img.clone().webp({ quality: 74 }).toFile(join(OUT, `${name}-${w}.webp`));
   }
-  console.log(job.name, meta.width, meta.height);
+  console.log(name, meta.width, meta.height);
 }
 
-// Open Graph card: the nursery benches, 1200 x 630
-await sharp(join(SRC, "fidelik.png"))
+// Open Graph card: the nursery benches, 1200 x 630 (full runs only)
+if (!SUFFIX && !ONLY) await sharp(join(SRC, "fidelik.png"))
   .extract({ left: 0, top: 160, width: 2400, height: 1260 })
   .resize(1200, 630)
   .jpeg({ quality: 80, mozjpeg: true })
