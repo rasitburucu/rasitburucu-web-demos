@@ -1,0 +1,46 @@
+{
+  "karakalem": {
+    "block": "DM-0412",
+    "next": "DM-0413",
+    "slabs": 46,
+    "sold": [[1, 20]],
+    "reserved": [[27, 29], [38, 38]],
+    "thickness": 2,
+    "size": [3.2, 1.9],
+    "cut": "2026-09",
+    "blockSize": [3.25, 1.95, 1.2]
+  },
+  "duman": {
+    "block": "DM-0388",
+    "next": "DM-0391",
+    "slabs": 38,
+    "sold": [[1, 14], [29, 38]],
+    "reserved": [[21, 22]],
+    "thickness": 2,
+    "size": [2.95, 1.8],
+    "cut": "2026-08",
+    "blockSize": [3.0, 1.85, 1.0]
+  },
+  "sirma": {
+    "block": "DM-0417",
+    "next": "DM-0420",
+    "slabs": 32,
+    "sold": [[1, 18], [29, 32]],
+    "reserved": [],
+    "thickness": 3,
+    "size": [3.05, 1.85],
+    "cut": "2026-09",
+    "blockSize": [3.1, 1.9, 1.18]
+  },
+  "kiragi": {
+    "block": "DM-0402",
+    "next": "DM-0406",
+    "slabs": 44,
+    "sold": [[1, 30]],
+    "reserved": [[41, 44]],
+    "thickness": 2,
+    "size": [3.1, 1.95],
+    "cut": "2026-07",
+    "blockSize": [3.15, 2.0, 1.15]
+  }
+}
