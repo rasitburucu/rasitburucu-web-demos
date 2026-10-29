@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Damar — Yön A · Blok Defteri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:wght@400;500;600;700&family=Sofia+Sans+Extra+Condensed:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #E4E3DE;      /* marble dust on the yard floor */
+    --surface: #F3F2EE;     /* polished slab white */
+    --ink: #1B1D21;
+    --ink-2: #555960;
+    --line: #C7C5BE;
+    --mark: #2A3A98;        /* marking paint sprayed on blocks */
+    --mark-soft: #A9B2DE;
+    --on-mark: #FFFFFF;
+    --sold: #D2CFC8;
+    --display: "Sofia Sans Extra Condensed", "Arial Narrow", sans-serif;
+    --text: "Sofia Sans", system-ui, sans-serif;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--ground); color: var(--ink); font: 400 16px/1.5 var(--text); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--mark); outline-offset: 3px; }
+
+  .strip { background: var(--ink); color: #E4E3DE; font-size: 12.5px; text-align: center; padding: 5px 16px; letter-spacing: .01em; }
+  header.top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 32px; padding: 14px 40px; border-bottom: 1px solid var(--line); }
+  .word { font: 800 34px/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+  .word small { display: block; font: 500 11.5px/1.2 var(--text); letter-spacing: .02em; text-transform: none; color: var(--ink-2); margin-top: 3px; }
+  nav.main { display: flex; gap: 26px; font-weight: 500; font-size: 15px; }
+  nav.main a { text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
+  nav.main a[aria-current="page"] { border-color: var(--ink); }
+  .right { display: flex; align-items: center; gap: 14px; }
+  .lang { display: inline-flex; border: 1px solid var(--line); }
+  .lang button { background: none; border: 0; padding: 6px 10px; font-size: 13px; font-weight: 600; color: var(--ink-2); }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 0; background: var(--mark); color: var(--on-mark); font-weight: 600; font-size: 15px; padding: 11px 18px; text-decoration: none; transition: background .15s; }
+  .btn:hover { background: #22307F; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+  .btn.ghost:hover { background: rgba(27,29,33,.06); }
+  .menu-btn { display: none; background: none; border: 1px solid var(--line); padding: 8px 10px; }
+
+  main.hero { display: grid; grid-template-columns: minmax(420px, 520px) 1fr; grid-template-areas: "head stage" "block stage" "ledger stage"; grid-template-rows: auto auto 1fr; column-gap: 40px; padding: 30px 40px 28px; max-width: 1720px; margin: 0 auto; }
+  .head { grid-area: head; } .block { grid-area: block; } .ledger { grid-area: ledger; align-self: start; } .stage { grid-area: stage; }
+  h1 { font: 800 clamp(2.5rem, 1.2rem + 2.9vw, 4.3rem)/.95 var(--display); letter-spacing: -.005em; margin: 0 0 12px; }
+  .lede { font-size: 17px; line-height: 1.5; color: var(--ink-2); max-width: 30em; margin: 0 0 18px; }
+
+  .block { background: var(--surface); border: 1px solid var(--line); padding: 14px 18px 12px; }
+  .block-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .block-no { font: 800 64px/.86 var(--display); color: var(--mark); letter-spacing: .01em; }
+  .block-no span { display: block; font: 600 12px/1.3 var(--text); color: var(--ink-2); letter-spacing: .02em; margin-bottom: 6px; }
+  .block-stone { font-size: 14px; color: var(--ink-2); margin-top: 8px; }
+  .block-stone b { font: 800 24px/1 var(--display); color: var(--ink); letter-spacing: .01em; margin-right: 6px; }
+  .iso { width: 168px; height: auto; flex: none; overflow: visible; margin: -4px -4px -8px 0; }
+  dl.facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 12px; margin: 10px 0 10px; }
+  dl.facts div { border-top: 1px solid var(--line); padding-top: 6px; }
+  dl.facts dt { font-size: 12px; color: var(--ink-2); }
+  dl.facts dd { margin: 0; font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; }
+  .strip-slabs { display: grid; grid-template-columns: repeat(46, 1fr); gap: 2px; height: 40px; margin-top: 4px; }
+  .strip-slabs button { border: 0; padding: 0; background: var(--mark-soft); position: relative; }
+  .strip-slabs button.sold { background: var(--sold); background-image: repeating-linear-gradient(135deg, transparent 0 3px, rgba(0,0,0,.09) 3px 4px); cursor: not-allowed; }
+  .strip-slabs button.sel { background: var(--mark); }
+  .strip-slabs button:hover:not(.sold):not(.sel) { background: #7C88C9; }
+  .strip-scale { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--ink-2); margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-top: 8px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; margin-right: 5px; vertical-align: -1px; }
+  .pair-note { font-size: 14px; margin: 8px 0 0; }
+
+  .ledger { margin-top: 12px; border: 1px solid var(--ink); background: var(--surface); display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 12px 14px; }
+  .ledger label { font-size: 12px; color: var(--ink-2); display: block; }
+  .qty { display: flex; align-items: center; gap: 6px; }
+  .qty input { width: 76px; font: 700 22px/1 var(--display); border: 1px solid var(--line); background: #fff; padding: 6px 8px; font-variant-numeric: tabular-nums; }
+  .seg { display: inline-flex; border: 1px solid var(--line); }
+  .seg button { border: 0; background: #fff; padding: 6px 9px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+  .result { font: 700 21px/1.15 var(--display); letter-spacing: .01em; font-variant-numeric: tabular-nums; }
+  .result small { display: block; font: 500 12px/1.3 var(--text); color: var(--ink-2); letter-spacing: 0; margin-top: 3px; }
+  .ledger .quote { grid-column: 1 / -1; justify-content: center; }
+
+  /* preview */
+  .stage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; gap: 12px; min-height: 0; align-self: start; }
+  .views { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .views .seg button { padding: 8px 12px; font-size: 14px; }
+  .viewer { position: relative; background: #D7D5CF; border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; perspective: 2200px; height: min(68vh, 660px); min-height: 480px; }
+  .viewer::after { content: ""; position: absolute; inset: auto 0 0 0; height: 18%; background: linear-gradient(transparent, rgba(0,0,0,.05)); pointer-events: none; }
+  .book { position: relative; display: flex; height: 92%; max-height: 640px; aspect-ratio: 3.8 / 3.2; transform-style: preserve-3d; }
+  .page { position: relative; flex: 1; transform-style: preserve-3d; }
+  .page img { display: block; width: 100%; height: 100%; object-fit: cover; box-shadow: 0 14px 30px rgba(20,22,26,.18), 0 2px 4px rgba(20,22,26,.12); }
+  .page.right { transform-origin: left center; margin-left: 2px; }
+  .page::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(112deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.16) 44%, rgba(255,255,255,0) 58%); mix-blend-mode: screen; transition: opacity .3s; }
+  .viewer[data-finish="honed"] .page::after, .viewer[data-finish="antiqued"] .page::after { opacity: 0; }
+  .page.right.opening { animation: open 1.45s var(--ease) both; }
+  @keyframes open { from { transform: rotateY(-180deg); } to { transform: rotateY(0deg); } }
+  .page .no { position: absolute; bottom: 10px; font: 800 26px/1 var(--display); color: var(--mark); background: rgba(243,242,238,.86); padding: 3px 7px; }
+  .page.left .no { left: 10px; }
+  .page.right .no { right: 10px; }
+  .quad { display: none; grid-template-columns: 1fr 1fr; gap: 2px; width: 92%; aspect-ratio: 6.4 / 3.8; }
+  .quad img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .elev { display: none; width: 88%; }
+  .elev svg { width: 100%; height: auto; display: block; }
+  .viewer[data-view="quad"] .book, .viewer[data-view="wall"] .book, .viewer[data-view="single"] .page.right { display: none; }
+  .viewer[data-view="single"] .book { aspect-ratio: 1.9 / 3.2; }
+  .viewer[data-view="quad"] .quad { display: grid; }
+  .viewer[data-view="wall"] .elev { display: block; }
+  .under { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .stones { display: flex; gap: 8px; }
+  .stones button { display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line); padding: 5px 10px 5px 5px; font-size: 14px; font-weight: 600; }
+  .stones button img { width: 28px; height: 28px; object-fit: cover; }
+  .stones button[aria-pressed="true"] { border-color: var(--mark); box-shadow: inset 0 0 0 1px var(--mark); }
+  .note { font-size: 12px; color: var(--ink-2); }
+  .toast { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); background: var(--ink); color: var(--surface); font-size: 13px; padding: 7px 12px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 3; }
+  .toast.on { opacity: 1; }
+
+  .mbar { display: none; }
+
+  @media (max-width: 1100px) {
+    main.hero { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "stage" "block" "ledger"; row-gap: 18px; }
+  }
+  @media (max-width: 760px) {
+    header.top { grid-template-columns: 1fr auto; padding: 12px 16px; gap: 12px; }
+    nav.main, .right .btn { display: none; }
+    .menu-btn { display: inline-block; }
+    .word { font-size: 28px; }
+    main.hero { padding: 18px 16px 96px; gap: 18px; }
+    h1 { font-size: 2.55rem; }
+    .lede { font-size: 16px; margin-bottom: 4px; }
+    .viewer { min-height: 0; height: auto; aspect-ratio: 4 / 3.6; }
+    .views .seg { overflow-x: auto; max-width: 100%; }
+    .views .seg button { padding: 7px 9px; font-size: 13px; white-space: nowrap; }
+    .stones { overflow-x: auto; max-width: 100%; }
+    .stones button { font-size: 13px; white-space: nowrap; }
+    .block-no { font-size: 50px; }
+    .iso { width: 128px; }
+    dl.facts dd { font-size: 13.5px; }
+    dl.facts { gap: 4px 8px; }
+    .ledger { grid-template-columns: 1fr; }
+    .mbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--surface); border-top: 1px solid var(--line); z-index: 5; }
+    .mbar .btn { justify-content: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page.right.opening { animation: none; }
+  }
+  @media (min-width: 1900px) { body { zoom: 1.3; } }
+</style>
+</head>
+<body>
+<div class="strip" data-i18n="strip">Concept study — rasitburucu.com</div>
+<header class="top">
+  <div class="word">Damar<small data-i18n="tag">Marble from Milas, Türkiye</small></div>
+  <nav class="main" aria-label="Main">
+    <a href="#" aria-current="page" data-i18n="n1">Blocks &amp; slabs</a>
+    <a href="#" data-i18n="n2">Stones</a>
+    <a href="#" data-i18n="n3">Quarry &amp; factory</a>
+    <a href="#" data-i18n="n4">Projects</a>
+    <a href="#" data-i18n="n5">Shipping</a>
+  </nav>
+  <div class="right">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="tr" aria-pressed="false">TR</button>
+    </div>
+    <a class="btn" href="#" data-i18n="cta">Request samples</a>
+    <button class="menu-btn" type="button" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="hero">
+  <div class="head">
+    <h1 id="h1" data-i18n="h1">Pick the block. See the bookmatch before it ships.</h1>
+    <p class="lede" data-i18n="lede">Every slab is numbered in the order it left the saw and photographed at our yard in Milas. Open two in a row side by side and see how many containers your project needs.</p>
+  </div>
+
+    <div class="block" aria-label="Block DM-0412">
+      <div class="block-head">
+        <div>
+          <div class="block-no"><span data-i18n="blk">Block</span>DM-0412</div>
+          <div class="block-stone"><b id="stone-name">Eflatun</b> <span data-i18n="stoneNote">lilac veins on white</span></div>
+        </div>
+        <svg class="iso" id="iso" viewBox="0 0 220 150" role="img" aria-label="Block drawing: where the slabs in view sit inside the block"></svg>
+      </div>
+      <dl class="facts">
+        <div><dt data-i18n="f1">Block size</dt><dd>325 × 195 × 120 cm</dd></div>
+        <div><dt data-i18n="f2">Cut into</dt><dd data-i18n="f2v">46 slabs, 2 cm</dd></div>
+        <div><dt data-i18n="f3">Still available</dt><dd id="left" data-i18n="f3v">22 slabs</dd></div>
+      </dl>
+      <div class="strip-slabs" id="strip" aria-label="Slabs of block DM-0412 in cutting order"></div>
+      <div class="strip-scale"><span>1</span><span>23</span><span>46</span></div>
+      <div class="legend"><span><i style="background:var(--mark)"></i><span data-i18n="l1">in view</span></span><span><i style="background:var(--mark-soft)"></i><span data-i18n="l2">available</span></span><span><i style="background:var(--sold)"></i><span data-i18n="l3">sold</span></span></div>
+      <p class="pair-note" id="pair-note"></p>
+    </div>
+
+    <div class="ledger" aria-label="Container estimate">
+      <div>
+        <label for="m2" data-i18n="need">Your project</label>
+        <div class="qty"><input id="m2" type="number" min="10" max="5000" step="10" value="120" inputmode="numeric"> <span>m²</span></div>
+      </div>
+      <div>
+        <label data-i18n="thick">Thickness</label>
+        <div class="seg" role="group" aria-label="Thickness"><button type="button" data-t="2" aria-pressed="true">2 cm</button><button type="button" data-t="3" aria-pressed="false">3 cm</button></div>
+      </div>
+      <div class="result" id="result" aria-live="polite"></div>
+      <a class="btn quote" href="#" id="quote"></a>
+    </div>
+
+  <section class="stage" aria-label="Bookmatch preview">
+    <div class="views">
+      <div class="seg" role="group" aria-label="Layout">
+        <button type="button" data-view="single" aria-pressed="false" data-i18n="v1">One slab</button>
+        <button type="button" data-view="book" aria-pressed="true" data-i18n="v2">Bookmatch ×2</button>
+        <button type="button" data-view="quad" aria-pressed="false" data-i18n="v3">Bookmatch ×4</button>
+        <button type="button" data-view="wall" aria-pressed="false" data-i18n="v4">On a wall</button>
+      </div>
+      <div class="seg" role="group" aria-label="Finish" id="finish">
+        <button type="button" data-f="" aria-pressed="true" data-i18n="p1">Polished</button>
+        <button type="button" data-f="honed" aria-pressed="false" data-i18n="p2">Honed</button>
+        <button type="button" data-f="antiqued" aria-pressed="false" data-i18n="p3">Antiqued</button>
+      </div>
+    </div>
+    <div class="viewer" id="viewer" data-view="book">
+      <div class="toast" id="toast"></div>
+      <div class="book" id="book">
+        <div class="page left"><img id="imgL" alt="Slab 21, block DM-0412" src="yon-dokular/eflatun-21.webp"><span class="no" id="noL">21</span></div>
+        <div class="page right opening" id="pageR"><img id="imgR" alt="Slab 22 turned over, mirrored" src="yon-dokular/eflatun-22-ayna.webp"><span class="no" id="noR">22</span></div>
+      </div>
+      <div class="quad" aria-label="Four-way match of slabs 21 to 24">
+        <img src="yon-dokular/eflatun-q21.webp" alt=""><img src="yon-dokular/eflatun-q22.webp" alt=""><img src="yon-dokular/eflatun-q23.webp" alt=""><img src="yon-dokular/eflatun-q24.webp" alt="">
+      </div>
+      <div class="elev" aria-label="Wall elevation">
+        <svg viewBox="0 0 1000 640" role="img">
+          <defs>
+            <clipPath id="w"><rect x="140" y="70" width="640" height="400"/></clipPath>
+          </defs>
+          <rect x="0" y="0" width="1000" height="640" fill="#E9E8E3"/>
+          <line x1="40" y1="470" x2="960" y2="470" stroke="#1B1D21" stroke-width="2"/>
+          <g clip-path="url(#w)">
+            <image href="yon-dokular/eflatun-q21.webp" x="140" y="70" width="320" height="200" preserveAspectRatio="xMidYMid slice"/>
+            <image href="yon-dokular/eflatun-q22.webp" x="461" y="70" width="320" height="200" preserveAspectRatio="xMidYMid slice"/>
+            <image href="yon-dokular/eflatun-q23.webp" x="140" y="271" width="320" height="200" preserveAspectRatio="xMidYMid slice"/>
+            <image href="yon-dokular/eflatun-q24.webp" x="461" y="271" width="320" height="200" preserveAspectRatio="xMidYMid slice"/>
+          </g>
+          <rect x="140" y="70" width="640" height="400" fill="none" stroke="#1B1D21" stroke-width="1.5"/>
+          <!-- bench for scale -->
+          <rect x="520" y="412" width="230" height="10" fill="#8B6B4E"/>
+          <rect x="534" y="422" width="8" height="48" fill="#8B6B4E"/><rect x="728" y="422" width="8" height="48" fill="#8B6B4E"/>
+          <!-- dimensions -->
+          <g stroke="#2A3A98" stroke-width="1.5" fill="#2A3A98" font-family="Sofia Sans, sans-serif" font-size="18" font-weight="600">
+            <line x1="140" y1="510" x2="780" y2="510"/><line x1="140" y1="500" x2="140" y2="520"/><line x1="780" y1="500" x2="780" y2="520"/>
+            <text x="460" y="540" text-anchor="middle" stroke="none">4.80 m</text>
+            <line x1="830" y1="70" x2="830" y2="470"/><line x1="820" y1="70" x2="840" y2="70"/><line x1="820" y1="470" x2="840" y2="470"/>
+            <text x="850" y="276" stroke="none">3.00 m</text>
+          </g>
+          <text x="140" y="590" font-family="Sofia Sans, sans-serif" font-size="17" fill="#555960" data-i18n="elev">Four slabs, 21 to 24, mirrored on both joints. 1 mm joints, colour-matched filler.</text>
+        </svg>
+      </div>
+    </div>
+    <div class="under">
+      <div class="stones" role="group" aria-label="Stone" id="stones"></div>
+      <span class="note" data-i18n="note">Procedural texture, example stock. Real photos per slab in the finished site.</span>
+    </div>
+  </section>
+</main>
+
+<div class="mbar">
+  <a class="btn" href="#" data-i18n="cta">Request samples</a>
+  <a class="btn ghost" href="#" data-i18n="wa">WhatsApp message</a>
+</div>
+
+<script>
+const T = {
+  en: {
+    strip: 'Concept study — rasitburucu.com', tag: 'Marble from Milas, Türkiye',
+    n1: 'Blocks & slabs', n2: 'Stones', n3: 'Quarry & factory', n4: 'Projects', n5: 'Shipping', cta: 'Request samples', wa: 'WhatsApp message',
+    h1: 'Pick the block. See the bookmatch before it ships.',
+    lede: 'Every slab is numbered in the order it left the saw and photographed at our yard in Milas. Open two in a row side by side and see how many containers your project needs.',
+    blk: 'Block', stoneNote: 'lilac veins on white', f1: 'Block size', f2: 'Cut into', f2v: '46 slabs, 2 cm', f3: 'Still available', f3v: '22 slabs',
+    l1: 'in view', l2: 'available', l3: 'sold', need: 'Your project', thick: 'Thickness',
+    v1: 'One slab', v2: 'Bookmatch ×2', v3: 'Bookmatch ×4', v4: 'On a wall', p1: 'Polished', p2: 'Honed', p3: 'Antiqued',
+    note: 'Procedural texture, example stock. Real photos per slab in the finished site.',
+    elev: 'Four slabs, 21 to 24, mirrored on both joints. 1 mm joints, colour-matched filler.',
+    pair: (a, b) => `Slabs ${a} and ${b} were cut one after the other, so their veins meet at the joint.`,
+    res: (s, b, t, c) => `${s} slabs · ${b} bundles · ${t} t<br>${c} × 20′ container${c > 1 ? 's' : ''}<small>Incl. 10% cutting waste. Estimate; the factory confirms the packing list.</small>`,
+    q: (n) => `Ask for a quote: ${n} slabs from DM-0412`,
+    onlyDemo: 'This mockup has photos for slabs 21–26 only.', soldMsg: 'This slab is sold.', finishOnly: 'Finishes are shown for slabs 21–22 in this mockup.'
+  },
+  tr: {
+    strip: 'Konsept çalışma — rasitburucu.com', tag: 'Milas mermeri, Türkiye',
+    n1: 'Bloklar ve plakalar', n2: 'Taşlar', n3: 'Ocak ve fabrika', n4: 'Projeler', n5: 'Sevkiyat', cta: 'Numune isteyin', wa: 'WhatsApp mesajı',
+    h1: 'Bloğu seçin, kitap açılımını sevkiyattan önce görün.',
+    lede: 'Her plaka testereden çıktığı sırayla numaralanır ve Milas’taki sahamızda fotoğraflanır. Ardışık iki plakayı yan yana açın; projenizin kaç konteyner tuttuğunu hemen görün.',
+    blk: 'Blok', stoneNote: 'beyaz zeminde leylak damar', f1: 'Blok ölçüsü', f2: 'Kesim', f2v: '46 plaka, 2 cm', f3: 'Satışta', f3v: '22 plaka',
+    l1: 'görünen', l2: 'satışta', l3: 'satıldı', need: 'Projeniz', thick: 'Kalınlık',
+    v1: 'Tek plaka', v2: 'İkili açılım', v3: 'Dörtlü açılım', v4: 'Duvarda', p1: 'Cilalı', p2: 'Honlu', p3: 'Eskitme',
+    note: 'Doku temsili, stok örnek. Bitmiş sitede her plakanın gerçek fotoğrafı olur.',
+    elev: '21’den 24’e dört plaka, iki ek yerinde de ayna. 1 mm derz, renk uyumlu dolgu.',
+    pair: (a, b) => `${a} ve ${b} numaralı plakalar art arda kesildi; damarları ek yerinde buluşur.`,
+    res: (s, b, t, c) => `${s} plaka · ${b} demet · ${t} t<br>${c} × 20′ konteyner<small>%10 kesim firesi dahil. Tahmini; kesin çeki listesini fabrika verir.</small>`,
+    q: (n) => `Teklif isteyin: DM-0412'den ${n} plaka`,
+    onlyDemo: 'Bu makette yalnız 21–26 numaralı plakaların görseli var.', soldMsg: 'Bu plaka satıldı.', finishOnly: 'Yüzeyler bu makette 21–22 için gösteriliyor.'
+  }
+};
+let lang = 'en';
+const SOLD = new Set([...Array(20).keys()].map(i => i + 1).concat([27, 28, 29, 38]));
+const READY = [21, 23, 25];            // pairs with rendered images in this mockup
+let stone = 'eflatun', start = 21, finish = '', view = 'book';
+const stones = [['eflatun', 'Eflatun'], ['duman', 'Duman'], ['sirma', 'Sırma'], ['kiragi', 'Kırağı']];
+const $ = (s) => document.querySelector(s);
+
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 2200); }
+
+function i18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const v = T[lang][el.dataset.i18n]; if (typeof v === 'string') el.textContent = v; });
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  $('#pair-note').textContent = T[lang].pair(start, start + 1);
+  calc();
+}
+function strip() {
+  iso();
+  const s = $('#strip'); s.innerHTML = '';
+  for (let i = 1; i <= 46; i++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.title = (lang === 'tr' ? 'Plaka ' : 'Slab ') + i;
+    b.setAttribute('aria-label', b.title);
+    if (SOLD.has(i)) b.className = 'sold';
+    if (i === start || i === start + 1) b.className = 'sel';
+    b.addEventListener('click', () => pick(i));
+    s.appendChild(b);
+  }
+}
+function iso() {
+  // isometric block: x = length 325, y = depth 120 (46 slabs across it), z = height 195 (cm)
+  const L = 325, D = 120, Hh = 195, k = 0.27, c = Math.cos(Math.PI / 6), sn = Math.sin(Math.PI / 6);
+  const P = (x, y, z) => [110 + (x - y) * c * k, 20 + (x + y) * sn * k - z * k + Hh * k * 0.5 - 6];
+  const poly = (pts, fill, stroke = '#1B1D21', w = .8, extra = '') => `<polygon points="${pts.map(p => P(...p).map(v => v.toFixed(1)).join(',')).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${w}" ${extra}/>`;
+  let g = '';
+  // side faces (front x-z at y=D and right y-z at x=L)
+  g += poly([[0, D, 0], [L, D, 0], [L, D, Hh], [0, D, Hh]], '#E9E8E3');
+  g += poly([[L, 0, 0], [L, D, 0], [L, D, Hh], [L, 0, Hh]], '#D9D8D2');
+  // top face, banded by slab: sold faded, available tinted, in view marked
+  const pitch = D / 46;
+  for (let i = 1; i <= 46; i++) {
+    const y0 = (i - 1) * pitch, y1 = i * pitch;
+    const sel = i === start || i === start + 1;
+    const fill = sel ? '#2A3A98' : SOLD.has(i) ? '#D3CFC7' : '#9FA9DD';
+    g += poly([[0, y0, Hh], [L, y0, Hh], [L, y1, Hh], [0, y1, Hh]], fill, sel ? '#2A3A98' : 'rgba(27,29,33,.25)', .3);
+    // slab edges on the right face
+    if (sel) g += poly([[L, y0, 0], [L, y1, 0], [L, y1, Hh], [L, y0, Hh]], '#2A3A98', '#2A3A98', .25);
+  }
+  g += poly([[0, 0, Hh], [L, 0, Hh], [L, D, Hh], [0, D, Hh]], 'none', '#1B1D21', 1);
+  const t = P(L * 0.5, D, Hh * 0.45);
+  g += `<text x="${t[0] - 32}" y="${t[1] + 4}" font-family="Sofia Sans Extra Condensed, sans-serif" font-weight="800" font-size="15" fill="#2A3A98" transform="rotate(30 ${t[0] - 32} ${t[1] + 4})">DM-0412</text>`;
+  $('#iso').innerHTML = g;
+}
+function pick(i) {
+  if (SOLD.has(i)) return toast(T[lang].soldMsg);
+  const n = i % 2 === 1 ? i : i - 1;
+  if (!READY.includes(n) || stone !== 'eflatun') return toast(T[lang].onlyDemo);
+  start = n; finish = ''; syncFinish(); show(true);
+}
+function src(n, mirror) {
+  const f = finish && start === 21 && stone === 'eflatun' ? '-' + finish : '';
+  return `yon-dokular/${stone}-${n}${mirror ? '-ayna' : ''}${f}.webp`;
+}
+function show(open) {
+  $('#imgL').src = src(start, false); $('#imgR').src = src(start + 1, true);
+  $('#noL').textContent = start; $('#noR').textContent = start + 1;
+  $('#imgL').alt = (lang === 'tr' ? 'Plaka ' : 'Slab ') + start;
+  $('#imgR').alt = (lang === 'tr' ? 'Plaka ' : 'Slab ') + (start + 1);
+  $('#pair-note').textContent = T[lang].pair(start, start + 1);
+  strip();
+  if (open) { const r = $('#pageR'); r.classList.remove('opening'); void r.offsetWidth; r.classList.add('opening'); }
+}
+function syncFinish() { document.querySelectorAll('#finish button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === finish))); }
+function calc() {
+  const m2 = Math.max(0, +$('#m2').value || 0);
+  const t = +document.querySelector('.ledger .seg button[aria-pressed="true"]').dataset.t;
+  const slabs = Math.ceil(m2 * 1.10 / 6.08);
+  const bundles = Math.ceil(slabs / (t === 2 ? 10 : 7));
+  const tons = m2 * 1.10 * (t / 100) * 2.71 * 1.04;
+  const cont = Math.max(1, Math.ceil(tons / 27));
+  $('#result').innerHTML = T[lang].res(slabs, bundles, tons.toFixed(1).replace('.', lang === 'tr' ? ',' : '.'), cont);
+  $('#quote').textContent = T[lang].q(slabs);
+}
+function stonesUI() {
+  const box = $('#stones'); box.innerHTML = '';
+  for (const [k, name] of stones) {
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = `<img src="yon-dokular/${k}-21.webp" alt="">${name}`;
+    b.setAttribute('aria-pressed', String(k === stone));
+    b.addEventListener('click', () => { stone = k; start = 21; finish = ''; syncFinish(); $('#stone-name').textContent = name; stonesUI(); show(true); });
+    box.appendChild(b);
+  }
+}
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { lang = b.dataset.lang; i18n(); strip(); }));
+document.querySelectorAll('.views .seg [data-view]').forEach(b => b.addEventListener('click', () => {
+  view = b.dataset.view; $('#viewer').dataset.view = view;
+  document.querySelectorAll('.views [data-view]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  if (view === 'book') show(true);
+}));
+document.querySelectorAll('#finish button').forEach(b => b.addEventListener('click', () => {
+  if (!(start === 21 && stone === 'eflatun') && b.dataset.f) return toast(T[lang].finishOnly);
+  finish = b.dataset.f; $('#viewer').dataset.finish = finish || 'polished'; syncFinish(); show(false);
+}));
+document.querySelectorAll('.ledger .seg button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.ledger .seg button').forEach(x => x.setAttribute('aria-pressed', String(x === b))); calc();
+}));
+$('#m2').addEventListener('input', calc);
+const q = new URLSearchParams(location.search);
+if (q.get('lang') === 'tr') lang = 'tr';
+if (q.get('view')) { const b = document.querySelector(`.views [data-view="${q.get('view')}"]`); if (b) b.click(); }
+if (q.get('anim') === '0') document.getElementById('pageR').classList.remove('opening');
+if (q.get('k')) { const r = document.getElementById('pageR'); r.style.animationDelay = (-1.45 * +q.get('k')) + 's'; r.style.animationPlayState = 'paused'; }
+stonesUI(); strip(); i18n();
+window.__ready = true;
+</script>
+</body>
+</html>

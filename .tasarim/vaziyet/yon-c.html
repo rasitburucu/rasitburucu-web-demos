@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vaziyet · Yön C · Belge (prototip)</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#DDE2E5">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400..800&family=Atkinson+Hyperlegible+Mono:wght@400..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --masa:#DDE2E5;      /* belediye masasının gri laminatı */
+  --kagit:#FDFDFB;
+  --metin:#1B1E22;
+  --metin-2:#4E555C;
+  --kursun:#3A3F45;    /* kurşun kalem */
+  --cizgi:#C3CBD1;
+  --fosfor:#D4F53C;    /* fosforlu kalem (yeşil) */
+  --fosfor-derin:#56701A;
+  --tasma:#C42B2B;     /* kırmızı kalem: yalnız taşma */
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--masa);color:var(--metin);-webkit-text-size-adjust:100%}
+body{font-family:"Atkinson Hyperlegible Next",system-ui,sans-serif;font-size:16.5px;line-height:1.5;background:var(--masa);min-height:100vh}
+::selection{background:var(--fosfor);color:var(--metin)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2.5px solid var(--metin);outline-offset:3px;border-radius:2px}
+.mono{font-family:"Atkinson Hyperlegible Mono",ui-monospace,monospace}
+.serit{background:var(--metin);color:#E9ECEE;font-size:13px;padding:6px 32px;display:flex;justify-content:space-between;gap:16px}
+.serit a{color:inherit;text-underline-offset:3px}
+header.ust{display:flex;align-items:center;justify-content:space-between;padding:14px 32px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit}
+.logo b{font-weight:800;font-size:25px;letter-spacing:-.02em}
+.logo small{font-size:13px;color:var(--metin-2)}
+.logo i{display:inline-block;width:26px;height:6px;background:var(--fosfor);transform:skewX(-14deg);margin-left:-2px}
+nav.menu{display:flex;gap:26px;align-items:center;font-size:15.5px}
+nav.menu a{color:inherit;text-decoration:none}
+nav.menu a:hover{text-decoration:underline;text-underline-offset:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:4px;padding:11px 18px;font-weight:700;cursor:pointer;text-decoration:none;transition:background-color .15s,transform .15s}
+.btn-ana{background:var(--metin);color:#fff}
+.btn-ana:hover{background:#30353B}
+.btn-ana:active{transform:scale(.97)}
+.btn-ince{background:transparent;border:1.5px solid var(--metin);color:var(--metin)}
+.ornek{font-size:10.5px;font-weight:700;letter-spacing:.05em;border:1px solid currentColor;border-radius:2px;padding:0 4px;margin-left:6px;opacity:.7;vertical-align:2px}
+
+main.ilk{display:grid;grid-template-columns:minmax(440px,.9fr) 1.1fr;gap:28px;padding:6px 32px 28px;align-items:start}
+/* belge */
+.belge-yigin{position:relative;padding:10px 6px 0 0}
+.belge-yigin::before{content:"";position:absolute;inset:18px -4px -8px 10px;background:#F4F5F3;border:1px solid var(--cizgi);transform:rotate(1.2deg);box-shadow:0 10px 30px -18px rgba(20,30,40,.5)}
+.belge{position:relative;background:var(--kagit);border:1px solid var(--cizgi);padding:26px 30px 22px;box-shadow:0 1px 0 rgba(0,0,0,.05),0 18px 40px -24px rgba(20,30,40,.45);overflow:hidden}
+.filigran{position:absolute;right:-30px;top:44%;transform:rotate(-24deg);font-weight:800;font-size:56px;letter-spacing:.08em;color:rgba(27,30,34,.045);pointer-events:none;white-space:nowrap}
+.belge-ust{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--metin);padding-bottom:10px;margin-bottom:6px}
+.belge-ust h2{font-size:20px;font-weight:800;letter-spacing:.06em}
+.belge-ust p{font-size:12.5px;color:var(--metin-2)}
+.belge-ust .kod{font-family:"Atkinson Hyperlegible Mono";font-size:12px;text-align:right;color:var(--metin-2)}
+table.satirlar{width:100%;border-collapse:collapse;font-size:15px}
+.satirlar th{text-align:left;font-weight:400;color:var(--metin-2);padding:7px 10px 7px 0;width:44%;vertical-align:middle;border-bottom:1px solid #E6E9EC;font-size:14px}
+.satirlar td{padding:4px 0;border-bottom:1px solid #E6E9EC;vertical-align:middle}
+.satirlar .ara th{font-weight:700;color:var(--metin);padding-top:12px;font-size:13px;letter-spacing:.04em}
+.deger{position:relative;display:inline-flex;align-items:center;gap:6px;padding:2px 6px 2px 4px}
+.deger::before{content:"";position:absolute;left:-4px;right:-6px;top:20%;bottom:12%;background:var(--fosfor);transform:skewX(-10deg) scaleX(0);transform-origin:left;border-radius:2px;z-index:0;opacity:.95}
+.deger.isaretli::before{transform:skewX(-10deg) scaleX(1)}
+@media (prefers-reduced-motion:no-preference){.deger::before{transition:transform .32s var(--ease)}}
+.deger input{position:relative;z-index:1;border:0;border-bottom:1.5px dashed #9AA4AC;background:transparent;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:16px;width:64px;padding:2px 2px;text-align:right}
+.deger input:focus{outline:none;border-bottom:2px solid var(--metin)}
+.deger span{position:relative;z-index:1;font-family:"Atkinson Hyperlegible Mono";font-size:14px;color:var(--metin-2)}
+.deger.sabit{font-family:"Atkinson Hyperlegible Mono";font-size:15px}
+.notlar{font-size:13.5px;color:var(--metin-2);margin-top:12px;line-height:1.55}
+.notlar mark{background:linear-gradient(transparent 22%,var(--fosfor) 22%,var(--fosfor) 88%,transparent 88%);color:var(--metin)}
+.belge-alt{display:flex;justify-content:space-between;gap:16px;margin-top:14px;font-size:12.5px;color:var(--metin-2);border-top:1px solid #E6E9EC;padding-top:10px}
+.okuma{margin-top:12px;background:#F3F7DC;border-left:4px solid var(--fosfor-derin);padding:9px 12px;font-size:14px;color:#2E3A10;min-height:3.4em}
+.okuma b{color:#1F2A06}
+/* sağ */
+.sag{display:flex;flex-direction:column;gap:14px;min-width:0}
+h1{font-weight:800;font-size:clamp(2.2rem,1.3rem + 2.3vw,3.25rem);line-height:1.02;letter-spacing:-.03em;text-wrap:balance}
+h1 .vurgu{background:linear-gradient(transparent 58%,var(--fosfor) 58%,var(--fosfor) 92%,transparent 92%)}
+.alt{font-size:17.5px;color:var(--metin-2);max-width:36em;text-wrap:pretty}
+.sekmeler{display:flex;gap:6px;flex-wrap:wrap}
+.sekmeler button{border:1.5px solid var(--cizgi);background:var(--kagit);border-radius:999px;padding:6px 13px;font-size:14px;cursor:pointer;white-space:nowrap;flex:none}
+.sekmeler button[aria-pressed=true]{background:var(--metin);border-color:var(--metin);color:#fff}
+.sonuc-izgara{display:grid;grid-template-columns:1.45fr 1fr;gap:14px;align-items:start}
+.kroki-kutu{background:#F8FAFB;border:1px solid var(--cizgi);position:relative;box-shadow:0 14px 30px -24px rgba(20,30,40,.6)}
+svg#kroki{width:100%;height:auto;max-height:calc(100vh - 380px);display:block;touch-action:none}
+.kontrol{display:flex;flex-direction:column;background:var(--kagit);border:1px solid var(--cizgi)}
+.kontrol ul{list-style:none;padding:12px 16px;display:flex;flex-direction:column;gap:7px;border-bottom:1px solid #E6E9EC}
+.kontrol li{display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:14.5px;align-items:start}
+.kontrol li .t{font-weight:800;font-size:16px;line-height:1.2}
+.kontrol li.ok .t{color:var(--fosfor-derin)}
+.kontrol li.no{color:var(--tasma)}
+.kontrol li .m{font-size:14px;color:var(--metin-2);font-variant-numeric:tabular-nums}
+.kontrol li.no .m{color:var(--tasma)}
+.kontrol .fiyat{padding:12px 16px;display:flex;flex-direction:column;gap:8px;justify-content:center}
+.fiyat .tutar{font-weight:800;font-size:24px;letter-spacing:-.01em;line-height:1.1}
+.fiyat small{font-size:13px;color:var(--metin-2);font-weight:400}
+.ruhsat{grid-column:1/-1;border-top:1px solid #E6E9EC;padding:10px 16px;font-size:14px;color:var(--metin-2)}
+.ruhsat b{color:var(--metin)}
+.ruhsat.uyari{background:#FBECEC;color:#5E1C1C}
+.ruhsat.uyari b{color:var(--tasma)}
+.durum{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.durum.no{color:var(--tasma)}
+.durum p{font-size:15px;font-weight:400;color:var(--metin-2);letter-spacing:0}
+.durum button{margin-left:8px;font-size:14px;padding:6px 12px}
+.mobil-cubuk{display:none}
+@media (max-width:900px){
+  .serit{padding:6px 16px;font-size:12px}
+  .serit .genis{display:none}
+  header.ust{padding:12px 16px}
+  nav.menu{display:none}
+  main.ilk{display:flex;flex-direction:column;align-items:stretch;padding:0 16px 80px;gap:14px;min-width:0}
+  .sekmeler,.sonuc-izgara,.belge-yigin{min-width:0;max-width:100%}
+  .sag{display:contents}
+  h1{order:1;font-size:2.15rem;padding-top:6px}
+  .alt{order:2;font-size:15.5px}
+  .durum{order:3}
+  .sekmeler{order:4;flex-wrap:nowrap;overflow-x:auto}
+  .sonuc-izgara{order:5;grid-template-columns:1fr}
+  svg#kroki{max-height:none}
+  .belge-yigin{order:7}
+  .belge{padding:18px 16px}
+  .filigran{font-size:38px}
+  .mobil-cubuk{display:grid;grid-template-columns:1fr 1fr 1.4fr;position:fixed;left:0;right:0;bottom:0;background:var(--metin);z-index:5}
+  .mobil-cubuk a{color:#fff;text-decoration:none;text-align:center;padding:14px 6px;font-weight:700;font-size:15px;border-right:1px solid #3A3F45}
+  .mobil-cubuk a:last-child{background:var(--fosfor);color:var(--metin);border:0}
+}
+@media (min-width:901px){.tel{display:none}}
+</style>
+</head>
+<body>
+<div class="serit"><span>Konsept çalışma — <a href="https://rasitburucu.com/tr/work">rasitburucu.com</a></span><span class="genis">Bu bir tasarım örneğidir; hiçbir talep gönderilmez.</span></div>
+<header class="ust">
+  <a class="logo" href="#" aria-label="Vaziyet ana sayfa"><b>Vaziyet</b><i aria-hidden="true"></i><small>Prefabrik ve hafif çelik ev</small></a>
+  <nav class="menu" aria-label="Ana menü">
+    <a href="#">Modeller</a><a href="#">Fiyatın içinde ne var</a><a href="#">Nasıl üretiyoruz</a><a href="#">Ruhsat ve imar</a>
+    <a class="btn btn-ince" href="#">0 222 000 00 00 <span class="ornek">ÖRNEK</span></a>
+  </nav>
+  <a class="btn btn-ince tel" href="#">Ara</a>
+</header>
+
+<main class="ilk">
+  <div class="belge-yigin">
+    <article class="belge" aria-labelledby="belgeBaslik">
+      <div class="filigran" aria-hidden="true">ÖRNEK BELGE</div>
+      <div class="belge-ust">
+        <div><h2 id="belgeBaslik">İMAR DURUMU</h2><p>Belgedeki değerleri buraya yazın. Belgeniz yanınızda değilse en sık görülen değerlerle başladık; ada ve parsel numaranızla belediyenizin e-imar sayfasından bakabilirsiniz.</p></div>
+        <div class="kod">Örnek düzen<br>gerçek belge değildir</div>
+      </div>
+      <table class="satirlar">
+        <tr><th>Ada / parsel</th><td><span class="deger sabit">412 / 7 <span>(örnek)</span></span></td></tr>
+        <tr><th>Tapudaki niteliği</th><td><span class="sekmeler" id="nitelik" role="group" aria-label="Tapudaki niteliği" style="gap:4px"><button type="button" data-n="arsa" aria-pressed="true">Arsa</button><button type="button" data-n="tarla" aria-pressed="false">Tarla</button><button type="button" data-n="bilmiyorum" aria-pressed="false">Bilmiyorum</button></span></td></tr>
+        <tr><th>Parsel cephesi × derinliği</th><td><span class="deger" data-k="W"><input id="W" type="number" inputmode="decimal" step="0.5" value="30" aria-label="Parsel cephesi, metre"><span>×</span><input id="D" type="number" inputmode="decimal" step="0.5" value="22" aria-label="Parsel derinliği, metre"><span>m</span></span></td></tr>
+        <tr><th>Kullanım / nizam</th><td><span class="deger sabit">Konut alanı; ayrık nizam, 2 kat</span></td></tr>
+        <tr class="ara"><th colspan="2">YAPILAŞMA KOŞULLARI</th></tr>
+        <tr><th>TAKS</th><td><span class="deger" data-k="taks"><input id="taks" type="number" inputmode="decimal" step="0.05" value="0.30" aria-label="TAKS"></span></td></tr>
+        <tr><th>KAKS (emsal)</th><td><span class="deger" data-k="kaks"><input id="kaks" type="number" inputmode="decimal" step="0.05" value="0.60" aria-label="KAKS"></span></td></tr>
+        <tr><th>Yençok (Hmax)</th><td><span class="deger" data-k="hmax"><input id="hmax" type="number" inputmode="decimal" step="0.5" value="6.50" aria-label="Yükseklik sınırı, metre"><span>m</span></span></td></tr>
+        <tr class="ara"><th colspan="2">BAHÇE MESAFELERİ</th></tr>
+        <tr><th>Ön bahçe</th><td><span class="deger" data-k="on"><input id="on" type="number" inputmode="decimal" step="0.5" value="5" aria-label="Ön bahçe, metre"><span>m</span></span></td></tr>
+        <tr><th>Yan bahçe</th><td><span class="deger" data-k="yan"><input id="yan" type="number" inputmode="decimal" step="0.5" value="3" aria-label="Yan bahçe, metre"><span>m</span></span></td></tr>
+        <tr><th>Arka bahçe</th><td><span class="deger" data-k="arka"><input id="arka" type="number" inputmode="decimal" step="0.5" value="3" aria-label="Arka bahçe, metre"><span>m</span></span></td></tr>
+      </table>
+      <p class="notlar">Plan notları (örnek): <mark>Bodrum katlar emsale dahil değildir.</mark> Saçak ve açık çıkmalar bahçe mesafesine taşamaz. Uygulama, onaylı mimari projeye göre yapılır.</p>
+      <div class="okuma" id="okuma" aria-live="polite"><b>Okuma notu:</b> Bir satıra dokunun; o değerin ne anlama geldiğini ve çizimde nereye düştüğünü gösterelim.</div>
+      <div class="belge-alt"><span>Belgedeki adlar belediyeye göre değişebilir: “Emsal” yerine “E”, “Hmax” yerine “Yençok”.</span></div>
+    </article>
+  </div>
+
+  <section class="sag" aria-labelledby="baslik">
+    <h1 id="baslik">İmar durumunuzu birlikte okuyalım.</h1>
+    <p class="alt">Belediyeden aldığınız kâğıttaki beş rakam, hangi evin arsanıza sığacağını söyler. Sığmayanı baştan söyleriz.</p>
+    <div class="durum" id="durum" aria-live="polite"></div>
+    <div class="sekmeler" id="modeller" role="group" aria-label="Model"></div>
+    <div class="sonuc-izgara">
+      <div class="kroki-kutu"><svg id="kroki" role="img" aria-labelledby="kBaslik kAciklama"><title id="kBaslik">Arsanın krokisi ve seçilen ev</title><desc id="kAciklama"></desc></svg></div>
+      <div class="kontrol" id="kontrol"></div>
+    </div>
+  </section>
+</main>
+<nav class="mobil-cubuk" aria-label="Hızlı iletişim"><a href="#">Ara</a><a href="#">WhatsApp</a><a href="#">Teklif iste</a></nav>
+
+<script>
+const MODELLER=[
+ {id:'sundurma',ad:'Sundurma',m2:48,oda:'1+1',kat:1,w:8.0,d:6.0,taban:48,toplam:48,sacak:3.4,fiyat:529000},
+ {id:'sofa',ad:'Sofa',m2:78,oda:'2+1',kat:1,w:12.0,d:6.5,taban:78,toplam:78,sacak:3.4,fiyat:749000},
+ {id:'hayat',ad:'Hayat',m2:104,oda:'3+1',kat:1,w:13.0,d:8.0,taban:104,toplam:104,sacak:3.4,fiyat:968000},
+ {id:'cumba',ad:'Cumba',m2:124,oda:'3+1, iki kat',kat:2,w:9.0,d:6.9,taban:62,toplam:124,sacak:6.3,fiyat:1248000},
+ {id:'avlu',ad:'Avlu',m2:138,oda:'4+1',kat:1,w:15.0,d:9.2,taban:138,toplam:138,sacak:3.4,fiyat:1169000}
+];
+const OKUMA={
+ W:'<b>Parsel ölçüsü</b> tapudan ya da aplikasyon krokisinden okunur. Çizimde arsanın kenarlarıdır.',
+ taks:'<b>TAKS 0,30</b>: evin oturduğu alan arsanın en çok %30’u olabilir. Çizimde evin ayak izi bu sınırla karşılaştırılır.',
+ kaks:'<b>KAKS (emsal)</b>: bütün katların toplamı arsanın bu katını geçemez. İki katlı evlerde önemlidir.',
+ hmax:'<b>Yençok (Hmax)</b>: evin saçağına kadar olan yükseklik bu değeri geçemez.',
+ on:'<b>Ön bahçe</b>: yol tarafında boş kalacak şerit. Çizimde yola bakan yeşil işaretli banttır.',
+ yan:'<b>Yan bahçe</b>: komşulara bırakılan boşluk, iki yanda da geçerli.',
+ arka:'<b>Arka bahçe</b>: planda başka değer yoksa en az 3 m. Bazı eski planlarda “H/2” yazar; o zaman evin yüksekliğinin yarısı.'
+};
+const S={W:30,D:22,on:5,yan:3,arka:3,taks:.30,kaks:.60,hmax:6.5,kuzey:160,model:'sofa',rot:0,x0:null,y0:null,nitelik:'arsa',isaret:'on'};
+const tr=new Intl.NumberFormat('tr-TR');
+const f1=v=>v.toLocaleString('tr-TR',{minimumFractionDigits:1,maximumFractionDigits:1});
+const f2=v=>v.toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const mil=v=>(v/1e6).toLocaleString('tr-TR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const model=()=>MODELLER.find(m=>m.id===S.model);
+const YON=['kuzeye','kuzeydoğuya','doğuya','güneydoğuya','güneye','güneybatıya','batıya','kuzeybatıya'];
+const GUNES=['doğrudan güneş az alır','sabah güneşi alır','sabah güneşi alır','sabahtan öğleye güneş alır','gün boyu güneş alır','öğleden akşama güneş alır','akşam güneşi alır','akşam güneşi az alır'];
+function hesap(){
+  const m=model(), r=S.rot%180!==0, w=r?m.d:m.w, d=r?m.w:m.d;
+  const arkaG=S.arka; // PAİY md. 23: planda aksi yoksa arka bahçe en az 3,00 m
+  const b={x0:S.yan,x1:S.W-S.yan,y0:S.on,y1:S.D-arkaG};
+  if(S.x0===null){S.x0=(S.W-w)/2;S.y0=S.on+1}
+  S.x0=Math.min(Math.max(S.x0,0),Math.max(0,S.W-w)); S.y0=Math.min(Math.max(S.y0,0),Math.max(0,S.D-d));
+  const h={x0:S.x0,x1:S.x0+w,y0:S.y0,y1:S.y0+d,w,d}, tas=[];
+  if(h.x0<b.x0-1e-6)tas.push({k:'sol',m:b.x0-h.x0,r:{x0:h.x0,x1:Math.min(h.x1,b.x0),y0:h.y0,y1:h.y1}});
+  if(h.x1>b.x1+1e-6)tas.push({k:'sağ',m:h.x1-b.x1,r:{x0:Math.max(h.x0,b.x1),x1:h.x1,y0:h.y0,y1:h.y1}});
+  if(h.y0<b.y0-1e-6)tas.push({k:'ön',m:b.y0-h.y0,r:{x0:h.x0,x1:h.x1,y0:h.y0,y1:Math.min(h.y1,b.y0)}});
+  if(h.y1>b.y1+1e-6)tas.push({k:'arka',m:h.y1-b.y1,r:{x0:h.x0,x1:h.x1,y0:Math.max(h.y0,b.y1),y1:h.y1}});
+  const alan=S.W*S.D, taksHak=S.taks*alan, kaksHak=S.kaks*alan;
+  const bw=b.x1-b.x0, bd=b.y1-b.y0;
+  const cevirSigar=tas.length>0&&((r?m.w:m.d)<=bw)&&((r?m.d:m.w)<=bd);
+  let n=[0,1]; for(let i=0;i<(S.rot/90)%4;i++) n=[-n[1],n[0]];
+  const aci=(Math.atan2(n[0],n[1])*180/Math.PI+360)%360, az=(aci-S.kuzey+720)%360, yi=Math.round(az/45)%8;
+  const tir=m.taban<=60?1:(m.taban<=110?2:3), top=[m.fiyat+tir*19000+m.taban*2800+12000, m.fiyat+tir*23000+m.taban*3500+18000];
+  return {m,b,h,tas,alan,taksHak,kaksHak,cevirSigar,yon:YON[yi],gunes:GUNES[yi],bahce:alan-m.taban,top};
+}
+const svg=document.getElementById('kroki'), NS='http://www.w3.org/2000/svg';
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e}
+function ciz(){
+  const R=hesap(), {b,h,m}=R, W=S.W, D=S.D, Y=y=>D-y;
+  const FK=(svg.clientWidth&&svg.clientWidth<620)?1.4:1;
+  svg.setAttribute('viewBox',`-5 -4 ${W+12} ${D+12}`);
+  [...svg.querySelectorAll(':scope > :not(title):not(desc)')].forEach(n=>n.remove());
+  const defs=el('defs',{});
+  // milimetrik kâğıt
+  const g=el('pattern',{id:'mm',width:1,height:1,patternUnits:'userSpaceOnUse'},defs);
+  el('path',{d:'M1 0 L0 0 0 1',fill:'none',stroke:'#DCE4EA','stroke-width':.03},g);
+  const g5=el('pattern',{id:'mm5',width:5,height:5,patternUnits:'userSpaceOnUse'},defs);
+  el('rect',{width:5,height:5,fill:'url(#mm)'},g5); el('path',{d:'M5 0 L0 0 0 5',fill:'none',stroke:'#C6D2DA','stroke-width':.06},g5);
+  const kt=el('pattern',{id:'kalem',width:.45,height:.45,patternUnits:'userSpaceOnUse',patternTransform:'rotate(40)'},defs);
+  el('line',{x1:0,y1:0,x2:0,y2:.45,stroke:'#3A3F45','stroke-width':.08},kt);
+  const kr=el('pattern',{id:'kirmizi',width:.42,height:.42,patternUnits:'userSpaceOnUse',patternTransform:'rotate(-40)'},defs);
+  el('line',{x1:0,y1:0,x2:0,y2:.42,stroke:'#C42B2B','stroke-width':.13},kr);
+  el('rect',{x:-5,y:-4,width:W+12,height:D+12,fill:'url(#mm5)'});
+  // yol
+  el('line',{x1:-5,y1:D+1.2,x2:W+7,y2:D+1.2,stroke:'#3A3F45','stroke-width':.07});
+  el('line',{x1:-5,y1:D+6.2,x2:W+7,y2:D+6.2,stroke:'#3A3F45','stroke-width':.07});
+  el('text',{x:W/2,y:D+4.2,'text-anchor':'middle','font-size':1*FK,fill:'#4E555C','letter-spacing':'.2'}).textContent='YOL';
+  // fosforlu işaret: yapılaşma alanı ve seçili satırın karşılığı
+  el('rect',{x:b.x0,y:Y(b.y1),width:Math.max(0,b.x1-b.x0),height:Math.max(0,b.y1-b.y0),fill:'rgba(212,245,60,.38)'});
+  const vurgu={on:[0,Y(b.y0),W,S.on],arka:[0,0,W,D-b.y1],yan:null,W:[0,0,W,D]}[S.isaret];
+  if(S.isaret==='yan'){[[0,0,S.yan,D],[W-S.yan,0,S.yan,D]].forEach(r=>el('rect',{x:r[0],y:r[1],width:r[2],height:r[3],fill:'rgba(212,245,60,.85)'}))}
+  else if(vurgu&&S.isaret!=='W') el('rect',{x:vurgu[0],y:vurgu[1],width:vurgu[2],height:vurgu[3],fill:'rgba(212,245,60,.85)'});
+  // parsel (kurşun kalem, hafif titrek değil, temiz)
+  el('rect',{x:0,y:0,width:W,height:D,fill:'none',stroke:'#1B1E22','stroke-width':.16});
+  el('rect',{x:b.x0,y:Y(b.y1),width:Math.max(0,b.x1-b.x0),height:Math.max(0,b.y1-b.y0),fill:'none',stroke:'#3A3F45','stroke-width':.07,'stroke-dasharray':'.5 .3'});
+  const yaz=(x,y,t,o)=>{const e=el('text',Object.assign({x,y,'font-size':.9*FK,fill:'#3A3F45','text-anchor':'middle','font-family':'Atkinson Hyperlegible Mono'},o||{}));e.textContent=t;return e};
+  yaz(W/2,-1.2,`${f1(W)} m`); yaz(-1.4,D/2,`${f1(D)} m`,{transform:`rotate(-90 -1.4 ${D/2})`});
+  yaz(W-3.4,Y(b.y0/2)+.3,`ön ${f1(S.on)}`); yaz(W-3.4,(D-b.y1)/2+.3,`arka ${f1(D-b.y1)}`); yaz(S.yan/2,D/2,`${f1(S.yan)}`); yaz(W-S.yan/2,D/2,`${f1(S.yan)}`);
+  // ev: kurşun kalem tarama
+  const ev=el('g',{id:'ev',tabindex:0,role:'button','aria-label':`${m.ad} ${m.m2}; ok tuşlarıyla kaydırın`,style:'cursor:grab;outline:none'});
+  el('rect',{x:h.x0,y:Y(h.y1),width:h.w,height:h.d,fill:'url(#kalem)',stroke:'#1B1E22','stroke-width':.14},ev);
+  el('rect',{x:h.x0+h.w*.2,y:Y(h.y1)+h.d*.3,width:h.w*.6,height:h.d*.4,fill:'#F8FAFB'},ev);
+  el('text',{x:h.x0+h.w/2,y:Y(h.y1)+h.d/2+.4,'text-anchor':'middle','font-size':Math.min(1.15,h.w/7)*FK,'font-weight':800,fill:'#1B1E22'},ev).textContent=`${m.ad} ${m.m2}`;
+  R.tas.forEach(t=>{el('rect',{x:t.r.x0,y:Y(t.r.y1),width:t.r.x1-t.r.x0,height:t.r.y1-t.r.y0,fill:'url(#kirmizi)',stroke:'#C42B2B','stroke-width':.14});
+    const cx=(t.r.x0+t.r.x1)/2, cy=Y((t.r.y0+t.r.y1)/2); el('circle',{cx,cy,r:1.1,fill:'#fff',stroke:'#C42B2B','stroke-width':.12}); yaz(cx,cy+.35,`${f1(t.m)}`,{fill:'#C42B2B','font-weight':700,'font-size':.8*FK});});
+  // kuzey
+  const a=S.kuzey; const kg=el('g',{transform:`translate(${W+3.6} 2.4) rotate(${a})`}); el('path',{d:'M0 -1.6 L.55 .8 L0 .4 L-.55 .8 Z',fill:'#1B1E22'},kg); el('circle',{cx:0,cy:0,r:1.9,fill:'none',stroke:'#3A3F45','stroke-width':.06},kg);
+  const ra=a*Math.PI/180; yaz(W+3.6+Math.sin(ra)*2.8,2.4-Math.cos(ra)*2.8+.35,'K',{'font-weight':800,'font-family':'Atkinson Hyperlegible Next'});
+  document.getElementById('kAciklama').textContent=`${f1(W)} × ${f1(D)} m arsa krokisi; ${m.ad} ${m.m2}.`;
+  surukle(ev); kontrol(R);
+}
+function surukle(g){let bas=null;const pt=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
+  g.addEventListener('pointerdown',e=>{bas={p:pt(e),x0:S.x0,y0:S.y0};g.setPointerCapture(e.pointerId)});
+  g.addEventListener('pointermove',e=>{if(!bas)return;const p=pt(e);S.x0=Math.round((bas.x0+(p.x-bas.p.x))*2)/2;S.y0=Math.round((bas.y0-(p.y-bas.p.y))*2)/2;ciz();document.getElementById('ev')?.focus()});
+  g.addEventListener('pointerup',()=>bas=null);
+  g.addEventListener('keydown',e=>{const k={ArrowLeft:[-.5,0],ArrowRight:[.5,0],ArrowUp:[0,.5],ArrowDown:[0,-.5]}[e.key];if(!k)return;e.preventDefault();S.x0+=k[0];S.y0+=k[1];ciz();document.getElementById('ev').focus()});}
+function kontrol(R){
+  const m=R.m, cekmeOk=R.tas.length===0, taksOk=m.taban<=R.taksHak, kaksOk=m.toplam<=R.kaksHak, hOk=m.sacak<=S.hmax;
+  const hepsi=cekmeOk&&taksOk&&kaksOk&&hOk;
+  const d=document.getElementById('durum');
+  d.className='durum'+(hepsi?'':' no');
+  d.innerHTML=hepsi?`${m.ad} ${m.m2} sığıyor; ${tr.format(Math.round(R.bahce))} m² bahçe kalıyor.<p>Salon ${R.yon} bakıyor; ${R.gunes}.</p>`:`${m.ad} ${m.m2} bu haliyle sığmıyor.${R.cevirSigar?'<button class="btn btn-ana" type="button" id="cevir2">Çevirince sığıyor, çevir</button>':''}<p>Kırmızı kalemle işaretli yerler sınırı aşıyor.</p>`;
+  document.getElementById('cevir2')?.addEventListener('click',()=>{S.rot=(S.rot+90)%360;S.x0=null;ciz()});
+  const li=(ok,a,b)=>`<li class="${ok?'ok':'no'}"><span class="t" aria-hidden="true">${ok?'✓':'✕'}</span><span>${a}<br><span class="m">${b}</span></span></li>`;
+  const tasYazi=R.tas.map(t=>`${t.k} ${f1(t.m)} m taşıyor`).join(', ');
+  document.getElementById('kontrol').innerHTML=`<ul>
+   ${li(cekmeOk,'Bahçe mesafeleri',cekmeOk?'ön, yan ve arka sınırların içinde':tasYazi)}
+   ${li(taksOk,'Taban alanı (TAKS)',`${m.taban} m², hakkınız ${tr.format(Math.floor(R.taksHak))} m²`)}
+   ${li(kaksOk,'Toplam alan (emsal)',`${m.toplam} m², hakkınız ${tr.format(Math.floor(R.kaksHak))} m²`)}
+   ${li(hOk,'Yükseklik',`saçak ${f2(m.sacak)} m, sınır ${f2(S.hmax)} m`)}
+  </ul><div class="fiyat"><div class="tutar">${mil(R.top[0])}–${mil(R.top[1])} milyon TL<br><small>tahmini; ev, nakliye, temel ve vinç</small></div><div><button class="btn btn-ana" type="button">Bu yerleşimle teklif iste</button></div></div>
+  <div class="ruhsat ${S.nitelik!=='arsa'?'uyari':''}">${S.nitelik==='tarla'?'<b>Tapuda “tarla” yazıyorsa kalıcı konut ruhsatı alınamaz.</b> Bu kontrol yalnız ölçülere bakar.':'<b>Bu kontrol yalnız ölçülere bakar.</b> Ruhsatı belediye verir; tapuda “tarla” yazıyorsa kalıcı konut ruhsatı alınamaz.'}</div>`;
+}
+function isaretle(k){S.isaret=k;document.querySelectorAll('.deger[data-k]').forEach(x=>x.classList.toggle('isaretli',x.dataset.k===k||(k==='W'&&x.dataset.k==='W')));document.getElementById('okuma').innerHTML=OKUMA[k]||'';ciz()}
+const mk=document.getElementById('modeller');
+MODELLER.forEach(m=>{const b=document.createElement('button');b.type='button';b.dataset.id=m.id;b.setAttribute('aria-pressed',m.id===S.model);b.textContent=`${m.ad} ${m.m2}, ${m.oda}`;
+  b.addEventListener('click',()=>{S.model=m.id;S.x0=null;mk.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.id===m.id));ciz()});mk.appendChild(b)});
+['W','D','taks','kaks','hmax','on','yan','arka'].forEach(id=>{const i=document.getElementById(id);
+  i.addEventListener('input',()=>{const v=parseFloat(String(i.value).replace(',','.'));if(!isNaN(v)){S[id]=v;ciz()}});
+  i.addEventListener('focus',()=>isaretle(id==='D'?'W':id))});
+document.querySelectorAll('#nitelik button').forEach(b=>b.addEventListener('click',()=>{S.nitelik=b.dataset.n;document.querySelectorAll('#nitelik button').forEach(x=>x.setAttribute('aria-pressed',x===b));ciz()}));
+const q=new URLSearchParams(location.search);
+if(q.get('durum')==='tasma'){S.W=18;S.D=26;S.model='avlu';document.getElementById('W').value=18;document.getElementById('D').value=26;mk.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.id==='avlu'));S.isaret='yan'}
+isaretle(S.isaret); addEventListener('resize',ciz);
+</script>
+</body>
+</html>

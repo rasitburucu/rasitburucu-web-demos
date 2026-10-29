@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yedi Pencere · Yön C · Çakıl</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Yön C · Çakıl — maket. Taşlık çakıl mozaiği: arayüz siyah-beyaz, renk yalnız fotoğrafta. */
+:root{
+  --zemin:#FAF9F6;     /* ak çakıl, kireç harcı */
+  --metin:#1A1A18;
+  --metin2:#57544F;
+  --kara:#1E1E1C;      /* kara dere çakılı */
+  --gri:#8F8B84;
+  --acik:#E7E4DD;
+  --cizgi:#D6D2CA;
+  --f:"Atkinson Hyperlegible Next", "Segoe UI", Arial, sans-serif;
+  --out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box}
+html{color-scheme:light}
+body{margin:0;background:var(--zemin);color:var(--metin);font:16px/1.5 var(--f)}
+::selection{background:var(--kara);color:#fff}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--kara);outline-offset:3px;border-radius:4px}
+.kc{font:600 12px/28px var(--f);text-align:center;background:var(--kara);color:#EDEBE6;height:28px}
+header{display:flex;align-items:center;gap:26px;padding:0 32px;height:64px;max-width:1720px;margin:0 auto}
+.logo{text-decoration:none;display:flex;align-items:center;gap:12px}
+.logo i{display:block;width:30px;height:22px;background:radial-gradient(circle at 30% 40%,var(--kara) 22%,transparent 24%),radial-gradient(circle at 70% 60%,var(--kara) 20%,transparent 22%),radial-gradient(circle at 52% 25%,#fff 16%,transparent 18%);border:2px solid var(--kara);border-radius:46% 54% 50% 50%/55% 48% 52% 45%}
+.logo b{font:800 22px/1 var(--f);letter-spacing:-.01em}
+.logo span{font:500 14px/1 var(--f);color:var(--metin2)}
+nav.ust{display:flex;gap:22px;margin-left:auto;font:600 15px/1 var(--f)}
+nav.ust a{text-decoration:none}
+.dil{display:flex;border:2px solid var(--kara);border-radius:999px;overflow:hidden}
+.dil button{border:0;background:none;padding:5px 10px;font:700 12.5px/1 var(--f);cursor:pointer}
+.dil button[aria-pressed="true"]{background:var(--kara);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;border-radius:999px;border:2px solid var(--kara);background:transparent;font:700 16px/1 var(--f);cursor:pointer;text-decoration:none}
+.btn.ana{background:var(--kara);color:#fff}
+.btn.ana:hover{background:#3A3936;border-color:#3A3936}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+
+.ilk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:36px;max-width:1720px;margin:0 auto;padding:6px 32px 30px;align-items:start}
+h1{font:800 clamp(2.2rem,1rem + 2.6vw,3.8rem)/1.02 var(--f);letter-spacing:-.025em;margin:0 0 10px;text-wrap:balance}
+.alt{margin:0 0 14px;font:400 17.5px/1.5 var(--f);color:var(--metin2);max-width:50ch}
+#mozaik{display:block;width:100%;height:auto}
+.moz-alt{display:flex;justify-content:space-between;gap:12px;font:500 14px/1.35 var(--f);color:var(--metin2);margin-top:6px}
+
+.sag h2{font:800 20px/1.2 var(--f);margin:0}
+.ust-sat{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:0 0 8px}
+.lejant{display:flex;gap:16px;font:500 14px/1 var(--f);color:var(--metin2)}
+.lejant i{display:inline-block;width:16px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px;border:2px solid var(--kara)}
+.lejant i.k{background:var(--kara)}
+.izgara{display:grid;grid-template-columns:150px repeat(14,minmax(0,1fr)) 78px;align-items:center;row-gap:2px;column-gap:0;border-top:2px solid var(--kara);border-bottom:2px solid var(--kara);padding:4px 0}
+.gun{font:700 12px/1.05 var(--f);text-align:center;padding:4px 0 6px;border:0;background:none;cursor:pointer;border-radius:6px}
+.gun small{display:block;font:500 11px/1.1 var(--f);color:var(--metin2)}
+.gun.sec{background:var(--kara);color:#fff}
+.gun.sec small{color:#D9D6CF}
+.gun.ara{background:var(--acik)}
+.oda-ad{padding:5px 6px 5px 0;text-align:left;border:0;background:none;cursor:pointer;border-left:4px solid transparent;padding-left:8px}
+.oda-ad b{display:block;font:700 15.5px/1.15 var(--f)}
+.oda-ad small{display:block;font:500 12.5px/1.2 var(--f);color:var(--metin2)}
+.oda-ad[aria-pressed="true"]{border-left-color:var(--kara)}
+.hucre{display:flex;justify-content:center;align-items:center;height:36px;border:0;background:none;padding:0;cursor:pointer}
+.hucre.ara{background:var(--acik)}
+.hucre i{display:block;width:72%;max-width:26px;height:19px;border:2px solid var(--kara);background:#fff;border-radius:48% 52% 46% 54%/56% 46% 54% 44%;transition:background .3s var(--out),transform .3s var(--out)}
+.hucre.dolu i{background:var(--kara)}
+.satir-sec .hucre i{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--kara)}
+.fiy{font:700 14px/1 var(--f);text-align:right;font-variant-numeric:tabular-nums;padding-right:2px}
+.fiy small{display:block;font:500 11.5px/1.2 var(--f);color:var(--metin2)}
+.sat-alt{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px;align-items:center;margin:8px 0 14px;font:500 14px/1.35 var(--f);color:var(--metin2)}
+.adim{display:flex;align-items:center;gap:8px;font:700 15px/1 var(--f);color:var(--metin)}
+.adim button{width:34px;height:34px;border-radius:50%;border:2px solid var(--kara);background:transparent;font:700 17px/1 var(--f);cursor:pointer}
+
+.kart{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1fr);gap:18px;border:2px solid var(--kara);border-radius:14px;padding:14px}
+.kart img{display:block;width:100%;height:100%;min-height:230px;object-fit:cover;border-radius:8px}
+.kart h3{font:800 30px/1 var(--f);margin:2px 0 4px;letter-spacing:-.015em}
+.kart .konum{margin:0 0 10px;font:500 15px/1.35 var(--f);color:var(--metin2)}
+dl.olgu{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0 0 10px;font:400 14.5px/1.35 var(--f)}
+dl.olgu dt{color:var(--metin2)}
+dl.olgu dd{margin:0;font-weight:600}
+.fiyat{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 10px;font-variant-numeric:tabular-nums}
+.fiyat strong{font:800 24px/1 var(--f)}
+.fiyat span{font:500 13px/1.3 var(--f);color:var(--metin2);text-align:right}
+.kart .btn.ana{width:100%}
+.dolu-not{display:none;margin:0 0 10px;padding:9px 11px;border-left:4px solid var(--kara);background:var(--acik);font:600 14.5px/1.35 var(--f)}
+.kart.is-dolu .dolu-not{display:block}
+.not{margin:8px 0 0;font:400 12.5px/1.4 var(--f);color:var(--metin2)}
+
+/* varış */
+.varis{max-width:1720px;margin:0 auto;padding:36px 32px 120px;border-top:2px solid var(--kara)}
+.varis-bas{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:10px 48px;align-items:end;margin-bottom:14px}
+.varis h2{font:800 clamp(1.9rem,1.2rem + 1.5vw,2.8rem)/1.05 var(--f);margin:0;letter-spacing:-.02em}
+.varis-bas p{margin:0;color:var(--metin2);max-width:62ch}
+.mod{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.mod button{min-height:42px;padding:0 16px;border:2px solid var(--kara);background:transparent;border-radius:999px;font:700 15px/1 var(--f);cursor:pointer}
+.mod button[aria-pressed="true"]{background:var(--kara);color:#fff}
+.ozet-sat{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.ozet-sat strong{font:800 30px/1 var(--f)}
+.ozet-sat span{color:var(--metin2)}
+#serit{display:block;width:100%;height:auto}
+.atif{margin:8px 0 0;font-size:12.5px;color:var(--metin2)}
+.altcubuk{display:none}
+dialog{border:2px solid var(--kara);border-radius:14px;padding:0;max-width:440px;width:calc(100% - 32px);background:var(--zemin);color:var(--metin)}
+dialog::backdrop{background:rgba(30,30,28,.5)}
+.dlg{padding:20px}
+.dlg h2{font:800 26px/1.1 var(--f);margin:0 0 12px}
+.dlg dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 14px}
+.dlg dt{color:var(--metin2)}
+.dlg dd{margin:0;font-weight:600}
+.dlg .uyari{font-size:14px;background:var(--acik);padding:10px 12px;margin:0 0 14px}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0s!important;transition-delay:0s!important}}
+@media (max-width:1180px){nav.ust,.logo span{display:none}.dil{margin-left:auto}.ilk{grid-template-columns:1fr}.varis-bas{grid-template-columns:1fr}}
+@media (max-width:760px){
+  header{padding:0 16px;height:56px;gap:12px}
+  nav.ust,.ust-ana,.logo span{display:none}
+  .dil{margin-left:auto}
+  .ilk{padding:4px 16px 20px;gap:18px}
+  h1{font-size:2.1rem}
+  .alt{font-size:16px}
+  .izgara{grid-template-columns:104px repeat(7,minmax(0,1fr))}
+  .izgara .gizle,.izgara .fiy{display:none}
+  .oda-ad b{font-size:14px}
+  .oda-ad small{font-size:11.5px}
+  .kart{grid-template-columns:1fr;padding:12px}
+  .kart img{min-height:190px;height:190px}
+  .varis{padding:28px 16px 110px}
+  .altcubuk{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--zemin);border-top:2px solid var(--kara)}
+  .altcubuk .btn{flex:1;min-height:46px;padding:0 10px;font-size:15px}
+}
+</style>
+</head>
+<body>
+<div class="kc" data-i18n="kc">Konsept çalışma — rasitburucu.com</div>
+<header>
+  <a class="logo" href="#"><i aria-hidden="true"></i><b>Yedi Pencere</b><span data-i18n="logoAlt">Kaleiçi'nde konak otel</span></a>
+  <nav class="ust" aria-label="Ana menü"><a href="#odalar" data-i18n="navOda">Odalar</a><a href="#varis" data-i18n="navVaris">Varış</a><a href="#" data-i18n="navKonak">Konak</a><a href="#" data-i18n="navSss">Sık sorulanlar</a></nav>
+  <div class="dil" role="group" aria-label="Dil"><button type="button" data-dil="tr" aria-pressed="true">TR</button><button type="button" data-dil="en" aria-pressed="false">EN</button></div>
+  <a class="btn ust-ana" href="#odalar" data-i18n="rezervasyon">Rezervasyon</a>
+</header>
+<main>
+<section class="ilk" id="odalar" aria-labelledby="h1">
+  <div class="sol">
+    <h1 id="h1" data-i18n="h1">Hangi gece hangi oda boş, tek bakışta.</h1>
+    <p class="alt" data-i18n="alt">Tarih sorup cevap beklemeyin: yedi odanın önümüzdeki iki haftası burada. Her odanın neye baktığı, kaç basamak çıkıldığı ve fiyatı yanında.</p>
+    <svg id="mozaik" viewBox="0 0 600 420" role="group" aria-label="Konağın çakıl mozaiği; her pencere bir oda"></svg>
+    <div class="moz-alt"><span data-i18n="mozAlt">Taşlıktaki çakıl döşemeden: kararmış pencere, seçtiğiniz gecelerde dolu.</span><span data-i18n="kurgu">Kurgusal konak.</span></div>
+  </div>
+  <div class="sag">
+    <div class="ust-sat">
+      <h2 data-i18n="ikiHafta">Önümüzdeki iki hafta</h2>
+      <div class="lejant"><span><i></i><span data-i18n="bos">boş gece</span></span><span><i class="k"></i><span data-i18n="dolu">dolu gece</span></span></div>
+    </div>
+    <div class="izgara" id="izgara" role="grid" aria-label="Oda ve gece doluluğu"></div>
+    <div class="sat-alt">
+      <span id="secim-yazi"></span>
+      <span class="adim"><span data-i18n="geceL">Gece</span> <button type="button" id="n-az" aria-label="Bir gece azalt">−</button><b id="t-gece">2</b><button type="button" id="n-cok" aria-label="Bir gece artır">+</button></span>
+    </div>
+    <article class="kart" id="kart" aria-live="polite">
+      <img id="o-foto" alt="" src="">
+      <div>
+        <h3 id="o-ad">Körfez</h3>
+        <p class="konum" id="o-konum"></p>
+        <p class="dolu-not" id="o-dolu"></p>
+        <dl class="olgu">
+          <dt data-i18n="fNe">Ne görür</dt><dd id="o-ne"></dd>
+          <dt data-i18n="fKapi">Kapıdan</dt><dd id="o-basamak"></dd>
+          <dt data-i18n="fTavan">Tavan</dt><dd id="o-tavan"></dd>
+          <dt data-i18n="fGece">Gece</dt><dd id="o-ses"></dd>
+        </dl>
+        <div class="fiyat"><strong id="o-fiyat"></strong><span id="o-toplam"></span></div>
+        <button class="btn ana" id="o-ayir" type="button" data-i18n="ayir">Bu odayı ayırın</button>
+        <p class="not" data-i18n="canli">Konakta asansör yok. Doluluk gerçekte otelin rezervasyon sisteminden anlık gelir; burada örnektir.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="varis" id="varis" aria-labelledby="v-h">
+  <div class="varis-bas"><h2 id="v-h" data-i18n="vH">Kapıdan kapıya</h2><p data-i18n="vP">Kaleiçi'nin dar sokaklarında son kısım yürünür. Her taş on metre: nereden gelirseniz gelin, yolun ne kadar olduğunu, nerede merdiven ve Arnavut kaldırımı olduğunu görün.</p></div>
+  <div class="mod" role="group" aria-label="Nereden geliyorsunuz">
+    <button type="button" data-mod="havalimani" aria-pressed="false" data-i18n="mHava">Havalimanı</button><button type="button" data-mod="otogar" aria-pressed="false" data-i18n="mOto">Otogar</button><button type="button" data-mod="arac" aria-pressed="true" data-i18n="mArac">Kendi aracınız</button><button type="button" data-mod="marina" aria-pressed="false" data-i18n="mMarina">Marina</button>
+  </div>
+  <div class="ozet-sat"><strong id="v-metre"></strong><span id="v-ozet"></span></div>
+  <svg id="serit" viewBox="0 0 1000 150" role="img" aria-label="Çakıl şerit: her taş 10 metre"></svg>
+  <p class="atif" data-i18n="atif">Yol verisi: © OpenStreetMap katkıda bulunanlar (ODbL). Sayısı haritada olmayan merdivenlerde basamak sahada sayılır.</p>
+</section>
+</main>
+<div class="altcubuk"><a class="btn" href="#izgara" data-i18n="cTarih">Tarih</a><a class="btn" href="#" data-i18n="cAra">Ara</a><button class="btn ana" type="button" id="c-rez" data-i18n="rezervasyon">Rezervasyon</button></div>
+<dialog id="ozet" aria-labelledby="oz-h"><div class="dlg"><h2 id="oz-h" data-i18n="ozH">Rezervasyon özeti</h2><dl id="oz-dl"></dl><p class="uyari" data-i18n="ozUyari">Bu bir tasarım örneği; rezervasyon hiçbir yere gönderilmez.</p><button class="btn ana" type="button" id="oz-tamam" data-i18n="ozTamam">Anladım</button></div></dialog>
+
+<script>
+(()=>{
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+const U=(id,w)=>`https://images.unsplash.com/photo-${id}?w=${w||1000}&q=72&auto=format&fit=crop`;
+const FOTO={sokak1:'1704036626672-c80204212c2a',sokak2:'1650051887439-0b24837aa570',avlu1:'1762872502140-0026fe0c8f33',avlu2:'1778516523917-c4a0523dd9ca',deniz1:'1674078678256-0e2550cddb29',deniz2:'1665130531253-b423048adc62',deniz3:'1663574629234-5a88589e56a8'};
+const ODALAR=[
+ {id:'kosk',ad:'Köşk',kat:{tr:'Köşk katı',en:'Belvedere'},bakar:{tr:'Deniz',en:'Sea'},ne:{tr:'Deniz, üç yönden pencere',en:'The sea, windows on three sides'},basamak:37,tavan:{tr:'3,10 m; çatı ahşabı',en:'3.10 m; roof timbers'},ses:{tr:'Rüzgâr ve dalga',en:'Wind and waves'},fiyat:12400,foto:'deniz3',pen:[[398,92,92,44,3]]},
+ {id:'hidirlik',ad:'Hıdırlık',kat:{tr:'Köşk katı',en:'Belvedere'},bakar:{tr:'Deniz',en:'Sea'},ne:{tr:'Deniz ve yanda Hıdırlık Kulesi',en:'The sea, Hıdırlık Tower to one side'},basamak:35,tavan:{tr:'2,90 m; çatı ahşabı',en:'2.90 m; roof timbers'},ses:{tr:'Sessiz',en:'Quiet'},fiyat:9200,foto:'deniz2',pen:[[336,92,36,44,1]]},
+ {id:'korfez',ad:'Körfez',kat:{tr:'1. kat',en:'First floor'},bakar:{tr:'Deniz',en:'Sea'},ne:{tr:'Deniz; karşıda Konyaaltı ve Beydağları',en:'The sea, with the Beydağları range opposite'},basamak:23,tavan:{tr:'3,20 m',en:'3.20 m'},ses:{tr:'Yaz akşamları limandan müzik gelebilir',en:'Summer evenings: music from the harbour'},fiyat:8600,foto:'deniz1',pen:[[410,182,46,62,1]]},
+ {id:'sofa',ad:'Sofa',kat:{tr:'1. kat',en:'First floor'},bakar:{tr:'Avlu',en:'Courtyard'},ne:{tr:'Avlu; oda sofaya açılır',en:'The courtyard; opens onto the hall'},basamak:21,tavan:{tr:'3,40 m; göbekli ahşap tavan',en:'3.40 m; carved timber ceiling'},ses:{tr:'Sessiz',en:'Quiet'},fiyat:7400,foto:'avlu2',pen:[[300,182,46,62,1]]},
+ {id:'cumba',ad:'Cumba',kat:{tr:'1. kat',en:'First floor'},bakar:{tr:'Sokak',en:'Lane'},ne:{tr:'Sokak, cumbadan iki yöne',en:'The lane, both ways from the bay'},basamak:21,tavan:{tr:'3,20 m; ahşap',en:'3.20 m; timber'},ses:{tr:'Cuma ve cumartesi gece yarısına kadar sokak sesi',en:'Street noise until midnight, Fri and Sat'},fiyat:5900,foto:'sokak2',pen:[[132,180,118,58,3]]},
+ {id:'avlu',ad:'Avlu',kat:{tr:'Zemin',en:'Ground floor'},bakar:{tr:'Avlu',en:'Courtyard'},ne:{tr:'Avlu, turunç ağacı ve sarnıç',en:'The courtyard, bitter-orange tree and cistern'},basamak:2,tavan:{tr:'3,60 m; ahşap kiriş',en:'3.60 m; timber beams'},ses:{tr:'Sessiz',en:'Quiet'},fiyat:5200,foto:'avlu1',pen:[[410,296,46,58,1]]},
+ {id:'taslik',ad:'Taşlık',kat:{tr:'Zemin',en:'Ground floor'},bakar:{tr:'Sokak',en:'Lane'},ne:{tr:'Sokak; demir parmaklıklı pencere',en:'The lane, through an iron-barred window'},basamak:1,tavan:{tr:'3,80 m; taş duvar',en:'3.80 m; stone walls'},ses:{tr:'Hafta sonu gece yarısına kadar sokak',en:'Passers-by until midnight at weekends'},fiyat:4600,foto:'sokak1',pen:[[300,296,46,58,1]]}
+];
+const DOLU={taslik:[0,0,1,1,0,0,0,1,1,0,0,0,0,1],avlu:[0,0,0,1,1,1,0,0,0,0,1,1,0,0],cumba:[1,1,0,0,0,0,1,1,1,0,0,0,0,0],sofa:[0,0,0,0,1,1,0,0,0,1,1,0,0,0],korfez:[0,0,1,1,1,0,0,0,1,1,1,1,0,0],hidirlik:[0,1,1,1,0,0,0,0,0,0,1,1,1,0],kosk:[0,0,0,1,1,1,1,0,0,0,0,1,1,1]};
+const BAS=new Date(2026,9,16);
+const S={dil:'tr',giris:0,gece:2,kisi:2,secili:'korfez',mod:'arac'};
+const GUN={tr:['Paz','Pzt','Sal','Çar','Per','Cum','Cmt'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']};
+const GUNU={tr:['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'],en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']};
+const AY={tr:['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']};
+const gun=(i)=>{const d=new Date(BAS);d.setDate(d.getDate()+i);return d};
+const tarihYaz=(i)=>{const d=gun(i);return `${GUNU[S.dil][d.getDay()]} ${d.getDate()} ${AY[S.dil][d.getMonth()]}`};
+const para=(n)=>S.dil==='tr'?n.toLocaleString('tr-TR')+' TL':'TRY '+n.toLocaleString('en-GB');
+const doluMu=(id)=>{for(let i=S.giris;i<S.giris+S.gece;i++)if(DOLU[id][i])return true;return false};
+const ilkBos=(id)=>{for(let g=S.giris+1;g<=14-S.gece;g++){let ok=true;for(let i=g;i<g+S.gece;i++)if(DOLU[id][i]){ok=false;break}if(ok)return g}return -1};
+const T={
+ tr:{kc:'Konsept çalışma — rasitburucu.com',logoAlt:"Kaleiçi'nde konak otel",navOda:'Odalar',navVaris:'Varış',navKonak:'Konak',navSss:'Sık sorulanlar',rezervasyon:'Rezervasyon',
+  h1:'Hangi gece hangi oda boş, tek bakışta.',alt:'Tarih sorup cevap beklemeyin: yedi odanın önümüzdeki iki haftası burada. Her odanın neye baktığı, kaç basamak çıkıldığı ve fiyatı yanında.',
+  mozAlt:'Taşlıktaki çakıl döşemeden: kararmış pencere, seçtiğiniz gecelerde dolu.',kurgu:'Kurgusal konak.',ikiHafta:'Önümüzdeki iki hafta',bos:'boş gece',dolu:'dolu gece',geceL:'Gece',
+  fNe:'Ne görür',fKapi:'Kapıdan',fTavan:'Tavan',fGece:'Gece',ayir:'Bu odayı ayırın',canli:'Konakta asansör yok. Doluluk gerçekte otelin rezervasyon sisteminden anlık gelir; burada örnektir.',
+  vH:'Kapıdan kapıya',vP:"Kaleiçi'nin dar sokaklarında son kısım yürünür. Her taş on metre: nereden gelirseniz gelin, yolun ne kadar olduğunu, nerede merdiven ve Arnavut kaldırımı olduğunu görün.",
+  mHava:'Havalimanı',mOto:'Otogar',mArac:'Kendi aracınız',mMarina:'Marina',atif:'Yol verisi: © OpenStreetMap katkıda bulunanlar (ODbL). Sayısı haritada olmayan merdivenlerde basamak sahada sayılır.',
+  cTarih:'Tarih',cAra:'Ara',ozH:'Rezervasyon özeti',ozUyari:'Bu bir tasarım örneği; rezervasyon hiçbir yere gönderilmez.',ozTamam:'Anladım',
+  basamak:(n)=>`${n} basamak`,gecebas:'gece başına, örnek',toplam:(n,t)=>`${n} gece: ${t}`,dolum:'Bu tarihlerde dolu',bosA:(a,b)=>`${a}–${b} arası boş.`,gec:'O tarihlere geç',
+  secim:(a,b,n)=>`Giriş ${a}, çıkış ${b} (${n} gece)`,konum:(o)=>`${o.kat.tr}, ${o.bakar.tr.toLowerCase()} tarafı`},
+ en:{kc:'Concept study — rasitburucu.com',logoAlt:'A townhouse hotel in Kaleiçi',navOda:'Rooms',navVaris:'Getting here',navKonak:'The house',navSss:'FAQ',rezervasyon:'Book',
+  h1:'Every room, every night, at a glance.',alt:"No need to ask and wait: the next two weeks of all seven rooms are right here, with each room's view, steps and price.",
+  mozAlt:'From the pebble floor of the entrance hall: a dark window is taken on your nights.',kurgu:'Fictional house.',ikiHafta:'The next two weeks',bos:'free night',dolu:'taken night',geceL:'Nights',
+  fNe:'View',fKapi:'From the door',fTavan:'Ceiling',fGece:'At night',ayir:'Reserve this room',canli:"There is no lift. In reality availability comes live from the hotel's booking system; here it is a sample.",
+  vH:'Door to door',vP:'In the narrow lanes of Kaleiçi the last stretch is on foot. Each pebble is ten metres: see how far it is, and where the stairs and cobbles are.',
+  mHava:'Airport',mOto:'Bus station',mArac:'By car',mMarina:'Marina',atif:'Route data: © OpenStreetMap contributors (ODbL). Where the map has no count, steps are counted on site.',
+  cTarih:'Dates',cAra:'Call',ozH:'Booking summary',ozUyari:'This is a design sample; nothing is sent anywhere.',ozTamam:'Got it',
+  basamak:(n)=>`${n} ${n===1?'step':'steps'}`,gecebas:'per night, sample',toplam:(n,t)=>`${n} nights: ${t}`,dolum:'Taken on these dates',bosA:(a,b)=>`Free ${a}–${b}.`,gec:'Switch to those dates',
+  secim:(a,b,n)=>`Check-in ${a}, check-out ${b} (${n} nights)`,konum:(o)=>`${o.kat.en}, ${o.bakar.en.toLowerCase()} side`}
+};
+
+/* ---- çakıl mozaiği (prosedürel) ---- */
+let tohum=7;const rnd=()=>{tohum=(tohum*16807)%2147483647;return (tohum-1)/2147483646};
+const icinde=(x,y,[rx,ry,rw,rh])=>x>=rx&&x<=rx+rw&&y>=ry&&y<=ry+rh;
+const kenar=(x,y,[rx,ry,rw,rh])=>Math.min(x-rx,rx+rw-x,y-ry,ry+rh-y);
+function poligonIc(x,y,p){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const [xi,yi]=p[i],[xj,yj]=p[j];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))c=!c}return c}
+function poligonKenar(x,y,p){let m=1e9;for(let i=0,j=p.length-1;i<p.length;j=i++){const [x1,y1]=p[j],[x2,y2]=p[i];const dx=x2-x1,dy=y2-y1;const t=Math.max(0,Math.min(1,((x-x1)*dx+(y-y1)*dy)/(dx*dx+dy*dy)));m=Math.min(m,Math.hypot(x-(x1+t*dx),y-(y1+t*dy)))}return m}
+const GOVDE=[92,150,416,232], KOSK=[318,74,184,80], CUMBA=[120,168,142,82], KAPI=[156,290,64,92];
+const CATI=[[80,152],[190,110],[322,110],[322,152]], KCATI=[[306,76],[410,42],[514,76]];
+function mozaik(){
+  const svg=document.getElementById('mozaik');svg.innerHTML='';tohum=7;
+  el('rect',{x:0,y:0,width:600,height:420,rx:10,fill:'#3A3835'},svg);
+  const g0=el('g',{},svg);
+  const gpen={};ODALAR.forEach(o=>{gpen[o.id]=el('g',{class:'pen','data-oda':o.id,tabindex:0,role:'button'},svg)});
+  const A=10.2, CX=300, CY=236;
+  for(let y=5;y<418;y+=A*.84){
+    const sat=Math.round(y/(A*.84));
+    for(let x=5+(sat%2?A/2:0);x<598;x+=A){
+      const px=x+(rnd()-.5)*3.4, py=y+(rnd()-.5)*3.4;
+      let sinif='zemin', oda=null;
+      let rot=Math.atan2(py-CY,px-CX)*180/Math.PI+90+(rnd()-.5)*30;
+      const kenarU=Math.min(px,600-px,py,420-py);
+      if(kenarU<8){sinif='kara'}else if(kenarU<16){sinif='bordur'}
+      else{
+      for(const o of ODALAR){for(const pw of o.pen){const r=pw.slice(0,4);if(icinde(px,py,[r[0]-6,r[1]-6,r[2]+12,r[3]+12])){
+        const k=kenar(px,py,r);
+        if(k<4.6){sinif='kara';rot=(Math.abs(px-r[0])<6||Math.abs(px-r[0]-r[2])<6)?90+(rnd()-.5)*20:(rnd()-.5)*20}
+        else{const n=pw[4];let mul=false;if(n>1){const w=r[2]/n;for(let i=1;i<n;i++){if(Math.abs(px-(r[0]+i*w))<3.4)mul=true}}if(Math.abs(py-(r[1]+r[3]*.36))<2.8)mul=true;sinif=mul?'kara':'cam';oda=o.id}
+      }}}
+      if(sinif==='zemin'){
+        if(icinde(px,py,[KAPI[0]-5,KAPI[1]-5,KAPI[2]+10,KAPI[3]+5])){const k=kenar(px,py,KAPI);sinif=(k<4.6)?'kara':'ahsap';if(Math.abs(px-(KAPI[0]+KAPI[2]/2))<3&&py>KAPI[1])sinif='kara';rot=90+(rnd()-.5)*16}
+        else if(poligonIc(px,py,KCATI)||poligonKenar(px,py,KCATI)<4){sinif=poligonKenar(px,py,KCATI)<4.8?'kara':'cati';rot=(rnd()-.5)*10}
+        else if(icinde(px,py,[KOSK[0]-4,KOSK[1]-4,KOSK[2]+8,KOSK[3]+8])){sinif=kenar(px,py,KOSK)<4.8?'kara':'duvar';rot=(rnd()-.5)*24}
+        else if(poligonIc(px,py,CATI)||poligonKenar(px,py,CATI)<4){sinif=poligonKenar(px,py,CATI)<4.8?'kara':'cati';rot=(rnd()-.5)*10}
+        else if(icinde(px,py,[CUMBA[0]-4,CUMBA[1]-4,CUMBA[2]+8,CUMBA[3]+8])){sinif=kenar(px,py,CUMBA)<4.8?'kara':'duvar';rot=(rnd()-.5)*24}
+        else if(icinde(px,py,[GOVDE[0]-4,GOVDE[1]-4,GOVDE[2]+8,GOVDE[3]+8])){const k=kenar(px,py,GOVDE);sinif=k<4.8?'kara':(Math.abs(py-266)<3?'kara':(py>266?'tas':'duvar'));rot=(rnd()-.5)*24}
+        else if(py>384){sinif=(Math.round(px/10.2)%2===0)?'yer':'yer2';rot=(rnd()-.5)*12}
+      }}
+      const rx=3.4+rnd()*1.7, ry=2.6+rnd()*1.3;
+      const renk={kara:'#141413',bordur:'#F3F1EC',cam:'#B9B3A8',duvar:'#FFFFFF',tas:'#E3DFD7',cati:(sat%2?'#8F8B84':'#77736C'),ahsap:'#6B665F',yer:'#5E5A54',yer2:'#77736C',zemin:(rnd()<.5?'#2B2A27':'#4A4844')}[sinif];
+      const hedef=oda?gpen[oda]:g0;
+      const e=el('ellipse',{cx:px.toFixed(1),cy:py.toFixed(1),rx:rx.toFixed(1),ry:ry.toFixed(1),fill:renk,transform:`rotate(${rot.toFixed(0)} ${px.toFixed(1)} ${py.toFixed(1)})`},hedef);
+      if(sinif==='cam'){e.setAttribute('class','cam');e.style.transitionDelay=(rnd()*.45).toFixed(2)+'s'}
+      if(['duvar','tas','bordur'].includes(sinif))e.setAttribute('stroke','#BDB7AC'),e.setAttribute('stroke-width','.7');
+    }
+  }
+  ODALAR.forEach(o=>{const [x,y,w,h]=o.pen[0];el('rect',{class:'halka',x:x-9,y:y-9,width:w+18,height:h+18,rx:9,fill:'none',stroke:'transparent','stroke-width':3.5},gpen[o.id]);el('rect',{x:x-9,y:y-9,width:w+18,height:h+18,fill:'transparent'},gpen[o.id])});
+  const st=el('style',{},svg);st.textContent=`.pen{cursor:pointer;outline:none}.pen .cam{transition:fill .28s cubic-bezier(.16,1,.3,1)}.pen.dolu .cam{fill:#141413}.pen.secili .halka{stroke:#F08A3C;stroke:#141413}.pen.secili .halka{stroke:#141413;filter:drop-shadow(0 0 0 #fff)}.pen:hover .halka{stroke:#8F8B84}.pen:focus-visible .halka{stroke:#141413;stroke-dasharray:6 4}`;
+  // seçili halkanın beyaz dış çizgisi
+  st.textContent+=`.pen.secili .halka{stroke:#141413;paint-order:stroke}`;
+}
+
+/* ---- ızgara ---- */
+function izgara(){
+  const z=document.getElementById('izgara');z.innerHTML='';
+  const bos=document.createElement('div');z.appendChild(bos);
+  for(let i=0;i<14;i++){const d=gun(i);const b=document.createElement('button');b.type='button';b.className='gun'+(i>=7?' gizle':'');b.dataset.g=i;b.innerHTML=`${d.getDate()}<small>${GUN[S.dil][d.getDay()]}</small>`;b.setAttribute('aria-label',tarihYaz(i));z.appendChild(b)}
+  const f=document.createElement('div');f.className='gizle';z.appendChild(f);
+  ODALAR.forEach(o=>{
+    const a=document.createElement('button');a.type='button';a.className='oda-ad';a.dataset.oda=o.id;a.innerHTML=`<b>${o.ad}</b><small>${o.bakar[S.dil]}, ${T[S.dil].basamak(o.basamak)}</small>`;z.appendChild(a);
+    for(let i=0;i<14;i++){const c=document.createElement('button');c.type='button';c.className='hucre'+(DOLU[o.id][i]?' dolu':'')+(i>=7?' gizle':'');c.dataset.oda=o.id;c.dataset.g=i;c.setAttribute('aria-label',`${o.ad}, ${tarihYaz(i)}, ${DOLU[o.id][i]?T[S.dil].dolu:T[S.dil].bos}`);const r=(rnd()-.5)*24;c.innerHTML=`<i style="transform:rotate(${r.toFixed(0)}deg)"></i>`;z.appendChild(c)}
+    const p=document.createElement('div');p.className='fiy';p.innerHTML=`${o.fiyat.toLocaleString(S.dil==='tr'?'tr-TR':'en-GB')}<small>TL</small>`;z.appendChild(p);
+  });
+}
+
+function guncelle(){
+  const t=T[S.dil];
+  document.getElementById('t-gece').textContent=S.gece;
+  document.querySelectorAll('.gun').forEach(b=>{const g=+b.dataset.g;b.classList.toggle('sec',g===S.giris);b.classList.toggle('ara',g>S.giris&&g<S.giris+S.gece)});
+  document.querySelectorAll('.hucre').forEach(c=>{const g=+c.dataset.g;c.classList.toggle('ara',g>=S.giris&&g<S.giris+S.gece)});
+  document.querySelectorAll('.oda-ad').forEach(a=>a.setAttribute('aria-pressed',a.dataset.oda===S.secili));
+  document.querySelectorAll('.izgara').forEach(z=>{});
+  ODALAR.forEach(o=>{document.querySelectorAll(`.hucre[data-oda="${o.id}"]`).forEach(c=>c.parentElement&&c.classList.toggle('satir',o.id===S.secili))});
+  document.getElementById('izgara').querySelectorAll('.hucre').forEach(c=>c.classList.toggle('secr',c.dataset.oda===S.secili));
+  document.querySelectorAll('#mozaik .pen').forEach(g=>{const id=g.dataset.oda,d=doluMu(id),o=ODALAR.find(r=>r.id===id);g.classList.toggle('dolu',d);g.classList.toggle('secili',id===S.secili);g.setAttribute('aria-pressed',id===S.secili);g.setAttribute('aria-label',`${o.ad}, ${o.bakar[S.dil]}, ${t.basamak(o.basamak)}${d?', '+t.dolum.toLowerCase():''}`)});
+  document.getElementById('secim-yazi').textContent=t.secim(tarihYaz(S.giris),tarihYaz(S.giris+S.gece),S.gece);
+  const o=ODALAR.find(r=>r.id===S.secili),d=doluMu(o.id);
+  const img=document.getElementById('o-foto');img.src=U(FOTO[o.foto],900);img.alt=o.ne[S.dil];
+  document.getElementById('o-ad').textContent=o.ad;
+  document.getElementById('o-konum').textContent=t.konum(o);
+  document.getElementById('o-ne').textContent=o.ne[S.dil];
+  document.getElementById('o-basamak').textContent=t.basamak(o.basamak);
+  document.getElementById('o-tavan').textContent=o.tavan[S.dil];
+  document.getElementById('o-ses').textContent=o.ses[S.dil];
+  document.getElementById('o-fiyat').textContent=para(o.fiyat);
+  document.getElementById('o-toplam').innerHTML=`${t.gecebas}<br>${t.toplam(S.gece,para(o.fiyat*S.gece))}`;
+  const k=document.getElementById('kart');k.classList.toggle('is-dolu',d);
+  const dn=document.getElementById('o-dolu'),ay=document.getElementById('o-ayir');
+  if(d){const g=ilkBos(o.id);dn.innerHTML=g<0?t.dolum+'.':`${t.dolum}. ${t.bosA(gun(g).getDate()+' '+AY[S.dil][gun(g).getMonth()],gun(g+S.gece).getDate()+' '+AY[S.dil][gun(g+S.gece).getMonth()])} <button type="button" class="btn" id="o-gec" style="min-height:34px;margin-top:6px;font-size:14px">${t.gec}</button>`;ay.disabled=true;const b=document.getElementById('o-gec');if(b)b.onclick=()=>{S.giris=g;guncelle()}}else ay.disabled=false;
+  // seçili satır vurgusu
+  document.querySelectorAll('.hucre').forEach(c=>c.closest('.izgara'));
+  document.querySelectorAll('.hucre').forEach(c=>{c.querySelector('i').style.boxShadow=(c.dataset.oda===S.secili&&+c.dataset.g>=S.giris&&+c.dataset.g<S.giris+S.gece)?'0 0 0 2px #fff,0 0 0 4px #1E1E1C':''});
+}
+
+/* ---- çakıl şerit ---- */
+const ROTA={
+ havalimani:{bas:'Kale Kapısı',m:735,p:[['Cumhuriyet Cd.',11,'asfalt'],['Uzunçarşı Sk.',234,'?'],['Uzunçarşı Geçidi',53,'?'],['',10,'?'],['Aralık Geçidi',74,'?'],['Mermerli Sk.',80,'?'],['',115,'?'],['Mermerli Sk.',10,'?'],['Hıdırlık Sk.',147,'?']]},
+ otogar:{bas:'İsmetpaşa',m:948,p:[['Çarşı',193,'?'],['Cumhuriyet Cd.',32,'asfalt'],['Uzunçarşı Sk.',234,'?'],['Uzunçarşı Geçidi',53,'?'],['',10,'?'],['Aralık Geçidi',74,'?'],['Mermerli Sk.',80,'?'],['',115,'?'],['Mermerli Sk.',10,'?'],['Hıdırlık Sk.',147,'?']]},
+ arac:{bas:'Üç Kapılar otoparkı',m:737,p:[['',61,'tas'],['merdiven',11,'m',10],['',10,'tas'],['merdiven',10,'m',13],['Hesapçı Sk.',382,'tas'],['Hesapçı Sk.',194,'?'],['Hıdırlık Sk.',69,'?']]},
+ marina:{bas:'Yat Limanı',m:765,p:[['',178,'?'],['Tuz Kapısı Sk.',74,'arnavut'],['',50,'tas'],['taş merdiven',42,'m',null],['Mermerli Sk.',150,'?'],['',115,'?'],['Mermerli Sk.',10,'?'],['Hıdırlık Sk.',147,'?']]}
+};
+function serit(){
+  const v=ROTA[S.mod],svg=document.getElementById('serit');svg.innerHTML='';const tr=S.dil==='tr';
+  let bas=0,mer=0;v.p.forEach(s=>{if(s[2]==='m'){mer++;if(s[3])bas+=s[3]}});
+  document.getElementById('v-metre').textContent=v.m.toLocaleString(tr?'tr-TR':'en-GB')+' m';
+  document.getElementById('v-ozet').textContent=tr?`${Math.round(v.m/10)} taş · ${mer?(bas?bas+' basamak':'1 taş merdiven, basamak sahada sayılır'):'basamaksız'} · yaklaşık ${Math.round(v.m/75)} dakika`:`${Math.round(v.m/10)} pebbles · ${mer?(bas?bas+' steps':'1 stone stair, steps counted on site'):'step-free'} · about ${Math.round(v.m/75)} min`;
+  const n=Math.round(v.m/10), L=20, R=980, dx=(R-L)/n, y=70;
+  let m0=0, i0=0; tohum=11; const merdE=[];
+  v.p.forEach(s=>{const say=Math.max(1,Math.round(s[1]/10));const x0=L+i0*dx;
+    for(let k=0;k<say&&i0+k<n;k++){const cx=L+(i0+k+.5)*dx;
+      if(s[2]==='m'){el('rect',{x:cx-dx*.36,y:y-15,width:dx*.72,height:30,rx:1.5,fill:'#1E1E1C'},svg)}
+      else{const f={tas:'#FFFFFF',arnavut:'#8F8B84',asfalt:'#3A3936','?':'#FFFFFF'}[s[2]];
+        [-7,7].forEach(dy=>{const ox=(rnd()-.5)*dx*.3;el('ellipse',{cx:cx+ox,cy:y+dy+(rnd()-.5)*2,rx:dx*(.3+rnd()*.12),ry:4.4+rnd()*1.6,fill:f,stroke:'#1E1E1C','stroke-width':s[2]==='?'?.8:1.3,'stroke-dasharray':s[2]==='?'?'2 2':'none',transform:`rotate(${((rnd()-.5)*40).toFixed(0)} ${cx+ox} ${y+dy})`},svg)})}}
+    const x1=L+(i0+say)*dx;
+    if(s[2]==='m'){merdE.push({x:(x0+x1)/2,n:s[3]})}
+    else if(s[0]&&say>=6){el('line',{x1:x0+2,y1:y+20,x2:x1-2,y2:y+20,stroke:'#1E1E1C','stroke-width':1},svg);const t=el('text',{x:(x0+x1)/2,y:y+36,'text-anchor':'middle',style:'font:600 12.5px Atkinson Hyperlegible Next,sans-serif;fill:#57544F'},svg);t.textContent=s[0]}
+    i0+=say;m0+=s[1]});
+  const grup=[];merdE.forEach(e=>{const g=grup[grup.length-1];if(g&&e.x-g.x2<80){g.n.push(e.n);g.x2=e.x}else grup.push({x1:e.x,x2:e.x,n:[e.n]})});
+  grup.forEach(g=>{const say=g.n.filter(Boolean);const t=el('text',{x:(g.x1+g.x2)/2,y:y-24,'text-anchor':'middle',style:'font:700 13px Atkinson Hyperlegible Next,sans-serif;fill:#1E1E1C'},svg);t.textContent=say.length?(say.join(' + ')+(tr?' basamak':' steps')):(tr?'taş merdiven':'stone stair')});
+  const b=el('text',{x:L,y:22,style:'font:800 14px Atkinson Hyperlegible Next,sans-serif;fill:#1E1E1C'},svg);b.textContent=v.bas;
+  const k=el('text',{x:R,y:22,'text-anchor':'end',style:'font:800 14px Atkinson Hyperlegible Next,sans-serif;fill:#1E1E1C'},svg);k.textContent='Yedi Pencere';
+  const lg=[['#FFFFFF',tr?'taş kaplama':'paving',false],['#8F8B84',tr?'Arnavut kaldırımı':'cobbles',false],['#FFFFFF',tr?'yüzey bilinmiyor':'unknown',true],['#1E1E1C',tr?'merdiven':'stairs',false]];
+  lg.forEach(([f,txt,kes],i)=>{const lx=L+i*150;el('ellipse',{cx:lx+10,cy:132,rx:9,ry:6,fill:f,stroke:'#1E1E1C','stroke-width':kes?1:2,'stroke-dasharray':kes?'2 2':'none'},svg);const t=el('text',{x:lx+26,y:137,style:'font:500 12.5px Atkinson Hyperlegible Next,sans-serif;fill:#57544F'},svg);t.textContent=txt});
+}
+
+function dil(d){S.dil=d;document.documentElement.lang=d;document.querySelectorAll('[data-dil]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dil===d));
+  document.querySelectorAll('[data-i18n]').forEach(n=>{const v=T[d][n.dataset.i18n];if(typeof v==='string')n.textContent=v});izgara();guncelle();serit()}
+
+mozaik();
+document.getElementById('mozaik').addEventListener('click',e=>{const g=e.target.closest('.pen');if(g){S.secili=g.dataset.oda;guncelle()}});
+document.getElementById('mozaik').addEventListener('keydown',e=>{const g=e.target.closest('.pen');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();S.secili=g.dataset.oda;guncelle()}});
+document.getElementById('izgara').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.classList.contains('gun')){S.giris=Math.min(+b.dataset.g,14-S.gece);guncelle()}
+  else if(b.classList.contains('oda-ad')){S.secili=b.dataset.oda;guncelle()}
+  else if(b.classList.contains('hucre')){S.secili=b.dataset.oda;S.giris=Math.min(+b.dataset.g,14-S.gece);guncelle()}});
+document.getElementById('n-az').onclick=()=>{if(S.gece>1){S.gece--;guncelle()}};
+document.getElementById('n-cok').onclick=()=>{if(S.giris+S.gece<14){S.gece++;guncelle()}};
+document.querySelectorAll('[data-dil]').forEach(b=>b.onclick=()=>dil(b.dataset.dil));
+document.querySelectorAll('[data-mod]').forEach(b=>b.onclick=()=>{S.mod=b.dataset.mod;document.querySelectorAll('[data-mod]').forEach(x=>x.setAttribute('aria-pressed',x===b));serit()});
+const oz=document.getElementById('ozet');
+const ozAc=()=>{const o=ODALAR.find(r=>r.id===S.secili);if(doluMu(o.id))return;const tr=S.dil==='tr';
+  document.getElementById('oz-dl').innerHTML=(tr?[['Oda',o.ad],['Giriş',tarihYaz(S.giris)+', 14.00'],['Çıkış',tarihYaz(S.giris+S.gece)+', 11.00'],['Basamak',o.basamak],['Toplam (örnek)',para(o.fiyat*S.gece)]]:[['Room',o.ad],['Check-in',tarihYaz(S.giris)+', 2 pm'],['Check-out',tarihYaz(S.giris+S.gece)+', 11 am'],['Steps',o.basamak],['Total (sample)',para(o.fiyat*S.gece)]]).map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');oz.showModal()};
+document.getElementById('o-ayir').onclick=ozAc;document.getElementById('c-rez').onclick=ozAc;document.getElementById('oz-tamam').onclick=()=>oz.close();
+const q=new URLSearchParams(location.search);
+if(q.get('oda'))S.secili=q.get('oda');if(q.get('mod')){S.mod=q.get('mod');document.querySelectorAll('[data-mod]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.mod===S.mod))}
+dil(q.get('dil')||'tr');
+})();
+</script>
+</body>
+</html>

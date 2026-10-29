@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Damar — bookmatch trial (procedural)</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "/node_modules/three/build/three.module.js",
+    "three/addons/": "/node_modules/three/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root {
+    --ink: #1d1c1a;
+    --ink-2: #5d5a55;
+    --paper: #f4f2ee;
+    --line: #d9d5ce;
+    --accent: #2f4a6b;
+    --on-accent: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #c9c5be; color: var(--ink); font: 14px/1.45 system-ui, "Segoe UI", sans-serif; }
+  #gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+  .panel {
+    position: fixed; left: 16px; top: 16px; width: 290px; max-height: calc(100vh - 32px); overflow: auto;
+    background: var(--paper); border: 1px solid var(--line); padding: 16px 16px 14px;
+  }
+  .brand { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2px; }
+  .brand b { font-size: 18px; letter-spacing: .01em; }
+  .brand span { font-size: 12px; color: var(--ink-2); }
+  .sub { font-size: 12px; color: var(--ink-2); margin: 0 0 14px; }
+  h2 { font-size: 12px; font-weight: 600; margin: 14px 0 6px; color: var(--ink-2); }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; }
+  button {
+    font: inherit; font-size: 13px; color: var(--ink); background: #fff; border: 1px solid var(--line);
+    padding: 6px 10px; cursor: pointer; min-height: 32px;
+  }
+  button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .stone { display: flex; align-items: center; gap: 8px; }
+  .chip { width: 18px; height: 18px; border: 1px solid rgba(0,0,0,.15); display: inline-block; }
+  .block { margin-top: 6px; padding: 10px; border: 1px solid var(--line); background: #fff; }
+  .block .t { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .block .t strong { font-size: 13px; }
+  .strip { display: grid; grid-template-columns: repeat(46, 1fr); gap: 1px; margin: 9px 0 6px; height: 26px; }
+  .strip i { display: block; background: #e7e3dc; }
+  .strip i.free { background: #9fb3c8; }
+  .strip i.sel { background: var(--accent); }
+  .strip i.sold { background: #d8d3cb; background-image: repeating-linear-gradient(135deg, transparent 0 3px, rgba(0,0,0,.08) 3px 4px); }
+  .legend { font-size: 11.5px; color: var(--ink-2); display: flex; gap: 10px; flex-wrap: wrap; }
+  .legend em { font-style: normal; display: inline-flex; align-items: center; gap: 4px; }
+  .legend em::before { content: ""; width: 9px; height: 9px; display: inline-block; background: var(--c); }
+  .step { display: flex; gap: 6px; }
+  .step button { min-width: 32px; padding: 4px 8px; }
+  .meta { font-size: 12.5px; margin-top: 8px; color: var(--ink); }
+  .note { position: fixed; right: 16px; top: 16px; max-width: 470px; font-size: 12px; color: var(--ink-2); background: rgba(244,242,238,.94); border: 1px solid var(--line); padding: 8px 10px; }
+  .busy { position: fixed; right: 16px; top: 72px; font-size: 12px; background: var(--ink); color: #fff; padding: 6px 10px; display: none; }
+  .busy.on { display: block; }
+  .dims { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); font-size: 12.5px; background: rgba(244,242,238,.94); border: 1px solid var(--line); padding: 6px 10px; white-space: nowrap; }
+  @media (max-width: 760px) {
+    .panel { left: 8px; right: 8px; top: auto; bottom: 8px; width: auto; max-height: 46vh; }
+    .note, .dims { display: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="gl" aria-label="Bookmatch preview"></canvas>
+
+<section class="panel" aria-label="Controls">
+  <div class="brand"><b>Damar</b><span>working name</span></div>
+  <p class="sub">Bookmatch trial · procedural texture · example data</p>
+
+  <h2 id="h-stone">Stone</h2>
+  <div class="row" role="group" aria-labelledby="h-stone" id="stones"></div>
+
+  <h2 id="h-view">Layout and scene</h2>
+  <div class="row" role="group" aria-labelledby="h-view" id="views"></div>
+
+  <h2 id="h-fin">Surface finish</h2>
+  <div class="row" role="group" aria-labelledby="h-fin" id="finishes"></div>
+
+  <h2>Block <span id="blk-id"></span> <small>(example)</small></h2>
+  <div class="block">
+    <div class="t">
+      <strong id="sel-text">Slabs 21–22</strong>
+      <div class="step">
+        <button id="prev" aria-label="Previous slabs">‹</button>
+        <button id="next" aria-label="Next slabs">›</button>
+      </div>
+    </div>
+    <div class="strip" id="strip" aria-hidden="true"></div>
+    <div class="legend"><em style="--c:#2f4a6b">in view</em><em style="--c:#9fb3c8">available</em><em style="--c:#d8d3cb">sold</em></div>
+    <div class="meta" id="left-text"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><button id="replay">Open the book again</button></div>
+</section>
+
+<div class="dims" id="dims"></div>
+<div class="note">Procedural marble generated in the browser, not a photograph of a real stone. Stone names, block and stock figures are examples.</div>
+<div class="busy" id="busy">Cutting slabs…</div>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

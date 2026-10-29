@@ -1,0 +1,3 @@
+GUNES fidelik {'az': 15.0, 'el': 22.0, 'exposure': -0.5, 'film_fac': 0.22, 'floor': (0.74, 0.72, 0.67), 'haze': 0.002, 'haze_aniso': 0.7, 'haze_col': (1.0, 0.93, 0.8), 'leaf_rough': 0.6, 'leaf_sat': 1.3, 'leaf_spec': 0.12, 'sky': 0.14, 'sun': 24.0, 'sun_ang': 1.5, 'sun_col': (1.0, 0.8, 0.58)}
+SAVED D:/Yazılım Projeleri/rasitburucu-web-demos/.tasarim/gelidonya/blender/gelidonya-fidelik-gunes.blend
+DONE D:/Yazılım Projeleri/rasitburucu-web-demos-wt/gelidonya/.tasarim/gelidonya/blender/render-v21/fidelik.png

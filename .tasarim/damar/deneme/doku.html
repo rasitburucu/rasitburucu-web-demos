@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Damar — prosedürel doku galerisi</title>
+<style>
+  html, body { margin: 0; background: #2a2927; color: #e9e6e1; font: 14px/1.4 system-ui, sans-serif; }
+  canvas { display: block; }
+  .lbl { position: absolute; font-size: 12px; letter-spacing: .02em; color: #e9e6e1; background: rgba(0,0,0,.45); padding: 3px 7px; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import { createMarble2D, layout } from './marble-2d.js';
+import { STONES } from './marble-glsl.js';
+
+const q = new URLSearchParams(location.search);
+const W = +(q.get('w') || 1600), H = +(q.get('h') || 1000);
+const kind = q.get('kind') || 'gallery';
+const finish = q.get('finish') || 'polished';
+const slab = +(q.get('slab') || 21);
+const c = document.getElementById('c');
+c.width = W; c.height = H; c.style.width = W + 'px'; c.style.height = H + 'px';
+const mr = createMarble2D(c);
+mr.clear([0.165, 0.161, 0.153]);
+const labels = [];
+const t0 = performance.now();
+if (kind === 'gallery') {
+  const keys = Object.keys(STONES);
+  const pad = 16, cw = (W - pad * 3) / 2, ch = (H - pad * 3) / 2;
+  keys.forEach((k, i) => {
+    const bx = { x: pad + (i % 2) * (cw + pad), y: pad + Math.floor(i / 2) * (ch + pad), w: cw, h: ch };
+    for (const it of layout('single', k, finish, slab, bx)) { mr.draw(it.req, it.rect); labels.push([it.rect, STONES[k].name + ' · ' + STONES[k].note]); }
+  });
+} else {
+  const stone = q.get('stone') || 'eflatun';
+  const bx = { x: 24, y: 24, w: W - 48, h: H - 48 };
+  for (const it of layout(kind, stone, finish, slab, bx, 1)) mr.draw(it.req, it.rect);
+  labels.push([{ x: 24, y: 24 }, STONES[stone].name + ' · ' + kind + ' · ' + finish + ' · slab ' + slab]);
+}
+mr.gl.finish();
+const ms = Math.round(performance.now() - t0);
+for (const [r, t] of labels) {
+  const d = document.createElement('div'); d.className = 'lbl'; d.textContent = t;
+  d.style.left = (r.x + 8) + 'px'; d.style.top = (r.y + 8) + 'px'; document.body.appendChild(d);
+}
+document.title += ' (' + ms + ' ms)';
+window.__ready = true;
+</script>
+</body>
+</html>

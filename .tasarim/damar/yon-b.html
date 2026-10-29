@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Damar — Yön B · Plaka Sahası</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wdth,wght@75..125,300..800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #161513;     /* showroom at dusk, warm graphite */
+    --ground-2: #1F1D1A;
+    --ink: #EEEAE3;
+    --ink-2: #A8A39A;
+    --line: #36332E;
+    --accent: #BCA8D6;     /* sampled from the selected stone's veins */
+    --on-accent: #161513;
+    --font: "Mona Sans", system-ui, sans-serif;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--ground); color: var(--ink); font: 400 16px/1.5 var(--font); font-stretch: 100%; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .strip { background: #0D0C0B; color: var(--ink-2); font-size: 12.5px; text-align: center; padding: 5px 16px; }
+  header.top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 36px; padding: 16px 40px; }
+  .word { font-weight: 700; font-stretch: 125%; font-size: 24px; letter-spacing: .08em; text-transform: uppercase; }
+  .word small { display: block; font-weight: 400; font-stretch: 100%; font-size: 12px; letter-spacing: .01em; text-transform: none; color: var(--ink-2); }
+  nav.main { display: flex; gap: 28px; font-size: 15px; color: var(--ink-2); }
+  nav.main a { text-decoration: none; }
+  nav.main a[aria-current="page"] { color: var(--ink); }
+  .right { display: flex; gap: 14px; align-items: center; }
+  .lang { display: inline-flex; border: 1px solid var(--line); }
+  .lang button { background: none; border: 0; padding: 6px 10px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+  .lang button[aria-pressed="true"] { color: var(--ink); background: var(--ground-2); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: 15px; padding: 11px 18px; text-decoration: none; transition: filter .15s, background .4s; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .menu-btn { display: none; background: none; border: 1px solid var(--line); padding: 8px 10px; }
+
+  .stage { position: relative; height: calc(100vh - 106px); min-height: 640px; max-height: 980px; overflow: hidden; }
+  .copy { position: absolute; left: 40px; top: 18px; width: min(470px, 36vw); z-index: 4; }
+  h1 { font-weight: 640; font-stretch: 122%; font-size: clamp(2.2rem, 1.1rem + 2.3vw, 3.35rem); line-height: .98; letter-spacing: -.01em; margin: 0 0 14px; }
+  .lede { color: var(--ink-2); font-size: 16.5px; margin: 0; max-width: 30em; }
+
+  /* spotlights and floor */
+  .light { position: absolute; inset: 0; pointer-events: none; background:
+      radial-gradient(42% 55% at 72% 38%, rgba(255,244,226,.13), transparent 70%),
+      radial-gradient(30% 45% at 30% 58%, rgba(255,244,226,.07), transparent 72%); }
+  .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: linear-gradient(#1A1916, #121110); }
+  .floor::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: #2A2723; }
+
+  /* the rack: slabs leaning in a bundle, flip one forward */
+  .yard { position: absolute; left: 2%; bottom: 27%; width: 56%; height: 33%; perspective: 1300px; perspective-origin: 70% 20%; }
+  .rack { position: absolute; left: 6%; bottom: 0; width: 100%; height: 100%; transform-style: preserve-3d; }
+  .slab { position: absolute; bottom: 0; left: 0; height: 92%; aspect-ratio: 1.9 / 3.2; transform-origin: 50% 100%; transition: transform .7s var(--ease), filter .5s; filter: brightness(.62); }
+  .slab img { width: 100%; height: 100%; object-fit: cover; display: block; box-shadow: -14px 10px 26px rgba(0,0,0,.5); }
+  .slab .num { position: absolute; left: 6px; bottom: 6px; font-size: 12px; font-weight: 700; font-stretch: 110%; background: rgba(22,21,19,.75); padding: 2px 6px; color: var(--ink); }
+  .slab.cur { filter: brightness(1); }
+  .slab.sold { filter: brightness(.4) saturate(.6); }
+  .slab.sold::after { content: attr(data-sold); position: absolute; top: 8px; left: 8px; font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--ink); background: rgba(0,0,0,.6); padding: 2px 6px; }
+  .rack-a { position: absolute; left: 4%; bottom: -2%; width: 98%; height: 10px; background: #3B3833; transform: perspective(800px) rotateX(55deg); transform-origin: bottom; }
+
+  /* the pulled-out pair */
+  .pair { position: absolute; right: 5%; bottom: 27%; height: 64%; display: flex; perspective: 1800px; z-index: 3; }
+  .pair .pg { position: relative; height: 100%; aspect-ratio: 1.9 / 3.2; transform-style: preserve-3d; }
+  .pair img { width: 100%; height: 100%; object-fit: cover; display: block; box-shadow: 0 30px 60px rgba(0,0,0,.55), 0 2px 6px rgba(0,0,0,.4); }
+  .pair .pg.r { margin-left: 2px; transform-origin: left center; }
+  .pair .pg.r.opening { animation: open 1.5s var(--ease) both; }
+  @keyframes open { from { transform: rotateY(-178deg); } to { transform: rotateY(0); } }
+  .pair .refl { position: absolute; left: 0; right: 0; top: 100%; height: 24%; background: linear-gradient(rgba(255,255,255,.06), transparent); filter: blur(2px); }
+  .tag { position: absolute; right: 5%; bottom: calc(27% - 46px); z-index: 6; font-size: 13.5px; color: var(--ink-2); text-align: right; text-shadow: 0 1px 8px #161513; }
+  .tag b { color: var(--ink); font-weight: 600; font-stretch: 110%; }
+
+  /* control bar */
+  .bar { position: absolute; left: 40px; right: 40px; bottom: 22px; z-index: 5; display: grid; grid-template-columns: auto auto 1fr auto; gap: 18px; align-items: center; background: rgba(31,29,26,.92); border: 1px solid var(--line); padding: 12px 14px; }
+  .flip { display: flex; align-items: center; gap: 10px; }
+  .flip button { background: var(--ground); border: 1px solid var(--line); width: 40px; height: 40px; font-size: 18px; }
+  .flip .cnt { font-weight: 600; font-stretch: 112%; font-variant-numeric: tabular-nums; min-width: 9.5em; }
+  .flip .cnt small { display: block; font-weight: 400; font-stretch: 100%; color: var(--ink-2); font-size: 12px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chips button { background: none; border: 1px solid var(--line); padding: 7px 11px; font-size: 13.5px; color: var(--ink-2); }
+  .chips button[aria-pressed="true"] { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+  .stones button { display: inline-flex; align-items: center; gap: 7px; }
+  .stones img { width: 18px; height: 18px; object-fit: cover; }
+  .toast { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); z-index: 6; background: var(--ink); color: var(--ground); font-size: 13px; padding: 7px 12px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+  .toast.on { opacity: 1; }
+  .hint { position: absolute; left: 40px; bottom: calc(27% - 40px); z-index: 4; font-size: 13px; color: var(--ink-2); }
+  .mbar { display: none; }
+
+  @media (max-width: 900px) {
+    header.top { grid-template-columns: 1fr auto; padding: 12px 16px; gap: 12px; }
+    nav.main, .right .btn { display: none; }
+    .menu-btn { display: inline-block; }
+    .stage { height: auto; min-height: 0; max-height: none; padding: 8px 16px 110px; display: flex; flex-direction: column; }
+    .copy { order: 1; } .tag { order: 3; } .yard { order: 4; } .bar { order: 5; }
+    .copy { position: static; width: auto; }
+    h1 { font-size: 2.25rem; }
+    .light, .floor { display: none; }
+    .pair { position: relative; right: auto; bottom: auto; height: 58vw; margin: 18px auto 6px; justify-content: center; width: max-content; order: 2; }
+    .tag { position: static; text-align: left; margin-bottom: 14px; }
+    .yard { position: relative; left: auto; bottom: auto; width: 100%; height: 150px; perspective: none; }
+    .rack { position: relative; display: flex; gap: 6px; overflow-x: auto; height: 100%; transform: none !important; }
+    .slab { position: relative; height: 130px; transform: none !important; flex: none; }
+    .slab.cur { outline: 2px solid var(--accent); }
+    .rack-a, .hint { display: none; }
+    .bar { position: static; grid-template-columns: 1fr; margin-top: 14px; }
+    .mbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: var(--ground-2); border-top: 1px solid var(--line); z-index: 9; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slab { transition: none; }
+    .pair .pg.r.opening { animation: none; }
+  }
+  @media (min-width: 1900px) { .stage { max-height: none; } .bar { font-size: 17px; } }
+</style>
+</head>
+<body>
+<div class="strip" data-i18n="strip">Concept study — rasitburucu.com</div>
+<header class="top">
+  <div class="word">Damar<small data-i18n="tag">Slab yard · Milas, Türkiye</small></div>
+  <nav class="main" aria-label="Main">
+    <a href="#" aria-current="page" data-i18n="n1">Slab yard</a>
+    <a href="#" data-i18n="n2">Stones</a>
+    <a href="#" data-i18n="n3">Sample box</a>
+    <a href="#" data-i18n="n4">Quarry</a>
+    <a href="#" data-i18n="n5">Shipping</a>
+  </nav>
+  <div class="right">
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="tr" aria-pressed="false">TR</button></div>
+    <a class="btn" href="#" data-i18n="cta">Request samples</a>
+    <button class="menu-btn" type="button" aria-label="Menu">☰</button>
+  </div>
+</header>
+
+<main class="stage" id="stage">
+  <div class="light"></div>
+  <div class="floor"></div>
+  <div class="toast" id="toast"></div>
+  <div class="copy">
+    <h1 data-i18n="h1">Walk our slab yard without the flight.</h1>
+    <p class="lede" data-i18n="lede">Importers used to fly to Milas to choose their slabs. Flip through the bundle here, pull out the one you like and stand its twin beside it.</p>
+  </div>
+
+  <div class="yard" aria-label="Bundle of block DM-0412">
+    <div class="rack" id="rack"></div>
+    <div class="rack-a"></div>
+  </div>
+  <p class="hint" data-i18n="hint">Scroll or use the arrows to flip through the bundle.</p>
+
+  <div class="pair" id="pair" aria-label="Pulled-out pair">
+    <div class="pg"><img id="pl" src="yon-dokular/eflatun-21.webp" alt="Slab 21"></div>
+    <div class="pg r opening" id="pr"><img id="prImg" src="yon-dokular/eflatun-22-ayna.webp" alt="Slab 22, turned over"></div>
+  </div>
+  <div class="tag" id="tag"></div>
+
+  <div class="bar" role="group" aria-label="Controls">
+    <div class="flip">
+      <button type="button" id="prev" aria-label="Previous slab">‹</button>
+      <div class="cnt" id="cnt"></div>
+      <button type="button" id="next" aria-label="Next slab">›</button>
+    </div>
+    <button type="button" class="btn" id="pull" data-i18n="pull">Pull out this pair</button>
+    <div class="chips stones" id="stones" role="group" aria-label="Stone"></div>
+    <div class="chips" id="finish" role="group" aria-label="Finish">
+      <button type="button" data-f="" aria-pressed="true" data-i18n="p1">Polished</button>
+      <button type="button" data-f="honed" aria-pressed="false" data-i18n="p2">Honed</button>
+      <button type="button" data-f="antiqued" aria-pressed="false" data-i18n="p3">Antiqued</button>
+    </div>
+  </div>
+</main>
+<div class="mbar"><a class="btn" href="#" data-i18n="cta">Request samples</a><a class="btn ghost" href="#">WhatsApp</a></div>
+
+<script>
+const T = {
+  en: { strip: 'Concept study — rasitburucu.com', tag: 'Slab yard · Milas, Türkiye', n1: 'Slab yard', n2: 'Stones', n3: 'Sample box', n4: 'Quarry', n5: 'Shipping', cta: 'Request samples', wa: 'WhatsApp message',
+    h1: 'Walk our slab yard without the flight.',
+    lede: 'Importers used to fly to Milas to choose their slabs. Flip through the bundle here, pull out the one you like and stand its twin beside it.',
+    hint: 'Scroll or use the arrows to flip through the bundle.', pull: 'Pull out this pair', p1: 'Polished', p2: 'Honed', p3: 'Antiqued',
+    cnt: (n) => `Slab ${n} of 46<small>Block DM-0412 · example stock</small>`, sold: 'SOLD',
+    tagt: (a, b) => `<b>Slabs ${a}–${b}</b>, cut one after the other<br>1.90 × 3.20 m each · 2 cm`, onlyDemo: 'This mockup has photos for pairs 21–22, 23–24 and 25–26.', soldMsg: 'Sold. Flip on to the next free slab.', finishOnly: 'Finishes are shown for slabs 21–22 in this mockup.' },
+  tr: { strip: 'Konsept çalışma — rasitburucu.com', tag: 'Plaka sahası · Milas', n1: 'Plaka sahası', n2: 'Taşlar', n3: 'Numune kutusu', n4: 'Ocak', n5: 'Sevkiyat', cta: 'Numune isteyin', wa: 'WhatsApp mesajı',
+    h1: 'Plaka sahamızı uçağa binmeden gezin.',
+    lede: 'İthalatçılar plaka seçmek için Milas’a uçardı. Demeti buradan çevirin, beğendiğiniz plakayı çekin, ikizini yanına koyun.',
+    hint: 'Demeti çevirmek için kaydırın ya da okları kullanın.', pull: 'Bu çifti çek', p1: 'Cilalı', p2: 'Honlu', p3: 'Eskitme',
+    cnt: (n) => `Plaka ${n} / 46<small>Blok DM-0412 · örnek stok</small>`, sold: 'SATILDI',
+    tagt: (a, b) => `<b>${a}–${b} numaralı plakalar</b>, art arda kesildi<br>her biri 1,90 × 3,20 m · 2 cm`, onlyDemo: 'Bu makette yalnız 21–22, 23–24 ve 25–26 çiftlerinin görseli var.', soldMsg: 'Satıldı. Bir sonraki boş plakaya geçin.', finishOnly: 'Yüzeyler bu makette 21–22 için gösteriliyor.' }
+};
+const ACCENT = { eflatun: '#BCA8D6', duman: '#C9CDD2', sirma: '#CDB287', kiragi: '#B6C1CC' };
+const SOLD = new Set([13, 14, 15, 16, 17, 18, 19, 20]);
+const FIRST = 13, LAST = 26;
+let lang = 'en', cur = 21, pairStart = 21, stone = 'eflatun', finish = '';
+const $ = (s) => document.querySelector(s);
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('on'), 2300); }
+
+const rack = $('#rack');
+for (let n = FIRST; n <= LAST; n++) {
+  const d = document.createElement('div');
+  d.className = 'slab' + (SOLD.has(n) ? ' sold' : '');
+  d.dataset.n = n;
+  d.innerHTML = `<img src="yon-dokular/raf-${n}.webp" alt=""><span class="num">${n}</span>`;
+  d.addEventListener('click', () => { cur = n; layout(); });
+  rack.appendChild(d);
+}
+function layout() {
+  const narrow = matchMedia('(max-width: 900px)').matches;
+  if (narrow) { const el = rack.querySelector(`[data-n="${cur}"]`); if (el) rack.scrollLeft = el.offsetLeft - rack.clientWidth / 2 + el.clientWidth / 2; }
+  [...rack.children].forEach((el, i) => {
+    const n = +el.dataset.n;
+    el.classList.toggle('cur', n === cur);
+    el.dataset.sold = T[lang].sold;
+    if (narrow) return;
+    const k = n - cur;                 // slabs before the current one lean back, after it lean forward
+    const base = (n - FIRST) * 24;
+    let x = base, ry = -70, z = 0;
+    if (k === 0) { ry = -18; z = 60; x += 40; }
+    else if (k > 0) { x += 120; ry = -72; }
+    el.style.transform = `translateX(${x}px) translateZ(${z}px) rotateY(${ry}deg)`;
+    el.style.zIndex = k === 0 ? 50 : 40 - Math.abs(k);
+  });
+  $('#cnt').innerHTML = T[lang].cnt(cur);
+}
+function pull() {
+  const n = cur % 2 === 1 ? cur : cur - 1;
+  if (SOLD.has(cur)) return toast(T[lang].soldMsg);
+  if (![21, 23, 25].includes(n) || stone !== 'eflatun') return toast(T[lang].onlyDemo);
+  pairStart = n; finish = ''; syncFinish(); showPair(true);
+}
+function src(n, m) { const f = finish && pairStart === 21 && stone === 'eflatun' ? '-' + finish : ''; return `yon-dokular/${stone}-${n}${m ? '-ayna' : ''}${f}.webp`; }
+function showPair(open) {
+  $('#pl').src = src(pairStart, false); $('#prImg').src = src(pairStart + 1, true);
+  $('#tag').innerHTML = T[lang].tagt(pairStart, pairStart + 1);
+  if (open) { const r = $('#pr'); r.classList.remove('opening'); void r.offsetWidth; r.classList.add('opening'); }
+}
+function syncFinish() { document.querySelectorAll('#finish button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.f === finish))); }
+function stonesUI() {
+  const box = $('#stones'); box.innerHTML = '';
+  for (const [k, name] of [['eflatun', 'Eflatun'], ['duman', 'Duman'], ['sirma', 'Sırma'], ['kiragi', 'Kırağı']]) {
+    const b = document.createElement('button'); b.type = 'button'; b.innerHTML = `<img src="yon-dokular/${k}-21.webp" alt="">${name}`;
+    b.setAttribute('aria-pressed', String(k === stone));
+    b.addEventListener('click', () => { stone = k; pairStart = 21; finish = ''; syncFinish(); document.documentElement.style.setProperty('--accent', ACCENT[k]); stonesUI(); showPair(true); });
+    box.appendChild(b);
+  }
+}
+function i18n() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => { const v = T[lang][el.dataset.i18n]; if (typeof v === 'string') el.textContent = v; });
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  layout(); showPair(false);
+}
+$('#prev').addEventListener('click', () => { cur = Math.max(FIRST, cur - 1); layout(); });
+$('#next').addEventListener('click', () => { cur = Math.min(LAST, cur + 1); layout(); });
+$('#pull').addEventListener('click', pull);
+document.querySelectorAll('#finish button').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.f && !(pairStart === 21 && stone === 'eflatun')) return toast(T[lang].finishOnly);
+  finish = b.dataset.f; syncFinish(); showPair(false);
+}));
+let wheelLock = 0;
+$('.yard').addEventListener('wheel', (e) => { e.preventDefault(); const now = Date.now(); if (now - wheelLock < 140) return; wheelLock = now; cur = Math.min(LAST, Math.max(FIRST, cur + (e.deltaY > 0 ? 1 : -1))); layout(); }, { passive: false });
+addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') $('#next').click(); if (e.key === 'ArrowLeft') $('#prev').click(); });
+document.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => { lang = b.dataset.lang; i18n(); }));
+addEventListener('resize', layout);
+const q = new URLSearchParams(location.search);
+if (q.get('lang') === 'tr') lang = 'tr';
+if (q.get('anim') === '0') $('#pr').classList.remove('opening');
+if (q.get('k')) { const r = $('#pr'); r.style.animationDelay = (-1.5 * +q.get('k')) + 's'; r.style.animationPlayState = 'paused'; }
+stonesUI(); i18n();
+window.__ready = true;
+</script>
+</body>
+</html>

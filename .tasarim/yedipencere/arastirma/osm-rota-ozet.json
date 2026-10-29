@@ -1,0 +1,942 @@
+{
+ "kapi_yaklasik": [
+  36.88184,
+  30.70364
+ ],
+ "kaynak": "OpenStreetMap (ODbL) via Overpass + OpenTopoData SRTM30m, 2026-10-09",
+ "rotalar": {
+  "Kale Kapısı durağı (nostaljik tramvay, taksi)": {
+   "kisa": {
+    "toplam_m": 735,
+    "cikis_m": 29,
+    "inis_m": 39,
+    "yukseklik_bas": 42.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "Cumhuriyet Caddesi",
+      "tur": "pedestrian",
+      "yuzey": "asphalt",
+      "m": 11,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 234,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 53,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aralık Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 74,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 80,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   },
+   "bavul": {
+    "toplam_m": 735,
+    "cikis_m": 29,
+    "inis_m": 39,
+    "yukseklik_bas": 42.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "Cumhuriyet Caddesi",
+      "tur": "pedestrian",
+      "yuzey": "asphalt",
+      "m": 11,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 234,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 53,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aralık Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 74,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 80,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   }
+  },
+  "İsmetpaşa durağı (AntRay: havalimanı, otogar)": {
+   "kisa": {
+    "toplam_m": 948,
+    "cikis_m": 29,
+    "inis_m": 43,
+    "yukseklik_bas": 46.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "Old Bazaar",
+      "tur": "pedestrian",
+      "yuzey": null,
+      "m": 193,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Cumhuriyet Caddesi",
+      "tur": "living_street",
+      "yuzey": "asphalt",
+      "m": 32,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 234,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 53,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aralık Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 74,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 80,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   },
+   "bavul": {
+    "toplam_m": 948,
+    "cikis_m": 29,
+    "inis_m": 43,
+    "yukseklik_bas": 46.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "Old Bazaar",
+      "tur": "pedestrian",
+      "yuzey": null,
+      "m": 193,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Cumhuriyet Caddesi",
+      "tur": "living_street",
+      "yuzey": "asphalt",
+      "m": 32,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 234,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Uzuncarşı Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 53,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aralık Geçidi",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 74,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 80,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   }
+  },
+  "Üç Kapılar / Hadrian Kapısı (otopark yanı)": {
+   "kisa": {
+    "toplam_m": 737,
+    "cikis_m": 1,
+    "inis_m": 12,
+    "yukseklik_bas": 43.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "yaya alanı",
+      "tur": "pedestrian",
+      "yuzey": "paving_stones",
+      "m": 11,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": null,
+      "m": 18,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "paving_stones",
+      "m": 27,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": null,
+      "m": 5,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "merdiven",
+      "tur": "steps",
+      "yuzey": "stone",
+      "m": 11,
+      "basamak_osm": 10,
+      "incline": "down"
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "paving_stones",
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "merdiven",
+      "tur": "steps",
+      "yuzey": "stone",
+      "m": 10,
+      "basamak_osm": 13,
+      "incline": "up"
+     },
+     {
+      "ad": "Hesapçı Sokak",
+      "tur": "residential",
+      "yuzey": "paving_stones",
+      "m": 382,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hesapci Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 194,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 69,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   },
+   "bavul": {
+    "toplam_m": 851,
+    "cikis_m": 2,
+    "inis_m": 13,
+    "yukseklik_bas": 43.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "yaya alanı",
+      "tur": "pedestrian",
+      "yuzey": "paving_stones",
+      "m": 11,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": null,
+      "m": 18,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "paving_stones",
+      "m": 38,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": null,
+      "m": 50,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "servis yolu",
+      "tur": "service",
+      "yuzey": null,
+      "m": 131,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Kocatepe Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 12,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Kandiller Geçidi",
+      "tur": "residential",
+      "yuzey": "paving_stones",
+      "m": 24,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Kandiller Geçiti Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 83,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hesapçı Sokak",
+      "tur": "residential",
+      "yuzey": "paving_stones",
+      "m": 222,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hesapci Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 194,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 69,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   }
+  },
+  "Yat Limanı (marina)": {
+   "kisa": {
+    "toplam_m": 765,
+    "cikis_m": 49,
+    "inis_m": 19,
+    "yukseklik_bas": 2.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 178,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Tuz Kapısı Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 74,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "paving_stones",
+      "m": 50,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "merdiven",
+      "tur": "steps",
+      "yuzey": "rock",
+      "m": 42,
+      "basamak_osm": null,
+      "incline": "up"
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 150,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   },
+   "bavul": {
+    "toplam_m": 849,
+    "cikis_m": 52,
+    "inis_m": 22,
+    "yukseklik_bas": 2.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 99,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya alanı",
+      "tur": "pedestrian",
+      "yuzey": null,
+      "m": 35,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "sett",
+      "m": 12,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "İskele Caddesi",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 141,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aydoğdu Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 73,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Merdivenli Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 56,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 162,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   }
+  },
+  "Cumhuriyet Meydanı yeraltı otoparkı": {
+   "kisa": {
+    "toplam_m": 958,
+    "cikis_m": 34,
+    "inis_m": 45,
+    "yukseklik_bas": 43.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "servis yolu",
+      "tur": "service",
+      "yuzey": null,
+      "m": 33,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Şehit Binbaşı Cengiz Toytunç Caddesi",
+      "tur": "secondary",
+      "yuzey": "asphalt",
+      "m": 62,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Cumhuriyet Caddesi",
+      "tur": "pedestrian",
+      "yuzey": "asphalt",
+      "m": 79,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": null,
+      "m": 48,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "paving_stones",
+      "m": 91,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya alanı",
+      "tur": "pedestrian",
+      "yuzey": null,
+      "m": 16,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "merdiven",
+      "tur": "steps",
+      "yuzey": null,
+      "m": 67,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aydoğdu Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 73,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Merdivenli Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 56,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 162,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   },
+   "bavul": {
+    "toplam_m": 1068,
+    "cikis_m": 45,
+    "inis_m": 56,
+    "yukseklik_bas": 43.0,
+    "yukseklik_son": 32.0,
+    "parcalar": [
+     {
+      "ad": "servis yolu",
+      "tur": "service",
+      "yuzey": null,
+      "m": 33,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Şehit Binbaşı Cengiz Toytunç Caddesi",
+      "tur": "secondary",
+      "yuzey": "asphalt",
+      "m": 62,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Cumhuriyet Caddesi",
+      "tur": "secondary",
+      "yuzey": "asphalt",
+      "m": 136,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": "paving_stones",
+      "m": 84,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya yolu",
+      "tur": "footway",
+      "yuzey": null,
+      "m": 11,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "yaya alanı",
+      "tur": "pedestrian",
+      "yuzey": "paving_stones",
+      "m": 28,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "İskele Caddesi",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 141,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Aydoğdu Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 73,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Merdivenli Sokak",
+      "tur": "residential",
+      "yuzey": "sett",
+      "m": 56,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 162,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 115,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Mermerli Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 10,
+      "basamak_osm": null,
+      "incline": null
+     },
+     {
+      "ad": "Hıdırlık Sokak",
+      "tur": "residential",
+      "yuzey": null,
+      "m": 147,
+      "basamak_osm": null,
+      "incline": null
+     }
+    ]
+   }
+  }
+ },
+ "not": "Türetilmiş özet. Veri © OpenStreetMap katkıda bulunanlar (ODbL 1.0), Overpass ile 2026-10-09 okundu; yükseklik OpenTopoData SRTM 30 m (yalnız toplam fark anlamlı, cikis_m/inis_m gürültülü). Kapı noktası kurgusal konak için yaklaşık. basamak_osm yalnız step_count etiketi olan merdivenlerde dolu."
+}

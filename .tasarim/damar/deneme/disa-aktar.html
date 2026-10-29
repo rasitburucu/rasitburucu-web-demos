@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Damar — plaka görsellerini dışa aktar</title>
+<style>html,body{margin:0;background:#222;color:#ddd;font:13px system-ui} canvas{display:block}</style>
+</head>
+<body>
+<p>Yön maketleri için plaka görsellerini bir kez üretir. Kullanım: Playwright ile <code>window.__export(listesi)</code>.</p>
+<canvas id="c" width="16" height="16"></canvas>
+<script type="module">
+import { createMarble2D } from './marble-2d.js';
+import { SLAB } from './marble-glsl.js';
+const c = document.getElementById('c');
+const mr = createMarble2D(c);
+// items: [{name, stone, slab, side, portrait, mirrorX, mirrorY, finish, w, h, type, q}]
+window.__export = async (items) => {
+  const out = [];
+  for (const it of items) {
+    c.width = it.w; c.height = it.h;
+    mr.gl.viewport(0, 0, it.w, it.h);
+    mr.clear([0, 0, 0]);
+    const region = it.portrait ? { x: 0, y: 0, w: SLAB.h, h: SLAB.w } : { x: 0, y: 0, w: SLAB.w, h: SLAB.h };
+    mr.draw({ stone: it.stone, finish: it.finish || 'polished', slab: it.slab, side: it.side || 0,
+      portrait: !!it.portrait, mirrorX: !!it.mirrorX, mirrorY: !!it.mirrorY, region }, { x: 0, y: 0, w: it.w, h: it.h });
+    mr.gl.finish();
+    out.push({ name: it.name, data: c.toDataURL(it.type || 'image/webp', it.q || 0.86) });
+    await new Promise((r) => setTimeout(r, 0));
+  }
+  return out;
+};
+window.__ready = true;
+</script>
+</body>
+</html>
